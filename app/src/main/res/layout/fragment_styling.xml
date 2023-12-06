@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nestedScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ui.fragments.StylingFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/color_preview"
+            layout="@layout/view_color_table" />
+
+        <com.drdisagree.colorblendr.ui.widgets.SliderWidget
+            android:id="@+id/accent_saturation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:decimalFormat="#.##"
+            app:isDecimalFormat="true"
+            app:outputScale="100.0"
+            app:sliderDefaultValue="100"
+            app:sliderStepSize="1"
+            app:sliderValue="100"
+            app:sliderValueFrom="0"
+            app:sliderValueTo="200"
+            app:titleText="@string/accent_saturation"
+            app:valueFormat="x" />
+
+        <com.drdisagree.colorblendr.ui.widgets.SliderWidget
+            android:id="@+id/background_saturation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:decimalFormat="#.##"
+            app:isDecimalFormat="true"
+            app:outputScale="100.0"
+            app:sliderDefaultValue="100"
+            app:sliderStepSize="1"
+            app:sliderValue="100"
+            app:sliderValueFrom="0"
+            app:sliderValueTo="200"
+            app:titleText="@string/background_saturation"
+            app:valueFormat="x" />
+
+        <com.drdisagree.colorblendr.ui.widgets.SliderWidget
+            android:id="@+id/background_lightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:decimalFormat="#.##"
+            app:isDecimalFormat="true"
+            app:outputScale="100.0"
+            app:sliderDefaultValue="100"
+            app:sliderStepSize="1"
+            app:sliderValue="100"
+            app:sliderValueFrom="0"
+            app:sliderValueTo="200"
+            app:titleText="@string/background_lightness"
+            app:valueFormat="x" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

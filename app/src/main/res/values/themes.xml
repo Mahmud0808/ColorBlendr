@@ -1,0 +1,21 @@
+<resources>
+    <style name="Base.Theme.ColorBlendr" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Window layout. -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Navigation bar color. -->
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+
+        <!-- App theme -->
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Theme.ColorBlendr" parent="Base.Theme.ColorBlendr" />
+</resources>
