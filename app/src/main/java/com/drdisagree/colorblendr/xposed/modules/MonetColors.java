@@ -219,7 +219,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
         Map<K, V> result = new HashMap<>();
 
         if (keys.size() != values.size()) {
-            throw new IllegalArgumentException("Lists must have the same size");
+            throw new IllegalArgumentException("Lists must have the same size. Provided keys size: " + keys.size() + " Provided values size: " + values.size() + ".");
         }
 
         for (int i = 0; i < keys.size(); i++) {
