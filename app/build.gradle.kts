@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     id("com.android.application")
 }
@@ -10,8 +12,8 @@ android {
         applicationId = "com.drdisagree.colorblendr"
         minSdk = 31
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0 beta 1"
+        versionCode = 2
+        versionName = "1.0 beta 2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -23,6 +25,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            applicationVariants.all {
+                val variant = this
+                variant.outputs
+                    .map { it as BaseVariantOutputImpl }
+                    .forEach { output ->
+                        val outputFileName = "ColorBlendr ${variant.versionName}.apk"
+                        output.outputFileName = outputFileName
+                    }
+            }
         }
     }
     compileOptions {
