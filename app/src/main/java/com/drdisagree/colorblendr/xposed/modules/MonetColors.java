@@ -43,11 +43,10 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
     private int monetBackgroundSaturation = 100;
     private int monetBackgroundLightness = 100;
     private boolean pitchBlackTheme = false;
-    private String coreSpec = "TONAL_SPOT";
     private AtomicInteger counter;
     Class<?> ThemeOverlayControllerClass;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
-    private List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
+    private final List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
 
     public MonetColors(Context context) {
         super(context);
@@ -114,15 +113,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                 }
             });
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
-            Class<?> StyleClass = findClass(SYSTEMUI_PACKAGE + ".monet.Style", loadPackageParam.classLoader);
             Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
-
-            hookAllConstructors(StyleClass, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) {
-                    coreSpec = (String) param.args[0];
-                }
-            });
 
             hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
                 @Override
@@ -138,19 +129,11 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
                     param.setResult(modifiedShades);
 
-                    log(TAG + "coreSpec: " + coreSpec + " hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                    log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
                 }
             });
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            Class<?> StyleClass = findClass(SYSTEMUI_PACKAGE + ".monet.Style", loadPackageParam.classLoader);
             Class<?> TonalPaletteClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalPalette", loadPackageParam.classLoader);
-
-            hookAllConstructors(StyleClass, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) {
-                    coreSpec = (String) param.args[0];
-                }
-            });
 
             hookAllConstructors(TonalPaletteClass, new XC_MethodHook() {
                 @Override
@@ -171,7 +154,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                     setObjectField(param.thisObject, "allShades", modifiedShades);
                     setObjectField(param.thisObject, "allShadesMapped", mappedShades);
 
-                    log(TAG + "coreSpec: " + coreSpec + " hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                    log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
                 }
             });
         }
