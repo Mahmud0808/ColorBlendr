@@ -15,15 +15,12 @@ import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 
-import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.xposed.ModPack;
+import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,9 +33,6 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
     @SuppressWarnings("unused")
     private static final String TAG = "ColorBlendr - " + MonetColors.class.getSimpleName() + ": ";
-    private boolean accentSaturation = false;
-    private boolean backgroundSaturation = false;
-    private boolean backgroundLightness = false;
     private int monetAccentSaturation = 100;
     private int monetBackgroundSaturation = 100;
     private int monetBackgroundLightness = 100;
@@ -58,10 +52,6 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
         monetBackgroundSaturation = Xprefs.getInt(MONET_BACKGROUND_SATURATION, 100);
         monetBackgroundLightness = Xprefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100);
         pitchBlackTheme = Xprefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
-
-        accentSaturation = monetAccentSaturation != 100;
-        backgroundSaturation = monetBackgroundSaturation != 100;
-        backgroundLightness = monetBackgroundLightness != 100;
 
         if (Key.length > 0 && (Key[0].equals(MONET_ACCENT_SATURATION) ||
                 Key[0].equals(MONET_BACKGROUND_SATURATION) ||
@@ -91,7 +81,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
         counter = new AtomicInteger(0);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2) {
             Class<?> ShadesClass = findClass(SYSTEMUI_PACKAGE + ".monet.Shades", loadPackageParam.classLoader);
 
             hookAllMethods(ShadesClass, "of", new XC_MethodHook() {
@@ -100,8 +90,15 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                     float hue = (float) param.args[0];
                     float chroma = (float) param.args[1];
 
-                    ArrayList<Integer> shadesList = generateShades(hue, chroma);
-                    ArrayList<Integer> modifiedShades = modifyColors(shadesList);
+                    ArrayList<Integer> shadesList = ColorModifiers.generateShades(hue, chroma);
+                    ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                            shadesList,
+                            counter,
+                            monetAccentSaturation,
+                            monetBackgroundSaturation,
+                            monetBackgroundLightness,
+                            pitchBlackTheme
+                    );
 
                     int[] shades = modifiedShades.stream()
                             .mapToInt(Integer::intValue)
@@ -124,8 +121,15 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                     Object chroma = getObjectField(param.thisObject, "chroma");
                     float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
 
-                    ArrayList<Integer> shadesList = generateShades(hueValue, chromaValue);
-                    ArrayList<Integer> modifiedShades = modifyColors(shadesList);
+                    ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
+                    ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                            shadesList,
+                            counter,
+                            monetAccentSaturation,
+                            monetBackgroundSaturation,
+                            monetBackgroundLightness,
+                            pitchBlackTheme
+                    );
 
                     param.setResult(modifiedShades);
 
@@ -146,10 +150,17 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                     Object chroma = getObjectField(param.args[0], "chroma");
                     float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));
 
-                    ArrayList<Integer> shadesList = generateShades(hueValue, chromaValue);
-                    ArrayList<Integer> modifiedShades = modifyColors(shadesList);
+                    ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
+                    ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                            shadesList,
+                            counter,
+                            monetAccentSaturation,
+                            monetBackgroundSaturation,
+                            monetBackgroundLightness,
+                            pitchBlackTheme
+                    );
 
-                    Map<Integer, Integer> mappedShades = zipToMap(SHADE_KEYS, modifiedShades);
+                    Map<Integer, Integer> mappedShades = ColorModifiers.zipToMap(SHADE_KEYS, modifiedShades);
 
                     setObjectField(param.thisObject, "allShades", modifiedShades);
                     setObjectField(param.thisObject, "allShadesMapped", mappedShades);
@@ -158,74 +169,5 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                 }
             });
         }
-    }
-
-    private ArrayList<Integer> generateShades(float hue, float chroma) {
-        ArrayList<Integer> shadeList = new ArrayList<>(Arrays.asList(new Integer[12]));
-
-        shadeList.set(0, ColorUtil.CAMToColor(hue, Math.min(40.0f, chroma), 99.0f));
-        shadeList.set(1, ColorUtil.CAMToColor(hue, Math.min(40.0f, chroma), 95.0f));
-
-        for (int i = 2; i < 12; i++) {
-            float lstar;
-            if (i == 6) {
-                lstar = 49.6f;
-            } else {
-                lstar = 100 - ((i - 1) * 10);
-            }
-            shadeList.set(i, ColorUtil.CAMToColor(hue, chroma, lstar));
-        }
-
-        return shadeList;
-    }
-
-    private ArrayList<Integer> modifyColors(ArrayList<Integer> palette) {
-        counter.getAndIncrement();
-
-        boolean accentPalette = counter.get() <= 3;
-
-        if (accentPalette) {
-            if (accentSaturation) {
-                // Set accent saturation
-                palette.replaceAll(o -> ColorUtil.modifySaturation(o, monetAccentSaturation));
-            }
-        } else {
-            if (backgroundSaturation) {
-                // Set background saturation
-                palette.replaceAll(o -> ColorUtil.modifySaturation(o, monetBackgroundSaturation));
-            }
-
-            if (backgroundLightness) {
-                // Set background lightness
-                for (int j = 0; j < palette.size(); j++) {
-                    palette.set(j, ColorUtil.modifyLightness(palette.get(j), monetBackgroundLightness, j + 1));
-                }
-            }
-
-            if (pitchBlackTheme) {
-                // Set pitch black theme
-                palette.set(10, Color.BLACK);
-            }
-        }
-
-        if (counter.get() >= 5) {
-            counter.set(0);
-        }
-
-        return palette;
-    }
-
-    public static <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
-        Map<K, V> result = new HashMap<>();
-
-        if (keys.size() != values.size()) {
-            throw new IllegalArgumentException("Lists must have the same size. Provided keys size: " + keys.size() + " Provided values size: " + values.size() + ".");
-        }
-
-        for (int i = 0; i < keys.size(); i++) {
-            result.put(keys.get(i), values.get(i));
-        }
-
-        return result;
     }
 }
