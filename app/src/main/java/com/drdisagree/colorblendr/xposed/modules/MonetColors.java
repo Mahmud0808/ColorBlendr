@@ -12,15 +12,20 @@ import static de.robv.android.xposed.XposedBridge.log;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.xposed.ModPack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -40,7 +45,9 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
     private boolean pitchBlackTheme = false;
     private String coreSpec = "TONAL_SPOT";
     private AtomicInteger counter;
+    Class<?> ThemeOverlayControllerClass;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
+    private List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
 
     public MonetColors(Context context) {
         super(context);
@@ -63,14 +70,18 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                 Key[0].equals(MONET_PITCH_BLACK_THEME)
         )) {
             if (ThemeOverlayControllerParam != null) {
-                callMethod(ThemeOverlayControllerParam.thisObject, "reevaluateSystemTheme", true);
+                try {
+                    callMethod(ThemeOverlayControllerParam.thisObject, "reevaluateSystemTheme", true);
+                } catch (Throwable t) {
+                    log(TAG + t);
+                }
             }
         }
     }
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) {
-        Class<?> ThemeOverlayControllerClass = findClass(SYSTEMUI_PACKAGE + ".theme.ThemeOverlayController", loadPackageParam.classLoader);
+        ThemeOverlayControllerClass = findClass(SYSTEMUI_PACKAGE + ".theme.ThemeOverlayController", loadPackageParam.classLoader);
 
         hookAllConstructors(ThemeOverlayControllerClass, new XC_MethodHook() {
             @Override
@@ -79,38 +90,91 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
             }
         });
 
-        Class<?> StyleClass = findClass(SYSTEMUI_PACKAGE + ".monet.Style", loadPackageParam.classLoader);
-        Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
         counter = new AtomicInteger(0);
 
-        hookAllConstructors(StyleClass, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                if (param.args[0] instanceof String) {
-                    coreSpec = (String) param.args[0];
-                } else if (param.args[2] instanceof String) {
-                    coreSpec = (String) param.args[2];
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            Class<?> ShadesClass = findClass(SYSTEMUI_PACKAGE + ".monet.Shades", loadPackageParam.classLoader);
+
+            hookAllMethods(ShadesClass, "of", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    float hue = (float) param.args[0];
+                    float chroma = (float) param.args[1];
+
+                    ArrayList<Integer> shadesList = generateShades(hue, chroma);
+                    ArrayList<Integer> modifiedShades = modifyColors(shadesList);
+
+                    int[] shades = modifiedShades.stream()
+                            .mapToInt(Integer::intValue)
+                            .toArray();
+
+                    param.setResult(shades);
+
+                    log(TAG + "hue: " + hue + " chroma: " + chroma + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
                 }
-            }
-        });
+            });
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
+            Class<?> StyleClass = findClass(SYSTEMUI_PACKAGE + ".monet.Style", loadPackageParam.classLoader);
+            Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
 
-        hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                Object hue = getObjectField(param.thisObject, "hue");
-                float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
+            hookAllConstructors(StyleClass, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    coreSpec = (String) param.args[0];
+                }
+            });
 
-                Object chroma = getObjectField(param.thisObject, "chroma");
-                float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
+            hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    Object hue = getObjectField(param.thisObject, "hue");
+                    float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
 
-                ArrayList<Integer> shades = generateShades(hueValue, chromaValue);
-                ArrayList<Integer> modifiedShades = modifyColors(shades);
+                    Object chroma = getObjectField(param.thisObject, "chroma");
+                    float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
 
-                param.setResult(modifiedShades);
+                    ArrayList<Integer> shadesList = generateShades(hueValue, chromaValue);
+                    ArrayList<Integer> modifiedShades = modifyColors(shadesList);
 
-                log(TAG + "coreSpec: " + coreSpec + " hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
-            }
-        });
+                    param.setResult(modifiedShades);
+
+                    log(TAG + "coreSpec: " + coreSpec + " hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                }
+            });
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Class<?> StyleClass = findClass(SYSTEMUI_PACKAGE + ".monet.Style", loadPackageParam.classLoader);
+            Class<?> TonalPaletteClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalPalette", loadPackageParam.classLoader);
+
+            hookAllConstructors(StyleClass, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    coreSpec = (String) param.args[0];
+                }
+            });
+
+            hookAllConstructors(TonalPaletteClass, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    Object camColor = getObjectField(param.thisObject, "seedCam");
+
+                    Object hue = getObjectField(param.args[0], "hue");
+                    float hueValue = (float) ((double) callMethod(hue, "get", camColor));
+
+                    Object chroma = getObjectField(param.args[0], "chroma");
+                    float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));
+
+                    ArrayList<Integer> shadesList = generateShades(hueValue, chromaValue);
+                    ArrayList<Integer> modifiedShades = modifyColors(shadesList);
+
+                    Map<Integer, Integer> mappedShades = zipToMap(SHADE_KEYS, modifiedShades);
+
+                    setObjectField(param.thisObject, "allShades", modifiedShades);
+                    setObjectField(param.thisObject, "allShadesMapped", mappedShades);
+
+                    log(TAG + "coreSpec: " + coreSpec + " hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                }
+            });
+        }
     }
 
     private ArrayList<Integer> generateShades(float hue, float chroma) {
@@ -166,5 +230,19 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
         }
 
         return palette;
+    }
+
+    public static <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
+        Map<K, V> result = new HashMap<>();
+
+        if (keys.size() != values.size()) {
+            throw new IllegalArgumentException("Lists must have the same size");
+        }
+
+        for (int i = 0; i < keys.size(); i++) {
+            result.put(keys.get(i), values.get(i));
+        }
+
+        return result;
     }
 }
