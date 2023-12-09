@@ -11,6 +11,7 @@ import static de.robv.android.xposed.XposedBridge.hookAllMethods;
 import static de.robv.android.xposed.XposedBridge.log;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
+import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
@@ -20,6 +21,7 @@ import android.os.Build;
 import com.drdisagree.colorblendr.xposed.ModPack;
 import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +34,14 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
     @SuppressWarnings("unused")
-    private static final String TAG = "ColorBlendr - " + MonetColors.class.getSimpleName() + ": ";
+    private static final String TAG = "ColorBlendr: ";
     private int monetAccentSaturation = 100;
     private int monetBackgroundSaturation = 100;
     private int monetBackgroundLightness = 100;
     private boolean pitchBlackTheme = false;
     private AtomicInteger counter;
-    Class<?> ThemeOverlayControllerClass;
+    private Class<?> ThemeOverlayControllerParentClass;
+    private Method reevaluateSystemTheme;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
     private final List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
 
@@ -61,8 +64,12 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
             if (ThemeOverlayControllerParam != null) {
                 try {
                     callMethod(ThemeOverlayControllerParam.thisObject, "reevaluateSystemTheme", true);
-                } catch (Throwable t) {
-                    log(TAG + t);
+                } catch (Throwable ignored) {
+                    try {
+                        reevaluateSystemTheme.invoke(ThemeOverlayControllerParam.thisObject, true);
+                    } catch (Throwable throwable) {
+                        log(TAG + throwable);
+                    }
                 }
             }
         }
@@ -70,12 +77,15 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) {
-        ThemeOverlayControllerClass = findClass(SYSTEMUI_PACKAGE + ".theme.ThemeOverlayController", loadPackageParam.classLoader);
+        Class<?> themeOverlayControllerClass = findClass(SYSTEMUI_PACKAGE + ".theme.ThemeOverlayController", loadPackageParam.classLoader);
 
-        hookAllConstructors(ThemeOverlayControllerClass, new XC_MethodHook() {
+        hookAllConstructors(themeOverlayControllerClass, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) {
+            protected void beforeHookedMethod(MethodHookParam param) {
                 ThemeOverlayControllerParam = param;
+
+                ThemeOverlayControllerParentClass = param.thisObject.getClass().getSuperclass();
+                reevaluateSystemTheme = findMethodExact(ThemeOverlayControllerParentClass, "reevaluateSystemTheme", boolean.class);
             }
         });
 
