@@ -61,15 +61,17 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                 Key[0].equals(MONET_BACKGROUND_LIGHTNESS) ||
                 Key[0].equals(MONET_PITCH_BLACK_THEME)
         )) {
-            if (ThemeOverlayControllerParam != null) {
-                try {
+            try {
+                if (ThemeOverlayControllerParam != null) {
                     callMethod(ThemeOverlayControllerParam.thisObject, "reevaluateSystemTheme", true);
-                } catch (Throwable ignored) {
-                    try {
+                }
+            } catch (Throwable ignored) {
+                try {
+                    if (reevaluateSystemTheme != null) {
                         reevaluateSystemTheme.invoke(ThemeOverlayControllerParam.thisObject, true);
-                    } catch (Throwable throwable) {
-                        log(TAG + throwable);
                     }
+                } catch (Throwable throwable) {
+                    log(TAG + throwable);
                 }
             }
         }
@@ -77,9 +79,9 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) {
-        Class<?> themeOverlayControllerClass = findClass(SYSTEMUI_PACKAGE + ".theme.ThemeOverlayController", loadPackageParam.classLoader);
+        Class<?> ThemeOverlayControllerClass = findClass(SYSTEMUI_PACKAGE + ".theme.ThemeOverlayController", loadPackageParam.classLoader);
 
-        hookAllConstructors(themeOverlayControllerClass, new XC_MethodHook() {
+        hookAllConstructors(ThemeOverlayControllerClass, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 ThemeOverlayControllerParam = param;
