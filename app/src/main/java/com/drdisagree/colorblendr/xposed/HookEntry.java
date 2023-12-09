@@ -83,7 +83,7 @@ public class HookEntry implements IXposedHookLoadPackage {
 
     private void onXPrefsReady(XC_LoadPackage.LoadPackageParam loadPackageParam) {
         if (BootLoopProtector.isBootLooped(loadPackageParam.packageName)) {
-            log(String.format("Possible bootloop in %s ; Iconify will not load for now...", loadPackageParam.packageName));
+            log(String.format("Possible bootloop in %s ; ColorBlendr will not load for now...", loadPackageParam.packageName));
             return;
         }
 
