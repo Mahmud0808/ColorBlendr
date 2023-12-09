@@ -8,6 +8,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -163,8 +164,16 @@ public class StylingFragment extends Fragment {
                 textView.setText(String.valueOf(colorCodes[j]));
                 textView.setRotation(270);
                 textView.setTextColor(ColorUtil.calculateTextColor(systemColors[i][j]));
-                textView.setTextSize(10);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 textView.setAlpha(0.8f);
+                textView.setMaxLines(1);
+                textView.setSingleLine(true);
+                textView.setAutoSizeTextTypeUniformWithConfiguration(
+                        1,
+                        20,
+                        1,
+                        TypedValue.COMPLEX_UNIT_SP
+                );
 
                 ((ViewGroup) colorTableRows[i].getChildAt(j)).addView(textView);
                 ((LinearLayout) colorTableRows[i].getChildAt(j)).setGravity(Gravity.CENTER);
