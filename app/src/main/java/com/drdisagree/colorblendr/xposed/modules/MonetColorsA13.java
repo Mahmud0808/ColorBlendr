@@ -41,6 +41,9 @@ public class MonetColorsA13 extends ModPack implements IXposedHookLoadPackage {
     private Method reevaluateSystemTheme;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
     private int seedColor = -1;
+    private boolean firstHookTried, firstHookSuccess;
+    private boolean secondHookTried, secondHookSuccess;
+    private Throwable throwable1, throwable2;
 
     public MonetColorsA13(Context context) {
         super(context);
@@ -95,35 +98,105 @@ public class MonetColorsA13 extends ModPack implements IXposedHookLoadPackage {
 
         counter = new AtomicInteger(0);
 
-        Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
+        firstHookTried = false;
+        firstHookSuccess = false;
+        secondHookTried = false;
+        secondHookSuccess = false;
 
-        hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                Object hue = getObjectField(param.thisObject, "hue");
-                float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
+        try {
+            Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
 
-                if (seedColor != -1) {
-                    hueValue = ColorUtil.getHue(seedColor);
+            firstHookTried = true;
+
+            hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    try {
+                        Object hue = getObjectField(param.thisObject, "hue");
+                        float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
+
+                        if (seedColor != -1) {
+                            hueValue = ColorUtil.getHue(seedColor);
+                        }
+
+                        Object chroma = getObjectField(param.thisObject, "chroma");
+                        float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
+
+                        ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
+                        ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                                shadesList,
+                                counter,
+                                monetAccentSaturation,
+                                monetBackgroundSaturation,
+                                monetBackgroundLightness,
+                                pitchBlackTheme
+                        );
+
+                        param.setResult(modifiedShades);
+
+                        firstHookSuccess = true;
+
+                        log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                    } catch (Throwable throwable) {
+                        if (!firstHookSuccess && !secondHookSuccess && secondHookTried) {
+                            log(TAG + throwable);
+                        }
+                    }
                 }
+            });
+        } catch (Throwable throwable) {
+            throwable1 = throwable;
+        }
 
-                Object chroma = getObjectField(param.thisObject, "chroma");
-                float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
+        try {
+            Class<?> ShadesClass = findClass(SYSTEMUI_PACKAGE + ".monet.Shades", loadPackageParam.classLoader);
 
-                ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
-                ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                        shadesList,
-                        counter,
-                        monetAccentSaturation,
-                        monetBackgroundSaturation,
-                        monetBackgroundLightness,
-                        pitchBlackTheme
-                );
+            secondHookTried = true;
 
-                param.setResult(modifiedShades);
+            hookAllMethods(ShadesClass, "of", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    try {
+                        float hue = (float) param.args[0];
+                        float chroma = (float) param.args[1];
 
-                log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
-            }
-        });
+                        if (seedColor != -1) {
+                            hue = ColorUtil.getHue(seedColor);
+                        }
+
+                        ArrayList<Integer> shadesList = ColorModifiers.generateShades(hue, chroma);
+                        ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                                shadesList,
+                                counter,
+                                monetAccentSaturation,
+                                monetBackgroundSaturation,
+                                monetBackgroundLightness,
+                                pitchBlackTheme
+                        );
+
+                        int[] shades = modifiedShades.stream()
+                                .mapToInt(Integer::intValue)
+                                .toArray();
+
+                        param.setResult(shades);
+
+                        secondHookSuccess = true;
+
+                        log(TAG + "hue: " + hue + " chroma: " + chroma + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                    } catch (Throwable throwable) {
+                        if (!firstHookSuccess && !secondHookSuccess && firstHookTried) {
+                            log(TAG + throwable);
+                        }
+                    }
+                }
+            });
+        } catch (Throwable throwable) {
+            throwable2 = throwable;
+        }
+
+        if (throwable1 != null && throwable2 != null) {
+            log(TAG + "First hook failed: " + throwable1);
+            log(TAG + "Second hook failed: " + throwable2);
+        }
     }
 }

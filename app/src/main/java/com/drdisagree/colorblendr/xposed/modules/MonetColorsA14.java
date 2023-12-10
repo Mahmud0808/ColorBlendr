@@ -47,6 +47,7 @@ public class MonetColorsA14 extends ModPack implements IXposedHookLoadPackage {
     private int seedColor = -1;
     private boolean firstHookTried, firstHookSuccess;
     private boolean secondHookTried, secondHookSuccess;
+    private Throwable throwable1, throwable2;
 
     public MonetColorsA14(Context context) {
         super(context);
@@ -153,9 +154,7 @@ public class MonetColorsA14 extends ModPack implements IXposedHookLoadPackage {
                 }
             });
         } catch (Throwable throwable) {
-            if (firstHookTried && secondHookTried) {
-                log(TAG + throwable);
-            }
+            throwable1 = throwable;
         }
 
         try {
@@ -166,38 +165,47 @@ public class MonetColorsA14 extends ModPack implements IXposedHookLoadPackage {
             hookAllMethods(ShadesClass, "of", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    float hue = (float) param.args[0];
-                    float chroma = (float) param.args[1];
+                    try {
+                        float hue = (float) param.args[0];
+                        float chroma = (float) param.args[1];
 
-                    if (seedColor != -1) {
-                        hue = ColorUtil.getHue(seedColor);
+                        if (seedColor != -1) {
+                            hue = ColorUtil.getHue(seedColor);
+                        }
+
+                        ArrayList<Integer> shadesList = ColorModifiers.generateShades(hue, chroma);
+                        ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                                shadesList,
+                                counter,
+                                monetAccentSaturation,
+                                monetBackgroundSaturation,
+                                monetBackgroundLightness,
+                                pitchBlackTheme
+                        );
+
+                        int[] shades = modifiedShades.stream()
+                                .mapToInt(Integer::intValue)
+                                .toArray();
+
+                        param.setResult(shades);
+
+                        secondHookSuccess = true;
+
+                        log(TAG + "hue: " + hue + " chroma: " + chroma + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                    } catch (Throwable throwable) {
+                        if (!firstHookSuccess && !secondHookSuccess && firstHookTried) {
+                            log(TAG + throwable);
+                        }
                     }
-
-                    ArrayList<Integer> shadesList = ColorModifiers.generateShades(hue, chroma);
-                    ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                            shadesList,
-                            counter,
-                            monetAccentSaturation,
-                            monetBackgroundSaturation,
-                            monetBackgroundLightness,
-                            pitchBlackTheme
-                    );
-
-                    int[] shades = modifiedShades.stream()
-                            .mapToInt(Integer::intValue)
-                            .toArray();
-
-                    param.setResult(shades);
-
-                    secondHookSuccess = true;
-
-                    log(TAG + "hue: " + hue + " chroma: " + chroma + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
                 }
             });
         } catch (Throwable throwable) {
-            if (firstHookTried && secondHookTried) {
-                log(TAG + throwable);
-            }
+            throwable2 = throwable;
+        }
+
+        if (throwable1 != null && throwable2 != null) {
+            log(TAG + "First hook failed: " + throwable1);
+            log(TAG + "Second hook failed: " + throwable2);
         }
     }
 }
