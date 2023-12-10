@@ -17,6 +17,14 @@
             android:id="@+id/color_preview"
             layout="@layout/view_color_table" />
 
+        <com.drdisagree.colorblendr.ui.widgets.ColorPickerWidget
+            android:id="@+id/seed_color_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:previewColor="@android:color/black"
+            app:summaryText="@string/seed_color_picker_desc"
+            app:titleText="@string/seed_color_picker_title" />
+
         <com.drdisagree.colorblendr.ui.widgets.SliderWidget
             android:id="@+id/accent_saturation"
             android:layout_width="match_parent"

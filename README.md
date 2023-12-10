@@ -53,3 +53,4 @@ If this project help you in any way, you can give me a cup of coffee :)
 ## Credits 🤝
 
 - [@siavash79](https://github.com/siavash79) for helping me.
+- [@fennifith](https://github.com/fennifith) for color picker.

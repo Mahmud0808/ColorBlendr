@@ -1,8 +1,11 @@
 package com.drdisagree.colorblendr;
 
+import static com.drdisagree.colorblendr.common.Const.TAB_SELECTED_INDEX;
+
 import android.app.Application;
 import android.content.Context;
 
+import com.drdisagree.colorblendr.config.RPrefs;
 import com.google.android.material.color.DynamicColors;
 
 import java.lang.ref.WeakReference;
@@ -17,6 +20,7 @@ public class ColorBlendr extends Application {
         instance = this;
         contextReference = new WeakReference<>(getApplicationContext());
         DynamicColors.applyToActivitiesIfAvailable(this);
+        RPrefs.clearPref(TAB_SELECTED_INDEX);
     }
 
     public static Context getAppContext() {

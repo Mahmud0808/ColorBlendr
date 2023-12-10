@@ -22,5 +22,12 @@
             app:summaryText="@string/pitch_black_theme_desc"
             app:titleText="@string/pitch_black_theme_title" />
 
+        <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+            android:id="@+id/custom_primary_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:summaryText="@string/custom_primary_color_desc"
+            app:titleText="@string/custom_primary_color_title" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

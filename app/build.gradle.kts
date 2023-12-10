@@ -61,4 +61,8 @@ dependencies {
     compileOnly(files("libs/api-82-sources.jar"))
     implementation("com.crossbowffs.remotepreferences:remotepreferences:0.8")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("me.jfenn:AndroidUtils:0.0.5")
 }

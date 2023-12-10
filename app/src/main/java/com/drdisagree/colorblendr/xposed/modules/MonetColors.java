@@ -4,6 +4,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
+import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE;
 import static com.drdisagree.colorblendr.config.XPrefs.Xprefs;
 import static de.robv.android.xposed.XposedBridge.hookAllConstructors;
@@ -18,6 +19,7 @@ import static de.robv.android.xposed.XposedHelpers.setObjectField;
 import android.content.Context;
 import android.os.Build;
 
+import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.xposed.ModPack;
 import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 
@@ -44,6 +46,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
     private Method reevaluateSystemTheme;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
     private final List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
+    private int seedColor = -1;
 
     public MonetColors(Context context) {
         super(context);
@@ -55,11 +58,13 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
         monetBackgroundSaturation = Xprefs.getInt(MONET_BACKGROUND_SATURATION, 100);
         monetBackgroundLightness = Xprefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100);
         pitchBlackTheme = Xprefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
+        seedColor = Xprefs.getInt(MONET_SEED_COLOR, -1);
 
         if (Key.length > 0 && (Key[0].equals(MONET_ACCENT_SATURATION) ||
                 Key[0].equals(MONET_BACKGROUND_SATURATION) ||
                 Key[0].equals(MONET_BACKGROUND_LIGHTNESS) ||
-                Key[0].equals(MONET_PITCH_BLACK_THEME)
+                Key[0].equals(MONET_PITCH_BLACK_THEME) ||
+                Key[0].equals(MONET_SEED_COLOR)
         )) {
             try {
                 if (ThemeOverlayControllerParam != null) {
@@ -102,6 +107,10 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                     float hue = (float) param.args[0];
                     float chroma = (float) param.args[1];
 
+                    if (seedColor != -1) {
+                        hue = ColorUtil.getHue(seedColor);
+                    }
+
                     ArrayList<Integer> shadesList = ColorModifiers.generateShades(hue, chroma);
                     ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
                             shadesList,
@@ -129,6 +138,10 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                 protected void beforeHookedMethod(MethodHookParam param) {
                     Object hue = getObjectField(param.thisObject, "hue");
                     float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
+
+                    if (seedColor != -1) {
+                        hueValue = ColorUtil.getHue(seedColor);
+                    }
 
                     Object chroma = getObjectField(param.thisObject, "chroma");
                     float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
@@ -158,6 +171,10 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
                     Object hue = getObjectField(param.args[0], "hue");
                     float hueValue = (float) ((double) callMethod(hue, "get", camColor));
+
+                    if (seedColor != -1) {
+                        hueValue = ColorUtil.getHue(seedColor);
+                    }
 
                     Object chroma = getObjectField(param.args[0], "chroma");
                     float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));

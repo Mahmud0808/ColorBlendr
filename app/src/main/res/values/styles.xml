@@ -14,4 +14,6 @@
         <item name="android:textSize">15sp</item>
         <item name="android:drawableRight">@null</item>
     </style>
+
+    <style name="ColorPickerDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog"/>
 </resources>

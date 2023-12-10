@@ -4,19 +4,18 @@
     <value>
       <entry key="app">
         <State>
-          <targetSelectedWithDropDown>
+          <runningDeviceTargetSelectedWithDropDown>
             <Target>
-              <type value="BOOT_WITH_SNAPSHOT_TARGET" />
+              <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\crazy\.android\avd\Pixel_6a_API_33.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="adb-40c701c0-olksk2._adb-tls-connect._tcp" />
                 </Key>
               </deviceKey>
-              <snapshotKey value="C:\Users\crazy\.android\avd\Pixel_6a_API_33.avd\snapshots\snap_2023-12-05_17-13-14" />
             </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-12-05T15:22:40.298646600Z" />
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2023-12-10T09:15:54.343322200Z" />
         </State>
       </entry>
     </value>

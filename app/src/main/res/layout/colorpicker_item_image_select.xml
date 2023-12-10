@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <me.jfenn.colorpickerdialog.views.RoundedSquareImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:alpha="0.2"
+        android:src="#000000"
+        android:tint="?android:attr/textColorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
+            android:alpha="0.5"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_add_a_photo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/colorPickerDialog_title_all_photos"
+            android:textAlignment="center"
+            android:textColor="?android:textColorSecondary"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</FrameLayout>

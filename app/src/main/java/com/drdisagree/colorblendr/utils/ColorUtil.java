@@ -46,6 +46,13 @@ public class ColorUtil {
         return ColorUtils.HSLToColor(hsl);
     }
 
+    public static float getHue(int color) {
+        float[] hsl = new float[3];
+        ColorUtils.colorToHSL(color, hsl);
+
+        return hsl[0];
+    }
+
     public static float[] getSystemTintList() {
         return new float[]{1.0f, 0.99f, 0.95f, 0.9f, 0.8f, 0.7f, 0.6f, 0.496f, 0.4f, 0.3f, 0.2f, 0.1f, 0.0f};
     }

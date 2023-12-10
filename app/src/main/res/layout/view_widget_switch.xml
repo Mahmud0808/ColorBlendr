@@ -23,7 +23,7 @@
             android:layout_height="20dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="18dp"
+            android:layout_marginStart="16dp"
             android:contentDescription="@string/icon"
             app:tint="?attr/colorPrimary" />
 
@@ -32,8 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginVertical="22dp"
-            android:layout_marginStart="18dp"
+            android:layout_marginVertical="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="10dp"
             android:layout_toStartOf="@id/switch_widget"
             android:layout_toEndOf="@id/icon"

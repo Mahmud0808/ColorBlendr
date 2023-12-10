@@ -61,4 +61,11 @@
         <attr name="entries" format="reference" />
         <attr name="showSelectedPrefix" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="ColorPickerTheme">
+        <attr name="redColor" format="color" />
+        <attr name="greenColor" format="color" />
+        <attr name="blueColor" format="color" />
+        <attr name="neutralColor" format="color" />
+    </declare-styleable>
 </resources>

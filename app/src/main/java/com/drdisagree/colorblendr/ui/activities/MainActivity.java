@@ -1,21 +1,20 @@
 package com.drdisagree.colorblendr.ui.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
+import static com.drdisagree.colorblendr.common.Const.TAB_SELECTED_INDEX;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
 import com.drdisagree.colorblendr.ui.adapters.FragmentAdapter;
 import com.drdisagree.colorblendr.ui.fragments.AboutFragment;
-import com.drdisagree.colorblendr.ui.fragments.ToolsFragment;
 import com.drdisagree.colorblendr.ui.fragments.StylingFragment;
+import com.drdisagree.colorblendr.ui.fragments.ToolsFragment;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(new StylingFragment());
         fragments.add(new ToolsFragment());
         binding.viewPager.setAdapter(new FragmentAdapter(this, fragments));
-        binding.viewPager.setCurrentItem(1, false);
+        binding.viewPager.setCurrentItem(RPrefs.getInt(TAB_SELECTED_INDEX, 1), false);
 
         new TabLayoutMediator(
                 binding.header.tabLayout,
@@ -58,5 +57,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         ).attach();
+
+        binding.header.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                RPrefs.putInt(TAB_SELECTED_INDEX, tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                RPrefs.putInt(TAB_SELECTED_INDEX, tab.getPosition());
+            }
+        });
     }
 }
