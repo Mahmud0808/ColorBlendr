@@ -44,6 +44,10 @@ Elevate your creativity with effortless material customization. Instantly tweak 
   
 - That's it. Now you are good to go!
 
+## Translation 🌐
+
+- Assist in translating ColorBlendr into your preferred language through [our Crowdin platform](https://crowdin.com/project/ColorBlendr). Your contribution will help make ColorBlendr accessible to a wider audience.
+
 ## Donation 💰
 
 If this project help you in any way, you can give me a cup of coffee :)
