@@ -3,6 +3,8 @@ name: Crowdin Upload
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'app/src/main/res/values/strings.xml'
   workflow_dispatch:
 
 jobs:
