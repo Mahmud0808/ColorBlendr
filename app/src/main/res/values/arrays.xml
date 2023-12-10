@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="module_scope" translatable="false">
-        <item>android</item>
         <item>com.android.systemui</item>
-    </string-array>
-    <string-array name="monet_style">
-        <item>@string/monet_neutral</item>
-        <item>@string/monet_monochrome</item>
-        <item>@string/monet_tonalspot</item>
-        <item>@string/monet_vibrant</item>
-        <item>@string/monet_rainbow</item>
-        <item>@string/monet_expressive</item>
-        <item>@string/monet_fidelity</item>
-        <item>@string/monet_content</item>
-        <item>@string/monet_fruitsalad</item>
     </string-array>
 </resources>

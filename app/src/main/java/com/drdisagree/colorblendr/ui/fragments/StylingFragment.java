@@ -4,9 +4,9 @@ import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
+import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -24,17 +24,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.drdisagree.colorblendr.ColorBlendr;
-import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentStylingBinding;
 import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
 import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog;
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
@@ -47,7 +46,6 @@ public class StylingFragment extends Fragment {
     private static final int[] colorCodes = {
             0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000
     };
-    private static String selectedStyle;
     private static boolean accurateShades = RPrefs.getBoolean(MONET_ACCURATE_SHADES, true);
     private final int[] monetAccentSaturation = new int[]{RPrefs.getInt(MONET_ACCENT_SATURATION, 100)};
     private final int[] monetBackgroundSaturation = new int[]{RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100)};
@@ -65,14 +63,6 @@ public class StylingFragment extends Fragment {
                 binding.colorPreview.systemNeutral1,
                 binding.colorPreview.systemNeutral2
         };
-
-        selectedStyle = RPrefs.getString(
-                MONET_STYLE,
-                ColorBlendr
-                        .getAppContext()
-                        .getResources()
-                        .getString(R.string.monet_tonalspot)
-        );
 
         monetSeedColor = new int[]{RPrefs.getInt(
                 MONET_SEED_COLOR,
@@ -226,21 +216,18 @@ public class StylingFragment extends Fragment {
     private void assignCustomColorsToPalette() {
         ArrayList<ArrayList<Integer>> palette = convertIntArrayToList(ColorUtil.getSystemColors(requireContext()));
 
-        if (!Objects.equals(selectedStyle, ColorBlendr.getAppContext().getResources().getString(R.string.monet_monochrome))) {
-            // Set accent saturation
-            palette.get(0).replaceAll(o -> ColorUtil.modifySaturation(o, monetAccentSaturation[0]));
-            palette.get(1).replaceAll(o -> ColorUtil.modifySaturation(o, monetAccentSaturation[0]));
-            palette.get(2).replaceAll(o -> ColorUtil.modifySaturation(o, monetAccentSaturation[0]));
-
-            // Set background saturation
-            palette.get(3).replaceAll(o -> ColorUtil.modifySaturation(o, monetBackgroundSaturation[0]));
-            palette.get(4).replaceAll(o -> ColorUtil.modifySaturation(o, monetBackgroundSaturation[0]));
-        }
-
-        // Set background lightness
-        for (int i = Objects.equals(selectedStyle, ColorBlendr.getAppContext().getResources().getString(R.string.monet_monochrome)) ? 0 : 3; i < palette.size(); i++) {
-            for (int j = 0; j < palette.get(i).size(); j++) {
-                palette.get(i).set(j, ColorUtil.modifyLightness(palette.get(i).get(j), monetBackgroundLightness[0], j));
+        // Modify colors
+        for (int i = 0; i < palette.size(); i++) {
+            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                    new ArrayList<>(palette.get(i).subList(1, palette.get(i).size())),
+                    new AtomicInteger(i),
+                    monetAccentSaturation[0],
+                    monetBackgroundSaturation[0],
+                    monetBackgroundLightness[0],
+                    RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false)
+            );
+            for (int j = 1; j < palette.get(i).size(); j++) {
+                palette.get(i).set(j, modifiedShades.get(j - 1));
             }
         }
 
