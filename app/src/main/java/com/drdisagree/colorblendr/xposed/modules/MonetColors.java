@@ -47,6 +47,8 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
     private final List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
     private int seedColor = -1;
+    private boolean firstHookTried, firstHookSuccess;
+    private boolean secondHookTried, secondHookSuccess;
 
     public MonetColors(Context context) {
         super(context);
@@ -99,6 +101,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
         counter = new AtomicInteger(0);
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2) {
+            // Android 12 & 12.1
             Class<?> ShadesClass = findClass(SYSTEMUI_PACKAGE + ".monet.Shades", loadPackageParam.classLoader);
 
             hookAllMethods(ShadesClass, "of", new XC_MethodHook() {
@@ -130,73 +133,112 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                     log(TAG + "hue: " + hue + " chroma: " + chroma + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
                 }
             });
-        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
-            Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
+        } else {
+            firstHookTried = false;
+            firstHookSuccess = false;
+            secondHookTried = false;
+            secondHookSuccess = false;
 
-            hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    Object hue = getObjectField(param.thisObject, "hue");
-                    float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
+            // Android 13
+            try {
+                Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
 
-                    if (seedColor != -1) {
-                        hueValue = ColorUtil.getHue(seedColor);
+                firstHookTried = true;
+
+                hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        try {
+                            Object hue = getObjectField(param.thisObject, "hue");
+                            float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
+
+                            if (seedColor != -1) {
+                                hueValue = ColorUtil.getHue(seedColor);
+                            }
+
+                            Object chroma = getObjectField(param.thisObject, "chroma");
+                            float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
+
+                            ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
+                            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                                    shadesList,
+                                    counter,
+                                    monetAccentSaturation,
+                                    monetBackgroundSaturation,
+                                    monetBackgroundLightness,
+                                    pitchBlackTheme
+                            );
+
+                            param.setResult(modifiedShades);
+
+                            firstHookSuccess = true;
+
+                            log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                        } catch (Throwable throwable) {
+                            if (!firstHookSuccess && !secondHookSuccess && secondHookTried) {
+                                log(TAG + throwable);
+                            }
+                        }
                     }
-
-                    Object chroma = getObjectField(param.thisObject, "chroma");
-                    float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
-
-                    ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
-                    ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                            shadesList,
-                            counter,
-                            monetAccentSaturation,
-                            monetBackgroundSaturation,
-                            monetBackgroundLightness,
-                            pitchBlackTheme
-                    );
-
-                    param.setResult(modifiedShades);
-
-                    log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                });
+            } catch (Throwable throwable) {
+                if (firstHookTried && secondHookTried) {
+                    log(TAG + throwable);
                 }
-            });
-        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            Class<?> TonalPaletteClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalPalette", loadPackageParam.classLoader);
+            }
 
-            hookAllConstructors(TonalPaletteClass, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) {
-                    Object camColor = getObjectField(param.thisObject, "seedCam");
+            // Android 14
+            try {
+                Class<?> TonalPaletteClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalPalette", loadPackageParam.classLoader);
 
-                    Object hue = getObjectField(param.args[0], "hue");
-                    float hueValue = (float) ((double) callMethod(hue, "get", camColor));
+                secondHookTried = true;
 
-                    if (seedColor != -1) {
-                        hueValue = ColorUtil.getHue(seedColor);
+                hookAllConstructors(TonalPaletteClass, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        try {
+                            Object camColor = getObjectField(param.thisObject, "seedCam");
+
+                            Object hue = getObjectField(param.args[0], "hue");
+                            float hueValue = (float) ((double) callMethod(hue, "get", camColor));
+
+                            if (seedColor != -1) {
+                                hueValue = ColorUtil.getHue(seedColor);
+                            }
+
+                            Object chroma = getObjectField(param.args[0], "chroma");
+                            float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));
+
+                            ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
+                            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                                    shadesList,
+                                    counter,
+                                    monetAccentSaturation,
+                                    monetBackgroundSaturation,
+                                    monetBackgroundLightness,
+                                    pitchBlackTheme
+                            );
+
+                            Map<Integer, Integer> mappedShades = ColorModifiers.zipToMap(SHADE_KEYS, modifiedShades);
+
+                            setObjectField(param.thisObject, "allShades", modifiedShades);
+                            setObjectField(param.thisObject, "allShadesMapped", mappedShades);
+
+                            secondHookSuccess = true;
+
+                            log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                        } catch (Throwable throwable) {
+                            if (!firstHookSuccess && !secondHookSuccess && firstHookTried) {
+                                log(TAG + throwable);
+                            }
+                        }
                     }
-
-                    Object chroma = getObjectField(param.args[0], "chroma");
-                    float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));
-
-                    ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
-                    ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                            shadesList,
-                            counter,
-                            monetAccentSaturation,
-                            monetBackgroundSaturation,
-                            monetBackgroundLightness,
-                            pitchBlackTheme
-                    );
-
-                    Map<Integer, Integer> mappedShades = ColorModifiers.zipToMap(SHADE_KEYS, modifiedShades);
-
-                    setObjectField(param.thisObject, "allShades", modifiedShades);
-                    setObjectField(param.thisObject, "allShadesMapped", mappedShades);
-
-                    log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                });
+            } catch (Throwable throwable) {
+                if (firstHookTried && secondHookTried) {
+                    log(TAG + throwable);
                 }
-            });
+            }
         }
     }
 }
