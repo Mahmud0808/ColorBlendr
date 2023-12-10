@@ -48,7 +48,7 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 If this project help you in any way, you can give me a cup of coffee :)
 
-<a href="https://www.buymeacoffee.com/DrDisagree"><img src="https://github.com/Mahmud0808/Iconify/blob/beta/.github/resources/bmc-button.png" width="30%" alt="Buy me a coffee" /></a>
+<a href="https://www.buymeacoffee.com/DrDisagree"><img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/bmc-button.png" width="30%" alt="Buy me a coffee" /></a>
 
 ## Credits 🤝
 
