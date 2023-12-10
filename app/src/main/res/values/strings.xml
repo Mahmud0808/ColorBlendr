@@ -2,7 +2,7 @@
     <string name="app_name">ColorBlendr</string>
     <string name="app_moto">Express yourself with colors</string>
     <string name="app_description">Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</string>
-    <string name="tab_app_name">\u003C %s \u003E</string>
+    <string name="tab_app_name" translatable="false">\u003C %s \u003E</string>
     <string name="tab_about">About</string>
     <string name="tab_styling">Styling</string>
     <string name="tab_tools">Tools</string>
@@ -26,7 +26,7 @@
     <string name="opt_selected1">Selected: %s</string>
     <string name="opt_selected2">Selected: %s%s</string>
     <string name="btn_apply">Apply customization</string>
-    <string name="dev_name">DrDisagree</string>
+    <string name="dev_name" translatable="false">DrDisagree</string>
     <string name="dev_bio">Passionate Android Developer\nOpen-source contributor</string>
     <string name="github">Github</string>
     <string name="version">Version</string>
@@ -38,15 +38,15 @@
     <string name="seed_color_picker_desc">Create palette based on custom color</string>
     <string name="colorPickerDialog_dialogName">Color Picker</string>
     <string name="colorPickerDialog_reset">Reset</string>
-    <string name="colorPickerDialog_red">R</string>
-    <string name="colorPickerDialog_blue">B</string>
-    <string name="colorPickerDialog_green">G</string>
-    <string name="colorPickerDialog_alpha">A</string>
-    <string name="colorPickerDialog_hue">H</string>
-    <string name="colorPickerDialog_saturation">S</string>
-    <string name="colorPickerDialog_brightness">V</string>
-    <string name="colorPickerDialog_rgb">RGB</string>
-    <string name="colorPickerDialog_hsv">HSV</string>
+    <string name="colorPickerDialog_red" translatable="false">R</string>
+    <string name="colorPickerDialog_blue" translatable="false">B</string>
+    <string name="colorPickerDialog_green" translatable="false">G</string>
+    <string name="colorPickerDialog_alpha" translatable="false">A</string>
+    <string name="colorPickerDialog_hue" translatable="false">H</string>
+    <string name="colorPickerDialog_saturation" translatable="false">S</string>
+    <string name="colorPickerDialog_brightness" translatable="false">V</string>
+    <string name="colorPickerDialog_rgb" translatable="false">RGB</string>
+    <string name="colorPickerDialog_hsv" translatable="false">HSV</string>
     <string name="colorPickerDialog_preset">Preset</string>
     <string name="colorPickerDialog_image">Image</string>
     <string name="colorPickerDialog_imageColorPicker">Pick Color from Image</string>
