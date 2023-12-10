@@ -17,7 +17,6 @@ import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import android.content.Context;
-import android.os.Build;
 
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.xposed.ModPack;
@@ -33,10 +32,10 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class MonetColors extends ModPack implements IXposedHookLoadPackage {
+public class MonetColorsA14 extends ModPack implements IXposedHookLoadPackage {
 
     @SuppressWarnings("unused")
-    private static final String TAG = "ColorBlendr: ";
+    private static final String TAG = "ColorBlendr - " + MonetColorsA14.class.getSimpleName() + ": ";
     private int monetAccentSaturation = 100;
     private int monetBackgroundSaturation = 100;
     private int monetBackgroundLightness = 100;
@@ -49,7 +48,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
     private boolean firstHookTried, firstHookSuccess;
     private boolean secondHookTried, secondHookSuccess;
 
-    public MonetColors(Context context) {
+    public MonetColorsA14(Context context) {
         super(context);
     }
 
@@ -102,9 +101,67 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
         counter = new AtomicInteger(0);
 
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2) {
-            // Android 12 & 12.1
+        firstHookTried = false;
+        firstHookSuccess = false;
+        secondHookTried = false;
+        secondHookSuccess = false;
+
+        try {
+            Class<?> TonalPaletteClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalPalette", loadPackageParam.classLoader);
+
+            firstHookTried = true;
+
+            hookAllConstructors(TonalPaletteClass, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    try {
+                        Object camColor = getObjectField(param.thisObject, "seedCam");
+
+                        Object hue = getObjectField(param.args[0], "hue");
+                        float hueValue = (float) ((double) callMethod(hue, "get", camColor));
+
+                        if (seedColor != -1) {
+                            hueValue = ColorUtil.getHue(seedColor);
+                        }
+
+                        Object chroma = getObjectField(param.args[0], "chroma");
+                        float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));
+
+                        ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
+                        ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                                shadesList,
+                                counter,
+                                monetAccentSaturation,
+                                monetBackgroundSaturation,
+                                monetBackgroundLightness,
+                                pitchBlackTheme
+                        );
+
+                        Map<Integer, Integer> mappedShades = ColorModifiers.zipToMap(SHADE_KEYS, modifiedShades);
+
+                        setObjectField(param.thisObject, "allShades", modifiedShades);
+                        setObjectField(param.thisObject, "allShadesMapped", mappedShades);
+
+                        firstHookSuccess = true;
+
+                        log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
+                    } catch (Throwable throwable) {
+                        if (!firstHookSuccess && !secondHookSuccess && secondHookTried) {
+                            log(TAG + throwable);
+                        }
+                    }
+                }
+            });
+        } catch (Throwable throwable) {
+            if (firstHookTried && secondHookTried) {
+                log(TAG + throwable);
+            }
+        }
+
+        try {
             Class<?> ShadesClass = findClass(SYSTEMUI_PACKAGE + ".monet.Shades", loadPackageParam.classLoader);
+
+            secondHookTried = true;
 
             hookAllMethods(ShadesClass, "of", new XC_MethodHook() {
                 @Override
@@ -132,114 +189,14 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
 
                     param.setResult(shades);
 
+                    secondHookSuccess = true;
+
                     log(TAG + "hue: " + hue + " chroma: " + chroma + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
                 }
             });
-        } else {
-            firstHookTried = false;
-            firstHookSuccess = false;
-            secondHookTried = false;
-            secondHookSuccess = false;
-
-            // Android 13
-            try {
-                Class<?> TonalSpecClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalSpec", loadPackageParam.classLoader);
-
-                firstHookTried = true;
-
-                hookAllMethods(TonalSpecClass, "shades", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) {
-                        try {
-                            Object hue = getObjectField(param.thisObject, "hue");
-                            float hueValue = (float) ((double) callMethod(hue, "get", param.args[0]));
-
-                            if (seedColor != -1) {
-                                hueValue = ColorUtil.getHue(seedColor);
-                            }
-
-                            Object chroma = getObjectField(param.thisObject, "chroma");
-                            float chromaValue = (float) ((double) callMethod(chroma, "get", param.args[0]));
-
-                            ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
-                            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                                    shadesList,
-                                    counter,
-                                    monetAccentSaturation,
-                                    monetBackgroundSaturation,
-                                    monetBackgroundLightness,
-                                    pitchBlackTheme
-                            );
-
-                            param.setResult(modifiedShades);
-
-                            firstHookSuccess = true;
-
-                            log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
-                        } catch (Throwable throwable) {
-                            if (!firstHookSuccess && !secondHookSuccess && secondHookTried) {
-                                log(TAG + throwable);
-                            }
-                        }
-                    }
-                });
-            } catch (Throwable throwable) {
-                if (firstHookTried && secondHookTried) {
-                    log(TAG + throwable);
-                }
-            }
-
-            // Android 14
-            try {
-                Class<?> TonalPaletteClass = findClass(SYSTEMUI_PACKAGE + ".monet.TonalPalette", loadPackageParam.classLoader);
-
-                secondHookTried = true;
-
-                hookAllConstructors(TonalPaletteClass, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) {
-                        try {
-                            Object camColor = getObjectField(param.thisObject, "seedCam");
-
-                            Object hue = getObjectField(param.args[0], "hue");
-                            float hueValue = (float) ((double) callMethod(hue, "get", camColor));
-
-                            if (seedColor != -1) {
-                                hueValue = ColorUtil.getHue(seedColor);
-                            }
-
-                            Object chroma = getObjectField(param.args[0], "chroma");
-                            float chromaValue = (float) ((double) callMethod(chroma, "get", camColor));
-
-                            ArrayList<Integer> shadesList = ColorModifiers.generateShades(hueValue, chromaValue);
-                            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                                    shadesList,
-                                    counter,
-                                    monetAccentSaturation,
-                                    monetBackgroundSaturation,
-                                    monetBackgroundLightness,
-                                    pitchBlackTheme
-                            );
-
-                            Map<Integer, Integer> mappedShades = ColorModifiers.zipToMap(SHADE_KEYS, modifiedShades);
-
-                            setObjectField(param.thisObject, "allShades", modifiedShades);
-                            setObjectField(param.thisObject, "allShadesMapped", mappedShades);
-
-                            secondHookSuccess = true;
-
-                            log(TAG + "hue: " + hueValue + " chroma: " + chromaValue + " isAccent: " + (counter.get() <= 3 && counter.get() != 0));
-                        } catch (Throwable throwable) {
-                            if (!firstHookSuccess && !secondHookSuccess && firstHookTried) {
-                                log(TAG + throwable);
-                            }
-                        }
-                    }
-                });
-            } catch (Throwable throwable) {
-                if (firstHookTried && secondHookTried) {
-                    log(TAG + throwable);
-                }
+        } catch (Throwable throwable) {
+            if (firstHookTried && secondHookTried) {
+                log(TAG + throwable);
             }
         }
     }
