@@ -42,7 +42,6 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
     private int monetBackgroundLightness = 100;
     private boolean pitchBlackTheme = false;
     private AtomicInteger counter;
-    private Class<?> ThemeOverlayControllerParentClass;
     private Method reevaluateSystemTheme;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
     private final List<Integer> SHADE_KEYS = List.of(10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
@@ -93,8 +92,11 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
             protected void beforeHookedMethod(MethodHookParam param) {
                 ThemeOverlayControllerParam = param;
 
-                ThemeOverlayControllerParentClass = param.thisObject.getClass().getSuperclass();
-                reevaluateSystemTheme = findMethodExact(ThemeOverlayControllerParentClass, "reevaluateSystemTheme", boolean.class);
+                reevaluateSystemTheme = findMethodExact(
+                        param.thisObject.getClass().getSuperclass(),
+                        "reevaluateSystemTheme",
+                        boolean.class
+                );
             }
         });
 
