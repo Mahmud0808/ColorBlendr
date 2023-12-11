@@ -78,7 +78,7 @@ public class ColorModifiers {
             }
         }
 
-        for (int j = 0; j < palette.size(); j++) {
+        for (int j = 0; j < palette.size() - 1; j++) {
             int i = counter.get() - 1;
 
             int overriddenColor;
