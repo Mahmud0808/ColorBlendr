@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ColorBlendr</string>
+    <string name="app_name" translatable="false">ColorBlendr</string>
     <string name="app_moto">Express yourself with colors</string>
     <string name="app_description">Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</string>
     <string name="tab_app_name" translatable="false">\u003C %s \u003E</string>
@@ -30,7 +30,7 @@
     <string name="dev_bio">Learner | Developer | Designer</string>
     <string name="github">Github</string>
     <string name="version">Version</string>
-    <string name="version_codes">%s | %d</string>
+    <string name="version_codes" translatable="false">%s | %d</string>
     <string name="pitch_black_theme_title">Pitch black theme</string>
     <string name="pitch_black_theme_desc">Change one of the styles to apply</string>
     <string name="color_picker_preview">Color picker preview</string>
