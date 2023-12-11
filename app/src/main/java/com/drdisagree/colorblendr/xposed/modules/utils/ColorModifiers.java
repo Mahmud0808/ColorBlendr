@@ -1,7 +1,10 @@
 package com.drdisagree.colorblendr.xposed.modules.utils;
 
+import static com.drdisagree.colorblendr.config.XPrefs.Xprefs;
+
 import android.graphics.Color;
 
+import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 
 import java.util.ArrayList;
@@ -38,7 +41,8 @@ public class ColorModifiers {
             int monetAccentSaturation,
             int monetBackgroundSaturation,
             int monetBackgroundLightness,
-            boolean pitchBlackTheme
+            boolean pitchBlackTheme,
+            boolean accurateShades
     ) {
         counter.getAndIncrement();
 
@@ -69,6 +73,23 @@ public class ColorModifiers {
             if (pitchBlackTheme) {
                 // Set pitch black theme
                 palette.set(10, Color.BLACK);
+            }
+        }
+
+        for (int j = 0; j < palette.size(); j++) {
+            int i = counter.get() - 1;
+
+            int overriddenColor;
+            try {
+                overriddenColor = RPrefs.getInt("monet_color_" + i + (j + 1), -1);
+            } catch (Throwable ignored) {
+                overriddenColor = Xprefs.getInt("monet_color_" + i + (j + 1), -1);
+            }
+
+            if (overriddenColor != -1) {
+                palette.set(j, overriddenColor);
+            } else if (!accurateShades && i == 0 && j == 2) {
+                palette.set(j, palette.get(j + 2));
             }
         }
 

@@ -1,5 +1,7 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
+import static com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS;
+import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
 
@@ -26,6 +28,12 @@ public class ToolsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentToolsBinding.inflate(inflater, container, false);
 
+        binding.accurateShades.setSwitchChecked(RPrefs.getBoolean(MONET_ACCURATE_SHADES, true));
+        binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {
+            RPrefs.putBoolean(MONET_ACCURATE_SHADES, isChecked);
+            sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
+        });
+
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
         binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) -> RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked));
 
@@ -34,6 +42,9 @@ public class ToolsFragment extends Fragment {
             RPrefs.putBoolean(MONET_SEED_COLOR_ENABLED, isChecked);
             sharedViewModel.setVisibilityState(MONET_SEED_COLOR_ENABLED, isChecked ? View.VISIBLE : View.GONE);
         });
+
+        binding.overrideColorsManually.setSwitchChecked(RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false));
+        binding.overrideColorsManually.setSwitchChangeListener((buttonView, isChecked) -> RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, isChecked));
 
         return binding.getRoot();
     }

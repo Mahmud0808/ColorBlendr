@@ -15,5 +15,17 @@
         <item name="android:drawableRight">@null</item>
     </style>
 
-    <style name="ColorPickerDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog"/>
+    <style name="ColorPickerDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
+
+    <style name="SnackBarStyle" parent="Widget.Material3.Snackbar">
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+    </style>
+
+    <style name="SnackBarStyle.TextView" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="SnackBarStyle.Button" parent="Widget.Material3.Button.TextButton.Snackbar">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 </resources>

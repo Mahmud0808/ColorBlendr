@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.xposed.modules;
 
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
+import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
@@ -36,6 +37,7 @@ public class MonetColorsA12 extends ModPack implements IXposedHookLoadPackage {
     private int monetBackgroundSaturation = 100;
     private int monetBackgroundLightness = 100;
     private boolean pitchBlackTheme = false;
+    private boolean accurateShades = true;
     private AtomicInteger counter;
     private Method reevaluateSystemTheme;
     private XC_MethodHook.MethodHookParam ThemeOverlayControllerParam;
@@ -51,12 +53,14 @@ public class MonetColorsA12 extends ModPack implements IXposedHookLoadPackage {
         monetBackgroundSaturation = Xprefs.getInt(MONET_BACKGROUND_SATURATION, 100);
         monetBackgroundLightness = Xprefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100);
         pitchBlackTheme = Xprefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
+        accurateShades = Xprefs.getBoolean(MONET_ACCURATE_SHADES, true);
         seedColor = Xprefs.getInt(MONET_SEED_COLOR, -1);
 
         if (Key.length > 0 && (Key[0].equals(MONET_ACCENT_SATURATION) ||
                 Key[0].equals(MONET_BACKGROUND_SATURATION) ||
                 Key[0].equals(MONET_BACKGROUND_LIGHTNESS) ||
                 Key[0].equals(MONET_PITCH_BLACK_THEME) ||
+                Key[0].equals(MONET_ACCURATE_SHADES) ||
                 Key[0].equals(MONET_SEED_COLOR)
         )) {
             try {
@@ -113,7 +117,8 @@ public class MonetColorsA12 extends ModPack implements IXposedHookLoadPackage {
                         monetAccentSaturation,
                         monetBackgroundSaturation,
                         monetBackgroundLightness,
-                        pitchBlackTheme
+                        pitchBlackTheme,
+                        accurateShades
                 );
 
                 int[] shades = modifiedShades.stream()

@@ -21,4 +21,5 @@ public class Const {
     public static final String MONET_PITCH_BLACK_THEME = "monetPitchBlackTheme";
     public static final String MONET_SEED_COLOR = "monetSeedColor";
     public static final String MONET_SEED_COLOR_ENABLED = "monetSeedColorEnabled";
+    public static final String MANUAL_OVERRIDE_COLORS = "manualOverrideColors";
 }

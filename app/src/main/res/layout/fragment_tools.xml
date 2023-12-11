@@ -15,6 +15,36 @@
         android:orientation="vertical"
         android:paddingTop="16dp">
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            android:clickable="true"
+            app:cardBackgroundColor="?attr/colorPrimaryContainer"
+            app:cardMaxElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <com.google.android.material.textview.MaterialTextView
+                style="?attr/textAppearanceBodySmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center"
+                android:layout_margin="16dp"
+                android:alpha="0.8"
+                android:text="@string/change_style_to_apply"
+                android:textColor="?attr/colorOnPrimaryContainer" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+            android:id="@+id/accurate_shades"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:isChecked="true"
+            app:summaryText="@string/accurate_shades_desc"
+            app:titleText="@string/accurate_shades_title" />
+
         <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
             android:id="@+id/pitch_black_theme"
             android:layout_width="match_parent"
@@ -28,6 +58,13 @@
             android:layout_height="wrap_content"
             app:summaryText="@string/custom_primary_color_desc"
             app:titleText="@string/custom_primary_color_title" />
+
+        <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+            android:id="@+id/override_colors_manually"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:summaryText="@string/override_colors_manually_desc"
+            app:titleText="@string/override_colors_manually_title" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

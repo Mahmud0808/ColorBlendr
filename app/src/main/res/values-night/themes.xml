@@ -15,5 +15,8 @@
         <!-- App theme -->
         <item name="fontFamily">sans-serif</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="snackbarStyle">@style/SnackBarStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextView</item>
+        <item name="snackbarButtonStyle">@style/SnackBarStyle.Button</item>
     </style>
 </resources>

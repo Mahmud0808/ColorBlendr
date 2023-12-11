@@ -32,7 +32,8 @@
     <string name="version">Version</string>
     <string name="version_codes" translatable="false">%s | %d</string>
     <string name="pitch_black_theme_title">Pitch black theme</string>
-    <string name="pitch_black_theme_desc">Change one of the styles to apply</string>
+    <string name="pitch_black_theme_desc">Black background in dark mode</string>
+    <string name="change_style_to_apply">If toggles don\'t apply instantly, try adjusting one of the sliders to apply changes promptly.</string>
     <string name="color_picker_preview">Color picker preview</string>
     <string name="seed_color_picker_title">Primary color</string>
     <string name="seed_color_picker_desc">Create palette based on custom color</string>
@@ -62,4 +63,6 @@
     <string name="meet_the_developer">Meet the developer</string>
     <string name="buymeacoffee_title">Enjoying this app?</string>
     <string name="buymeacoffee_desc">Consider buying me a coffee</string>
+    <string name="override_colors_manually_title">Override colors manually</string>
+    <string name="override_colors_manually_desc">Tap on the color palette preview to override individual colors; long press to reset</string>
 </resources>
