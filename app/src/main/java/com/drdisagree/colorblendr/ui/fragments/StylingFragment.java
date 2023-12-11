@@ -9,7 +9,6 @@ import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
 
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -28,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentStylingBinding;
 import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
@@ -170,7 +170,6 @@ public class StylingFragment extends Fragment {
             public void onStartTrackingTouch(@NonNull Slider slider) {
             }
 
-            @SuppressLint("SetTextI18n")
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
                 monetBackgroundLightness[0] = (int) slider.getValue();
@@ -263,11 +262,11 @@ public class StylingFragment extends Fragment {
 
                 colorTableRows[i].getChildAt(j).setOnClickListener(v -> {
                     boolean manualOverride = RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false);
-                    String snackbarButton = manualOverride ? "Override" : "Copy";
+                    String snackbarButton = getString(manualOverride ? R.string.override : R.string.copy);
 
                     Snackbar.make(
                                     requireView(),
-                                    "Color code: " + ColorUtil.intToHexColor((Integer) v.getTag()),
+                                    getString(R.string.color_code, ColorUtil.intToHexColor((Integer) v.getTag())),
                                     Snackbar.LENGTH_INDEFINITE)
                             .setAction(snackbarButton, v1 -> {
                                 if (!manualOverride) {
@@ -278,8 +277,12 @@ public class StylingFragment extends Fragment {
                                 }
 
                                 if (finalJ == 0 || finalJ == 12) {
-                                    Snackbar.make(requireView(), "Cannot override this color", Snackbar.LENGTH_SHORT)
-                                            .setAction("Dismiss", v2 -> {
+                                    Snackbar.make(
+                                                    requireView(),
+                                                    getString(R.string.cannot_override_color),
+                                                    Snackbar.LENGTH_SHORT
+                                            )
+                                            .setAction(getString(R.string.override), v2 -> {
                                             })
                                             .show();
                                     return;
@@ -316,13 +319,25 @@ public class StylingFragment extends Fragment {
                     ((TextView) ((ViewGroup) v)
                             .getChildAt(0))
                             .setTextColor(ColorUtil.calculateTextColor(systemColors[finalI][finalJ]));
-                    Snackbar.make(requireView(), "Custom color cleared", Snackbar.LENGTH_SHORT)
-                            .setAction("Reset all", v2 -> {
+                    Snackbar.make(
+                                    requireView(),
+                                    getString(R.string.color_reset_success),
+                                    Snackbar.LENGTH_SHORT
+                            )
+                            .setAction(getString(R.string.reset_all), v2 -> {
                                 for (int x = 0; x < colorTableRows.length; x++) {
                                     for (int y = 0; y < colorTableRows[x].getChildCount(); y++) {
                                         RPrefs.clearPref("monet_color_" + x + y);
                                     }
                                 }
+                                Snackbar.make(
+                                                requireView(),
+                                                getString(R.string.reset_all_success),
+                                                Snackbar.LENGTH_SHORT
+                                        )
+                                        .setAction(getString(R.string.dismiss), v3 -> {
+                                        })
+                                        .show();
                             })
                             .show();
                     return true;

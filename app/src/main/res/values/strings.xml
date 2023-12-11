@@ -65,4 +65,12 @@
     <string name="buymeacoffee_desc">Consider buying me a coffee</string>
     <string name="override_colors_manually_title">Override colors manually</string>
     <string name="override_colors_manually_desc">Tap on the color palette preview to override individual colors; long press to reset</string>
+    <string name="override">Override</string>
+    <string name="copy">Copy</string>
+    <string name="color_code">Color code: %s</string>
+    <string name="cannot_override_color">Cannot override this color</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="color_reset_success">Custom color reset successfully</string>
+    <string name="reset_all">Reset all</string>
+    <string name="reset_all_success">All colors reset successfully</string>
 </resources>
