@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorModifiers {
 
+    private static final String[][] colorNames = ColorUtil.getColorNames();
+
     public static ArrayList<Integer> generateShades(float hue, float chroma) {
         ArrayList<Integer> shadeList = new ArrayList<>(Arrays.asList(new Integer[12]));
 
@@ -81,9 +83,9 @@ public class ColorModifiers {
 
             int overriddenColor;
             try {
-                overriddenColor = RPrefs.getInt("monet_color_" + i + (j + 1), -1);
+                overriddenColor = RPrefs.getInt(colorNames[i][j + 1], -1);
             } catch (Throwable ignored) {
-                overriddenColor = Xprefs.getInt("monet_color_" + i + (j + 1), -1);
+                overriddenColor = Xprefs.getInt(colorNames[i][j + 1], -1);
             }
 
             if (overriddenColor != -1) {

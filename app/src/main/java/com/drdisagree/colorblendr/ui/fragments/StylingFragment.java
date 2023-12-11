@@ -54,6 +54,7 @@ public class StylingFragment extends Fragment {
     private final int[] monetAccentSaturation = new int[]{RPrefs.getInt(MONET_ACCENT_SATURATION, 100)};
     private final int[] monetBackgroundSaturation = new int[]{RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100)};
     private final int[] monetBackgroundLightness = new int[]{RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100)};
+    private final String[][] colorNames = ColorUtil.getColorNames();
     private int[] monetSeedColor;
 
     @Override
@@ -196,8 +197,8 @@ public class StylingFragment extends Fragment {
                 colorTableRows[i].getChildAt(j).getBackground().setTint(systemColors[i][j]);
                 colorTableRows[i].getChildAt(j).setTag(systemColors[i][j]);
 
-                if (RPrefs.getInt("monet_color_" + i + j, -1) != -1) {
-                    colorTableRows[i].getChildAt(j).getBackground().setTint(RPrefs.getInt("monet_color_" + i + j, 0));
+                if (RPrefs.getInt(colorNames[i][j], -1) != -1) {
+                    colorTableRows[i].getChildAt(j).getBackground().setTint(RPrefs.getInt(colorNames[i][j], 0));
                 }
 
                 TextView textView = new TextView(requireContext());
@@ -300,7 +301,7 @@ public class StylingFragment extends Fragment {
                                                 ((TextView) ((ViewGroup) v)
                                                         .getChildAt(0))
                                                         .setTextColor(ColorUtil.calculateTextColor(color));
-                                                RPrefs.putInt("monet_color_" + finalI + finalJ, color);
+                                                RPrefs.putInt(colorNames[finalI][finalJ], color);
                                             }
                                         })
                                         .show(getChildFragmentManager(), "overrideColorPicker" + finalI + finalJ);
@@ -313,7 +314,7 @@ public class StylingFragment extends Fragment {
                         return true;
                     }
 
-                    RPrefs.clearPref("monet_color_" + finalI + finalJ);
+                    RPrefs.clearPref(colorNames[finalI][finalJ]);
                     v.getBackground().setTint(systemColors[finalI][finalJ]);
                     v.setTag(systemColors[finalI][finalJ]);
                     ((TextView) ((ViewGroup) v)
@@ -327,7 +328,7 @@ public class StylingFragment extends Fragment {
                             .setAction(getString(R.string.reset_all), v2 -> {
                                 for (int x = 0; x < colorTableRows.length; x++) {
                                     for (int y = 0; y < colorTableRows[x].getChildCount(); y++) {
-                                        RPrefs.clearPref("monet_color_" + x + y);
+                                        RPrefs.clearPref(colorNames[x][y]);
                                     }
                                 }
                                 Snackbar.make(
