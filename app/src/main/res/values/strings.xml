@@ -27,7 +27,7 @@
     <string name="opt_selected2">Selected: %s%s</string>
     <string name="btn_apply">Apply customization</string>
     <string name="dev_name" translatable="false">DrDisagree</string>
-    <string name="dev_bio">Passionate Android Developer\nOpen-source contributor</string>
+    <string name="dev_bio">Learner | Developer | Designer</string>
     <string name="github">Github</string>
     <string name="version">Version</string>
     <string name="version_codes">%s | %d</string>
@@ -59,4 +59,7 @@
     <string name="colorPickerDialog_msg_permissions_button">Grant</string>
     <string name="custom_primary_color_title">Custom primary color</string>
     <string name="custom_primary_color_desc">Generate palette from custom color</string>
+    <string name="meet_the_developer">Meet the developer</string>
+    <string name="buymeacoffee_title">Enjoying this app?</string>
+    <string name="buymeacoffee_desc">Consider buying me a coffee</string>
 </resources>

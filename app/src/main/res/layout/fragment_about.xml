@@ -147,7 +147,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="12dp"
-            android:text="Meet the developer"
+            android:text="@string/meet_the_developer"
             android:textColor="?attr/colorOnSurface" />
 
         <com.google.android.material.card.MaterialCardView
@@ -191,7 +191,7 @@
                             style="?attr/textAppearanceTitleSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="DrDisagree"
+                            android:text="@string/dev_name"
                             android:textColor="?attr/colorOnSurface" />
 
                         <com.google.android.material.textview.MaterialTextView
@@ -200,7 +200,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:alpha="0.8"
-                            android:text="Learner | Developer | Designer"
+                            android:text="@string/dev_bio"
                             android:textColor="?attr/colorOnSurface" />
 
                     </LinearLayout>
@@ -251,7 +251,7 @@
                             style="?attr/textAppearanceTitleSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Enjoying this app?"
+                            android:text="@string/buymeacoffee_title"
                             android:textColor="?attr/colorOnSurface" />
 
                         <com.google.android.material.textview.MaterialTextView
@@ -260,7 +260,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:alpha="0.8"
-                            android:text="Consider buying me a coffee"
+                            android:text="@string/buymeacoffee_desc"
                             android:textColor="?attr/colorOnSurface" />
 
                     </LinearLayout>
