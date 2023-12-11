@@ -15,10 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
+import com.drdisagree.colorblendr.R;
+
 import java.util.Locale;
 
 import me.jfenn.androidutils.seekbar.SeekBarUtils;
-import com.drdisagree.colorblendr.R;
 import me.jfenn.colorpickerdialog.utils.ColorUtils;
 
 public class HSVPickerView extends PickerView {
@@ -139,22 +140,22 @@ public class HSVPickerView extends PickerView {
 
         SeekBarUtils.setProgressBarDrawable(hue, new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                ColorUtils.getColorWheelArr(saturation.getProgress() / 255f, brightness.getProgress() / 255f)
+                ColorUtils.getColorWheelArr(1f, 1f)
         ), neutralColor);
 
         SeekBarUtils.setProgressBarDrawable(saturation, new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 new int[]{
-                        Color.HSVToColor(new float[]{hue.getProgress(), 0, brightness.getProgress() / 255f}),
-                        Color.HSVToColor(new float[]{hue.getProgress(), 1, brightness.getProgress() / 255f})
+                        Color.HSVToColor(new float[]{hue.getProgress(), 0, 1f}),
+                        Color.HSVToColor(new float[]{hue.getProgress(), 1, 1f})
                 }
         ), neutralColor);
 
         SeekBarUtils.setProgressBarDrawable(brightness, new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 new int[]{
-                        Color.HSVToColor(new float[]{hue.getProgress(), saturation.getProgress() / 255f, 0}),
-                        Color.HSVToColor(new float[]{hue.getProgress(), saturation.getProgress() / 255f, 1})
+                        Color.HSVToColor(new float[]{hue.getProgress(), 1f, 0}),
+                        Color.HSVToColor(new float[]{hue.getProgress(), 1f, 1})
                 }
         ), neutralColor);
     }
