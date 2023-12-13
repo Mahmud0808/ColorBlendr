@@ -73,4 +73,16 @@
     <string name="color_reset_success">Custom color reset successfully</string>
     <string name="reset_all">Reset all</string>
     <string name="reset_all_success">All colors reset successfully</string>
+    <string name="backup_restore_title">Backup &amp; restore configs</string>
+    <string name="backup_restore_desc">Share the delight of your theme\'s unique look and feel by saving and sharing your configuration</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="backup_success">Backup successful</string>
+    <string name="backup_fail">Backup failed</string>
+    <string name="restore_success">Restore successful</string>
+    <string name="restore_fail">Restore failed</string>
+    <string name="restart">Restart</string>
+    <string name="retry">Retry</string>
+    <string name="confirmation_title">Are you sure?</string>
+    <string name="confirmation_desc">This will override your current theme and configuration.</string>
 </resources>
