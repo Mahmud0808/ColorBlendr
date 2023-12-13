@@ -25,6 +25,7 @@ import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentToolsBinding;
 import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
+import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.processphoenix.ProcessPhoenix;
@@ -58,7 +59,15 @@ public class ToolsFragment extends Fragment {
         });
 
         binding.overrideColorsManually.setSwitchChecked(RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false));
-        binding.overrideColorsManually.setSwitchChangeListener((buttonView, isChecked) -> RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, isChecked));
+        binding.overrideColorsManually.setSwitchChangeListener((buttonView, isChecked) -> {
+            String[][] colorNames = ColorUtil.getColorNames();
+            for (String[] colorName : colorNames) {
+                for (String resource : colorName) {
+                    RPrefs.clearPref(resource);
+                }
+            }
+            RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, isChecked);
+        });
 
         binding.backupRestore.backup.setOnClickListener(v -> backupRestoreSettings(true));
         binding.backupRestore.restore.setOnClickListener(v -> backupRestoreSettings(false));
