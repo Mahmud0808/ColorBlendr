@@ -65,4 +65,5 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("me.jfenn:AndroidUtils:0.0.5")
+    implementation("com.jakewharton:process-phoenix:2.1.2")
 }
