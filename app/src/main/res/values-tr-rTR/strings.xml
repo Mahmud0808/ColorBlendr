@@ -61,4 +61,16 @@
     <string name="color_reset_success">Özel renk başarıyla sıfırlandı</string>
     <string name="reset_all">Tümünü sıfırla</string>
     <string name="reset_all_success">Tüm renkler başarıyla sıfırlandı</string>
+    <string name="backup_restore_title">Yedekle &amp; yapılandırmaları geri yükle</string>
+    <string name="backup_restore_desc">Mutluluğu yaymak için yapılandırmanızı kaydedip paylaşarak temanızın kendine özgü estetiğini yakalayın ve paylaşın</string>
+    <string name="backup">Yedekle</string>
+    <string name="restore">Geri Yükle</string>
+    <string name="backup_success">Yedekleme başarılı</string>
+    <string name="backup_fail">Yedekleme başarısız</string>
+    <string name="restore_success">Geri yükleme başarılı</string>
+    <string name="restore_fail">Geri yükleme başarısız</string>
+    <string name="restart">Yeniden Başlat</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="confirmation_title">Emin misiniz?</string>
+    <string name="confirmation_desc">Bu, mevcut temanızı ve yapılandırmanızı geçersiz kılacaktır.</string>
 </resources>
