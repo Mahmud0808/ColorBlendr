@@ -33,7 +33,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:digits="#0123456789ABCDEF"
+                    android:digits="#0123456789ABCDEFabcdef"
                     android:imeOptions="actionDone"
                     android:inputType="text|textNoSuggestions|textCapCharacters"
                     android:lines="1"
