@@ -155,7 +155,7 @@ public class RootServiceProvider extends RootService {
 
         @Override
         public boolean isRooted() throws RemoteException {
-            return Shell.cmd("whoami").exec().getOut().get(0).equals("root");
+            return Shell.getShell().isRoot();
         }
 
         /**
@@ -166,8 +166,11 @@ public class RootServiceProvider extends RootService {
             getAM().registerProcessObserver(processListener);
         }
 
+        /**
+         * Method to run when SystemUI restarts.
+         */
         @Override
-        public void runOnSystemUIRestarted(MethodInterface method) throws RemoteException {
+        public void runOnSystemUIRestarted(MethodInterface method) {
             onSystemUIRestartedListener = method;
         }
 
