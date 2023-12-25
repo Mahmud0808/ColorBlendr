@@ -45,13 +45,20 @@ android {
         viewBinding = true
         dataBinding = true
         buildConfig = true
+        aidl = true
     }
 }
 
 dependencies {
+    compileOnly(project(":systemstubs"))
+
+    val libsuVersion = "5.2.1"
+    implementation("com.github.topjohnwu.libsu:core:${libsuVersion}")
+    implementation("com.github.topjohnwu.libsu:service:${libsuVersion}")
+    implementation("dev.rikka.shizuku:api:12.1.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -66,4 +73,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("me.jfenn:AndroidUtils:0.0.5")
     implementation("com.jakewharton:process-phoenix:2.1.2")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.work:work-runtime:2.9.0")
+    implementation("androidx.palette:palette:1.0.0")
 }

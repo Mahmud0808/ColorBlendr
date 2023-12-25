@@ -2,14 +2,54 @@ package com.drdisagree.colorblendr.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.core.graphics.ColorUtils;
 
 import com.drdisagree.colorblendr.utils.cam.Cam;
+import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorUtil {
+
+    public static ArrayList<ArrayList<Integer>> generateModifiedColors(
+            Context context,
+            int accentSaturation,
+            int backgroundSaturation,
+            int backgroundLightness,
+            boolean pitchBlackTheme,
+            boolean accurateShades
+    ) {
+        ArrayList<ArrayList<Integer>> palette = MiscUtil.convertIntArrayToList(ColorUtil.getSystemColors(context));
+
+        // Modify colors
+        for (int i = 0; i < palette.size(); i++) {
+            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
+                    new ArrayList<>(palette.get(i).subList(1, palette.get(i).size())),
+                    new AtomicInteger(i),
+                    accentSaturation,
+                    backgroundSaturation,
+                    backgroundLightness,
+                    pitchBlackTheme,
+                    accurateShades
+            );
+            for (int j = 1; j < palette.get(i).size(); j++) {
+                palette.get(i).set(j, modifiedShades.get(j - 1));
+            }
+        }
+
+        return palette;
+    }
+
+    public static @ColorInt int getAccentColor(Context context) {
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true);
+        return typedValue.data;
+    }
 
     public static int modifySaturation(int color, int saturation) {
         float saturationFloat = (saturation - 100) / 100f;

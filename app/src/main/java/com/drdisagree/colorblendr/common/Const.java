@@ -22,4 +22,7 @@ public class Const {
     public static final String MONET_SEED_COLOR = "monetSeedColor";
     public static final String MONET_SEED_COLOR_ENABLED = "monetSeedColorEnabled";
     public static final String MANUAL_OVERRIDE_COLORS = "manualOverrideColors";
+    public static boolean isBackgroundServiceRunning = false;
+    public static final String MONET_LAST_UPDATED = "monetLastUpdated";
+    public static final String FABRICATED_OVERLAY_SOURCE_PACKAGE = "com.android.systemui";
 }

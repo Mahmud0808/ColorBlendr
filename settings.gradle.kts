@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ColorBlendr"
 include(":app")
+include(":systemstubs")

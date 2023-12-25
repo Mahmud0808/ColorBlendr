@@ -5,6 +5,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
+import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
@@ -32,13 +33,13 @@ import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentStylingBinding;
 import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
 import com.drdisagree.colorblendr.utils.ColorUtil;
-import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
+import com.drdisagree.colorblendr.utils.OverlayManager;
+import com.drdisagree.colorblendr.utils.WallpaperUtil;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog;
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
@@ -71,16 +72,16 @@ public class StylingFragment extends Fragment {
 
         monetSeedColor = new int[]{RPrefs.getInt(
                 MONET_SEED_COLOR,
-                getPrimaryColor()
+                WallpaperUtil.getWallpaperColor(requireContext())
         )};
 
-        assignStockColorsToPalette();
-        enablePaletteOnClickListener();
+        assignStockColorsToPalette(colorTableRows);
+        enablePaletteOnClickListener(colorTableRows);
 
         // Primary color
         binding.seedColorPicker.setPreviewColor(RPrefs.getInt(
                 MONET_SEED_COLOR,
-                getPrimaryColor()
+                WallpaperUtil.getWallpaperColor(requireContext())
         ));
         binding.seedColorPicker.setOnClickListener(v -> new ColorPickerDialog()
                 .withCornerRadius(10)
@@ -107,7 +108,10 @@ public class StylingFragment extends Fragment {
 
         binding.accentSaturation.setOnSliderChangeListener((slider, value, fromUser) -> {
             monetAccentSaturation[0] = (int) value;
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
         });
 
         binding.accentSaturation.setOnSliderTouchListener(new Slider.OnSliderTouchListener() {
@@ -119,14 +123,20 @@ public class StylingFragment extends Fragment {
             public void onStopTrackingTouch(@NonNull Slider slider) {
                 monetAccentSaturation[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0]);
+                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+                OverlayManager.applyFabricatedColors(generateModifiedColors());
             }
         });
 
         // Long Click Reset
         binding.accentSaturation.setResetClickListener(v -> {
             monetAccentSaturation[0] = 100;
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
             RPrefs.clearPref(MONET_ACCENT_SATURATION);
+            OverlayManager.applyFabricatedColors(generateModifiedColors());
             return true;
         });
 
@@ -135,7 +145,10 @@ public class StylingFragment extends Fragment {
 
         binding.backgroundSaturation.setOnSliderChangeListener((slider, value, fromUser) -> {
             monetBackgroundSaturation[0] = (int) value;
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
         });
 
         binding.backgroundSaturation.setOnSliderTouchListener(new Slider.OnSliderTouchListener() {
@@ -147,14 +160,20 @@ public class StylingFragment extends Fragment {
             public void onStopTrackingTouch(@NonNull Slider slider) {
                 monetBackgroundSaturation[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0]);
+                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+                OverlayManager.applyFabricatedColors(generateModifiedColors());
             }
         });
 
         // Reset button
         binding.backgroundSaturation.setResetClickListener(v -> {
             monetBackgroundSaturation[0] = 100;
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
             RPrefs.clearPref(MONET_BACKGROUND_SATURATION);
+            OverlayManager.applyFabricatedColors(generateModifiedColors());
             return true;
         });
 
@@ -163,7 +182,10 @@ public class StylingFragment extends Fragment {
 
         binding.backgroundLightness.setOnSliderChangeListener((slider, value, fromUser) -> {
             monetBackgroundLightness[0] = (int) value;
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
         });
 
         binding.backgroundLightness.setOnSliderTouchListener(new Slider.OnSliderTouchListener() {
@@ -175,21 +197,35 @@ public class StylingFragment extends Fragment {
             public void onStopTrackingTouch(@NonNull Slider slider) {
                 monetBackgroundLightness[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0]);
+                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+                OverlayManager.applyFabricatedColors(generateModifiedColors());
             }
         });
 
         // Long Click Reset
         binding.backgroundLightness.setResetClickListener(v -> {
             monetBackgroundLightness[0] = 100;
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
             RPrefs.clearPref(MONET_BACKGROUND_LIGHTNESS);
+            OverlayManager.applyFabricatedColors(generateModifiedColors());
             return true;
         });
 
         return binding.getRoot();
     }
 
-    private void assignStockColorsToPalette() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        sharedViewModel.getBooleanStates().observe(getViewLifecycleOwner(), this::updateBooleanStates);
+        sharedViewModel.getVisibilityStates().observe(getViewLifecycleOwner(), this::updateViewVisibility);
+    }
+
+    private void assignStockColorsToPalette(LinearLayout[] colorTableRows) {
         int[][] systemColors = ColorUtil.getSystemColors(requireContext());
 
         for (int i = 0; i < colorTableRows.length; i++) {
@@ -222,38 +258,7 @@ public class StylingFragment extends Fragment {
         }
     }
 
-    private void assignCustomColorsToPalette() {
-        ArrayList<ArrayList<Integer>> palette = convertIntArrayToList(ColorUtil.getSystemColors(requireContext()));
-
-        // Modify colors
-        for (int i = 0; i < palette.size(); i++) {
-            ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
-                    new ArrayList<>(palette.get(i).subList(1, palette.get(i).size())),
-                    new AtomicInteger(i),
-                    monetAccentSaturation[0],
-                    monetBackgroundSaturation[0],
-                    monetBackgroundLightness[0],
-                    RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
-                    RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
-            );
-            for (int j = 1; j < palette.get(i).size(); j++) {
-                palette.get(i).set(j, modifiedShades.get(j - 1));
-            }
-        }
-
-        // Update preview colors
-        for (int i = 0; i < colorTableRows.length; i++) {
-            for (int j = 0; j < colorTableRows[i].getChildCount(); j++) {
-                colorTableRows[i].getChildAt(j).getBackground().setTint(palette.get(i).get(j));
-                colorTableRows[i].getChildAt(j).setTag(palette.get(i).get(j));
-                ((TextView) ((ViewGroup) colorTableRows[i].getChildAt(j))
-                        .getChildAt(0))
-                        .setTextColor(ColorUtil.calculateTextColor(palette.get(i).get(j)));
-            }
-        }
-    }
-
-    private void enablePaletteOnClickListener() {
+    private void enablePaletteOnClickListener(LinearLayout[] colorTableRows) {
         int[][] systemColors = ColorUtil.getSystemColors(requireContext());
 
         for (int i = 0; i < colorTableRows.length; i++) {
@@ -347,18 +352,13 @@ public class StylingFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        sharedViewModel.getBooleanStates().observe(getViewLifecycleOwner(), this::updateBooleanStates);
-        sharedViewModel.getVisibilityStates().observe(getViewLifecycleOwner(), this::updateViewVisibility);
-    }
-
     private void updateBooleanStates(Map<String, Boolean> stringBooleanMap) {
         Boolean accurateShades = stringBooleanMap.get(MONET_ACCURATE_SHADES);
         if (accurateShades != null) {
-            assignCustomColorsToPalette();
+            updatePreviewColors(
+                    colorTableRows,
+                    generateModifiedColors()
+            );
         }
     }
 
@@ -375,23 +375,32 @@ public class StylingFragment extends Fragment {
         }
     }
 
-    private static ArrayList<ArrayList<Integer>> convertIntArrayToList(int[][] array) {
-        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
-
-        for (int[] row : array) {
-            ArrayList<Integer> rowList = new ArrayList<>();
-            for (int value : row) {
-                rowList.add(value);
-            }
-
-            result.add(rowList);
-        }
-
-        return result;
-    }
-
     private @ColorInt int getPrimaryColor() {
         return requireContext().getColor(com.google.android.material.R.color.material_dynamic_primary40);
+    }
+
+    private void updatePreviewColors(LinearLayout[] colorTableRows, ArrayList<ArrayList<Integer>> palette) {
+        // Update preview colors
+        for (int i = 0; i < colorTableRows.length; i++) {
+            for (int j = 0; j < colorTableRows[i].getChildCount(); j++) {
+                colorTableRows[i].getChildAt(j).getBackground().setTint(palette.get(i).get(j));
+                colorTableRows[i].getChildAt(j).setTag(palette.get(i).get(j));
+                ((TextView) ((ViewGroup) colorTableRows[i].getChildAt(j))
+                        .getChildAt(0))
+                        .setTextColor(ColorUtil.calculateTextColor(palette.get(i).get(j)));
+            }
+        }
+    }
+
+    private ArrayList<ArrayList<Integer>> generateModifiedColors() {
+        return ColorUtil.generateModifiedColors(
+                requireContext(),
+                monetAccentSaturation[0],
+                monetBackgroundSaturation[0],
+                monetBackgroundLightness[0],
+                RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
+                RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
+        );
     }
 
     @Override

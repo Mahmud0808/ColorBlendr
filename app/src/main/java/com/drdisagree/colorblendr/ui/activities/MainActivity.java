@@ -2,23 +2,34 @@ package com.drdisagree.colorblendr.ui.activities;
 
 import static com.drdisagree.colorblendr.common.Const.TAB_SELECTED_INDEX;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
+import com.drdisagree.colorblendr.service.BackgroundService;
 import com.drdisagree.colorblendr.ui.adapters.FragmentAdapter;
 import com.drdisagree.colorblendr.ui.fragments.AboutFragment;
 import com.drdisagree.colorblendr.ui.fragments.StylingFragment;
 import com.drdisagree.colorblendr.ui.fragments.ToolsFragment;
+import com.drdisagree.colorblendr.utils.AppUtil;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,5 +85,64 @@ public class MainActivity extends AppCompatActivity {
                 RPrefs.putInt(TAB_SELECTED_INDEX, tab.getPosition());
             }
         });
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (AppUtil.permissionsGranted(this) && AppUtil.hasStoragePermission()) {
+                if (!Const.isBackgroundServiceRunning) {
+                    startForegroundService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
+                }
+            } else {
+                requestPermissionsLauncher.launch(AppUtil.REQUIRED_PERMISSIONS);
+            }
+        }, 3000);
+    }
+
+    private final ActivityResultLauncher<String[]> requestPermissionsLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            this::handlePermissionsResult
+    );
+
+    private void handlePermissionsResult(Map<String, Boolean> result) {
+        for (Map.Entry<String, Boolean> pair : result.entrySet()) {
+            if (!pair.getValue()) {
+                showGeneralPermissionSnackbar(pair.getKey());
+                return;
+            }
+        }
+
+        if (!AppUtil.hasStoragePermission()) {
+            showStoragePermissionSnackbar();
+            return;
+        }
+
+        if (!Const.isBackgroundServiceRunning) {
+            startForegroundService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
+        }
+    }
+
+    private void showGeneralPermissionSnackbar(String permission) {
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                R.string.permission_must_be_granted,
+                Snackbar.LENGTH_INDEFINITE
+        );
+        snackbar.setAction(R.string.grant, v -> {
+            requestPermissionsLauncher.launch(new String[]{permission});
+            snackbar.dismiss();
+        });
+        snackbar.show();
+    }
+
+    private void showStoragePermissionSnackbar() {
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                R.string.file_access_permission_required,
+                Snackbar.LENGTH_INDEFINITE
+        );
+        snackbar.setAction(R.string.grant, v -> {
+            AppUtil.requestStoragePermission(MainActivity.this);
+            snackbar.dismiss();
+        });
+        snackbar.show();
     }
 }
