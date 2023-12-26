@@ -5,7 +5,7 @@ import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.service.ISystemUIRestartListener;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
-interface IRootServiceProvider {
+interface IRootService {
     boolean isRooted();
     void setupSystemUIRestartListener();
     void runOnSystemUIRestarted(in MethodInterface method);

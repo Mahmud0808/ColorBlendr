@@ -16,6 +16,7 @@
         android:paddingTop="16dp">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/warn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -66,7 +67,8 @@
             app:summaryText="@string/override_colors_manually_desc"
             app:titleText="@string/override_colors_manually_title" />
 
-        <include android:id="@+id/backup_restore"
+        <include
+            android:id="@+id/backup_restore"
             layout="@layout/view_backup_restore" />
 
     </LinearLayout>

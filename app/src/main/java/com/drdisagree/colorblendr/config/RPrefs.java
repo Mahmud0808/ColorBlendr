@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.config;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.drdisagree.colorblendr.common.Const.EXCLUDED_PREFS_FROM_BACKUP;
 
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -105,6 +107,18 @@ public class RPrefs {
         } catch (IOException e) {
             Log.e(TAG, "Error serializing preferences", e);
         }
+
+        try (outputStream; ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
+            Map<String, ?> allPrefs = prefs.getAll();
+
+            for (String excludedPref : EXCLUDED_PREFS_FROM_BACKUP) {
+                allPrefs.remove(excludedPref);
+            }
+
+            objectOutputStream.writeObject(allPrefs);
+        } catch (IOException e) {
+            Log.e(TAG, "Error serializing preferences", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -117,24 +131,47 @@ public class RPrefs {
             return;
         }
 
-        editor.clear();
-
-        for (Map.Entry<String, Object> e : map.entrySet()) {
-            if (e.getValue() instanceof Boolean) {
-                editor.putBoolean(e.getKey(), (Boolean) e.getValue());
-            } else if (e.getValue() instanceof String) {
-                editor.putString(e.getKey(), (String) e.getValue());
-            } else if (e.getValue() instanceof Integer) {
-                editor.putInt(e.getKey(), (int) e.getValue());
-            } else if (e.getValue() instanceof Float) {
-                editor.putFloat(e.getKey(), (float) e.getValue());
-            } else if (e.getValue() instanceof Long) {
-                editor.putLong(e.getKey(), (Long) e.getValue());
-            } else {
-                throw new IllegalArgumentException("Type " + e.getValue().getClass().getName() + " is unknown");
+        // Retrieve excluded prefs from current prefs
+        Map<String, Object> excludedPrefs = new HashMap<>();
+        for (String excludedPref : EXCLUDED_PREFS_FROM_BACKUP) {
+            Object prefValue = prefs.getAll().get(excludedPref);
+            if (prefValue != null) {
+                excludedPrefs.put(excludedPref, prefValue);
             }
         }
 
+        editor.clear();
+
+        // Restore excluded prefs
+        for (Map.Entry<String, Object> entry : excludedPrefs.entrySet()) {
+            putObject(entry.getKey(), entry.getValue());
+        }
+
+        // Restore non-excluded prefs
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (EXCLUDED_PREFS_FROM_BACKUP.contains(entry.getKey())) {
+                continue;
+            }
+
+            putObject(entry.getKey(), entry.getValue());
+        }
+
         editor.apply();
+    }
+
+    private static void putObject(String key, Object value) {
+        if (value instanceof Boolean) {
+            editor.putBoolean(key, (Boolean) value);
+        } else if (value instanceof String) {
+            editor.putString(key, (String) value);
+        } else if (value instanceof Integer) {
+            editor.putInt(key, (Integer) value);
+        } else if (value instanceof Float) {
+            editor.putFloat(key, (Float) value);
+        } else if (value instanceof Long) {
+            editor.putLong(key, (Long) value);
+        } else {
+            throw new IllegalArgumentException("Type " + value.getClass().getName() + " is unknown");
+        }
     }
 }

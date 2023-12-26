@@ -85,8 +85,8 @@
     <string name="retry">Retry</string>
     <string name="confirmation_title">Are you sure?</string>
     <string name="confirmation_desc">This will override your current theme and configuration.</string>
-    <string name="root_service_timeout">Timeout waiting for RootService connection.</string>
-    <string name="root_service_interrupted">Interrupted while waiting for RootService connection.</string>
+    <string name="root_service_not_found">Root not accessible.</string>
+    <string name="something_went_wrong">Something went wrong.</string>
     <string name="permission_must_be_granted">Permission must be granted</string>
     <string name="grant">Grant</string>
     <string name="background_service_notification_title">Background service</string>
@@ -94,4 +94,17 @@
     <string name="background_service_notification_channel_title">Background service</string>
     <string name="background_service_notification_channel_text">You can turn off these notifications.</string>
     <string name="file_access_permission_required">Files access required to generate wallpaper colors.</string>
+    <string name="onboarding_image">Onboarding image</string>
+    <string name="mode_one_title">Root</string>
+    <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
+    <string name="mode_two_title">Shizuku</string>
+    <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
+    <string name="mode_three_title">Xposed</string>
+    <string name="mode_three_desc">Use xposed framework to change colors. All customization options will be available.</string>
+    <string name="perm_one_title">Post Notifications</string>
+    <string name="perm_one_desc">This permission is required to keep the service alive in background.</string>
+    <string name="perm_two_title">Read Media Images</string>
+    <string name="perm_two_desc">This permission is required to retrieve home and lockscreen wallpaper.</string>
+    <string name="perm_three_title">All Files Access</string>
+    <string name="perm_three_desc">This permission is required to retrieve home and lockscreen  wallpaper.</string>
 </resources>

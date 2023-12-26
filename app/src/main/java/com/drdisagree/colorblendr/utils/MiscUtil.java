@@ -18,4 +18,10 @@ public class MiscUtil {
 
         return result;
     }
+
+    public static int[][] convertListToIntArray(ArrayList<ArrayList<Integer>> arrayList) {
+        return arrayList.stream()
+                .map(row -> row.stream().mapToInt(Integer::intValue).toArray())
+                .toArray(int[][]::new);
+    }
 }

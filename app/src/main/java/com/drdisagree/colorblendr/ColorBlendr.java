@@ -6,8 +6,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.service.IRootServiceProvider;
-import com.drdisagree.colorblendr.ui.activities.SplashActivity;
+import com.drdisagree.colorblendr.provider.RootServiceProvider;
+import com.drdisagree.colorblendr.service.IRootService;
 import com.google.android.material.color.DynamicColors;
 
 import java.lang.ref.WeakReference;
@@ -39,7 +39,7 @@ public class ColorBlendr extends Application {
         return instance;
     }
 
-    public static IRootServiceProvider getRootService() {
-        return SplashActivity.getRootServiceProvider();
+    public static IRootService getRootService() {
+        return RootServiceProvider.getRootServiceProvider();
     }
 }

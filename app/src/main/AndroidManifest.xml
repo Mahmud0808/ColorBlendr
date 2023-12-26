@@ -31,19 +31,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ColorBlendr">
         <activity
-            android:name=".ui.activities.SplashActivity"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher_round">
+            android:name=".ui.activities.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activities.MainActivity"
-            android:exported="true" />
 
         <receiver
             android:name=".service.BroadcastListener"

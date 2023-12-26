@@ -1,9 +1,12 @@
 package com.drdisagree.colorblendr.utils;
 
+import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME;
+import static com.drdisagree.colorblendr.common.Const.FRAMEWORK_PACKAGE;
+
 import android.os.RemoteException;
 
 import com.drdisagree.colorblendr.ColorBlendr;
-import com.drdisagree.colorblendr.service.IRootServiceProvider;
+import com.drdisagree.colorblendr.service.IRootService;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
 import java.util.ArrayList;
@@ -12,7 +15,8 @@ import java.util.Collections;
 public class OverlayManager {
 
     private static final String TAG = OverlayManager.class.getSimpleName();
-    private static final IRootServiceProvider mRootService = ColorBlendr.getRootService();
+    private static final IRootService mRootService = ColorBlendr.getRootService();
+    private static final String[][] colorNames = ColorUtil.getColorNames();
 
     public static void enableOverlay(String packageName) {
         try {
@@ -74,21 +78,21 @@ public class OverlayManager {
     }
 
     public static void applyFabricatedColors(ArrayList<ArrayList<Integer>> palette) {
-        FabricatedOverlayResource accentOverlay = new FabricatedOverlayResource("accent", "android");
-        FabricatedOverlayResource neutralOverlay = new FabricatedOverlayResource("neutral", "android");
-        String[][] colorNames = ColorUtil.getColorNames();
+        if (palette == null) {
+            return;
+        }
+
+        FabricatedOverlayResource fabricatedOverlay = new FabricatedOverlayResource(
+                FABRICATED_OVERLAY_NAME,
+                FRAMEWORK_PACKAGE
+        );
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 13; j++) {
-                if (i < 3) {
-                    accentOverlay.setColor(colorNames[i][j], palette.get(i).get(j));
-                } else {
-                    neutralOverlay.setColor(colorNames[i][j], palette.get(i).get(j));
-                }
+                fabricatedOverlay.setColor(colorNames[i][j], palette.get(i).get(j));
             }
         }
 
-        OverlayManager.registerFabricatedOverlay(accentOverlay);
-        OverlayManager.registerFabricatedOverlay(neutralOverlay);
+        OverlayManager.registerFabricatedOverlay(fabricatedOverlay);
     }
 }

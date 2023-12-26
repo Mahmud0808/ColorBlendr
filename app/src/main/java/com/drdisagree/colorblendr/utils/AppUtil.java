@@ -23,16 +23,20 @@ public class AppUtil {
                     Manifest.permission.READ_MEDIA_IMAGES
             } :
             new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.READ_EXTERNAL_STORAGE
             };
 
     public static boolean permissionsGranted(Context context) {
+        if (!hasStoragePermission()) {
+            return false;
+        }
+
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
+
         return true;
     }
 

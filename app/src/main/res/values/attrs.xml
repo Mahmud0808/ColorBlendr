@@ -62,6 +62,12 @@
         <attr name="showSelectedPrefix" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="SelectableViewWidget">
+        <attr name="titleText" />
+        <attr name="descriptionText" format="reference" />
+        <attr name="isSelected" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="ColorPickerTheme">
         <attr name="redColor" format="color" />
         <attr name="greenColor" format="color" />

@@ -4,6 +4,7 @@ import static com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.WORKING_METHOD;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentToolsBinding;
 import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
@@ -42,6 +44,10 @@ public class ToolsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentToolsBinding.inflate(inflater, container, false);
+
+        if (!Const.WORK_METHOD.XPOSED.equals(WORKING_METHOD)) {
+            binding.warn.setVisibility(View.GONE);
+        }
 
         binding.accurateShades.setSwitchChecked(RPrefs.getBoolean(MONET_ACCURATE_SHADES, true));
         binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {

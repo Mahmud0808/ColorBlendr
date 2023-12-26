@@ -25,7 +25,6 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayEntry;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 import com.topjohnwu.superuser.Shell;
 import com.topjohnwu.superuser.internal.Utils;
-import com.topjohnwu.superuser.ipc.RootService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,16 +36,16 @@ import java.util.Map;
 import rikka.shizuku.SystemServiceHelper;
 
 @SuppressWarnings({"all"})
-public class RootServiceProvider extends RootService {
+public class RootService extends com.topjohnwu.superuser.ipc.RootService {
 
     @Override
     public IBinder onBind(@NonNull Intent intent) {
-        return new RootServiceProviderImpl();
+        return new RootServiceImpl();
     }
 
-    static class RootServiceProviderImpl extends IRootServiceProvider.Stub {
+    static class RootServiceImpl extends IRootService.Stub {
 
-        private static final String TAG = RootServiceProviderImpl.class.getSimpleName();
+        private static final String TAG = RootServiceImpl.class.getSimpleName();
         private static Context context = Utils.getContext();
         private static final UserHandle currentUser;
         private static final int currentUserId;
