@@ -6,6 +6,7 @@ import android.graphics.Color;
 
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ public class ColorModifiers {
     public static ArrayList<Integer> modifyColors(
             ArrayList<Integer> palette,
             AtomicInteger counter,
+            ColorSchemeUtil.MONET style,
             int monetAccentSaturation,
             int monetBackgroundSaturation,
             int monetBackgroundLightness,
@@ -55,17 +57,17 @@ public class ColorModifiers {
         boolean backgroundLightness = monetBackgroundLightness != 100;
 
         if (accentPalette) {
-            if (accentSaturation) {
+            if (accentSaturation && !style.equals(ColorSchemeUtil.MONET.MONOCHROME)) {
                 // Set accent saturation
                 palette.replaceAll(o -> ColorUtil.modifySaturation(o, monetAccentSaturation));
             }
         } else {
-            if (backgroundSaturation) {
+            if (backgroundSaturation && !style.equals(ColorSchemeUtil.MONET.MONOCHROME)) {
                 // Set background saturation
                 palette.replaceAll(o -> ColorUtil.modifySaturation(o, monetBackgroundSaturation));
             }
 
-            if (backgroundLightness) {
+            if (backgroundLightness && !style.equals(ColorSchemeUtil.MONET.MONOCHROME)) {
                 // Set background lightness
                 for (int j = 0; j < palette.size(); j++) {
                     palette.set(j, ColorUtil.modifyLightness(palette.get(j), monetBackgroundLightness, j + 1));
@@ -75,6 +77,13 @@ public class ColorModifiers {
             if (pitchBlackTheme) {
                 // Set pitch black theme
                 palette.set(10, Color.BLACK);
+            }
+        }
+
+        if (style.equals(ColorSchemeUtil.MONET.MONOCHROME)) {
+            // Set monochrome lightness
+            for (int j = 0; j < palette.size(); j++) {
+                palette.set(j, ColorUtil.modifyLightness(palette.get(j), monetBackgroundLightness, j + 1));
             }
         }
 

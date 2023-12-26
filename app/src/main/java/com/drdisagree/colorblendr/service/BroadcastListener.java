@@ -6,6 +6,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
+import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,11 +16,13 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.drdisagree.colorblendr.ColorBlendr;
+import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
+import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
 
 public class BroadcastListener extends BroadcastReceiver {
 
@@ -55,6 +58,10 @@ public class BroadcastListener extends BroadcastReceiver {
         OverlayManager.applyFabricatedColors(
                 ColorUtil.generateModifiedColors(
                         context,
+                        ColorSchemeUtil.stringToEnum(
+                                context,
+                                RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
+                        ),
                         RPrefs.getInt(MONET_ACCENT_SATURATION, 100),
                         RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100),
                         RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100),

@@ -1,5 +1,7 @@
 package com.drdisagree.colorblendr.utils;
 
+import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
@@ -8,7 +10,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.core.graphics.ColorUtils;
 
+import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.cam.Cam;
+import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
 import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 
 import java.util.ArrayList;
@@ -18,19 +22,27 @@ public class ColorUtil {
 
     public static ArrayList<ArrayList<Integer>> generateModifiedColors(
             Context context,
+            ColorSchemeUtil.MONET style,
             int accentSaturation,
             int backgroundSaturation,
             int backgroundLightness,
             boolean pitchBlackTheme,
             boolean accurateShades
     ) {
-        ArrayList<ArrayList<Integer>> palette = MiscUtil.convertIntArrayToList(ColorUtil.getSystemColors(context));
+        ArrayList<ArrayList<Integer>> palette = ColorSchemeUtil.generateColorPalette(
+                style,
+                RPrefs.getInt(
+                        MONET_SEED_COLOR,
+                        WallpaperUtil.getWallpaperColor(context)
+                )
+        );
 
         // Modify colors
         for (int i = 0; i < palette.size(); i++) {
             ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
                     new ArrayList<>(palette.get(i).subList(1, palette.get(i).size())),
                     new AtomicInteger(i),
+                    style,
                     accentSaturation,
                     backgroundSaturation,
                     backgroundLightness,

@@ -9,11 +9,14 @@ import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,10 +38,12 @@ import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.WallpaperUtil;
+import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog;
@@ -93,6 +98,8 @@ public class StylingFragment extends Fragment {
                         monetSeedColor[0] = color;
                         binding.seedColorPicker.setPreviewColor(color);
                         RPrefs.putInt(MONET_SEED_COLOR, monetSeedColor[0]);
+                        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(generateModifiedColors()), 800);
                     }
                 })
                 .show(getChildFragmentManager(), "seedColorPicker")
@@ -102,6 +109,23 @@ public class StylingFragment extends Fragment {
                         View.VISIBLE :
                         View.GONE
         );
+
+        // Monet Style
+        int selectedIndex = Arrays.asList(getResources().getStringArray(R.array.monet_style))
+                .indexOf(RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot)));
+        binding.monetStyles.setSelectedIndex(selectedIndex);
+        binding.monetStyles.setOnItemSelectedListener(index -> {
+            RPrefs.putString(MONET_STYLE, getResources().getStringArray(R.array.monet_style)[index]);
+            ArrayList<ArrayList<Integer>> modifiedColors = generateModifiedColors();
+            updatePreviewColors(
+                    colorTableRows,
+                    modifiedColors
+            );
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+                OverlayManager.applyFabricatedColors(modifiedColors);
+            }, 800);
+        });
 
         // Monet primary accent saturation
         binding.accentSaturation.setSliderValue(RPrefs.getInt(MONET_ACCENT_SATURATION, 100));
@@ -121,6 +145,10 @@ public class StylingFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
+                if (monetAccentSaturation[0] == (int) slider.getValue()) {
+                    return;
+                }
+
                 monetAccentSaturation[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
@@ -136,7 +164,7 @@ public class StylingFragment extends Fragment {
                     generateModifiedColors()
             );
             RPrefs.clearPref(MONET_ACCENT_SATURATION);
-            OverlayManager.applyFabricatedColors(generateModifiedColors());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(generateModifiedColors()), 200);
             return true;
         });
 
@@ -158,6 +186,10 @@ public class StylingFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
+                if (monetBackgroundSaturation[0] == (int) slider.getValue()) {
+                    return;
+                }
+
                 monetBackgroundSaturation[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
@@ -173,7 +205,7 @@ public class StylingFragment extends Fragment {
                     generateModifiedColors()
             );
             RPrefs.clearPref(MONET_BACKGROUND_SATURATION);
-            OverlayManager.applyFabricatedColors(generateModifiedColors());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(generateModifiedColors()), 200);
             return true;
         });
 
@@ -195,6 +227,10 @@ public class StylingFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
+                if (monetBackgroundLightness[0] == (int) slider.getValue()) {
+                    return;
+                }
+
                 monetBackgroundLightness[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
@@ -210,7 +246,7 @@ public class StylingFragment extends Fragment {
                     generateModifiedColors()
             );
             RPrefs.clearPref(MONET_BACKGROUND_LIGHTNESS);
-            OverlayManager.applyFabricatedColors(generateModifiedColors());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(generateModifiedColors()), 200);
             return true;
         });
 
@@ -366,12 +402,22 @@ public class StylingFragment extends Fragment {
         Integer seedColorVisibility = visibilityStates.get(MONET_SEED_COLOR_ENABLED);
         if (seedColorVisibility != null && binding.seedColorPicker.getVisibility() != seedColorVisibility) {
             binding.seedColorPicker.setVisibility(seedColorVisibility);
-            monetSeedColor = new int[]{RPrefs.getInt(
-                    MONET_SEED_COLOR,
-                    getPrimaryColor()
-            )};
-            binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
-            RPrefs.clearPref(MONET_SEED_COLOR);
+
+            if (seedColorVisibility == View.GONE) {
+                if (RPrefs.getInt(MONET_SEED_COLOR, -1) != -1) {
+                    monetSeedColor = new int[]{WallpaperUtil.getWallpaperColor(requireContext())};
+                    binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
+                    RPrefs.clearPref(MONET_SEED_COLOR);
+                    RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(generateModifiedColors()), 800);
+                }
+            } else {
+                monetSeedColor = new int[]{RPrefs.getInt(
+                        MONET_SEED_COLOR,
+                        WallpaperUtil.getWallpaperColor(requireContext())
+                )};
+                binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
+            }
         }
     }
 
@@ -395,6 +441,10 @@ public class StylingFragment extends Fragment {
     private ArrayList<ArrayList<Integer>> generateModifiedColors() {
         return ColorUtil.generateModifiedColors(
                 requireContext(),
+                ColorSchemeUtil.stringToEnum(
+                        requireContext(),
+                        RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))
+                ),
                 monetAccentSaturation[0],
                 monetBackgroundSaturation[0],
                 monetBackgroundLightness[0],

@@ -20,6 +20,7 @@ import static de.robv.android.xposed.XposedHelpers.setObjectField;
 import android.content.Context;
 
 import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
 import com.drdisagree.colorblendr.xposed.ModPack;
 import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 
@@ -124,6 +125,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                         ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
                                 shadesList,
                                 counter,
+                                ColorSchemeUtil.MONET.TONALSPOT,
                                 monetAccentSaturation,
                                 monetBackgroundSaturation,
                                 monetBackgroundLightness,
@@ -168,6 +170,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                         ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
                                 shadesList,
                                 counter,
+                                ColorSchemeUtil.MONET.TONALSPOT,
                                 monetAccentSaturation,
                                 monetBackgroundSaturation,
                                 monetBackgroundLightness,
@@ -212,6 +215,7 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
                         ArrayList<Integer> modifiedShades = ColorModifiers.modifyColors(
                                 shadesList,
                                 counter,
+                                ColorSchemeUtil.MONET.TONALSPOT,
                                 monetAccentSaturation,
                                 monetBackgroundSaturation,
                                 monetBackgroundLightness,
