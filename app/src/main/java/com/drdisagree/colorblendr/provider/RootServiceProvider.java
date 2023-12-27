@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.provider;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,16 +10,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
+import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.service.IRootService;
 import com.drdisagree.colorblendr.service.RootService;
-import com.drdisagree.colorblendr.ui.fragments.HomeFragment;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -29,16 +23,14 @@ public class RootServiceProvider implements ServiceConnection {
 
     private static final String TAG = RootServiceProvider.class.getSimpleName();
     private final Context context;
-    private final FragmentManager fragmentManager;
-    private final int containerId;
     private static IRootService rootServiceProviderIPC;
     private static boolean isRootServiceBound = false;
+    private static MethodInterface methodRunOnSuccess;
+    private static MethodInterface methodRunOnFailure;
     private static final CountDownLatch mRootServiceConnectionTimer = new CountDownLatch(1);
 
-    public RootServiceProvider(Context context, FragmentManager fragmentManager, @IdRes int containerId) {
+    public RootServiceProvider(Context context) {
         this.context = context;
-        this.fragmentManager = fragmentManager;
-        this.containerId = containerId;
     }
 
     public static IRootService getRootServiceProvider() {
@@ -54,7 +46,7 @@ public class RootServiceProvider implements ServiceConnection {
     }
 
     private void bindRootService() {
-        ((Activity) context).runOnUiThread(() -> RootService.bind(
+        new Handler(Looper.getMainLooper()).post(() -> RootService.bind(
                 new Intent(context, RootService.class),
                 this
         ));
@@ -66,14 +58,18 @@ public class RootServiceProvider implements ServiceConnection {
             try {
                 bindRootService();
                 boolean success = mRootServiceConnectionTimer.await(5, TimeUnit.SECONDS);
-                ((Activity) context).runOnUiThread(success ? new SuccessRunnable() : new ErrorRunnable());
+                new Handler(Looper.getMainLooper()).post(
+                        success ?
+                                new SuccessRunnable() :
+                                new FailureRunnable()
+                );
             } catch (Exception e) {
                 new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(
                         ColorBlendr.getAppContext(),
                         R.string.something_went_wrong,
                         Toast.LENGTH_LONG
                 ).show());
-                Log.e(TAG, e.toString());
+                Log.e(TAG, "Error starting root service", e);
             }
         }
     }
@@ -92,30 +88,39 @@ public class RootServiceProvider implements ServiceConnection {
         bindRootService();
     }
 
-    static class ErrorRunnable implements Runnable {
+    static class FailureRunnable implements Runnable {
         @Override
         public void run() {
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(
-                    ColorBlendr.getAppContext(),
-                    R.string.root_service_not_found,
-                    Toast.LENGTH_LONG
-            ).show());
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (methodRunOnFailure != null) {
+                    methodRunOnFailure.run();
+                } else {
+                    Toast.makeText(
+                            ColorBlendr.getAppContext(),
+                            R.string.root_service_not_found,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
         }
     }
 
-    class SuccessRunnable implements Runnable {
+    static class SuccessRunnable implements Runnable {
         @Override
         public void run() {
-            Const.saveWorkingMethod();
-
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(
-                    containerId,
-                    new HomeFragment(),
-                    HomeFragment.class.getSimpleName()
-            );
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.commit();
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (methodRunOnSuccess != null) {
+                    methodRunOnSuccess.run();
+                }
+            });
         }
+    }
+
+    public void runOnSuccess(MethodInterface method) {
+        methodRunOnSuccess = method;
+    }
+
+    public void runOnFailure(MethodInterface method) {
+        methodRunOnFailure = method;
     }
 }

@@ -451,7 +451,7 @@ public class StylingFragment extends Fragment {
                     RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
             );
         } catch (Exception e) {
-            Log.e(TAG, e.toString());
+            Log.e(TAG, "Error generating modified colors", e);
             return null;
         }
     }

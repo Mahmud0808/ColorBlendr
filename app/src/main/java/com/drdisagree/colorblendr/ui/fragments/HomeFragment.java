@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
             try {
                 if (AppUtil.permissionsGranted(requireContext())) {
                     if (!Const.isBackgroundServiceRunning && Const.WORKING_METHOD != Const.WORK_METHOD.XPOSED) {
-                        requireContext().startForegroundService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
+                        requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                     }
                 } else {
                     requestPermissionsLauncher.launch(AppUtil.REQUIRED_PERMISSIONS);
@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment {
         }
 
         if (!Const.isBackgroundServiceRunning) {
-            requireContext().startForegroundService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
+            requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
         }
     }
 

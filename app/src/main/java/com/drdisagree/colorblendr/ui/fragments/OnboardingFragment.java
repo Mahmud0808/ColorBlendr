@@ -13,10 +13,13 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding;
+import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootServiceProvider;
 import com.drdisagree.colorblendr.ui.adapters.OnboardingAdapter;
 import com.drdisagree.colorblendr.utils.AppUtil;
@@ -100,11 +103,23 @@ public class OnboardingFragment extends Fragment {
                 if (WORKING_METHOD == Const.WORK_METHOD.NULL) {
                     Toast.makeText(requireContext(), "Select a method to proceed", Toast.LENGTH_SHORT).show();
                 } else if (WORKING_METHOD == Const.WORK_METHOD.ROOT) {
-                    RootServiceProvider rootServiceProvider = new RootServiceProvider(
-                            requireContext(),
-                            requireActivity().getSupportFragmentManager(),
-                            ((ViewGroup) binding.getRoot().getParent()).getId()
-                    );
+                    RootServiceProvider rootServiceProvider = new RootServiceProvider(requireContext());
+                    rootServiceProvider.runOnSuccess(new MethodInterface() {
+                        @Override
+                        public void run() {
+                            Const.saveWorkingMethod();
+
+                            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction.replace(
+                                    ((ViewGroup) binding.getRoot().getParent()).getId(),
+                                    new HomeFragment(),
+                                    HomeFragment.class.getSimpleName()
+                            );
+                            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            fragmentTransaction.commit();
+                        }
+                    });
                     rootServiceProvider.startRootService();
                 } else if (WORKING_METHOD == Const.WORK_METHOD.SHIZUKU) {
                     Toast.makeText(requireContext(), "Shizuku is not supported yet", Toast.LENGTH_SHORT).show();

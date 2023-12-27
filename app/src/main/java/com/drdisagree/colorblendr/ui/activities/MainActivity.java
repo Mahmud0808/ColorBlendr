@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
+import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootServiceProvider;
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment;
 import com.drdisagree.colorblendr.ui.fragments.OnboardingFragment;
@@ -32,12 +33,22 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             if (WORKING_METHOD == Const.WORK_METHOD.NULL) {
                 replaceFragment(new OnboardingFragment());
-            } else {
-                RootServiceProvider rootServiceProvider = new RootServiceProvider(
-                        this,
-                        getSupportFragmentManager(),
-                        ((ViewGroup) binding.getRoot().getParent()).getId()
-                );
+            } else if (WORKING_METHOD == Const.WORK_METHOD.ROOT) {
+                RootServiceProvider rootServiceProvider = new RootServiceProvider(this);
+                rootServiceProvider.runOnSuccess(new MethodInterface() {
+                    @Override
+                    public void run() {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(
+                                ((ViewGroup) binding.getRoot().getParent()).getId(),
+                                new HomeFragment(),
+                                HomeFragment.class.getSimpleName()
+                        );
+                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        fragmentTransaction.commit();
+                    }
+                });
                 rootServiceProvider.startRootService();
             }
         }

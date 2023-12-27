@@ -3,12 +3,14 @@ package com.drdisagree.colorblendr.utils;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.core.graphics.ColorUtils;
+import androidx.palette.graphics.Palette;
 
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.cam.Cam;
@@ -16,6 +18,7 @@ import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
 import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorUtil {
@@ -61,6 +64,17 @@ public class ColorUtil {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true);
         return typedValue.data;
+    }
+
+    public static @ColorInt int getDominantColor(Bitmap bitmap) {
+        if (bitmap == null) {
+            return Color.BLUE;
+        }
+
+        List<Palette.Swatch> swatchesTemp = Palette.from(bitmap).generate().getSwatches();
+        List<Palette.Swatch> swatches = new ArrayList<>(swatchesTemp);
+        swatches.sort((swatch1, swatch2) -> swatch2.getPopulation() - swatch1.getPopulation());
+        return swatches.size() > 0 ? swatches.get(0).getRgb() : Color.BLUE;
     }
 
     public static int modifySaturation(int color, int saturation) {

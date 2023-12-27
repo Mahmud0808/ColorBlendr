@@ -5,35 +5,73 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
-import androidx.palette.graphics.Palette;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class WallpaperUtil {
 
+    private static final String TAG = WallpaperUtil.class.getSimpleName();
+
     public static @ColorInt int getWallpaperColor(Context context) {
-        Bitmap bitmap = getBitmapFromWallpaperManager(context, WallpaperManager.FLAG_SYSTEM);
-        if (bitmap == null) {
+        Future<Bitmap> wallpaperFuture = WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM, null);
+
+        try {
+            Bitmap wallpaperBitmap = wallpaperFuture.get();
+            if (wallpaperBitmap != null) {
+                return ColorUtil.getDominantColor(wallpaperBitmap);
+            } else {
+                return Color.BLUE;
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "Error getting wallpaper color", e);
             return Color.BLUE;
         }
-
-        List<Palette.Swatch> swatchesTemp = Palette.from(bitmap).generate().getSwatches();
-        List<Palette.Swatch> swatches = new ArrayList<>(swatchesTemp);
-        swatches.sort((swatch1, swatch2) -> swatch2.getPopulation() - swatch1.getPopulation());
-        return swatches.size() > 0 ? swatches.get(0).getRgb() : Color.BLUE;
     }
 
-    public static Bitmap getBitmapFromWallpaperManager(Context context, int which) {
-        ParcelFileDescriptor wallpaperFile;
-        try {
-            WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+    public static class WallpaperLoader {
+
+        private static final String TAG = WallpaperLoader.class.getSimpleName();
+        private static final ExecutorService executorService = Executors.newFixedThreadPool(2);
+        private static final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+        public interface WallpaperLoadListener {
+            void onWallpaperLoaded(Bitmap bitmap);
+        }
+
+        public static Future<Bitmap> loadWallpaperAsync(Context context, int which, WallpaperLoadListener listener) {
+            Callable<Bitmap> callable = () -> loadWallpaper(context, which);
+            Future<Bitmap> future = executorService.submit(callable);
+
+            if (listener != null) {
+                executorService.execute(() -> {
+                    try {
+                        Bitmap result = future.get();
+                        notifyOnMainThread(listener, result);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error getting wallpaper bitmap async", e);
+                    }
+                });
+            }
+
+            return future;
+        }
+
+        private static Bitmap loadWallpaper(Context context, int which) {
             try {
+                ParcelFileDescriptor wallpaperFile;
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+
                 if (which == WallpaperManager.FLAG_SYSTEM) {
                     wallpaperFile = wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_SYSTEM);
                 } else {
@@ -47,14 +85,19 @@ public class WallpaperUtil {
                 Bitmap decodeFileDescriptor = BitmapFactory.decodeFileDescriptor(wallpaperFile.getFileDescriptor());
                 wallpaperFile.close();
 
-                return new BitmapDrawable(context.getResources(), decodeFileDescriptor).getBitmap();
-            } catch (Exception e) {
-                Log.e("WallpaperUtil", "Error getting wallpaper bitmap", e);
+                return decodeFileDescriptor;
+            } catch (IOException e) {
+                Log.e(TAG, "Error getting wallpaper bitmap", e);
                 return null;
             }
-        } catch (Exception exception) {
-            Log.e("WallpaperUtil", "Error getting wallpaper instance", exception);
-            return null;
+        }
+
+        private static void notifyOnMainThread(WallpaperLoadListener listener, Bitmap bitmap) {
+            mainHandler.post(() -> {
+                if (listener != null) {
+                    listener.onWallpaperLoaded(bitmap);
+                }
+            });
         }
     }
 }
