@@ -2,13 +2,15 @@ package com.drdisagree.colorblendr.ui.fragments;
 
 import static com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
+import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.WORKING_METHOD;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,25 +47,35 @@ public class ToolsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentToolsBinding.inflate(inflater, container, false);
 
-        if (!Const.WORK_METHOD.XPOSED.equals(WORKING_METHOD)) {
+        if (Const.WORK_METHOD.XPOSED != Const.getWorkingMethod()) {
             binding.warn.setVisibility(View.GONE);
         }
 
+        // Accurate shades
         binding.accurateShades.setSwitchChecked(RPrefs.getBoolean(MONET_ACCURATE_SHADES, true));
         binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_ACCURATE_SHADES, isChecked);
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
+            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> ColorUtil.applyFabricatedColors(requireContext()), 800);
         });
 
+        // Pitch black theme
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
-        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) -> RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked));
+        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) -> {
+            RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked);
+            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> ColorUtil.applyFabricatedColors(requireContext()), 800);
+        });
 
+        // Custom primary color
         binding.customPrimaryColor.setSwitchChecked(RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false));
         binding.customPrimaryColor.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_SEED_COLOR_ENABLED, isChecked);
             sharedViewModel.setVisibilityState(MONET_SEED_COLOR_ENABLED, isChecked ? View.VISIBLE : View.GONE);
         });
 
+        // Override colors manually
         binding.overrideColorsManually.setSwitchChecked(RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false));
         binding.overrideColorsManually.setSwitchChangeListener((buttonView, isChecked) -> {
             String[][] colorNames = ColorUtil.getColorNames();

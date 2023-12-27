@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentStylingBinding;
 import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
@@ -88,7 +89,9 @@ public class StylingFragment extends Fragment {
         // Primary color
         binding.seedColorPicker.setPreviewColor(RPrefs.getInt(
                 MONET_SEED_COLOR,
-                WallpaperUtil.getWallpaperColor(requireContext())
+                Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED ?
+                        getPrimaryColor() :
+                        WallpaperUtil.getWallpaperColor(requireContext())
         ));
         binding.seedColorPicker.setOnClickListener(v -> new ColorPickerDialog()
                 .withCornerRadius(10)
@@ -126,6 +129,9 @@ public class StylingFragment extends Fragment {
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
             new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(modifiedColors), 800);
         });
+        if (Const.WORK_METHOD.XPOSED == Const.getWorkingMethod()) {
+            binding.monetStyles.setVisibility(View.GONE);
+        }
 
         // Monet primary accent saturation
         binding.accentSaturation.setSliderValue(RPrefs.getInt(MONET_ACCENT_SATURATION, 100));
@@ -438,18 +444,24 @@ public class StylingFragment extends Fragment {
 
     private ArrayList<ArrayList<Integer>> generateModifiedColors() {
         try {
-            return ColorUtil.generateModifiedColors(
-                    requireContext(),
-                    ColorSchemeUtil.stringToEnum(
+            return Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED ?
+                    MiscUtil.convertIntArrayToList(
+                            ColorUtil.getSystemColors(
+                                    requireContext()
+                            )
+                    ) :
+                    ColorUtil.generateModifiedColors(
                             requireContext(),
-                            RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))
-                    ),
-                    monetAccentSaturation[0],
-                    monetBackgroundSaturation[0],
-                    monetBackgroundLightness[0],
-                    RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
-                    RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
-            );
+                            ColorSchemeUtil.stringToEnum(
+                                    requireContext(),
+                                    RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))
+                            ),
+                            monetAccentSaturation[0],
+                            monetBackgroundSaturation[0],
+                            monetBackgroundLightness[0],
+                            RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
+                            RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
+                    );
         } catch (Exception e) {
             Log.e(TAG, "Error generating modified colors", e);
             return null;

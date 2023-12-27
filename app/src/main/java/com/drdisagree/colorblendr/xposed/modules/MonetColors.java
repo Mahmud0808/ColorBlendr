@@ -96,12 +96,16 @@ public class MonetColors extends ModPack implements IXposedHookLoadPackage {
             protected void beforeHookedMethod(MethodHookParam param) {
                 ThemeOverlayControllerParam = param;
 
-                reevaluateSystemTheme = findMethodExact(
-                        param.thisObject.getClass().getSuperclass(),
-                        "reevaluateSystemTheme",
-                        boolean.class
-                );
-                reevaluateSystemTheme.setAccessible(true);
+                try {
+                    reevaluateSystemTheme = findMethodExact(
+                            param.thisObject.getClass().getSuperclass(),
+                            "reevaluateSystemTheme",
+                            boolean.class
+                    );
+                    reevaluateSystemTheme.setAccessible(true);
+                } catch (Throwable throwable) {
+                    log(TAG + throwable);
+                }
             }
         });
 

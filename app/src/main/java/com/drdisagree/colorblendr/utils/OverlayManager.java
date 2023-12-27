@@ -6,6 +6,7 @@ import static com.drdisagree.colorblendr.common.Const.FRAMEWORK_PACKAGE;
 import android.os.RemoteException;
 
 import com.drdisagree.colorblendr.ColorBlendr;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.service.IRootService;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
@@ -19,6 +20,8 @@ public class OverlayManager {
     private static final String[][] colorNames = ColorUtil.getColorNames();
 
     public static void enableOverlay(String packageName) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return;
+
         try {
             mRootService.enableOverlay(Collections.singletonList(packageName));
         } catch (RemoteException e) {
@@ -27,6 +30,8 @@ public class OverlayManager {
     }
 
     public static void disableOverlay(String packageName) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return;
+
         try {
             mRootService.disableOverlay(Collections.singletonList(packageName));
         } catch (RemoteException e) {
@@ -35,6 +40,8 @@ public class OverlayManager {
     }
 
     public static boolean isOverlayInstalled(String packageName) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return false;
+
         try {
             return mRootService.isOverlayInstalled(packageName);
         } catch (RemoteException e) {
@@ -44,6 +51,8 @@ public class OverlayManager {
     }
 
     public static boolean isOverlayEnabled(String packageName) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return false;
+
         try {
             return mRootService.isOverlayEnabled(packageName);
         } catch (RemoteException e) {
@@ -53,6 +62,8 @@ public class OverlayManager {
     }
 
     public static void uninstallOverlayUpdates(String packageName) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return;
+
         try {
             mRootService.uninstallOverlayUpdates(packageName);
         } catch (RemoteException e) {
@@ -61,6 +72,8 @@ public class OverlayManager {
     }
 
     public static void registerFabricatedOverlay(FabricatedOverlayResource fabricatedOverlay) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return;
+
         try {
             mRootService.registerFabricatedOverlay(fabricatedOverlay);
             mRootService.enableOverlayWithIdentifier(Collections.singletonList(fabricatedOverlay.overlayName));
@@ -70,6 +83,8 @@ public class OverlayManager {
     }
 
     public static void unregisterFabricatedOverlay(String packageName) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) return;
+
         try {
             mRootService.unregisterFabricatedOverlay(packageName);
         } catch (RemoteException e) {
@@ -78,7 +93,7 @@ public class OverlayManager {
     }
 
     public static void applyFabricatedColors(ArrayList<ArrayList<Integer>> palette) {
-        if (palette == null) {
+        if (palette == null || Const.getWorkingMethod() == Const.WORK_METHOD.XPOSED) {
             return;
         }
 
@@ -93,6 +108,6 @@ public class OverlayManager {
             }
         }
 
-        OverlayManager.registerFabricatedOverlay(fabricatedOverlay);
+        registerFabricatedOverlay(fabricatedOverlay);
     }
 }
