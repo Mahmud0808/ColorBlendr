@@ -39,6 +39,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+        Const.WORKING_METHOD = Const.getWorkingMethod();
 
         binding.header.logo.setText(getString(R.string.tab_app_name, getString(R.string.app_name)));
         binding.header.appbarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
@@ -88,7 +89,7 @@ public class HomeFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (AppUtil.permissionsGranted(requireContext())) {
-                    if (!Const.isBackgroundServiceRunning && Const.WORKING_METHOD != Const.WORK_METHOD.XPOSED) {
+                    if (!Const.isBackgroundServiceRunning && Const.getWorkingMethod() != Const.WORK_METHOD.XPOSED) {
                         requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                     }
                 } else {

@@ -13,6 +13,7 @@ public class XPrefs {
 
     private static final SharedPreferences.OnSharedPreferenceChangeListener listener = (sharedPreferences, key) -> loadEverything(key);
     public static SharedPreferences Xprefs;
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private static String packageName;
 
     public static void init(Context context) {
@@ -22,8 +23,9 @@ public class XPrefs {
     }
 
     public static void loadEverything(String... key) {
-        if (key.length > 0 && (key[0] == null || Const.PREF_UPDATE_EXCLUSIONS.stream().anyMatch(exclusion -> key[0].startsWith(exclusion))))
+        if (key.length > 0 && (key[0] == null || Const.PREF_UPDATE_EXCLUSIONS.stream().anyMatch(exclusion -> key[0].startsWith(exclusion)))) {
             return;
+        }
 
         for (ModPack thisMod : HookEntry.runningMods) {
             thisMod.updatePrefs(key);

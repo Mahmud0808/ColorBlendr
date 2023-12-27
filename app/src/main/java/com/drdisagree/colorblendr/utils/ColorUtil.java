@@ -1,6 +1,12 @@
 package com.drdisagree.colorblendr.utils;
 
+import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
+import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
+import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
+import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
+import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
+import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,6 +18,7 @@ import androidx.annotation.FloatRange;
 import androidx.core.graphics.ColorUtils;
 import androidx.palette.graphics.Palette;
 
+import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.cam.Cam;
 import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
@@ -22,6 +29,23 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorUtil {
+
+    public static void applyFabricatedColors(Context context) {
+        OverlayManager.applyFabricatedColors(
+                ColorUtil.generateModifiedColors(
+                        context,
+                        ColorSchemeUtil.stringToEnum(
+                                context,
+                                RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
+                        ),
+                        RPrefs.getInt(MONET_ACCENT_SATURATION, 100),
+                        RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100),
+                        RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                        RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
+                        RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
+                )
+        );
+    }
 
     public static ArrayList<ArrayList<Integer>> generateModifiedColors(
             Context context,
