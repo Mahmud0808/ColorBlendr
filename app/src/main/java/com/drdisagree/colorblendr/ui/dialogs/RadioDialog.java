@@ -10,108 +10,106 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.drdisagree.colorblendr.R;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-public class RadioDialog extends AppCompatActivity {
+public class RadioDialog extends Dialog {
 
-    Context context;
-    Dialog dialog;
-    int selectedIndex, dialogId;
-    private RadioDialogListener listener;
+    private final Context context;
+    private int selectedIndex;
+    private final int dialogId;
+    private WeakReference<RadioDialogListener> listenerReference;
 
     public RadioDialog(Context context, int dialogId, int selectedIndex) {
+        super(context);
         this.context = context;
         this.dialogId = dialogId;
         this.selectedIndex = selectedIndex;
+
+        initializeDialog();
+    }
+
+    private void initializeDialog() {
+        setContentView(R.layout.view_radio_dialog);
+        Objects.requireNonNull(getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        setCancelable(true);
+        setCanceledOnTouchOutside(true);
     }
 
     public void setRadioDialogListener(RadioDialogListener listener) {
-        this.listener = listener;
-    }
-
-    public void show(int title, int items, TextView output) {
-        show(title, items, output, false);
+        this.listenerReference = new WeakReference<>(listener);
     }
 
     public void show(int title, int items, TextView output, boolean showSelectedPrefix) {
-        if (dialog != null) dialog.dismiss();
+        if (context instanceof android.app.Activity && !((android.app.Activity) context).isFinishing()) {
+            if (listenerReference != null) {
+                RadioDialogListener listener = listenerReference.get();
+                if (listener != null) {
+                    if (isShowing()) {
+                        dismiss();
+                    }
 
-        String[] options = context.getResources().getStringArray(items);
+                    String[] options = context.getResources().getStringArray(items);
 
-        dialog = new Dialog(context);
-        dialog.setContentView(R.layout.view_radio_dialog);
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(true);
-        dialog.setOnCancelListener(null);
-        dialog.setCanceledOnTouchOutside(true);
+                    setContentView(R.layout.view_radio_dialog);
 
-        TextView text = dialog.findViewById(R.id.title);
-        text.setText(context.getResources().getText(title));
+                    TextView text = findViewById(R.id.title);
+                    text.setText(context.getResources().getText(title));
 
-        RadioGroup radioGroup = dialog.findViewById(R.id.radio_group);
+                    RadioGroup radioGroup = findViewById(R.id.radio_group);
 
-        for (int i = 0; i < options.length; i++) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.view_radio_button, radioGroup, false);
+                    for (int i = 0; i < options.length; i++) {
+                        LayoutInflater inflater = LayoutInflater.from(context);
+                        RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.view_radio_button, radioGroup, false);
 
-            radioButton.setText(options[i]);
-            radioButton.setId(i);
-            radioGroup.addView(radioButton);
-        }
+                        radioButton.setText(options[i]);
+                        radioButton.setId(i);
+                        radioGroup.addView(radioButton);
+                    }
 
-        ((RadioButton) radioGroup.getChildAt(selectedIndex)).setChecked(true);
+                    ((RadioButton) radioGroup.getChildAt(selectedIndex)).setChecked(true);
 
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            selectedIndex = checkedId;
-            dialog.hide();
-            output.setText(
-                    showSelectedPrefix ?
-                            context.getString(
-                                    R.string.opt_selected1,
-                                    ((RadioButton) radioGroup.getChildAt(checkedId)).getText()
-                            ) :
-                            ((RadioButton) radioGroup.getChildAt(checkedId)).getText()
-            );
+                    radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                        selectedIndex = checkedId;
+                        dismiss();
+                        output.setText(
+                                showSelectedPrefix ?
+                                        context.getString(
+                                                R.string.opt_selected1,
+                                                ((RadioButton) radioGroup.getChildAt(checkedId)).getText()
+                                        ) :
+                                        ((RadioButton) radioGroup.getChildAt(checkedId)).getText()
+                        );
 
-            if (listener != null) {
-                listener.onItemSelected(dialogId, selectedIndex);
+                        listener.onItemSelected(dialogId, selectedIndex);
+                    });
+
+                    WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                    layoutParams.copyFrom(Objects.requireNonNull(getWindow()).getAttributes());
+                    layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                    getWindow().setAttributes(layoutParams);
+
+                    show();
+                }
             }
-        });
-
-        dialog.create();
-        dialog.show();
-
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-        layoutParams.copyFrom(dialog.getWindow().getAttributes());
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        dialog.getWindow().setAttributes(layoutParams);
+        }
     }
 
     public void hide() {
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
+        if (isShowing()) {
+            dismiss();
         }
     }
 
     public void dismiss() {
-        if (dialog != null) {
-            dialog.dismiss();
-        }
+        super.dismiss();
     }
 
     public int getSelectedIndex() {
         return selectedIndex;
-    }
-
-    @Override
-    public void onDestroy() {
-        dismiss();
-        super.onDestroy();
     }
 
     public interface RadioDialogListener {
