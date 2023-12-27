@@ -28,4 +28,10 @@
     <style name="SnackBarStyle.Button" parent="Widget.Material3.Button.TextButton.Snackbar">
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
+
+    <style name="Base.Theme.ColorBlendr.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_branding_image</item>
+    </style>
 </resources>

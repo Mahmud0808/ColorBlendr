@@ -8,4 +8,5 @@
     <color name="colorPickerDialog_green">#388E3C</color>
     <color name="colorPickerDialog_blue">#1976D2</color>
     <color name="colorPickerDialog_neutral">#000000</color>
+    <color name="color_branding_img">@color/material_dynamic_primary50</color>
 </resources>
