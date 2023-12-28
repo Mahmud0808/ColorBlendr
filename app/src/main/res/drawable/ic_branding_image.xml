@@ -9,8 +9,8 @@
     </item>
     <item android:gravity="center">
         <vector xmlns:tools="http://schemas.android.com/tools"
-            android:width="200dp"
-            android:height="28.71dp"
+            android:width="140dp"
+            android:height="20dp"
             android:viewportWidth="120.55"
             android:viewportHeight="17.26">
             <path
