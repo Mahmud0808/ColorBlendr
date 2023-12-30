@@ -1,7 +1,5 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
-import static com.drdisagree.colorblendr.common.Const.TAB_SELECTED_INDEX;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,82 +12,56 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding;
 import com.drdisagree.colorblendr.service.BackgroundService;
-import com.drdisagree.colorblendr.ui.adapters.FragmentAdapter;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private static Fragment currentFragment;
+    private static FragmentManager fragmentManager;
+
+    public enum TAB_SELECTION {
+        FROM_LEFT_TO_RIGHT,
+        FROM_RIGHT_TO_LEFT,
+        NONE
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-        Const.WORKING_METHOD = Const.getWorkingMethod();
+        fragmentManager = getChildFragmentManager();
 
-        binding.header.logo.setText(getString(R.string.tab_app_name, getString(R.string.app_name)));
-        binding.header.appbarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            int totalScrollRange = appBarLayout1.getTotalScrollRange();
-            float alpha = 1.0f - Math.abs((float) verticalOffset / totalScrollRange * 2f);
-            binding.header.logo.setAlpha(Math.max(0.0f, Math.min(1.0f, alpha)));
-        });
+        if (savedInstanceState == null) {
+            replaceFragment(new ColorsFragment());
+        }
 
-        List<Fragment> fragments = new ArrayList<>();
-        fragments.add(new AboutFragment());
-        fragments.add(new StylingFragment());
-        fragments.add(new ToolsFragment());
-        binding.viewPager.setAdapter(new FragmentAdapter(requireActivity(), fragments));
-        binding.viewPager.setCurrentItem(RPrefs.getInt(TAB_SELECTED_INDEX, 1), false);
+        return binding.getRoot();
+    }
 
-        new TabLayoutMediator(
-                binding.header.tabLayout,
-                binding.viewPager,
-                (tab, position) -> {
-                    if (position == 0) {
-                        tab.setText(R.string.tab_about);
-                    } else if (position == 1) {
-                        tab.setText(R.string.tab_styling);
-                    } else if (position == 2) {
-                        tab.setText(R.string.tab_tools);
-                    }
-                }
-        ).attach();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        binding.header.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                RPrefs.putInt(TAB_SELECTED_INDEX, tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                RPrefs.putInt(TAB_SELECTED_INDEX, tab.getPosition());
-            }
-        });
+        setupBottomNavigationView();
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (AppUtil.permissionsGranted(requireContext())) {
-                    if (!Const.isBackgroundServiceRunning && Const.getWorkingMethod() != Const.WORK_METHOD.XPOSED) {
+                    if (!Const.isBackgroundServiceRunning) {
                         requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                     }
                 } else {
@@ -100,18 +72,105 @@ public class HomeFragment extends Fragment {
         }, 2000);
 
         registerOnBackPressedCallback();
+    }
 
-        return binding.getRoot();
+    public static void replaceFragment(Fragment fragment) {
+        String tag = fragment.getClass().getSimpleName();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        TAB_SELECTION direction = getSlidingDirection(currentFragment, fragment);
+
+        if (currentFragment != null) {
+            if (direction == TAB_SELECTION.FROM_LEFT_TO_RIGHT) {
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left,
+                        R.anim.slide_in_left,
+                        R.anim.slide_out_right
+                );
+            } else if (direction == TAB_SELECTION.FROM_RIGHT_TO_LEFT) {
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.slide_in_left,
+                        R.anim.slide_out_right,
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+            } else {
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.fade_in,
+                        R.anim.fade_out,
+                        R.anim.fade_in,
+                        R.anim.fade_out
+                );
+            }
+        }
+
+        fragmentTransaction.replace(
+                R.id.fragmentContainer,
+                fragment
+        );
+
+        if (Objects.equals(tag, ColorsFragment.class.getSimpleName())) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else if (Objects.equals(tag, ThemeFragment.class.getSimpleName()) ||
+                Objects.equals(tag, StylesFragment.class.getSimpleName()) ||
+                Objects.equals(tag, SettingsFragment.class.getSimpleName())
+        ) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.addToBackStack(tag);
+        } else {
+            fragmentTransaction.addToBackStack(tag);
+        }
+
+        fragmentTransaction.commit();
+        currentFragment = fragment;
+    }
+
+    private void setupBottomNavigationView() {
+        getChildFragmentManager().addOnBackStackChangedListener(() -> {
+            String tag = getTopFragment();
+
+            if (Objects.equals(tag, ColorsFragment.class.getSimpleName())) {
+                binding.bottomNavigationView.getMenu().getItem(0).setChecked(true);
+            } else if (Objects.equals(tag, ThemeFragment.class.getSimpleName())) {
+                binding.bottomNavigationView.getMenu().getItem(1).setChecked(true);
+            } else if (Objects.equals(tag, StylesFragment.class.getSimpleName())) {
+                binding.bottomNavigationView.getMenu().getItem(2).setChecked(true);
+            } else if (Objects.equals(tag, SettingsFragment.class.getSimpleName())) {
+                binding.bottomNavigationView.getMenu().getItem(3).setChecked(true);
+            }
+        });
+
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_colors) {
+                replaceFragment(new ColorsFragment());
+            } else if (item.getItemId() == R.id.nav_themes) {
+                replaceFragment(new ThemeFragment());
+            } else if (item.getItemId() == R.id.nav_styles) {
+                replaceFragment(new StylesFragment());
+            } else if (item.getItemId() == R.id.nav_settings) {
+                replaceFragment(new SettingsFragment());
+            } else {
+                return false;
+            }
+
+            return true;
+        });
+
+        binding.bottomNavigationView.setOnItemReselectedListener(item -> {
+            // Do nothing
+        });
     }
 
     private void registerOnBackPressedCallback() {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (binding.viewPager.getCurrentItem() == 1) {
-                    requireActivity().finish();
+                FragmentManager fragmentManager = getChildFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack();
                 } else {
-                    binding.viewPager.setCurrentItem(1, true);
+                    requireActivity().finish();
                 }
             }
         });
@@ -164,5 +223,66 @@ public class HomeFragment extends Fragment {
             snackbar.dismiss();
         });
         snackbar.show();
+    }
+
+    private static TAB_SELECTION getSlidingDirection(Fragment currentFragment, Fragment newFragment) {
+        if (currentFragment == null) {
+            return TAB_SELECTION.NONE;
+        }
+
+        boolean reverseAnimation;
+
+        if (currentFragment instanceof ColorsFragment &&
+                (newFragment instanceof ThemeFragment || newFragment instanceof StylesFragment || newFragment instanceof SettingsFragment)
+        ) {
+            reverseAnimation = false;
+        } else if (currentFragment instanceof SettingsFragment &&
+                (newFragment instanceof ThemeFragment || newFragment instanceof StylesFragment || newFragment instanceof ColorsFragment)
+        ) {
+            reverseAnimation = true;
+        } else if (currentFragment instanceof ThemeFragment) {
+            if (newFragment instanceof ColorsFragment) {
+                reverseAnimation = true;
+            } else if (newFragment instanceof StylesFragment || newFragment instanceof SettingsFragment) {
+                reverseAnimation = false;
+            } else {
+                return TAB_SELECTION.NONE;
+            }
+        } else if (currentFragment instanceof StylesFragment) {
+            if (newFragment instanceof SettingsFragment) {
+                reverseAnimation = false;
+            } else if (newFragment instanceof ColorsFragment || newFragment instanceof ThemeFragment) {
+                reverseAnimation = true;
+            } else {
+                return TAB_SELECTION.NONE;
+            }
+        } else {
+            return TAB_SELECTION.NONE;
+        }
+
+        return reverseAnimation ? TAB_SELECTION.FROM_RIGHT_TO_LEFT : TAB_SELECTION.FROM_LEFT_TO_RIGHT;
+    }
+
+    private String getTopFragment() {
+        String[] fragment = {null};
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        int last = fragmentManager.getFragments().size() - 1;
+
+        if (last >= 0) {
+            Fragment topFragment = fragmentManager.getFragments().get(last);
+            currentFragment = topFragment;
+
+            if (topFragment instanceof ColorsFragment)
+                fragment[0] = ColorsFragment.class.getSimpleName();
+            else if (topFragment instanceof ThemeFragment)
+                fragment[0] = ThemeFragment.class.getSimpleName();
+            else if (topFragment instanceof StylesFragment)
+                fragment[0] = StylesFragment.class.getSimpleName();
+            else if (topFragment instanceof SettingsFragment)
+                fragment[0] = SettingsFragment.class.getSimpleName();
+        }
+
+        return fragment[0];
     }
 }

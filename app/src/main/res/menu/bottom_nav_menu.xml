@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_colors"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_colors"
+        android:title="@string/colors" />
+    <item
+        android:id="@+id/nav_themes"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_theme"
+        android:title="@string/theme" />
+    <item
+        android:id="@+id/nav_styles"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_styles"
+        android:title="@string/styles" />
+    <item
+        android:id="@+id/nav_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_settings"
+        android:title="@string/settings" />
+</menu>

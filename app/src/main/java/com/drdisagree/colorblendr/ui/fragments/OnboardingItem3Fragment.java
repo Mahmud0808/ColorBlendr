@@ -23,21 +23,12 @@ public class OnboardingItem3Fragment extends Fragment {
             Const.WORKING_METHOD = Const.WORK_METHOD.ROOT;
 
             binding.shizuku.setSelected(false);
-            binding.xposed.setSelected(false);
         });
 
         binding.shizuku.setOnClickListener(v -> {
             Const.WORKING_METHOD = Const.WORK_METHOD.SHIZUKU;
 
             binding.root.setSelected(false);
-            binding.xposed.setSelected(false);
-        });
-
-        binding.xposed.setOnClickListener(v -> {
-            Const.WORKING_METHOD = Const.WORK_METHOD.XPOSED;
-
-            binding.root.setSelected(false);
-            binding.shizuku.setSelected(false);
         });
 
         return binding.getRoot();

@@ -1,5 +1,5 @@
 <resources>
-    <style name="Base.Theme.ColorBlendr.Light" parent="Theme.Material3.DynamicColors.Light">
+    <style name="Base.Theme.ColorBlendr" parent="Theme.Material3.DayNight">
         <!-- Window layout. -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -21,8 +21,6 @@
         <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextView</item>
         <item name="snackbarButtonStyle">@style/SnackBarStyle.Button</item>
     </style>
-
-    <style name="Base.Theme.ColorBlendr" parent="Base.Theme.ColorBlendr.Light" />
 
     <style name="Base.Theme" parent="Base.Theme.ColorBlendr" />
 </resources>

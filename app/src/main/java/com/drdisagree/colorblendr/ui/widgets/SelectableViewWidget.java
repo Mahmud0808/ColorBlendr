@@ -49,7 +49,7 @@ public class SelectableViewWidget extends RelativeLayout {
 
     private void init(Context context, AttributeSet attrs) {
         this.context = context;
-        inflate(context, R.layout.view_onboarding_mode, this);
+        inflate(context, R.layout.view_widget_selectable, this);
 
         initializeId();
 
@@ -149,7 +149,13 @@ public class SelectableViewWidget extends RelativeLayout {
                 typedValue,
                 true
         );
-        return isSelected() ? 0x33808080 : typedValue.data;
+        TypedValue typedValue2 = new TypedValue();
+        context.getTheme().resolveAttribute(
+                com.google.android.material.R.attr.colorPrimaryContainer,
+                typedValue2,
+                true
+        );
+        return isSelected() ? typedValue2.data : typedValue.data;
     }
 
     private @ColorInt int getIconColor() {

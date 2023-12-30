@@ -1,51 +1,25 @@
 package com.drdisagree.colorblendr.utils;
 
-import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
-import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
-import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
-import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
-import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
+import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.core.graphics.ColorUtils;
-import androidx.palette.graphics.Palette;
 
-import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.cam.Cam;
-import com.drdisagree.colorblendr.utils.monet.ColorSchemeUtil;
-import com.drdisagree.colorblendr.xposed.modules.utils.ColorModifiers;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorUtil {
-
-    public static void applyFabricatedColors(Context context) {
-        OverlayManager.applyFabricatedColors(
-                ColorUtil.generateModifiedColors(
-                        context,
-                        ColorSchemeUtil.stringToEnum(
-                                context,
-                                RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
-                        ),
-                        RPrefs.getInt(MONET_ACCENT_SATURATION, 100),
-                        RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100),
-                        RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                        RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
-                        RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
-                )
-        );
-    }
 
     public static ArrayList<ArrayList<Integer>> generateModifiedColors(
             Context context,
@@ -56,11 +30,46 @@ public class ColorUtil {
             boolean pitchBlackTheme,
             boolean accurateShades
     ) {
+        return generateModifiedColors(
+                context,
+                style,
+                accentSaturation,
+                backgroundSaturation,
+                backgroundLightness,
+                pitchBlackTheme,
+                accurateShades,
+                true
+        );
+    }
+
+    public static ArrayList<ArrayList<Integer>> generateModifiedColors(
+            Context context,
+            ColorSchemeUtil.MONET style,
+            int accentSaturation,
+            int backgroundSaturation,
+            int backgroundLightness,
+            boolean pitchBlackTheme,
+            boolean accurateShades,
+            boolean modifyPitchBlack
+    ) {
+        String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
+        ArrayList<Integer> wallpaperColorList;
+
+        if (wallpaperColors != null) {
+            wallpaperColorList = Const.GSON.fromJson(
+                    wallpaperColors,
+                    new TypeToken<ArrayList<Integer>>() {
+                    }.getType()
+            );
+        } else {
+            wallpaperColorList = WallpaperUtil.getWallpaperColors(context);
+        }
+
         ArrayList<ArrayList<Integer>> palette = ColorSchemeUtil.generateColorPalette(
                 style,
                 RPrefs.getInt(
                         MONET_SEED_COLOR,
-                        WallpaperUtil.getWallpaperColor(context)
+                        wallpaperColorList.get(0)
                 )
         );
 
@@ -74,7 +83,8 @@ public class ColorUtil {
                     backgroundSaturation,
                     backgroundLightness,
                     pitchBlackTheme,
-                    accurateShades
+                    accurateShades,
+                    modifyPitchBlack
             );
             for (int j = 1; j < palette.get(i).size(); j++) {
                 palette.get(i).set(j, modifiedShades.get(j - 1));
@@ -88,17 +98,6 @@ public class ColorUtil {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true);
         return typedValue.data;
-    }
-
-    public static @ColorInt int getDominantColor(Bitmap bitmap) {
-        if (bitmap == null) {
-            return Color.BLUE;
-        }
-
-        List<Palette.Swatch> swatchesTemp = Palette.from(bitmap).generate().getSwatches();
-        List<Palette.Swatch> swatches = new ArrayList<>(swatchesTemp);
-        swatches.sort((swatch1, swatch2) -> swatch2.getPopulation() - swatch1.getPopulation());
-        return swatches.size() > 0 ? swatches.get(0).getRgb() : Color.BLUE;
     }
 
     public static int modifySaturation(int color, int saturation) {

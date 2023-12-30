@@ -26,7 +26,6 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 import com.topjohnwu.superuser.Shell;
 import com.topjohnwu.superuser.internal.Utils;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -186,13 +185,18 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
          */
         @Override
         public boolean isOverlayEnabled(String packageName) throws RemoteException {
-            OverlayInfo overlay = getOMS().getOverlayInfo(packageName, currentUserId);
+            OverlayInfo overlay = getOMS().getOverlayInfoByIdentifier(
+                    generateOverlayIdentifier(packageName),
+                    currentUserId
+            );
 
             try {
-                Field isEnabled = overlay.getClass().getDeclaredField("isEnabled");
-                isEnabled.setAccessible(true);
-                return isEnabled.getBoolean(overlay);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+                Method isEnabled = overlay.getClass().getDeclaredMethod("isEnabled");
+                return (boolean) isEnabled.invoke(overlay);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                return false;
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 e.printStackTrace();
                 return false;
             }

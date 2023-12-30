@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    tools:context=".ui.fragments.SettingsFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        tools:context=".ui.fragments.SettingsFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="16dp">
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/accurate_shades"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:isChecked="true"
+                app:summaryText="@string/accurate_shades_desc"
+                app:titleText="@string/accurate_shades_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/pitch_black_theme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summaryText="@string/pitch_black_theme_desc"
+                app:titleText="@string/pitch_black_theme_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/custom_primary_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summaryText="@string/custom_primary_color_desc"
+                app:titleText="@string/custom_primary_color_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/override_colors_manually"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summaryText="@string/override_colors_manually_desc"
+                app:titleText="@string/override_colors_manually_title" />
+
+            <include
+                android:id="@+id/backup_restore"
+                layout="@layout/view_backup_restore" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardMaxElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="?attr/textAppearanceTitleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center"
+                            android:text="@string/about_this_app_title"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="?attr/textAppearanceBodySmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center"
+                            android:layout_marginTop="2dp"
+                            android:alpha="0.8"
+                            android:text="@string/about_this_app_desc"
+                            android:textColor="?attr/colorOnSurface" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="@android:string/untitled"
+                        android:src="@drawable/ic_arrow_end"
+                        app:tint="?attr/colorOnSurface" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_toolbar" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

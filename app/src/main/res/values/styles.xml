@@ -34,4 +34,6 @@
         <item name="postSplashScreenTheme">@style/Base.Theme</item>
         <item name="android:windowSplashScreenBrandingImage">@drawable/ic_branding_image</item>
     </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Material3.TitleLarge" />
 </resources>

@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.service;
 
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
+import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
+import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +18,10 @@ import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootServiceProvider;
 import com.drdisagree.colorblendr.utils.AppUtil;
-import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.OverlayManager;
+import com.drdisagree.colorblendr.utils.WallpaperUtil;
+
+import java.util.ArrayList;
 
 public class BroadcastListener extends BroadcastReceiver {
 
@@ -43,7 +49,7 @@ public class BroadcastListener extends BroadcastReceiver {
                         public void run() {
                             if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= 5000) {
                                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> ColorUtil.applyFabricatedColors(context), 3000);
+                                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 3000);
                             }
                         }
                     });
@@ -52,12 +58,23 @@ public class BroadcastListener extends BroadcastReceiver {
             }
         }
 
+        if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) &&
+                AppUtil.permissionsGranted(context)
+        ) {
+            ArrayList<Integer> wallpaperColors = WallpaperUtil.getWallpaperColors(context);
+            RPrefs.putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors));
+
+            if (!RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+                RPrefs.putInt(MONET_SEED_COLOR, wallpaperColors.get(0));
+            }
+        }
+
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) ||
                 Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction())
         ) {
             if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= 5000) {
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> ColorUtil.applyFabricatedColors(context), 3000);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 3000);
             }
         }
     }

@@ -2,9 +2,6 @@
 <resources>
     <string name="app_moto">Express yourself with colors</string>
     <string name="app_description">Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</string>
-    <string name="tab_about">About</string>
-    <string name="tab_styling">Styling</string>
-    <string name="tab_tools">Tools</string>
     <string name="monet_neutral">Neutral</string>
     <string name="monet_monochrome">Monochrome</string>
     <string name="monet_tonalspot">Tonal Spot</string>

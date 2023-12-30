@@ -68,6 +68,12 @@
         <attr name="isSelected" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="StylePreviewWidget">
+        <attr name="titleText" />
+        <attr name="descriptionText" />
+        <attr name="isSelected" />
+    </declare-styleable>
+
     <declare-styleable name="ColorPickerTheme">
         <attr name="redColor" format="color" />
         <attr name="greenColor" format="color" />

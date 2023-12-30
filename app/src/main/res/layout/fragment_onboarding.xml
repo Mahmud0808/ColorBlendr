@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.fragments.OnboardingFragment">
 
     <androidx.viewpager2.widget.ViewPager2
@@ -25,7 +26,7 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="24dp"
         android:singleLine="true"
-        android:text="Back"
+        android:text="@string/back"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -38,7 +39,7 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="24dp"
         android:singleLine="true"
-        android:text="Continue"
+        android:text="@string/btn_continue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

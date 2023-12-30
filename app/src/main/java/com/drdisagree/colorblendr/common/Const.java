@@ -2,11 +2,12 @@ package com.drdisagree.colorblendr.common;
 
 import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.xposed.utils.BootLoopProtector;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Const {
@@ -31,9 +32,14 @@ public class Const {
     public static final String MANUAL_OVERRIDE_COLORS = "manualOverrideColors";
     public static final String MONET_LAST_UPDATED = "monetLastUpdated";
     public static final String FABRICATED_OVERLAY_SOURCE_PACKAGE = FRAMEWORK_PACKAGE;
-    public static final String FABRICATED_OVERLAY_NAME = BuildConfig.APPLICATION_ID + "_dynamic_theme";
+    public static final String FABRICATED_OVERLAY_NAME_SYSTEM = BuildConfig.APPLICATION_ID + "_dynamic_theme";
+    public static final String FABRICATED_OVERLAY_NAME_APPS = BuildConfig.APPLICATION_ID + ".%s_dynamic_theme";
+    public static final String WALLPAPER_COLOR_LIST = "wallpaperColorList";
+    public static final String FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState";
+    public static final String SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn";
 
     // Service preferences
+    public static final Gson GSON = new Gson();
     public static boolean isBackgroundServiceRunning = false;
     public static final String PREF_WORKING_METHOD = "workingMethod";
     public static WORK_METHOD WORKING_METHOD = WORK_METHOD.NULL;
@@ -49,8 +55,7 @@ public class Const {
     public enum WORK_METHOD {
         NULL,
         ROOT,
-        SHIZUKU,
-        XPOSED;
+        SHIZUKU;
 
         public static WORK_METHOD fromString(String str) {
             try {
@@ -69,8 +74,17 @@ public class Const {
             )
     );
 
-    // Xposed variables
-    public static final List<String> PREF_UPDATE_EXCLUSIONS = Arrays.asList(BootLoopProtector.LOAD_TIME_KEY, BootLoopProtector.PACKAGE_STRIKE_KEY);
-    public static final String ACTION_HOOK_CHECK_REQUEST = BuildConfig.APPLICATION_ID + ".ACTION_HOOK_CHECK_REQUEST";
-    public static final String ACTION_HOOK_CHECK_RESULT = BuildConfig.APPLICATION_ID + ".ACTION_HOOK_CHECK_RESULT";
+    public static void saveSelectedFabricatedApps(HashMap<String, Boolean> selectedApps) {
+        RPrefs.putString(FABRICATED_OVERLAY_FOR_APPS_STATE, Const.GSON.toJson(selectedApps));
+    }
+
+    public static HashMap<String, Boolean> getSelectedFabricatedApps() {
+        String selectedApps = RPrefs.getString(FABRICATED_OVERLAY_FOR_APPS_STATE, null);
+        if (selectedApps == null || selectedApps.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        return Const.GSON.fromJson(selectedApps, new TypeToken<HashMap<String, Boolean>>() {
+        }.getType());
+    }
 }

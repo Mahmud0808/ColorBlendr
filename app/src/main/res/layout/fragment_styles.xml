@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    tools:context=".ui.fragments.StylesFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="12dp">
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_neutral"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_neutral_desc"
+                app:titleText="@string/monet_neutral" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_monochrome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_monochrome_desc"
+                app:titleText="@string/monet_monochrome" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_tonalspot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_tonalspot_desc"
+                app:titleText="@string/monet_tonalspot" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_vibrant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_vibrant_desc"
+                app:titleText="@string/monet_vibrant" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_rainbow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_rainbow_desc"
+                app:titleText="@string/monet_rainbow" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_expressive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_expressive_desc"
+                app:titleText="@string/monet_expressive" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_fidelity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_fidelity_desc"
+                app:titleText="@string/monet_fidelity" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_content_desc"
+                app:titleText="@string/monet_content" />
+
+            <com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+                android:id="@+id/monet_fruitsalad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/monet_fruitsalad_desc"
+                app:titleText="@string/monet_fruitsalad" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_toolbar" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

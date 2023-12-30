@@ -1,256 +1,268 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+    android:clipChildren="false"
     tools:context=".ui.fragments.AboutFragment">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp">
+        android:fillViewport="true"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        tools:context=".ui.fragments.AboutFragment">
 
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="?attr/colorSurfaceContainer"
-            app:cardMaxElevation="0dp"
-            app:strokeWidth="0dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardMaxElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
-                    android:id="@+id/github"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="8dp">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="16dp"
-                        android:src="@mipmap/ic_launcher_round" />
+                    android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/github"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="start|center"
-                        android:orientation="vertical">
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="8dp">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceTitleSmall"
-                            android:layout_width="wrap_content"
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="16dp"
+                            android:src="@mipmap/ic_launcher_round" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/app_name"
-                            android:textColor="?attr/colorOnSurface" />
+                            android:gravity="start|center"
+                            android:orientation="vertical">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceBodySmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0.8"
-                            android:justificationMode="inter_word"
-                            android:text="@string/app_description"
-                            android:textColor="?attr/colorOnSurface" />
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceTitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/app_name"
+                                android:textColor="?attr/colorOnSurface" />
 
-                    </LinearLayout>
-                </LinearLayout>
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceBodySmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:alpha="0.8"
+                                android:justificationMode="inter_word"
+                                android:text="@string/app_description"
+                                android:textColor="?attr/colorOnSurface" />
 
-                <LinearLayout
-                    android:id="@+id/version"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="16dp">
-
-                    <LinearLayout
-                        android:layout_width="60dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:contentDescription="@android:string/untitled"
-                            android:src="@drawable/ic_android"
-                            app:tint="#3DDC84" />
-
+                        </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/version"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="start|center"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="16dp">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceTitleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/version"
-                            android:textColor="?attr/colorOnSurface" />
+                        <LinearLayout
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="16dp"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/version_codes"
-                            style="?attr/textAppearanceBodySmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0.8"
-                            android:textColor="?attr/colorOnSurface" />
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:contentDescription="@android:string/untitled"
+                                android:src="@drawable/ic_android"
+                                app:tint="#3DDC84" />
 
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="start|center"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceTitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/version"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/version_codes"
+                                style="?attr/textAppearanceBodySmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:alpha="0.8"
+                                android:textColor="?attr/colorOnSurface" />
+
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.textview.MaterialTextView
-            style="?attr/textAppearanceTitleMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="12dp"
-            android:text="@string/meet_the_developer"
-            android:textColor="?attr/colorOnSurface" />
+            <com.google.android.material.textview.MaterialTextView
+                style="?attr/textAppearanceTitleMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="12dp"
+                android:text="@string/meet_the_developer"
+                android:textColor="?attr/colorOnSurface" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="?attr/colorSurfaceContainer"
-            app:cardMaxElevation="0dp"
-            app:strokeWidth="0dp">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardMaxElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
-                    android:id="@+id/developer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="8dp">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/img_drdisagree" />
+                    android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/developer"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="start|center"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="8dp">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceTitleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dev_name"
-                            android:textColor="?attr/colorOnSurface" />
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="16dp"
+                            android:src="@drawable/img_drdisagree" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceBodySmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0.8"
-                            android:text="@string/dev_bio"
-                            android:textColor="?attr/colorOnSurface" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="start|center"
+                            android:orientation="vertical">
 
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceTitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/dev_name"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceBodySmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:alpha="0.8"
+                                android:text="@string/dev_bio"
+                                android:textColor="?attr/colorOnSurface" />
+
+                        </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/buymeacoffee"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="16dp">
-
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="16dp"
-                        android:minHeight="60dp">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/icon"
-                            android:src="@drawable/buymeacoffee_bg"
-                            app:tint="?attr/colorOnSurface" />
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/icon"
-                            android:src="@drawable/buymeacoffee_fg" />
-
-                    </FrameLayout>
 
                     <LinearLayout
+                        android:id="@+id/buymeacoffee"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="start|center"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="16dp">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceTitleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/buymeacoffee_title"
-                            android:textColor="?attr/colorOnSurface" />
+                        <FrameLayout
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="16dp"
+                            android:minHeight="60dp">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceBodySmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0.8"
-                            android:text="@string/buymeacoffee_desc"
-                            android:textColor="?attr/colorOnSurface" />
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/icon"
+                                android:src="@drawable/buymeacoffee_bg"
+                                app:tint="?attr/colorOnSurface" />
 
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/icon"
+                                android:src="@drawable/buymeacoffee_fg" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="start|center"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceTitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/buymeacoffee_title"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                style="?attr/textAppearanceBodySmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:alpha="0.8"
+                                android:text="@string/buymeacoffee_desc"
+                                android:textColor="?attr/colorOnSurface" />
+
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_toolbar" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
