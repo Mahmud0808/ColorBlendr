@@ -177,8 +177,8 @@ public class OverlayManager {
         }
 
         if (pitchBlackTheme) {
-            palette.get(3).set(11, Color.BLACK);
-            palette.get(4).set(11, Color.BLACK);
+            fabricatedOverlays.get(0).setColor(colorNames[3][11], Color.BLACK);
+            fabricatedOverlays.get(0).setColor(colorNames[4][11], Color.BLACK);
         }
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
