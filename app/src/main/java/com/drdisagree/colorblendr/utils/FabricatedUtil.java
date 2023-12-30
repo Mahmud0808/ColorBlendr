@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.utils;
 
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
+import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -69,6 +70,10 @@ public class FabricatedUtil {
             overlay.setColor(resourceName, colorValue);
             overlay.setColor("g" + resourceName, colorValue);
         });
+
+        if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
+            addUnpaintedTextColors(overlay);
+        }
     }
 
     public static void getAndSaveSelectedFabricatedApps(Context context) {
@@ -103,5 +108,35 @@ public class FabricatedUtil {
         }
 
         return colorValue;
+    }
+
+    public static void addUnpaintedTextColors(FabricatedOverlayResource overlay) {
+        String[] prefixes = new String[]{
+                "m3_sys_color_",
+                "m3_sys_color_dynamic_"
+        };
+        String[] variants = new String[]{
+                "dark_",
+                "light_",
+        };
+        String[] suffixes = new String[]{
+                "on_surface",
+                "on_surface_variant",
+                "on_background"
+        };
+
+        for (String prefix : prefixes) {
+            for (String variant : variants) {
+                for (String suffix : suffixes) {
+                    String resourceName = prefix + variant + suffix;
+                    overlay.setColor(
+                            resourceName,
+                            variant.contains("dark") ?
+                                    Color.WHITE :
+                                    Color.BLACK
+                    );
+                }
+            }
+        }
     }
 }
