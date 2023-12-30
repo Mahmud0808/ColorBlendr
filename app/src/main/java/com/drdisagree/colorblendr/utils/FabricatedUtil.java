@@ -15,7 +15,6 @@ import androidx.core.util.Pair;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
-import com.drdisagree.colorblendr.utils.monet.scheme.DynamicScheme;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,19 +25,45 @@ public class FabricatedUtil {
     public static void createDynamicOverlay(
             FabricatedOverlayResource overlay,
             ArrayList<ArrayList<Integer>> paletteLight,
-            DynamicScheme mDynamicSchemeDark,
-            DynamicScheme mDynamicSchemeLight
+            ArrayList<ArrayList<Integer>> paletteDark
     ) {
-        assignDynamicPaletteToOverlay(overlay, true /* isDark */, mDynamicSchemeDark);
-        assignDynamicPaletteToOverlay(overlay, false /* isDark */, mDynamicSchemeLight);
+        assignDynamicPaletteToOverlay(overlay, true /* isDark */, paletteDark);
+        assignDynamicPaletteToOverlay(overlay, false /* isDark */, paletteLight);
         assignFixedColorsToOverlay(overlay, paletteLight);
     }
 
-    private static void assignDynamicPaletteToOverlay(FabricatedOverlayResource overlay, boolean isDark, DynamicScheme mDynamicScheme) {
+    @SuppressWarnings("unchecked")
+    private static void assignDynamicPaletteToOverlay(FabricatedOverlayResource overlay, boolean isDark, ArrayList<ArrayList<Integer>> palette) {
         String suffix = isDark ? "dark" : "light";
+        boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
         DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach(pair -> {
             String resourceName = "system_" + pair.first + "_" + suffix;
-            int colorValue = pair.second.getArgb(mDynamicScheme);
+            int colorValue;
+
+            Pair<Object, Object> valPair = (Pair<Object, Object>) pair.second;
+            if (valPair.first instanceof String) {
+                colorValue = Color.parseColor((String) (isDark ?
+                        valPair.second :
+                        valPair.first
+                ));
+            } else {
+                Pair<Integer, Integer> colorIndexPair = (Pair<Integer, Integer>) valPair.second;
+                colorValue = palette.get((Integer) valPair.first).get(
+                        isDark ?
+                                colorIndexPair.second :
+                                colorIndexPair.first
+                );
+
+                colorValue = replaceColorForPitchBlackTheme(
+                        pitchBlackTheme,
+                        resourceName,
+                        colorValue,
+                        isDark ?
+                                colorIndexPair.second :
+                                colorIndexPair.first
+                );
+            }
+
             overlay.setColor(resourceName, colorValue);
         });
     }
@@ -98,11 +123,14 @@ public class FabricatedUtil {
     public static @ColorInt int replaceColorForPitchBlackTheme(boolean pitchBlackTheme, String resourceName, int colorValue, int colorIndex) {
         if (pitchBlackTheme) {
             return switch (resourceName) {
-                case "m3_ref_palette_dynamic_neutral_variant6" -> Color.BLACK;
+                case "m3_ref_palette_dynamic_neutral_variant6", "system_background_dark" ->
+                        Color.BLACK;
                 case "m3_ref_palette_dynamic_neutral_variant12" ->
                         ColorUtil.modifyLightness(colorValue, 40, colorIndex);
                 case "m3_ref_palette_dynamic_neutral_variant17" ->
                         ColorUtil.modifyLightness(colorValue, 60, colorIndex);
+                case "system_surface_container_dark", "system_surface_dark" ->
+                        ColorUtil.modifyLightness(colorValue, 20, colorIndex);
                 default -> colorValue;
             };
         }

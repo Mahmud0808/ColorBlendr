@@ -58,6 +58,30 @@ public class ColorUtil {
             boolean accurateShades,
             boolean modifyPitchBlack
     ) {
+        return generateModifiedColors(
+                context,
+                style,
+                accentSaturation,
+                backgroundSaturation,
+                backgroundLightness,
+                pitchBlackTheme,
+                accurateShades,
+                modifyPitchBlack,
+                SystemUtil.isDarkMode()
+        );
+    }
+
+    public static ArrayList<ArrayList<Integer>> generateModifiedColors(
+            Context context,
+            ColorSchemeUtil.MONET style,
+            int accentSaturation,
+            int backgroundSaturation,
+            int backgroundLightness,
+            boolean pitchBlackTheme,
+            boolean accurateShades,
+            boolean modifyPitchBlack,
+            boolean isDark
+    ) {
         String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
         ArrayList<Integer> wallpaperColorList;
 
@@ -76,7 +100,8 @@ public class ColorUtil {
                 RPrefs.getInt(
                         MONET_SEED_COLOR,
                         wallpaperColorList.get(0)
-                )
+                ),
+                isDark
         );
 
         // Modify colors
