@@ -22,7 +22,6 @@ import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.service.IRootService;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
-import com.drdisagree.colorblendr.utils.monet.scheme.DynamicScheme;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,20 +93,42 @@ public class OverlayManager {
     }
 
     public static void applyFabricatedColors(Context context) {
-        boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
-
-        ArrayList<ArrayList<Integer>> palette = ColorUtil.generateModifiedColors(
+        ColorSchemeUtil.MONET style = ColorSchemeUtil.stringToEnumMonetStyle(
                 context,
-                ColorSchemeUtil.stringToEnumMonetStyle(
-                        context,
-                        RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
-                ),
-                RPrefs.getInt(MONET_ACCENT_SATURATION, 100),
-                RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100),
-                RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
+        );
+        int seedColor = RPrefs.getInt(
+                MONET_SEED_COLOR,
+                WallpaperUtil.getWallpaperColor(context)
+        );
+        int monetAccentSaturation = RPrefs.getInt(MONET_ACCENT_SATURATION, 100);
+        int monetBackgroundSaturation = RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100);
+        int monetBackgroundLightness = RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100);
+        boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
+        boolean accurateShades = RPrefs.getBoolean(MONET_ACCURATE_SHADES, true);
+
+        ArrayList<ArrayList<Integer>> paletteLight = ColorUtil.generateModifiedColors(
+                context,
+                style,
+                monetAccentSaturation,
+                monetBackgroundSaturation,
+                monetBackgroundLightness,
                 pitchBlackTheme,
-                RPrefs.getBoolean(MONET_ACCURATE_SHADES, true),
+                accurateShades,
+                false,
                 false
+        );
+
+        ArrayList<ArrayList<Integer>> paletteDark = ColorUtil.generateModifiedColors(
+                context,
+                style,
+                monetAccentSaturation,
+                monetBackgroundSaturation,
+                monetBackgroundLightness,
+                pitchBlackTheme,
+                accurateShades,
+                false,
+                true
         );
 
         ArrayList<FabricatedOverlayResource> fabricatedOverlays = new ArrayList<>();
@@ -118,48 +139,14 @@ public class OverlayManager {
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 13; j++) {
-                fabricatedOverlays.get(0).setColor(colorNames[i][j], palette.get(i).get(j));
+                fabricatedOverlays.get(0).setColor(colorNames[i][j], paletteDark.get(i).get(j));
             }
         }
 
-        ColorSchemeUtil.MONET style = ColorSchemeUtil.stringToEnumMonetStyle(
-                context,
-                RPrefs.getString(
-                        MONET_STYLE,
-                        context.getString(R.string.monet_tonalspot)
-                )
-        );
-        int seedColor = RPrefs.getInt(
-                MONET_SEED_COLOR,
-                WallpaperUtil.getWallpaperColor(context)
-        );
-
-        ArrayList<ArrayList<Integer>> mColorSchemeLight = ColorSchemeUtil.generateColorPalette(
-                style,
-                seedColor,
-                false,
-                5
-        );
-
-        DynamicScheme mDynamicSchemeDark = ColorSchemeUtil.getDynamicScheme(
-                style,
-                seedColor,
-                true,
-                5
-        );
-
-        DynamicScheme mDynamicSchemeLight = ColorSchemeUtil.getDynamicScheme(
-                style,
-                seedColor,
-                false,
-                5
-        );
-
         FabricatedUtil.createDynamicOverlay(
                 fabricatedOverlays.get(0),
-                mColorSchemeLight,
-                mDynamicSchemeDark,
-                mDynamicSchemeLight
+                paletteLight,
+                paletteDark
         );
 
         HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
@@ -169,7 +156,7 @@ public class OverlayManager {
                 FabricatedOverlayResource fabricatedOverlayPerApp = getFabricatedColorsPerApp(
                         context,
                         packageName,
-                        palette
+                        paletteDark
                 );
 
                 fabricatedOverlays.add(fabricatedOverlayPerApp);

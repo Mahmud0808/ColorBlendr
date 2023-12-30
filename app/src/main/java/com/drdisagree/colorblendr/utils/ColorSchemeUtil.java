@@ -40,6 +40,10 @@ public class ColorSchemeUtil {
         return generateColorPalette(style, color, SystemUtil.isDarkMode(), 5);
     }
 
+    public static ArrayList<ArrayList<Integer>> generateColorPalette(MONET style, @ColorInt int color, boolean isDark) {
+        return generateColorPalette(style, color, isDark, 5);
+    }
+
     public static ArrayList<ArrayList<Integer>> generateColorPalette(MONET style, @ColorInt int color, boolean isDark, int contrast) {
         ArrayList<ArrayList<Integer>> palette = new ArrayList<>();
 
