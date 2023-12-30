@@ -6,6 +6,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.app.Activity;
@@ -100,6 +101,19 @@ public class SettingsFragment extends Fragment {
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
                 new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 300);
             }
+        });
+
+        // Tint text color
+        binding.tintTextColor.setSwitchChecked(RPrefs.getBoolean(TINT_TEXT_COLOR, true));
+        binding.tintTextColor.setSwitchChangeListener((buttonView, isChecked) -> {
+            RPrefs.putBoolean(TINT_TEXT_COLOR, isChecked);
+            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                try {
+                    OverlayManager.applyFabricatedColors(requireContext());
+                } catch (Exception ignored) {
+                }
+            }, 300);
         });
 
         // Override colors manually

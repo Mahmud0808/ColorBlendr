@@ -44,6 +44,14 @@
                 app:titleText="@string/custom_primary_color_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/tint_text_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:isChecked="true"
+                app:summaryText="Maintain a subtle tint for text"
+                app:titleText="Tint text color" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/override_colors_manually"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -10,6 +10,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATIO
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
+import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -178,6 +179,13 @@ public class OverlayManager {
         if (pitchBlackTheme) {
             palette.get(3).set(11, Color.BLACK);
             palette.get(4).set(11, Color.BLACK);
+        }
+
+        if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
+            fabricatedOverlays.get(0).setColor("text_color_primary_device_default_dark", Color.WHITE);
+            fabricatedOverlays.get(0).setColor("text_color_secondary_device_default_dark", 0xB3FFFFFF);
+            fabricatedOverlays.get(0).setColor("text_color_primary_device_default_light", Color.BLACK);
+            fabricatedOverlays.get(0).setColor("text_color_secondary_device_default_light", 0xB3000000);
         }
 
         for (FabricatedOverlayResource fabricatedOverlay : fabricatedOverlays) {

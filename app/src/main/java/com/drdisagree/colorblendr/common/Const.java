@@ -37,6 +37,7 @@ public class Const {
     public static final String WALLPAPER_COLOR_LIST = "wallpaperColorList";
     public static final String FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState";
     public static final String SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn";
+    public static final String TINT_TEXT_COLOR = "tintTextColor";
 
     // Service preferences
     public static final Gson GSON = new Gson();
