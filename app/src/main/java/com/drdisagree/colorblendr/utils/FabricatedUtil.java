@@ -72,7 +72,7 @@ public class FabricatedUtil {
         });
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
-            addUnpaintedTextColors(overlay);
+            addUnpaintedTextColors(overlay.targetPackage, overlay);
         }
     }
 
@@ -110,7 +110,7 @@ public class FabricatedUtil {
         return colorValue;
     }
 
-    public static void addUnpaintedTextColors(FabricatedOverlayResource overlay) {
+    public static void addUnpaintedTextColors(String packageName, FabricatedOverlayResource overlay) {
         String[] prefixes = new String[]{
                 "m3_sys_color_",
                 "m3_sys_color_dynamic_"
@@ -137,6 +137,17 @@ public class FabricatedUtil {
                     );
                 }
             }
+        }
+
+        if (packageName.equals("com.google.android.gm")) {
+            overlay.setColor("m3_ref_palette_dynamic_neutral90", Color.WHITE);
+            overlay.setColor("gm3_ref_palette_dynamic_neutral90", Color.WHITE);
+            overlay.setColor("m3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF);
+            overlay.setColor("gm3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF);
+            overlay.setColor("m3_ref_palette_dynamic_neutral10", Color.BLACK);
+            overlay.setColor("gm3_ref_palette_dynamic_neutral10", Color.BLACK);
+            overlay.setColor("m3_ref_palette_dynamic_neutral_variant30", 0xB3000000);
+            overlay.setColor("gm3_ref_palette_dynamic_neutral_variant30", 0xB3000000);
         }
     }
 }
