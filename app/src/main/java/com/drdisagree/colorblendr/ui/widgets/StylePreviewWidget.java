@@ -14,7 +14,6 @@ import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -108,6 +107,8 @@ public class StylePreviewWidget extends RelativeLayout {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
         container.setCardBackgroundColor(getCardBackgroundColor());
+        titleTextView.setTextColor(getTextColor(isSelected));
+        descriptionTextView.setTextColor(getTextColor(isSelected));
     }
 
     public void applyColorScheme() {
@@ -184,19 +185,15 @@ public class StylePreviewWidget extends RelativeLayout {
     }
 
     private @ColorInt int getCardBackgroundColor() {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(
-                com.google.android.material.R.attr.colorSurfaceContainer,
-                typedValue,
-                true
-        );
-        TypedValue typedValue2 = new TypedValue();
-        context.getTheme().resolveAttribute(
-                com.google.android.material.R.attr.colorPrimaryContainer,
-                typedValue2,
-                true
-        );
-        return isSelected() ? typedValue2.data : typedValue.data;
+        return isSelected() ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorSurfaceContainer);
+    }
+
+    private @ColorInt int getTextColor(boolean isSelected) {
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
     }
 
     @Override

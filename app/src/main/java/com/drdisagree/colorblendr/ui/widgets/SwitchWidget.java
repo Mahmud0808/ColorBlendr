@@ -26,6 +26,7 @@ public class SwitchWidget extends RelativeLayout {
     private ImageView iconImageView;
     private MaterialSwitch materialSwitch;
     private BeforeSwitchChangeListener beforeSwitchChangeListener;
+    private boolean isMasterSwitch = false;
 
     public SwitchWidget(Context context) {
         super(context);
@@ -119,6 +120,22 @@ public class SwitchWidget extends RelativeLayout {
 
     public void setBeforeSwitchChangeListener(BeforeSwitchChangeListener listener) {
         beforeSwitchChangeListener = listener;
+    }
+
+    public boolean isMasterSwitch() {
+        return isMasterSwitch;
+    }
+
+    public void setMasterSwitch(boolean isMasterSwitch) {
+        this.isMasterSwitch = isMasterSwitch;
+    }
+
+    private void setMasterSwitchBackground() {
+        if (isMasterSwitch) {
+            container.setCardBackgroundColor(Color.TRANSPARENT);
+        } else {
+            container.setCardBackgroundColor(Color.WHITE);
+        }
     }
 
     @Override

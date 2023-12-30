@@ -21,6 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorUtil {
 
+    public static @ColorInt int getColorFromAttribute(Context context, int attr) {
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(attr, typedValue, true);
+        return typedValue.data;
+    }
+
     public static ArrayList<ArrayList<Integer>> generateModifiedColors(
             Context context,
             ColorSchemeUtil.MONET style,

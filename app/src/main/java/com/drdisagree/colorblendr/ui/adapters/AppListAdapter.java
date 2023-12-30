@@ -4,7 +4,6 @@ import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_AP
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.ui.models.AppInfo;
+import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.google.android.material.card.MaterialCardView;
 
@@ -111,33 +111,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         holder.iconView.setColorFilter(getIconColor(isSelected), PorterDuff.Mode.SRC_IN);
         holder.iconView.setImageResource(isSelected ? R.drawable.ic_checked_filled : R.drawable.ic_checked_outline);
         holder.container.setCardBackgroundColor(getCardBackgroundColor(isSelected));
+        holder.appName.setTextColor(getTextColor(isSelected));
+        holder.packageName.setTextColor(getTextColor(isSelected));
     }
 
     private @ColorInt int getCardBackgroundColor(boolean isSelected) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(
-                com.google.android.material.R.attr.colorSurfaceContainer,
-                typedValue,
-                true
-        );
-        TypedValue typedValue2 = new TypedValue();
-        context.getTheme().resolveAttribute(
-                com.google.android.material.R.attr.colorPrimaryContainer,
-                typedValue2,
-                true
-        );
-        return isSelected ? typedValue2.data : typedValue.data;
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorSurfaceContainer);
     }
 
     private @ColorInt int getIconColor(boolean isSelected) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(
-                isSelected ?
-                        com.google.android.material.R.attr.colorPrimary :
-                        com.google.android.material.R.attr.colorOnSurface,
-                typedValue,
-                true
-        );
-        return typedValue.data;
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimary) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+    }
+
+    private @ColorInt int getTextColor(boolean isSelected) {
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
     }
 }

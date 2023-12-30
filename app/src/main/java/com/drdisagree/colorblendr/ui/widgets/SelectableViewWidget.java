@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
 
@@ -94,6 +95,8 @@ public class SelectableViewWidget extends RelativeLayout {
         iconImageView.setColorFilter(getIconColor(), PorterDuff.Mode.SRC_IN);
         iconImageView.setImageResource(isSelected ? R.drawable.ic_checked_filled : R.drawable.ic_checked_outline);
         container.setCardBackgroundColor(getCardBackgroundColor());
+        titleTextView.setTextColor(getTextColor(isSelected));
+        descriptionTextView.setTextColor(getTextColor(isSelected));
     }
 
     @Override
@@ -143,31 +146,21 @@ public class SelectableViewWidget extends RelativeLayout {
     }
 
     private @ColorInt int getCardBackgroundColor() {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(
-                com.google.android.material.R.attr.colorSurfaceContainer,
-                typedValue,
-                true
-        );
-        TypedValue typedValue2 = new TypedValue();
-        context.getTheme().resolveAttribute(
-                com.google.android.material.R.attr.colorPrimaryContainer,
-                typedValue2,
-                true
-        );
-        return isSelected() ? typedValue2.data : typedValue.data;
+        return isSelected() ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorSurfaceContainer);
     }
 
     private @ColorInt int getIconColor() {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(
-                isSelected() ?
-                        com.google.android.material.R.attr.colorPrimary :
-                        com.google.android.material.R.attr.colorOnSurface,
-                typedValue,
-                true
-        );
-        return typedValue.data;
+        return isSelected() ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimary) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+    }
+
+    private @ColorInt int getTextColor(boolean isSelected) {
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
     }
 
     private void updateViewOnOrientation() {
