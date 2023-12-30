@@ -133,15 +133,28 @@ public class PerAppThemeFragment extends Fragment {
             return;
         }
 
-        List<AppInfo> filteredList = new ArrayList<>();
+        List<AppInfo> startsWithNameList = new ArrayList<>();
+        List<AppInfo> containsNameList = new ArrayList<>();
+        List<AppInfo> startsWithPackageNameList = new ArrayList<>();
+        List<AppInfo> containsPackageNameList = new ArrayList<>();
 
         for (AppInfo app : appList) {
-            if (app.appName.toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(app);
+            if (app.appName.toLowerCase().startsWith(query.toLowerCase())) {
+                startsWithNameList.add(app);
+            } else if (app.appName.toLowerCase().contains(query.toLowerCase())) {
+                containsNameList.add(app);
+            } else if (app.packageName.toLowerCase().startsWith(query.toLowerCase())) {
+                startsWithPackageNameList.add(app);
             } else if (app.packageName.toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(app);
+                containsPackageNameList.add(app);
             }
         }
+
+        List<AppInfo> filteredList = new ArrayList<>();
+        filteredList.addAll(startsWithNameList);
+        filteredList.addAll(containsNameList);
+        filteredList.addAll(startsWithPackageNameList);
+        filteredList.addAll(containsPackageNameList);
 
         adapter = new AppListAdapter(filteredList);
         binding.recyclerView.setAdapter(adapter);
