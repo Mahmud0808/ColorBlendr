@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.activities;
 
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.annotation.SuppressLint;
@@ -82,7 +81,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void saveWallpaperColors() {
-        if ((RPrefs.getInt(MONET_SEED_COLOR, -1) == -1 || !RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) &&
+        if (RPrefs.getInt(MONET_SEED_COLOR, -1) == -1 &&
                 AppUtil.permissionsGranted(getApplicationContext())
         ) {
             ArrayList<Integer> wallpaperColors = WallpaperUtil.getWallpaperColors(getApplicationContext());
