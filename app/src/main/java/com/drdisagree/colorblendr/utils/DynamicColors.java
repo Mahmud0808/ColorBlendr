@@ -65,10 +65,10 @@ public class DynamicColors {
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface", Pair.create(3, Pair.create(1, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_surface", Pair.create(3, Pair.create(10, 2))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_low", Pair.create(3, Pair.create(2, 10))));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_lowest", Pair.create(3, Pair.create(0, 12))));
+        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_lowest", Pair.create(3, Pair.create(1, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container", Pair.create(3, Pair.create(2, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_high", Pair.create(3, Pair.create(2, 10))));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_highest", Pair.create(3, Pair.create(3, 10))));
+        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_highest", Pair.create(3, Pair.create(3, 9))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_bright", Pair.create(3, Pair.create(2, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_dim", Pair.create(3, Pair.create(2, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_variant", Pair.create(4, Pair.create(2, 10))));
@@ -109,8 +109,8 @@ public class DynamicColors {
         // Google uses "gm3" prefix for these resources, MaterialComponents use "m3" instead.
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral4", Pair.create(-60, Pair.create(3, 11))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral6", Pair.create(-40, Pair.create(3, 11))));
-        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral12", Pair.create(20, Pair.create(3, 11))));
-        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral17", Pair.create(70, Pair.create(3, 11))));
+        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral12", Pair.create(20, Pair.create(3, 10))));
+        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral17", Pair.create(70, Pair.create(3, 10))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral22", Pair.create(20, Pair.create(3, 10))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral24", Pair.create(40, Pair.create(3, 10))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral87", Pair.create(70, Pair.create(3, 4))));
@@ -120,8 +120,8 @@ public class DynamicColors {
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral98", Pair.create(30, Pair.create(3, 2))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant4", Pair.create(-60, Pair.create(4, 11))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant6", Pair.create(-40, Pair.create(4, 11))));
-        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant12", Pair.create(20, Pair.create(4, 11))));
-        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant17", Pair.create(70, Pair.create(4, 11))));
+        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant12", Pair.create(20, Pair.create(4, 10))));
+        M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant17", Pair.create(70, Pair.create(4, 10))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant22", Pair.create(20, Pair.create(4, 10))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant24", Pair.create(40, Pair.create(4, 10))));
         M3_REF_PALETTE.add(Pair.create("m3_ref_palette_dynamic_neutral_variant87", Pair.create(70, Pair.create(4, 4))));

@@ -24,6 +24,9 @@
         <attr name="icon" />
         <attr name="iconSpaceReserved" />
         <attr name="isChecked" format="boolean" />
+        <attr name="isMasterSwitch" format="boolean" />
+        <attr name="summaryOnText" format="string" />
+        <attr name="summaryOffText" format="string" />
     </declare-styleable>
 
     <declare-styleable name="SliderWidget">

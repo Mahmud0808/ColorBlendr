@@ -98,12 +98,24 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
                 if (oiClass == null) {
                     oiClass = Class.forName("android.content.om.OverlayIdentifier");
                 }
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG, "static: ", e);
+            }
+            try {
                 if (foClass == null) {
                     foClass = Class.forName("android.content.om.FabricatedOverlay");
                 }
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG, "static: ", e);
+            }
+            try {
                 if (fobClass == null) {
                     fobClass = Class.forName("android.content.om.FabricatedOverlay$Builder");
                 }
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG, "static: ", e);
+            }
+            try {
                 if (omtbClass == null) {
                     omtbClass = Class.forName("android.content.om.OverlayManagerTransaction$Builder");
                 }
@@ -119,7 +131,8 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
         private static Integer getCurrentUserId() {
             try {
                 return (Integer) UserHandle.class.getMethod("getIdentifier").invoke(currentUser);
-            } catch (NoSuchMethodException | IllegalAccessException |
+            } catch (NoSuchMethodException |
+                     IllegalAccessException |
                      InvocationTargetException exception) {
                 return 0;
             }
@@ -190,12 +203,13 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
                     currentUserId
             );
 
+            if (overlay == null) {
+                return false;
+            }
+
             try {
                 Method isEnabled = overlay.getClass().getDeclaredMethod("isEnabled");
                 return (boolean) isEnabled.invoke(overlay);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-                return false;
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 e.printStackTrace();
                 return false;
@@ -381,6 +395,11 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
         @Override
         public OverlayIdentifier generateOverlayIdentifier(String packageName) throws RemoteException {
             return generateOverlayIdentifier(packageName, FABRICATED_OVERLAY_SOURCE_PACKAGE);
+        }
+
+        @Override
+        public void invalidateCachesForOverlay(String packageName) throws RemoteException {
+            getOMS().invalidateCachesForOverlay(packageName, currentUserId);
         }
 
         private static OverlayIdentifier generateOverlayIdentifier(String packageName, String sourcePackage) {

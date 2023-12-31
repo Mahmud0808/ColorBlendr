@@ -46,7 +46,6 @@ public class StylePreviewWidget extends RelativeLayout {
     private ColorSchemeUtil.MONET monetStyle;
     private ArrayList<ArrayList<Integer>> colorPalette;
 
-
     public StylePreviewWidget(Context context) {
         super(context);
         init(context, null);
@@ -107,6 +106,7 @@ public class StylePreviewWidget extends RelativeLayout {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
         container.setCardBackgroundColor(getCardBackgroundColor());
+        container.setStrokeWidth(isSelected ? 0 : 2);
         titleTextView.setTextColor(getTextColor(isSelected));
         descriptionTextView.setTextColor(getTextColor(isSelected));
     }

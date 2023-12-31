@@ -111,6 +111,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         holder.iconView.setColorFilter(getIconColor(isSelected), PorterDuff.Mode.SRC_IN);
         holder.iconView.setImageResource(isSelected ? R.drawable.ic_checked_filled : R.drawable.ic_checked_outline);
         holder.container.setCardBackgroundColor(getCardBackgroundColor(isSelected));
+        holder.container.setStrokeWidth(isSelected ? 0 : 2);
         holder.appName.setTextColor(getTextColor(isSelected));
         holder.packageName.setTextColor(getTextColor(isSelected));
     }

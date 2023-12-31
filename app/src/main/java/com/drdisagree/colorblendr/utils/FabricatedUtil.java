@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.utils;
 
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
+import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 
@@ -79,25 +80,26 @@ public class FabricatedUtil {
     public static void assignPerAppColorsToOverlay(FabricatedOverlayResource overlay, ArrayList<ArrayList<Integer>> palette) {
         DynamicColors.M3_REF_PALETTE.forEach(pair -> {
             // Format of pair: <resourceName, <lightnessToChange, <colorIndexRow, colorIndexColumn>>>
+
             boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
 
             String resourceName = pair.first;
 
             Pair<Integer, Pair<Integer, Integer>> valPair = pair.second;
-            int lightnessToChange = valPair.first + 100;
+
+            // TODO: Use lightnessToChange to modify the color value
+            // int lightnessToChange = valPair.first + 100;
 
             Pair<Integer, Integer> colorIndexPair = valPair.second;
             int baseColor = palette.get(colorIndexPair.first).get(colorIndexPair.second);
+            baseColor = replaceColorForPitchBlackTheme(pitchBlackTheme, resourceName, baseColor, colorIndexPair.second);
 
-            int colorValue = ColorUtil.modifyLightness(baseColor, lightnessToChange, colorIndexPair.second);
-            colorValue = replaceColorForPitchBlackTheme(pitchBlackTheme, resourceName, colorValue, colorIndexPair.second);
-
-            overlay.setColor(resourceName, colorValue);
-            overlay.setColor("g" + resourceName, colorValue);
+            overlay.setColor(resourceName, baseColor);
+            overlay.setColor("g" + resourceName, baseColor);
         });
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
-            addUnpaintedTextColors(overlay.targetPackage, overlay);
+            addTintlessTextColors(overlay);
         }
     }
 
@@ -122,15 +124,19 @@ public class FabricatedUtil {
 
     public static @ColorInt int replaceColorForPitchBlackTheme(boolean pitchBlackTheme, String resourceName, int colorValue, int colorIndex) {
         if (pitchBlackTheme) {
+            int lightness = RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100);
             return switch (resourceName) {
-                case "m3_ref_palette_dynamic_neutral_variant6", "system_background_dark" ->
-                        Color.BLACK;
-                case "m3_ref_palette_dynamic_neutral_variant12" ->
-                        ColorUtil.modifyLightness(colorValue, 40, colorIndex);
-                case "m3_ref_palette_dynamic_neutral_variant17" ->
-                        ColorUtil.modifyLightness(colorValue, 60, colorIndex);
+                case "m3_ref_palette_dynamic_neutral_variant6",
+                        "gm3_ref_palette_dynamic_neutral_variant6",
+                        "system_background_dark" -> Color.BLACK;
+                case "m3_ref_palette_dynamic_neutral_variant12",
+                        "gm3_ref_palette_dynamic_neutral_variant12" ->
+                        ColorUtil.modifyLightness(colorValue, lightness - 40, colorIndex);
+                case "m3_ref_palette_dynamic_neutral_variant17",
+                        "gm3_ref_palette_dynamic_neutral_variant17" ->
+                        ColorUtil.modifyLightness(colorValue, lightness - 60, colorIndex);
                 case "system_surface_container_dark", "system_surface_dark" ->
-                        ColorUtil.modifyLightness(colorValue, 20, colorIndex);
+                        ColorUtil.modifyLightness(colorValue, lightness - 20, colorIndex);
                 default -> colorValue;
             };
         }
@@ -138,7 +144,7 @@ public class FabricatedUtil {
         return colorValue;
     }
 
-    public static void addUnpaintedTextColors(String packageName, FabricatedOverlayResource overlay) {
+    public static void addTintlessTextColors(FabricatedOverlayResource overlay) {
         String[] prefixes = new String[]{
                 "m3_sys_color_",
                 "m3_sys_color_dynamic_"
@@ -167,15 +173,25 @@ public class FabricatedUtil {
             }
         }
 
-        if (packageName.equals("com.google.android.gm")) {
-            overlay.setColor("m3_ref_palette_dynamic_neutral90", Color.WHITE);
-            overlay.setColor("gm3_ref_palette_dynamic_neutral90", Color.WHITE);
-            overlay.setColor("m3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF);
-            overlay.setColor("gm3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF);
-            overlay.setColor("m3_ref_palette_dynamic_neutral10", Color.BLACK);
-            overlay.setColor("gm3_ref_palette_dynamic_neutral10", Color.BLACK);
-            overlay.setColor("m3_ref_palette_dynamic_neutral_variant30", 0xB3000000);
-            overlay.setColor("gm3_ref_palette_dynamic_neutral_variant30", 0xB3000000);
+        // Dark mode
+        ArrayList<Pair<String, Integer>> resourcesDark = new ArrayList<>();
+        resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral90", Color.WHITE));
+        resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF));
+        resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant80", Color.WHITE));
+
+        // Light mode
+        ArrayList<Pair<String, Integer>> resourcesLight = new ArrayList<>();
+        resourcesLight.add(new Pair<>("m3_ref_palette_dynamic_neutral10", Color.BLACK));
+        resourcesLight.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant30", 0xB3000000));
+
+        for (Pair<String, Integer> pair : resourcesDark) {
+            overlay.setColor(pair.first, pair.second);
+            overlay.setColor("g" + pair.first, pair.second);
+        }
+
+        for (Pair<String, Integer> pair : resourcesLight) {
+            overlay.setColor(pair.first, pair.second);
+            overlay.setColor("g" + pair.first, pair.second);
         }
     }
 }

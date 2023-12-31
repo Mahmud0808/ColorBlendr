@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -13,20 +14,27 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.core.graphics.ColorUtils;
+
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 public class SwitchWidget extends RelativeLayout {
 
+    private Context context;
     private MaterialCardView container;
     private TextView titleTextView;
     private TextView summaryTextView;
     private ImageView iconImageView;
     private MaterialSwitch materialSwitch;
     private BeforeSwitchChangeListener beforeSwitchChangeListener;
-    private boolean isMasterSwitch = false;
+    private boolean isMasterSwitch;
+    private String summaryOnText;
+    private String summaryOffText;
 
     public SwitchWidget(Context context) {
         super(context);
@@ -44,6 +52,7 @@ public class SwitchWidget extends RelativeLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
+        this.context = context;
         inflate(context, R.layout.view_widget_switch, this);
 
         initializeId();
@@ -51,9 +60,13 @@ public class SwitchWidget extends RelativeLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwitchWidget);
         setTitle(typedArray.getString(R.styleable.SwitchWidget_titleText));
         setSummary(typedArray.getString(R.styleable.SwitchWidget_summaryText));
-        setSwitchChecked(typedArray.getBoolean(R.styleable.SwitchWidget_isChecked, false));
         int icon = typedArray.getResourceId(R.styleable.SwitchWidget_icon, 0);
         boolean iconSpaceReserved = typedArray.getBoolean(R.styleable.SwitchWidget_iconSpaceReserved, false);
+        isMasterSwitch = typedArray.getBoolean(R.styleable.SwitchWidget_isMasterSwitch, false);
+        summaryOnText = typedArray.getString(R.styleable.SwitchWidget_summaryOnText);
+        summaryOffText = typedArray.getString(R.styleable.SwitchWidget_summaryOffText);
+        setSwitchChecked(typedArray.getBoolean(R.styleable.SwitchWidget_isChecked, false));
+        updateSummary();
         typedArray.recycle();
 
         if (icon != 0) {
@@ -72,6 +85,7 @@ public class SwitchWidget extends RelativeLayout {
                 }
 
                 materialSwitch.toggle();
+                updateSummary();
             }
         });
     }
@@ -114,28 +128,54 @@ public class SwitchWidget extends RelativeLayout {
         materialSwitch.setChecked(isChecked);
     }
 
+    private void updateSummary() {
+        if (summaryOnText == null || summaryOffText == null) {
+            return;
+        }
+
+        boolean isChecked = isSwitchChecked();
+
+        if (isChecked) {
+            setSummary(summaryOnText);
+        } else {
+            setSummary(summaryOffText);
+        }
+
+        if (isMasterSwitch) {
+            container.setCardBackgroundColor(getCardBackgroundColor(isChecked));
+            iconImageView.setColorFilter(getIconColor(isChecked), PorterDuff.Mode.SRC_IN);
+            titleTextView.setTextColor(getTextColor(isChecked));
+            summaryTextView.setTextColor(getTextColor(isChecked));
+        }
+    }
+
+    private @ColorInt int getCardBackgroundColor(boolean isSelected) {
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
+                ColorUtils.setAlphaComponent(
+                        ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer),
+                        64
+                );
+    }
+
+    private @ColorInt int getIconColor(boolean isSelected) {
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimary) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+    }
+
+    private @ColorInt int getTextColor(boolean isSelected) {
+        return isSelected ?
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+    }
+
     public void setSwitchChangeListener(CompoundButton.OnCheckedChangeListener listener) {
         materialSwitch.setOnCheckedChangeListener(listener);
     }
 
     public void setBeforeSwitchChangeListener(BeforeSwitchChangeListener listener) {
         beforeSwitchChangeListener = listener;
-    }
-
-    public boolean isMasterSwitch() {
-        return isMasterSwitch;
-    }
-
-    public void setMasterSwitch(boolean isMasterSwitch) {
-        this.isMasterSwitch = isMasterSwitch;
-    }
-
-    private void setMasterSwitchBackground() {
-        if (isMasterSwitch) {
-            container.setCardBackgroundColor(Color.TRANSPARENT);
-        } else {
-            container.setCardBackgroundColor(Color.WHITE);
-        }
     }
 
     @Override

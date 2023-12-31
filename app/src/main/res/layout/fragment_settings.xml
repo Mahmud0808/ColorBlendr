@@ -22,6 +22,16 @@
             android:paddingTop="16dp">
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/theming_enabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:isChecked="true"
+                app:isMasterSwitch="true"
+                app:summaryOffText="@string/app_service_desc_off"
+                app:summaryOnText="@string/app_service_desc_on"
+                app:titleText="@string/app_service_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/accurate_shades"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

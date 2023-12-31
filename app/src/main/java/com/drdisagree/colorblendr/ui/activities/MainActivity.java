@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.activities;
 
-import android.content.Intent;
+import static com.drdisagree.colorblendr.common.Const.FIRST_RUN;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,7 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
+import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment;
 import com.drdisagree.colorblendr.ui.fragments.OnboardingFragment;
@@ -29,7 +30,6 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     private ActivityMainBinding binding;
     private static FragmentManager fragmentManager;
 
@@ -44,17 +44,12 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            Intent intent = getIntent();
-            Const.WORK_METHOD WORKING_METHOD = Const.getWorkingMethod();
-
-            if (WORKING_METHOD == Const.WORK_METHOD.NULL) {
+            if (RPrefs.getBoolean(FIRST_RUN, true) ||
+                    !getIntent().getBooleanExtra("success", false)
+            ) {
                 replaceFragment(new OnboardingFragment(), false);
-            } else if (WORKING_METHOD == Const.WORK_METHOD.ROOT) {
-                if (intent.getBooleanExtra("success", false)) {
-                    replaceFragment(new HomeFragment(), false);
-                } else {
-                    replaceFragment(new OnboardingFragment(), false);
-                }
+            } else {
+                replaceFragment(new HomeFragment(), false);
             }
         }
     }

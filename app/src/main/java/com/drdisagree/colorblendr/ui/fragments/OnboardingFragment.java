@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
+import static com.drdisagree.colorblendr.common.Const.FIRST_RUN;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.os.Bundle;
@@ -45,7 +46,6 @@ public class OnboardingFragment extends Fragment {
 
         adapter.addFragment(new OnboardingItem1Fragment());
         adapter.addFragment(new OnboardingItem2Fragment());
-        adapter.addFragment(new OnboardingItem3Fragment());
 
         binding.viewPager.setAdapter(adapter);
 
@@ -66,14 +66,7 @@ public class OnboardingFragment extends Fragment {
                     return;
                 }
 
-                if (Const.WORKING_METHOD == Const.WORK_METHOD.NULL) {
-                    Toast.makeText(requireContext(), R.string.select_method_to_proceed, Toast.LENGTH_SHORT).show();
-                } else if (Const.WORKING_METHOD == Const.WORK_METHOD.ROOT) {
-                    checkRootConnection();
-                } else if (Const.WORKING_METHOD == Const.WORK_METHOD.SHIZUKU) {
-                    checkShizukuConnection();
-                }
-
+                checkRootConnection();
                 return;
             }
 
@@ -92,7 +85,7 @@ public class OnboardingFragment extends Fragment {
         rootServiceProvider.runOnSuccess(new MethodInterface() {
             @Override
             public void run() {
-                Const.saveWorkingMethod(Const.WORKING_METHOD);
+                WallpaperUtil.getAndSaveWallpaperColors(requireContext());
                 FabricatedUtil.getAndSaveSelectedFabricatedApps(requireContext());
                 goToHomeFragment();
             }
@@ -100,11 +93,8 @@ public class OnboardingFragment extends Fragment {
         rootServiceProvider.startRootService();
     }
 
-    private void checkShizukuConnection() {
-        Toast.makeText(requireContext(), R.string.shizuku_not_supported, Toast.LENGTH_SHORT).show();
-    }
-
     private void goToHomeFragment() {
+        RPrefs.putBoolean(FIRST_RUN, false);
         MainActivity.replaceFragment(new HomeFragment(), true);
     }
 

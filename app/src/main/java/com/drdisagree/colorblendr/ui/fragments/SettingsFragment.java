@@ -6,6 +6,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
@@ -57,9 +58,29 @@ public class SettingsFragment extends Fragment {
 
         MiscUtil.setToolbarTitle(requireContext(), R.string.settings, true, binding.header.toolbar);
 
+        // ColorBlendr service
+        binding.themingEnabled.setTitle(getString(R.string.app_service_title, getString(R.string.app_name)));
+        binding.themingEnabled.setSwitchChecked(RPrefs.getBoolean(THEMING_ENABLED, true));
+        binding.themingEnabled.setSwitchChangeListener((buttonView, isChecked) -> {
+            RPrefs.putBoolean(THEMING_ENABLED, isChecked);
+            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                try {
+                    if (isChecked) {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } else {
+                        OverlayManager.removeFabricatedColors();
+                    }
+                } catch (Exception ignored) {
+                }
+            }, 300);
+        });
+
         // Accurate shades
         binding.accurateShades.setSwitchChecked(RPrefs.getBoolean(MONET_ACCURATE_SHADES, true));
-        binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {
+        binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) ->
+
+        {
             RPrefs.putBoolean(MONET_ACCURATE_SHADES, isChecked);
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
@@ -73,7 +94,9 @@ public class SettingsFragment extends Fragment {
 
         // Pitch black theme
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
-        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) -> {
+        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) ->
+
+        {
             RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
             new Handler(Looper.getMainLooper()).postDelayed(() -> {

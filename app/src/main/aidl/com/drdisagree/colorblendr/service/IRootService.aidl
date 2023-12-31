@@ -22,6 +22,7 @@ interface IRootService {
     boolean setHighestPriority(String packageName);
     boolean setLowestPriority(String packageName);
     OverlayIdentifier generateOverlayIdentifier(String packageName);
+    void invalidateCachesForOverlay(String packageName);
     void uninstallOverlayUpdates(String packageName);
     void restartSystemUI();
     String[] runCommand(in List<String> command);

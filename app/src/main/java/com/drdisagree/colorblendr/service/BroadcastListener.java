@@ -8,6 +8,7 @@ import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.WallpaperUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BroadcastListener extends BroadcastReceiver {
 
@@ -35,29 +37,27 @@ public class BroadcastListener extends BroadcastReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
                 Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())
         ) {
+            // Start background service on boot
             if (AppUtil.permissionsGranted(context)) {
                 if (!Const.isBackgroundServiceRunning) {
                     context.startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                 }
             }
 
+            // Start root service on boot
             if (!RootServiceProvider.isRootServiceBound()) {
-                if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT) {
-                    RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
-                    rootServiceProvider.runOnSuccess(new MethodInterface() {
-                        @Override
-                        public void run() {
-                            if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= 5000) {
-                                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 3000);
-                            }
-                        }
-                    });
-                    rootServiceProvider.startRootService();
-                }
+                RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
+                rootServiceProvider.runOnSuccess(new MethodInterface() {
+                    @Override
+                    public void run() {
+                        updateAllColors(context);
+                    }
+                });
+                rootServiceProvider.startRootService();
             }
         }
 
+        // Update wallpaper colors on wallpaper change
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) &&
                 AppUtil.permissionsGranted(context)
         ) {
@@ -69,13 +69,47 @@ public class BroadcastListener extends BroadcastReceiver {
             }
         }
 
+        // Update fabricated colors on wallpaper change
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) ||
                 Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction())
         ) {
-            if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= 5000) {
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 3000);
+            updateAllColors(context);
+        }
+
+        if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
+            // Remove fabricated colors for uninstalled apps
+            Uri data = intent.getData();
+
+            if (data != null) {
+                String packageName = data.getSchemeSpecificPart();
+                HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
+
+                if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
+                    OverlayManager.unregisterFabricatedOverlay(packageName);
+                }
             }
+        } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
+            // Update fabricated colors for updated app
+            updateAllColors(context);
+        } else if (Intent.ACTION_PACKAGE_REPLACED.equals(intent.getAction())) {
+            // Update fabricated colors for updated app
+            Uri data = intent.getData();
+
+            if (data != null) {
+                String packageName = data.getSchemeSpecificPart();
+                HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
+
+                if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
+                    OverlayManager.applyFabricatedColorsPerApp(context, packageName, null);
+                }
+            }
+        }
+    }
+
+    private static void updateAllColors(Context context) {
+        if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= 5000) {
+            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 3000);
         }
     }
 }

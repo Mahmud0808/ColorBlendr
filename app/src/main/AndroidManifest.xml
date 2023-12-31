@@ -61,6 +61,8 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.SCREEN_OFF" />
                 <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 

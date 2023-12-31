@@ -95,6 +95,7 @@ public class SelectableViewWidget extends RelativeLayout {
         iconImageView.setColorFilter(getIconColor(), PorterDuff.Mode.SRC_IN);
         iconImageView.setImageResource(isSelected ? R.drawable.ic_checked_filled : R.drawable.ic_checked_outline);
         container.setCardBackgroundColor(getCardBackgroundColor());
+        container.setStrokeWidth(isSelected ? 0 : 2);
         titleTextView.setTextColor(getTextColor(isSelected));
         descriptionTextView.setTextColor(getTextColor(isSelected));
     }

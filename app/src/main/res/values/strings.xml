@@ -82,7 +82,7 @@
     <string name="retry">Retry</string>
     <string name="confirmation_title">Are you sure?</string>
     <string name="confirmation_desc">This will override your current theme and configuration.</string>
-    <string name="root_service_not_found">Root not accessible.</string>
+    <string name="root_service_not_found">Root permission not granted.</string>
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="permission_must_be_granted">Permission must be granted</string>
     <string name="grant">Grant</string>
@@ -92,10 +92,6 @@
     <string name="background_service_notification_channel_text">You can turn off these notifications.</string>
     <string name="file_access_permission_required">Files access required to generate wallpaper colors.</string>
     <string name="onboarding_image">Onboarding image</string>
-    <string name="mode_one_title">Root</string>
-    <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
-    <string name="mode_two_title">Shizuku</string>
-    <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
     <string name="perm_one_title">Post Notifications</string>
     <string name="perm_one_desc">This permission is required to keep the service alive in background.</string>
     <string name="perm_two_title">Read Media Images</string>
@@ -130,6 +126,7 @@
     <string name="search_hint">Search here…</string>
     <string name="note_title">Note:</string>
     <string name="grant_all_permissions">Please grant all permissions to proceed</string>
-    <string name="select_method_to_proceed">Select a method to proceed</string>
-    <string name="shizuku_not_supported">Shizuku is not supported yet</string>
+    <string name="app_service_title">%s service</string>
+    <string name="app_service_desc_on">Theming is active</string>
+    <string name="app_service_desc_off">Theming is inactive</string>
 </resources>

@@ -46,6 +46,11 @@ public class RootServiceProvider implements ServiceConnection {
     }
 
     private void bindRootService() {
+        if (isRootServiceBound) {
+            mRootServiceConnectionTimer.countDown();
+            return;
+        }
+
         new Handler(Looper.getMainLooper()).post(() -> RootService.bind(
                 new Intent(context, RootService.class),
                 this
@@ -75,16 +80,18 @@ public class RootServiceProvider implements ServiceConnection {
     }
 
     @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        rootServiceProviderIPC = IRootService.Stub.asInterface(service);
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        rootServiceProviderIPC = IRootService.Stub.asInterface(binder);
         isRootServiceBound = true;
         mRootServiceConnectionTimer.countDown();
+        Log.d(TAG, "Service connected");
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
         rootServiceProviderIPC = null;
         isRootServiceBound = false;
+        Log.d(TAG, "Service disconnected");
         bindRootService();
     }
 

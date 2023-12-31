@@ -1,5 +1,8 @@
 package com.drdisagree.colorblendr.utils;
 
+import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
+import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
+
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,6 +17,9 @@ import android.util.Size;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.palette.graphics.Palette;
+
+import com.drdisagree.colorblendr.common.Const;
+import com.drdisagree.colorblendr.config.RPrefs;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +41,16 @@ public class WallpaperUtil {
     private static final double MINIMUM_DARKNESS = 0.2;
     private static final double MAXIMUM_DARKNESS = 0.8;
     private static final float HUE_THRESHOLD = 10f;
+
+    public static void getAndSaveWallpaperColors(Context context) {
+        if (RPrefs.getInt(MONET_SEED_COLOR, -1) == -1 &&
+                AppUtil.permissionsGranted(context)
+        ) {
+            ArrayList<Integer> wallpaperColors = WallpaperUtil.getWallpaperColors(context);
+            RPrefs.putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors));
+            RPrefs.putInt(MONET_SEED_COLOR, wallpaperColors.get(0));
+        }
+    }
 
     public static ArrayList<Integer> getWallpaperColors(Context context) {
         Future<Bitmap> wallpaperFuture = WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM, null);

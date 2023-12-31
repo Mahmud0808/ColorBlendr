@@ -23,6 +23,7 @@ import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding;
 import com.drdisagree.colorblendr.service.BackgroundService;
 import com.drdisagree.colorblendr.utils.AppUtil;
+import com.drdisagree.colorblendr.utils.FragmentUtil;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Map;
@@ -33,12 +34,6 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private static Fragment currentFragment;
     private static FragmentManager fragmentManager;
-
-    public enum TAB_SELECTION {
-        FROM_LEFT_TO_RIGHT,
-        FROM_RIGHT_TO_LEFT,
-        NONE
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,31 +73,9 @@ public class HomeFragment extends Fragment {
         String tag = fragment.getClass().getSimpleName();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        TAB_SELECTION direction = getSlidingDirection(currentFragment, fragment);
-
+        FragmentUtil.TAB_SELECTION direction = FragmentUtil.getSlidingDirection(currentFragment, fragment);
         if (currentFragment != null) {
-            if (direction == TAB_SELECTION.FROM_LEFT_TO_RIGHT) {
-                fragmentTransaction.setCustomAnimations(
-                        R.anim.slide_in_right,
-                        R.anim.slide_out_left,
-                        R.anim.slide_in_left,
-                        R.anim.slide_out_right
-                );
-            } else if (direction == TAB_SELECTION.FROM_RIGHT_TO_LEFT) {
-                fragmentTransaction.setCustomAnimations(
-                        R.anim.slide_in_left,
-                        R.anim.slide_out_right,
-                        R.anim.slide_in_right,
-                        R.anim.slide_out_left
-                );
-            } else {
-                fragmentTransaction.setCustomAnimations(
-                        R.anim.fade_in,
-                        R.anim.fade_out,
-                        R.anim.fade_in,
-                        R.anim.fade_out
-                );
-            }
+            FragmentUtil.setCustomAnimations(direction, fragmentTransaction);
         }
 
         fragmentTransaction.replace(
@@ -223,44 +196,6 @@ public class HomeFragment extends Fragment {
             snackbar.dismiss();
         });
         snackbar.show();
-    }
-
-    private static TAB_SELECTION getSlidingDirection(Fragment currentFragment, Fragment newFragment) {
-        if (currentFragment == null) {
-            return TAB_SELECTION.NONE;
-        }
-
-        boolean reverseAnimation;
-
-        if (currentFragment instanceof ColorsFragment &&
-                (newFragment instanceof ThemeFragment || newFragment instanceof StylesFragment || newFragment instanceof SettingsFragment)
-        ) {
-            reverseAnimation = false;
-        } else if (currentFragment instanceof SettingsFragment &&
-                (newFragment instanceof ThemeFragment || newFragment instanceof StylesFragment || newFragment instanceof ColorsFragment)
-        ) {
-            reverseAnimation = true;
-        } else if (currentFragment instanceof ThemeFragment) {
-            if (newFragment instanceof ColorsFragment) {
-                reverseAnimation = true;
-            } else if (newFragment instanceof StylesFragment || newFragment instanceof SettingsFragment) {
-                reverseAnimation = false;
-            } else {
-                return TAB_SELECTION.NONE;
-            }
-        } else if (currentFragment instanceof StylesFragment) {
-            if (newFragment instanceof SettingsFragment) {
-                reverseAnimation = false;
-            } else if (newFragment instanceof ColorsFragment || newFragment instanceof ThemeFragment) {
-                reverseAnimation = true;
-            } else {
-                return TAB_SELECTION.NONE;
-            }
-        } else {
-            return TAB_SELECTION.NONE;
-        }
-
-        return reverseAnimation ? TAB_SELECTION.FROM_RIGHT_TO_LEFT : TAB_SELECTION.FROM_LEFT_TO_RIGHT;
     }
 
     private String getTopFragment() {
