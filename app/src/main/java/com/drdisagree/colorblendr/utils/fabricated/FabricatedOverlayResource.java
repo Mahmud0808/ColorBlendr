@@ -28,28 +28,48 @@ public class FabricatedOverlayResource implements Parcelable {
     }
 
     public void setInteger(String name, int value) {
+        this.setInteger(name, value, null);
+    }
+
+    public void setInteger(String name, int value, String configuration) {
         String formattedName = formatName(name, "integer");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_DEC, value));
+        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_DEC, value, configuration));
     }
 
     public void setBoolean(String name, boolean value) {
+        this.setBoolean(name, value, null);
+    }
+
+    public void setBoolean(String name, boolean value, String configuration) {
         String formattedName = formatName(name, "bool");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_BOOLEAN, value ? 1 : 0));
+        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_BOOLEAN, value ? 1 : 0, configuration));
     }
 
     public void setDimension(String name, int value) {
+        this.setDimension(name, value, null);
+    }
+
+    public void setDimension(String name, int value, String configuration) {
         String formattedName = formatName(name, "dimen");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_DIMENSION, value));
+        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_DIMENSION, value, configuration));
     }
 
     public void setAttribute(String name, int value) {
+        this.setAttribute(name, value, null);
+    }
+
+    public void setAttribute(String name, int value, String configuration) {
         String formattedName = formatName(name, "attr");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_ATTRIBUTE, value));
+        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_ATTRIBUTE, value, configuration));
     }
 
     public void setColor(String name, int value) {
+        this.setColor(name, value, null);
+    }
+
+    public void setColor(String name, int value, String configuration) {
         String formattedName = formatName(name, "color");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_COLOR_ARGB8, value));
+        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_COLOR_ARGB8, value, configuration));
     }
 
     public Map<String, FabricatedOverlayEntry> getEntries() {

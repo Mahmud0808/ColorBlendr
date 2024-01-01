@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.fabricated;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,11 +9,17 @@ public class FabricatedOverlayEntry implements Parcelable {
     private String resourceName;
     private int resourceType;
     private int resourceValue;
+    private String configuration;
 
     public FabricatedOverlayEntry(String resourceName, int resourceType, int resourceValue) {
+        this(resourceName, resourceType, resourceValue, null);
+    }
+
+    public FabricatedOverlayEntry(String resourceName, int resourceType, int resourceValue, String configuration) {
         this.resourceName = resourceName;
         this.resourceType = resourceType;
         this.resourceValue = resourceValue;
+        this.configuration = configuration;
     }
 
     public String getResourceName() {
@@ -39,13 +46,25 @@ public class FabricatedOverlayEntry implements Parcelable {
         this.resourceValue = resourceValue;
     }
 
+    public String getConfiguration() {
+        return
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ?
+                        null :
+                        configuration;
+    }
+
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
+    }
+
     protected FabricatedOverlayEntry(Parcel in) {
         resourceName = in.readString();
         resourceType = in.readInt();
         resourceValue = in.readInt();
+        configuration = in.readString();
     }
 
-    public static final Creator<FabricatedOverlayEntry> CREATOR = new Creator<FabricatedOverlayEntry>() {
+    public static final Creator<FabricatedOverlayEntry> CREATOR = new Creator<>() {
         @Override
         public FabricatedOverlayEntry createFromParcel(Parcel in) {
             return new FabricatedOverlayEntry(in);
@@ -67,5 +86,6 @@ public class FabricatedOverlayEntry implements Parcelable {
         dest.writeString(resourceName);
         dest.writeInt(resourceType);
         dest.writeInt(resourceValue);
+        dest.writeString(configuration);
     }
 }

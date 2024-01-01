@@ -12,6 +12,7 @@ import android.content.om.OverlayIdentifier;
 import android.content.om.OverlayInfo;
 import android.content.om.OverlayManagerTransaction;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
@@ -307,14 +308,38 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
                         int.class
                 );
 
+                boolean isA14orHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+                Method setResourceValueMethodWithConfig = null;
+
+                if (isA14orHigher) {
+                    setResourceValueMethodWithConfig = fobClass.getMethod(
+                            "setResourceValue",
+                            String.class,
+                            int.class,
+                            int.class,
+                            String.class
+                    );
+                }
+
                 for (Map.Entry<String, FabricatedOverlayEntry> entry : overlay.getEntries().entrySet()) {
                     FabricatedOverlayEntry overlayEntry = entry.getValue();
-                    setResourceValueMethod.invoke(
-                            fobInstance,
-                            overlayEntry.getResourceName(),
-                            overlayEntry.getResourceType(),
-                            overlayEntry.getResourceValue()
-                    );
+
+                    if (isA14orHigher && overlayEntry.getConfiguration() != null && setResourceValueMethodWithConfig != null) {
+                        setResourceValueMethodWithConfig.invoke(
+                                fobInstance,
+                                overlayEntry.getResourceName(),
+                                overlayEntry.getResourceType(),
+                                overlayEntry.getResourceValue(),
+                                overlayEntry.getConfiguration()
+                        );
+                    } else {
+                        setResourceValueMethod.invoke(
+                                fobInstance,
+                                overlayEntry.getResourceName(),
+                                overlayEntry.getResourceType(),
+                                overlayEntry.getResourceValue()
+                        );
+                    }
                 }
 
                 Object foInstance = fobClass.getMethod(
