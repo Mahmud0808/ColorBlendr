@@ -177,13 +177,20 @@ public class FabricatedUtil {
         // Dark mode
         ArrayList<Pair<String, Integer>> resourcesDark = new ArrayList<>();
         resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral90", Color.WHITE));
+        resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral95", Color.WHITE));
         resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF));
         resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant80", Color.WHITE));
+        resourcesDark.add(new Pair<>("text_color_primary_dark", Color.WHITE));
+        resourcesDark.add(new Pair<>("text_color_secondary_dark", 0xB3FFFFFF));
+        resourcesDark.add(new Pair<>("text_color_tertiary_dark", 0x80FFFFFF));
 
         // Light mode
         ArrayList<Pair<String, Integer>> resourcesLight = new ArrayList<>();
         resourcesLight.add(new Pair<>("m3_ref_palette_dynamic_neutral10", Color.BLACK));
         resourcesLight.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant30", 0xB3000000));
+        resourcesLight.add(new Pair<>("text_color_primary_light", Color.BLACK));
+        resourcesLight.add(new Pair<>("text_color_secondary_light", 0xB3000000));
+        resourcesLight.add(new Pair<>("text_color_tertiary_light", 0x80000000));
 
         for (Pair<String, Integer> pair : resourcesDark) {
             overlay.setColor(pair.first, pair.second);
