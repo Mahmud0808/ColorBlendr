@@ -128,14 +128,15 @@ public class FabricatedUtil {
             return switch (resourceName) {
                 case "m3_ref_palette_dynamic_neutral_variant6",
                         "gm3_ref_palette_dynamic_neutral_variant6",
-                        "system_background_dark" -> Color.BLACK;
+                        "system_background_dark",
+                        "system_surface_dark" -> Color.BLACK;
                 case "m3_ref_palette_dynamic_neutral_variant12",
                         "gm3_ref_palette_dynamic_neutral_variant12" ->
                         ColorUtil.modifyLightness(colorValue, lightness - 40, colorIndex);
                 case "m3_ref_palette_dynamic_neutral_variant17",
                         "gm3_ref_palette_dynamic_neutral_variant17" ->
                         ColorUtil.modifyLightness(colorValue, lightness - 60, colorIndex);
-                case "system_surface_container_dark", "system_surface_dark" ->
+                case "system_surface_container_dark" ->
                         ColorUtil.modifyLightness(colorValue, lightness - 20, colorIndex);
                 default -> colorValue;
             };
