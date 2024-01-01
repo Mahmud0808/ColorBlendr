@@ -64,7 +64,12 @@ public class ThemeFragment extends Fragment {
                 monetAccentSaturation[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
+                }, 200);
             }
         });
 
@@ -74,7 +79,12 @@ public class ThemeFragment extends Fragment {
             updatePreviewColors();
             RPrefs.clearPref(MONET_ACCENT_SATURATION);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                try {
+                    OverlayManager.applyFabricatedColors(requireContext());
+                } catch (Exception ignored) {
+                }
+            }, 200);
             return true;
         });
 
@@ -96,7 +106,12 @@ public class ThemeFragment extends Fragment {
                 monetBackgroundSaturation[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
+                }, 200);
             }
         });
 
@@ -106,7 +121,12 @@ public class ThemeFragment extends Fragment {
             updatePreviewColors();
             RPrefs.clearPref(MONET_BACKGROUND_SATURATION);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                try {
+                    OverlayManager.applyFabricatedColors(requireContext());
+                } catch (Exception ignored) {
+                }
+            }, 200);
             return true;
         });
 
@@ -128,7 +148,12 @@ public class ThemeFragment extends Fragment {
                 monetBackgroundLightness[0] = (int) slider.getValue();
                 RPrefs.putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
+                }, 200);
             }
         });
 
@@ -138,7 +163,12 @@ public class ThemeFragment extends Fragment {
             updatePreviewColors();
             RPrefs.clearPref(MONET_BACKGROUND_LIGHTNESS);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                try {
+                    OverlayManager.applyFabricatedColors(requireContext());
+                } catch (Exception ignored) {
+                }
+            }, 200);
             return true;
         });
 

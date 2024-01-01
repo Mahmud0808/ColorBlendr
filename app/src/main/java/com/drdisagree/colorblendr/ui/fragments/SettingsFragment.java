@@ -122,7 +122,12 @@ public class SettingsFragment extends Fragment {
                 );
                 RPrefs.putInt(MONET_SEED_COLOR, wallpaperColorList.get(0));
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 300);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
+                }, 300);
             }
         });
 
@@ -152,7 +157,12 @@ public class SettingsFragment extends Fragment {
 
             if (!isChecked) {
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 300);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
+                }, 300);
             }
         });
 

@@ -133,7 +133,12 @@ public class ColorsFragment extends Fragment {
                                 generateModifiedColors()
                         );
                         RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 300);
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            try {
+                                OverlayManager.applyFabricatedColors(requireContext());
+                            } catch (Exception ignored) {
+                            }
+                        }, 300);
                     }
                 })
                 .show(getChildFragmentManager(), "seedColorPicker")
@@ -288,7 +293,12 @@ public class ColorsFragment extends Fragment {
                                                 RPrefs.putInt(colorNames[finalI][finalJ], color);
 
                                                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                                                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+                                                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                                    try {
+                                                        OverlayManager.applyFabricatedColors(requireContext());
+                                                    } catch (Exception ignored) {
+                                                    }
+                                                }, 200);
                                             }
                                         })
                                         .show(getChildFragmentManager(), "overrideColorPicker" + finalI + finalJ);
@@ -328,7 +338,12 @@ public class ColorsFragment extends Fragment {
                                         .show();
 
                                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(requireContext()), 200);
+                                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                    try {
+                                        OverlayManager.applyFabricatedColors(requireContext());
+                                    } catch (Exception ignored) {
+                                    }
+                                }, 200);
                             })
                             .show();
                     return true;
