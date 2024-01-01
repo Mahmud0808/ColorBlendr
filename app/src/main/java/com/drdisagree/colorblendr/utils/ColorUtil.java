@@ -9,8 +9,10 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
+import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.cam.Cam;
@@ -343,5 +345,13 @@ public class ColorUtil {
 
     private static int constrain(int amount, int low, int high) {
         return amount < low ? low : Math.min(amount, high);
+    }
+
+    public static ArrayList<Integer> getMonetAccentColors() {
+        ArrayList<Integer> colors = new ArrayList<>();
+        colors.add(ContextCompat.getColor(ColorBlendr.getAppContext(), android.R.color.system_accent1_400));
+        colors.add(ContextCompat.getColor(ColorBlendr.getAppContext(), android.R.color.system_accent2_400));
+        colors.add(ContextCompat.getColor(ColorBlendr.getAppContext(), android.R.color.system_accent3_400));
+        return colors;
     }
 }

@@ -53,6 +53,10 @@ public class WallpaperUtil {
     }
 
     public static ArrayList<Integer> getWallpaperColors(Context context) {
+        if (!AppUtil.permissionsGranted(context)) {
+            return ColorUtil.getMonetAccentColors();
+        }
+
         Future<Bitmap> wallpaperFuture = WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM, null);
 
         try {
@@ -60,11 +64,11 @@ public class WallpaperUtil {
             if (wallpaperBitmap != null) {
                 return WallpaperUtil.getDominantColors(wallpaperBitmap);
             } else {
-                return new ArrayList<>(Color.BLUE);
+                return ColorUtil.getMonetAccentColors();
             }
         } catch (ExecutionException | InterruptedException e) {
             Log.e(TAG, "Error getting wallpaper color", e);
-            return new ArrayList<>(Color.BLUE);
+            return ColorUtil.getMonetAccentColors();
         }
     }
 
