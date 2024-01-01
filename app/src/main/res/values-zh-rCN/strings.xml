@@ -2,9 +2,6 @@
 <resources>
     <string name="app_moto">用颜色表达自我</string>
     <string name="app_description">通过轻松的材料定制提升您的创造力。只需轻点几下，即可立即调整颜色以获得个性化的触感。</string>
-    <string name="tab_about">关于</string>
-    <string name="tab_styling">款式</string>
-    <string name="tab_tools">工具</string>
     <string name="monet_neutral">中性</string>
     <string name="monet_monochrome">单色</string>
     <string name="monet_tonalspot">色调点</string>

@@ -2,9 +2,6 @@
 <resources>
     <string name="app_moto">عبّر عن نفسك بالألوان</string>
     <string name="app_description">رفع مستوى إبداعك مع تخصيص مواد التصميم بكل سهولة. قم بضبط الألوان للحصول على لمسة شخصية ببضع لمسات فقط.</string>
-    <string name="tab_about">حول</string>
-    <string name="tab_styling">تنسيق</string>
-    <string name="tab_tools">أدوات</string>
     <string name="monet_neutral">محايد</string>
     <string name="monet_monochrome">أحادي اللون</string>
     <string name="monet_tonalspot">نقطة لونية</string>

@@ -2,9 +2,6 @@
 <resources>
     <string name="app_moto">Kendinizi renkler ile ifade edin</string>
     <string name="app_description">Yaratıcılığınızı çabasız malzeme özelleştirmesi ile yükseltin. Sadece birkaç dokunuşla renkleri anında ayarlayarak kişisel bir dokunuş ekleyin.</string>
-    <string name="tab_about">Hakkında</string>
-    <string name="tab_styling">Stil</string>
-    <string name="tab_tools">Araçlar</string>
     <string name="monet_neutral">Doğal</string>
     <string name="monet_monochrome">Tek renkli</string>
     <string name="monet_tonalspot">Ton noktası</string>
