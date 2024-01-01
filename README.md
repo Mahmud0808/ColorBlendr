@@ -38,9 +38,7 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - Download and install the apk.
   
-- Enable the module from LSPosed.
-  
-- Restart SystemUI or reboot your device.
+- Allow permissions and root access for the app.
   
 - That's it. Now you are good to go!
 
