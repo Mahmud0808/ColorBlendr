@@ -23,6 +23,8 @@ import java.util.List;
 
 public class FabricatedUtil {
 
+    private static final String[][] colorNames = ColorUtil.getColorNames();
+
     public static void createDynamicOverlay(
             FabricatedOverlayResource overlay,
             ArrayList<ArrayList<Integer>> paletteLight,
@@ -97,6 +99,14 @@ public class FabricatedUtil {
             overlay.setColor(resourceName, baseColor);
             overlay.setColor("g" + resourceName, baseColor);
         });
+
+        if (overlay.targetPackage.startsWith("com.android.systemui.clocks.")) {
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 13; j++) {
+                    overlay.setColor(colorNames[i][j], palette.get(i).get(j));
+                }
+            }
+        }
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
             addTintlessTextColors(overlay);
