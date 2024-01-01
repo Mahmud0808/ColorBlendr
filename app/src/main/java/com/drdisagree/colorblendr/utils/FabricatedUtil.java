@@ -201,5 +201,9 @@ public class FabricatedUtil {
             overlay.setColor(pair.first, pair.second);
             overlay.setColor("g" + pair.first, pair.second);
         }
+
+        // For settings text color on android 14
+        overlay.setColor("settingslib_text_color_primary_device_default", Color.WHITE, "night");
+        overlay.setColor("settingslib_text_color_secondary_device_default", 0xB3FFFFFF, "night");
     }
 }
