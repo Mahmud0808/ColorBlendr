@@ -23,14 +23,19 @@ import com.drdisagree.colorblendr.config.RPrefs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WallpaperUtil {
 
@@ -197,71 +202,63 @@ public class WallpaperUtil {
 
     private static ArrayList<Integer> getDominantColors(Bitmap bitmap) {
         if (bitmap == null) {
-            return null;
+            return new ArrayList<>(Collections.singletonList(Color.BLUE));
         }
 
-        final int bitmapArea = bitmap.getWidth() * bitmap.getHeight();
-
+        int bitmapArea = bitmap.getWidth() * bitmap.getHeight();
         if (bitmapArea > MAX_WALLPAPER_EXTRACTION_AREA) {
-            Size optimalSize = calculateOptimalSize(
-                    bitmap.getWidth(),
-                    bitmap.getHeight()
-            );
-            bitmap = Bitmap.createScaledBitmap(
-                    bitmap,
-                    optimalSize.getWidth(),
-                    optimalSize.getHeight(),
-                    false /* filter */
-            );
+            Size optimalSize = calculateOptimalSize(bitmap.getWidth(), bitmap.getHeight());
+            bitmap = Bitmap.createScaledBitmap(bitmap, optimalSize.getWidth(), optimalSize.getHeight(), false);
         }
 
-        List<Palette.Swatch> swatchesTemp = Palette
-                .from(bitmap)
+        Palette palette = createPalette(bitmap);
+        List<Palette.Swatch> sortedSwatches = sortSwatches(palette.getSwatches());
+
+        List<Palette.Swatch> uniqueSwatches = getUniqueSwatches(palette);
+        sortedSwatches.addAll(0, uniqueSwatches);
+
+        List<Palette.Swatch> filteredSwatches = filterColors(sortedSwatches);
+
+        ArrayList<Integer> wallpaperColors = filteredSwatches.stream().map(Palette.Swatch::getRgb).collect(Collectors.toCollection(ArrayList::new));
+
+        return wallpaperColors.isEmpty() ? new ArrayList<>(Collections.singletonList(Color.BLUE)) : wallpaperColors;
+    }
+
+    private static Palette createPalette(Bitmap bitmap) {
+        return Palette.from(bitmap)
                 .maximumColorCount(25)
                 .resizeBitmapArea(MAX_WALLPAPER_EXTRACTION_AREA)
-                .generate()
-                .getSwatches();
+                .generate();
+    }
 
-        ArrayList<Palette.Swatch> swatches = new ArrayList<>(swatchesTemp);
-        swatches.sort((swatch1, swatch2) -> swatch2.getPopulation() - swatch1.getPopulation());
-        List<Palette.Swatch> filteredSwatches = filterColors(swatches);
+    private static List<Palette.Swatch> sortSwatches(List<Palette.Swatch> swatches) {
+        List<Palette.Swatch> sortedSwatches = new ArrayList<>(swatches);
+        sortedSwatches.sort(Comparator.comparingInt(Palette.Swatch::getPopulation).reversed());
+        return sortedSwatches;
+    }
 
-        ArrayList<Integer> wallpaperColors = new ArrayList<>();
-        for (Palette.Swatch swatch : filteredSwatches) {
-            wallpaperColors.add(swatch.getRgb());
-        }
-
-        ArrayList<Integer> colorsEmpty = new ArrayList<>();
-        colorsEmpty.add(Color.BLUE);
-
-        return wallpaperColors.size() > 0 ? wallpaperColors : colorsEmpty;
+    private static List<Palette.Swatch> getUniqueSwatches(Palette palette) {
+        return Stream.of(
+                palette.getVibrantSwatch(),
+                palette.getDarkVibrantSwatch(),
+                palette.getLightVibrantSwatch(),
+                palette.getMutedSwatch(),
+                palette.getDarkMutedSwatch(),
+                palette.getLightMutedSwatch()
+        ).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private static List<Palette.Swatch> filterColors(List<Palette.Swatch> swatches) {
-        List<Palette.Swatch> filteredSwatches = new ArrayList<>();
         Set<Float> addedHues = new HashSet<>();
-
-        for (Palette.Swatch swatch : swatches) {
-            int color = swatch.getRgb();
-            if (isColorInRange(color) && !hasSimilarHue(addedHues, color)) {
-                filteredSwatches.add(swatch);
-                addedHues.add(ColorUtil.getHue(color));
-            }
-        }
-
-        return filteredSwatches;
+        return swatches.stream()
+                .filter(swatch -> isColorInRange(swatch.getRgb()) && !hasSimilarHue(addedHues, swatch.getRgb()))
+                .peek(swatch -> addedHues.add(ColorUtil.getHue(swatch.getRgb())))
+                .collect(Collectors.toList());
     }
 
     private static boolean hasSimilarHue(Set<Float> addedHues, int color) {
         float hue = ColorUtil.getHue(color);
-
-        for (float addedHue : addedHues) {
-            if (Math.abs(hue - addedHue) < HUE_THRESHOLD) {
-                return true;
-            }
-        }
-
-        return false;
+        return addedHues.stream().anyMatch(addedHue -> Math.abs(hue - addedHue) < HUE_THRESHOLD);
     }
 
     private static boolean isColorInRange(int color) {
