@@ -43,9 +43,9 @@ public class WallpaperUtil {
     private static final int SMALL_SIDE = 128;
     private static final int MAX_BITMAP_SIZE = 112;
     private static final int MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE;
-    private static final double MINIMUM_DARKNESS = 0.2;
+    private static final double MINIMUM_DARKNESS = 0.1;
     private static final double MAXIMUM_DARKNESS = 0.8;
-    private static final float HUE_THRESHOLD = 10f;
+    private static final float HUE_THRESHOLD = 15f;
 
     public static void getAndSaveWallpaperColors(Context context) {
         if (RPrefs.getInt(MONET_SEED_COLOR, -1) == -1 &&
