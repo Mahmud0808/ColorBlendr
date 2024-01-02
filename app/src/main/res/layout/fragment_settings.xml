@@ -58,8 +58,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:isChecked="true"
-                app:summaryText="Maintain a subtle tint for text"
-                app:titleText="Tint text color" />
+                app:summaryText="@string/tint_text_desc"
+                app:titleText="@string/tint_text_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/override_colors_manually"
