@@ -121,6 +121,9 @@
     <string name="back">Back</string>
     <string name="permissions">Permissions</string>
     <string name="choose_method">Choose method</string>
+    <string name="auto_startup">Auto startup</string>
+    <string name="auto_startup_title">Start service on boot</string>
+    <string name="auto_startup_desc">%s will automatically initiate its service upon system boot.<![CDATA[<br /><br />]]>If this is not the case, please verify whether your system or any third-party tools may be restricting %s. For detailed instructions, you can refer to <![CDATA[<a href="https://dontkillmyapp.com"><b><u>Don\'t kill my app!</u></b></a>]]>.</string>
     <string name="about_this_app_title">About this app</string>
     <string name="about_this_app_desc">Information about this app and its developer</string>
     <string name="search_hint">Search here…</string>

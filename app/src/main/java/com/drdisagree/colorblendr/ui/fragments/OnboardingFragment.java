@@ -46,6 +46,7 @@ public class OnboardingFragment extends Fragment {
 
         adapter.addFragment(new OnboardingItem1Fragment());
         adapter.addFragment(new OnboardingItem2Fragment());
+        adapter.addFragment(new OnboardingItem3Fragment());
 
         binding.viewPager.setAdapter(adapter);
 
