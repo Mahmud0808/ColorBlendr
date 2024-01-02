@@ -28,11 +28,18 @@ import java.util.HashMap;
 public class BroadcastListener extends BroadcastReceiver {
 
     private static final String TAG = BroadcastListener.class.getSimpleName();
+    private static int lastOrientation = -1;
 
     @SuppressWarnings("deprecation")
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Received intent: " + intent.getAction());
+
+        if (lastOrientation == -1) {
+            lastOrientation = context.getResources().getConfiguration().orientation;
+        }
+
+        int currentOrientation = context.getResources().getConfiguration().orientation;
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
                 Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())
@@ -71,9 +78,12 @@ public class BroadcastListener extends BroadcastReceiver {
 
         // Update fabricated colors on wallpaper change
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) ||
-                Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction())
+                (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction()) &&
+                        lastOrientation == currentOrientation)
         ) {
             updateAllColors(context);
+        } else if (lastOrientation != currentOrientation) {
+            lastOrientation = currentOrientation;
         }
 
         if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
