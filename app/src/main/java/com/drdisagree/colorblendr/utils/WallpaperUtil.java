@@ -133,6 +133,7 @@ public class WallpaperUtil {
                 }
 
                 if (wallpaperFile == null) {
+                    Log.e(TAG, "Error getting wallpaper bitmap: wallpaperFile is null");
                     return null;
                 }
 
@@ -159,7 +160,7 @@ public class WallpaperUtil {
         }
     }
 
-    public static Bitmap createMiniBitmap(@NonNull Bitmap bitmap) {
+    private static Bitmap createMiniBitmap(@NonNull Bitmap bitmap) {
         int smallestSide = Math.min(bitmap.getWidth(), bitmap.getHeight());
         float scale = Math.min(1.0f, (float) SMALL_SIDE / smallestSide);
         return createMiniBitmap(bitmap,
