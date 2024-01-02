@@ -167,6 +167,7 @@ public class OverlayManager {
         }
 
         if (pitchBlackTheme) {
+            fabricatedOverlays.get(0).setColor("surface_header_dark_sysui", Color.BLACK);
             fabricatedOverlays.get(0).setColor(colorNames[3][11], Color.BLACK);
             fabricatedOverlays.get(0).setColor(colorNames[4][11], Color.BLACK);
         }
