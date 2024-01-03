@@ -2,13 +2,11 @@ package com.drdisagree.colorblendr.service;
 
 import android.content.om.OverlayIdentifier;
 import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.service.ISystemUIRestartListener;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
 interface IRootService {
     boolean isRooted();
-    void setupSystemUIRestartListener();
-    void runOnSystemUIRestarted(in MethodInterface method);
+    void setSystemUIRestartListener();
     boolean isOverlayInstalled(String packageName);
     boolean isOverlayEnabled(String packageName);
     void enableOverlay(in List<String> packages);

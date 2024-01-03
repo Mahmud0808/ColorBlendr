@@ -42,7 +42,6 @@ public class Const {
 
     // Service preferences
     public static final Gson GSON = new Gson();
-    public static boolean isBackgroundServiceRunning = false;
     public static final String PREF_WORKING_METHOD = "workingMethod";
 
     public static Set<String> EXCLUDED_PREFS_FROM_BACKUP = new HashSet<>(

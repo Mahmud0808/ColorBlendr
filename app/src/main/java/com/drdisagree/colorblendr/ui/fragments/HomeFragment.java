@@ -19,7 +19,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding;
 import com.drdisagree.colorblendr.service.BackgroundService;
 import com.drdisagree.colorblendr.utils.AppUtil;
@@ -56,7 +55,7 @@ public class HomeFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (AppUtil.permissionsGranted(requireContext())) {
-                    if (!Const.isBackgroundServiceRunning) {
+                    if (!BackgroundService.isServiceRunning()) {
                         requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                     }
                 } else {
@@ -167,7 +166,7 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        if (!Const.isBackgroundServiceRunning) {
+        if (!BackgroundService.isServiceRunning()) {
             requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
         }
     }
