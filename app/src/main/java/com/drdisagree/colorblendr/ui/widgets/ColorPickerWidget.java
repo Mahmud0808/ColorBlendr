@@ -50,11 +50,11 @@ public class ColorPickerWidget extends RelativeLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorPickerWidget);
         setTitle(typedArray.getString(R.styleable.ColorPickerWidget_titleText));
         setSummary(typedArray.getString(R.styleable.ColorPickerWidget_summaryText));
-        int colorResId = typedArray.getResourceId(R.styleable.ColorPickerWidget_previewColor, -1);
+        int colorResId = typedArray.getResourceId(R.styleable.ColorPickerWidget_previewColor, Integer.MIN_VALUE);
         selectedColor = typedArray.getColor(R.styleable.ColorPickerWidget_previewColor, Color.WHITE);
         typedArray.recycle();
 
-        if (colorResId != -1) {
+        if (colorResId != Integer.MIN_VALUE) {
             setPreviewColor(ContextCompat.getColor(getContext(), colorResId));
         }
     }

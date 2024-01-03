@@ -217,7 +217,7 @@ public class ColorsFragment extends Fragment {
                 colorTableRows[i].getChildAt(j).getBackground().setTint(systemColors[i][j]);
                 colorTableRows[i].getChildAt(j).setTag(systemColors[i][j]);
 
-                if (RPrefs.getInt(colorNames[i][j], -100) != -100) {
+                if (RPrefs.getInt(colorNames[i][j], Integer.MIN_VALUE) != Integer.MIN_VALUE) {
                     colorTableRows[i].getChildAt(j).getBackground().setTint(RPrefs.getInt(colorNames[i][j], 0));
                 }
 

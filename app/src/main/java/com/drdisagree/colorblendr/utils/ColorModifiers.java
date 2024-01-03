@@ -87,9 +87,9 @@ public class ColorModifiers {
         for (int j = 0; j < palette.size() - 1; j++) {
             int i = counter.get() - 1;
 
-            int overriddenColor = RPrefs.getInt(colorNames[i][j + 1], -100);
+            int overriddenColor = RPrefs.getInt(colorNames[i][j + 1], Integer.MIN_VALUE);
 
-            if (overriddenColor != -100) {
+            if (overriddenColor != Integer.MIN_VALUE) {
                 palette.set(j, overriddenColor);
             } else if (!accurateShades && i == 0 && j == 2) {
                 palette.set(j, palette.get(j + 2));
