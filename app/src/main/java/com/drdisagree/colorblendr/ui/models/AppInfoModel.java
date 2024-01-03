@@ -2,14 +2,14 @@ package com.drdisagree.colorblendr.ui.models;
 
 import android.graphics.drawable.Drawable;
 
-public class AppInfo {
+public class AppInfoModel {
 
     public String appName;
     public String packageName;
     public Drawable appIcon;
     private boolean isSelected = false;
 
-    public AppInfo(String appName, String packageName, Drawable appIcon) {
+    public AppInfoModel(String appName, String packageName, Drawable appIcon) {
         this.appName = appName;
         this.packageName = packageName;
         this.appIcon = appIcon;

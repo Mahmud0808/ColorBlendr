@@ -29,7 +29,7 @@ import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding;
 import com.drdisagree.colorblendr.ui.adapters.AppListAdapter;
-import com.drdisagree.colorblendr.ui.models.AppInfo;
+import com.drdisagree.colorblendr.ui.models.AppInfoModel;
 import com.drdisagree.colorblendr.utils.MiscUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 
@@ -39,7 +39,7 @@ import java.util.List;
 public class PerAppThemeFragment extends Fragment {
 
     private FragmentPerAppThemeBinding binding;
-    private List<AppInfo> appList;
+    private List<AppInfoModel> appList;
     private AppListAdapter adapter;
     private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
         @Override
@@ -133,12 +133,12 @@ public class PerAppThemeFragment extends Fragment {
             return;
         }
 
-        List<AppInfo> startsWithNameList = new ArrayList<>();
-        List<AppInfo> containsNameList = new ArrayList<>();
-        List<AppInfo> startsWithPackageNameList = new ArrayList<>();
-        List<AppInfo> containsPackageNameList = new ArrayList<>();
+        List<AppInfoModel> startsWithNameList = new ArrayList<>();
+        List<AppInfoModel> containsNameList = new ArrayList<>();
+        List<AppInfoModel> startsWithPackageNameList = new ArrayList<>();
+        List<AppInfoModel> containsPackageNameList = new ArrayList<>();
 
-        for (AppInfo app : appList) {
+        for (AppInfoModel app : appList) {
             if (app.appName.toLowerCase().startsWith(query.toLowerCase())) {
                 startsWithNameList.add(app);
             } else if (app.appName.toLowerCase().contains(query.toLowerCase())) {
@@ -150,7 +150,7 @@ public class PerAppThemeFragment extends Fragment {
             }
         }
 
-        List<AppInfo> filteredList = new ArrayList<>();
+        List<AppInfoModel> filteredList = new ArrayList<>();
         filteredList.addAll(startsWithNameList);
         filteredList.addAll(containsNameList);
         filteredList.addAll(startsWithPackageNameList);
@@ -160,8 +160,8 @@ public class PerAppThemeFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
     }
 
-    private static List<AppInfo> getAllInstalledApps(Context context) {
-        List<AppInfo> appList = new ArrayList<>();
+    private static List<AppInfoModel> getAllInstalledApps(Context context) {
+        List<AppInfoModel> appList = new ArrayList<>();
         PackageManager packageManager = context.getPackageManager();
 
         List<ApplicationInfo> applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
@@ -174,7 +174,7 @@ public class PerAppThemeFragment extends Fragment {
                     String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
             );
 
-            AppInfo app = new AppInfo(appName, packageName, appIcon);
+            AppInfoModel app = new AppInfoModel(appName, packageName, appIcon);
             app.setSelected(isSelected);
             appList.add(app);
         }

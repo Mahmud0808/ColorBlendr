@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.ui.models.AppInfo;
+import com.drdisagree.colorblendr.ui.models.AppInfoModel;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.google.android.material.card.MaterialCardView;
@@ -27,13 +27,13 @@ import java.util.List;
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHolder> {
 
     private Context context;
-    private final List<AppInfo> appList;
+    private final List<AppInfoModel> appList;
     private final HashMap<String, Boolean> selectedApps = new HashMap<>();
 
-    public AppListAdapter(List<AppInfo> appList) {
+    public AppListAdapter(List<AppInfoModel> appList) {
         this.appList = appList;
 
-        for (AppInfo appInfo : appList) {
+        for (AppInfoModel appInfo : appList) {
             if (appInfo.isSelected()) {
                 selectedApps.put(appInfo.packageName, appInfo.isSelected());
             }
@@ -52,7 +52,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        AppInfo appInfo = appList.get(position);
+        AppInfoModel appInfo = appList.get(position);
         holder.appIcon.setImageDrawable(appInfo.appIcon);
         holder.appName.setText(appInfo.appName);
         holder.packageName.setText(appInfo.packageName);
