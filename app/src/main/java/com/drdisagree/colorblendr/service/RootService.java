@@ -78,8 +78,8 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         try {
                             enableOverlayWithIdentifier(Collections.singletonList(FABRICATED_OVERLAY_NAME_SYSTEM));
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
+                        } catch (RemoteException ignored) {
+                            // Overlay was never registered
                         }
                     }, 3000);
                 }
