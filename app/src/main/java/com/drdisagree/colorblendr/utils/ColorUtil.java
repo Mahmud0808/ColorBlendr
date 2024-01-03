@@ -194,6 +194,24 @@ public class ColorUtil {
         return colorNames;
     }
 
+    public static String[][] getColorNamesM3(boolean isDynamic, boolean prefixG) {
+        String prefix = "m3_ref_palette_";
+        String dynamic = "dynamic_";
+
+        String[] accentTypes = {"primary", "secondary", "tertiary", "neutral", "neutral_variant"};
+        String[] values = {"100", "99", "95", "90", "80", "70", "60", "50", "40", "30", "20", "10", "0"};
+
+        String[][] colorNames = new String[accentTypes.length][values.length];
+
+        for (int i = 0; i < accentTypes.length; i++) {
+            for (int j = 0; j < values.length; j++) {
+                colorNames[i][j] = (prefixG ? "g" : "") + prefix + (isDynamic ? dynamic : "") + accentTypes[i] + values[j];
+            }
+        }
+
+        return colorNames;
+    }
+
     public static String intToHexColor(int colorInt) {
         return String.format("#%06X", (0xFFFFFF & colorInt));
     }
@@ -343,6 +361,7 @@ public class ColorUtil {
         return amount < low ? low : Math.min(amount, high);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static int constrain(int amount, int low, int high) {
         return amount < low ? low : Math.min(amount, high);
     }

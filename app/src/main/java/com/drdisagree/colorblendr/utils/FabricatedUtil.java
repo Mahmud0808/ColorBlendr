@@ -24,6 +24,10 @@ import java.util.List;
 public class FabricatedUtil {
 
     private static final String[][] colorNames = ColorUtil.getColorNames();
+    private static final String[][] colorNamesM3var1 = ColorUtil.getColorNamesM3(false, false);
+    private static final String[][] colorNamesM3var2 = ColorUtil.getColorNamesM3(true, false);
+    private static final String[][] colorNamesM3var3 = ColorUtil.getColorNamesM3(true, true);
+    private static final String[][] colorNamesM3var4 = ColorUtil.getColorNamesM3(false, true);
 
     public static void createDynamicOverlay(
             FabricatedOverlayResource overlay,
@@ -100,6 +104,15 @@ public class FabricatedUtil {
             overlay.setColor("g" + resourceName, baseColor);
         });
 
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 13; j++) {
+                overlay.setColor(colorNamesM3var1[i][j], palette.get(i).get(j));
+                overlay.setColor(colorNamesM3var2[i][j], palette.get(i).get(j));
+                overlay.setColor(colorNamesM3var3[i][j], palette.get(i).get(j));
+                overlay.setColor(colorNamesM3var4[i][j], palette.get(i).get(j));
+            }
+        }
+
         replaceColorsPerPackageName(overlay, palette, pitchBlackTheme);
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
@@ -138,7 +151,8 @@ public class FabricatedUtil {
                         "gm3_ref_palette_dynamic_neutral_variant12" ->
                         ColorUtil.modifyLightness(colorValue, lightness - 40, colorIndex);
                 case "m3_ref_palette_dynamic_neutral_variant17",
-                        "gm3_ref_palette_dynamic_neutral_variant17" ->
+                        "gm3_ref_palette_dynamic_neutral_variant17",
+                        "gm3_system_bar_color_night" ->
                         ColorUtil.modifyLightness(colorValue, lightness - 60, colorIndex);
                 case "system_surface_container_dark" ->
                         ColorUtil.modifyLightness(colorValue, lightness - 20, colorIndex);
@@ -187,6 +201,7 @@ public class FabricatedUtil {
         resourcesDark.add(new Pair<>("text_color_primary_dark", Color.WHITE));
         resourcesDark.add(new Pair<>("text_color_secondary_dark", 0xB3FFFFFF));
         resourcesDark.add(new Pair<>("text_color_tertiary_dark", 0x80FFFFFF));
+        resourcesDark.add(new Pair<>("google_dark_default_color_on_background", Color.WHITE));
 
         // Light mode
         ArrayList<Pair<String, Integer>> resourcesLight = new ArrayList<>();
@@ -195,6 +210,7 @@ public class FabricatedUtil {
         resourcesLight.add(new Pair<>("text_color_primary_light", Color.BLACK));
         resourcesLight.add(new Pair<>("text_color_secondary_light", 0xB3000000));
         resourcesLight.add(new Pair<>("text_color_tertiary_light", 0x80000000));
+        resourcesDark.add(new Pair<>("google_default_color_on_background", Color.BLACK));
 
         for (Pair<String, Integer> pair : resourcesDark) {
             overlay.setColor(pair.first, pair.second);
@@ -221,6 +237,28 @@ public class FabricatedUtil {
         } else if (overlay.targetPackage.equals("com.google.android.googlequicksearchbox")) {
             if (pitchBlackTheme) {
                 overlay.setColor("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK);
+            }
+        } else if (overlay.targetPackage.equals("com.google.android.apps.magazines")) {
+            overlay.setColor("cluster_divider_bg", Color.TRANSPARENT);
+            overlay.setColor("cluster_divider_border", Color.TRANSPARENT);
+
+            overlay.setColor("appwidget_background_day", palette.get(3).get(2));
+            overlay.setColor("home_background_day", palette.get(3).get(2));
+            overlay.setColor("google_default_color_background", palette.get(3).get(2));
+            overlay.setColor("gm3_system_bar_color_day", palette.get(4).get(3));
+            overlay.setColor("google_default_color_on_background", palette.get(3).get(11));
+            overlay.setColor("google_dark_default_color_on_background", palette.get(3).get(1));
+            overlay.setColor("google_default_color_on_background", palette.get(3).get(11));
+            overlay.setColor("gm3_system_bar_color_night", palette.get(4).get(10));
+
+            if (pitchBlackTheme) {
+                overlay.setColor("appwidget_background_night", Color.BLACK);
+                overlay.setColor("home_background_night", Color.BLACK);
+                overlay.setColor("google_dark_default_color_background", Color.BLACK);
+            } else {
+                overlay.setColor("appwidget_background_night", palette.get(3).get(11));
+                overlay.setColor("home_background_night", palette.get(3).get(11));
+                overlay.setColor("google_dark_default_color_background", palette.get(3).get(11));
             }
         }
     }
