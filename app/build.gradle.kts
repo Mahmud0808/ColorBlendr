@@ -70,7 +70,6 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("me.jfenn:AndroidUtils:0.0.5")
-    implementation("com.jakewharton:process-phoenix:2.1.2")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.work:work-runtime:2.9.0")
     implementation("androidx.palette:palette:1.0.0")

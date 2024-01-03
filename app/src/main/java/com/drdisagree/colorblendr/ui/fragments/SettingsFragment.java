@@ -40,7 +40,6 @@ import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.reflect.TypeToken;
-import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -266,7 +265,7 @@ public class SettingsFragment extends Fragment {
                                                 );
 
                                                 try {
-                                                    ProcessPhoenix.triggerRebirth(requireContext());
+                                                    OverlayManager.applyFabricatedColors(requireContext());
                                                 } catch (Exception ignored) {
                                                 }
                                             } catch (Exception exception) {
