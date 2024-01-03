@@ -46,7 +46,7 @@ public class BroadcastListener extends BroadcastReceiver {
         ) {
             // Start background service on boot
             if (AppUtil.permissionsGranted(context)) {
-                if (!Const.isBackgroundServiceRunning) {
+                if (!BackgroundService.isServiceRunning()) {
                     context.startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                 }
             }

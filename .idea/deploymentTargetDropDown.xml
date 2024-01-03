@@ -6,17 +6,16 @@
         <State>
           <targetSelectedWithDropDown>
             <Target>
-              <type value="BOOT_WITH_SNAPSHOT_TARGET" />
+              <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
                   <value value="C:\Users\crazy\.android\avd\Pixel_6a_API_34.avd" />
                 </Key>
               </deviceKey>
-              <snapshotKey value="C:\Users\crazy\.android\avd\Pixel_6a_API_34.avd\snapshots\snap_2023-12-09_18-05-57" />
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-12-25T07:58:53.941177Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-01-03T20:07:33.184767Z" />
         </State>
       </entry>
       <entry key="systemstubs">

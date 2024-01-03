@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.service;
 
+import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM;
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE;
 import static com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE;
 
@@ -13,7 +14,9 @@ import android.content.om.OverlayInfo;
 import android.content.om.OverlayManagerTransaction;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
@@ -71,8 +74,14 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
 
             @Override
             public void onProcessDied(int pid, int uid) {
-                if (uid == getSystemUI_UID() && onSystemUIRestartedListener != null) {
-                    onSystemUIRestartedListener.run();
+                if (uid == getSystemUI_UID()) {
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        try {
+                            enableOverlayWithIdentifier(Collections.singletonList(FABRICATED_OVERLAY_NAME_SYSTEM));
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, 3000);
                 }
             }
         };
@@ -174,16 +183,8 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
          * Listener to notify when SystemUI restarts.
          */
         @Override
-        public void setupSystemUIRestartListener() throws RemoteException {
+        public void setSystemUIRestartListener() throws RemoteException {
             getAM().registerProcessObserver(processListener);
-        }
-
-        /**
-         * Method to run when SystemUI restarts.
-         */
-        @Override
-        public void runOnSystemUIRestarted(MethodInterface method) {
-            onSystemUIRestartedListener = method;
         }
 
         /**

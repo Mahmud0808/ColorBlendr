@@ -10,18 +10,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
+import com.drdisagree.colorblendr.extension.MethodInterface;
+import com.drdisagree.colorblendr.provider.RootServiceProvider;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 
 public class BackgroundService extends Service {
 
-    private static final String TAG = BackgroundService.class.getSimpleName();
+    private static boolean isRunning = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "Background Service";
     private static final BroadcastListener myReceiver = new BroadcastListener();
@@ -34,10 +37,11 @@ public class BackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Const.isBackgroundServiceRunning = true;
+        isRunning = true;
 
         registerReceivers();
         startForeground();
+        setupSystemUIRestartListener();
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -98,8 +102,36 @@ public class BackgroundService extends Service {
         notificationManager.createNotificationChannel(channel);
     }
 
+    private void setupSystemUIRestartListener() {
+        if (!RootServiceProvider.isRootServiceBound()) {
+            RootServiceProvider rootServiceProvider = new RootServiceProvider(ColorBlendr.getAppContext());
+            rootServiceProvider.runOnSuccess(new MethodInterface() {
+                @Override
+                public void run() {
+                    try {
+                        ColorBlendr.getRootService().setSystemUIRestartListener();
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            rootServiceProvider.startRootService();
+        } else {
+            try {
+                ColorBlendr.getRootService().setSystemUIRestartListener();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static boolean isServiceRunning() {
+        return isRunning;
+    }
+
     @Override
     public void onDestroy() {
+        isRunning = false;
         try {
             unregisterReceiver(myReceiver);
         } catch (Exception ignored) {
