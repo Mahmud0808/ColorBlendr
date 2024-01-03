@@ -39,6 +39,7 @@ public class FabricatedUtil {
     private static void assignDynamicPaletteToOverlay(FabricatedOverlayResource overlay, boolean isDark, ArrayList<ArrayList<Integer>> palette) {
         String suffix = isDark ? "dark" : "light";
         boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
+
         DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach(pair -> {
             String resourceName = "system_" + pair.first + "_" + suffix;
             int colorValue;
@@ -80,16 +81,15 @@ public class FabricatedUtil {
     }
 
     public static void assignPerAppColorsToOverlay(FabricatedOverlayResource overlay, ArrayList<ArrayList<Integer>> palette) {
+        boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
+
+        // Format of pair: <resourceName, <lightnessToChange, <colorIndexRow, colorIndexColumn>>>
         DynamicColors.M3_REF_PALETTE.forEach(pair -> {
-            // Format of pair: <resourceName, <lightnessToChange, <colorIndexRow, colorIndexColumn>>>
-
-            boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
-
             String resourceName = pair.first;
 
             Pair<Integer, Pair<Integer, Integer>> valPair = pair.second;
 
-            // TODO: Use lightnessToChange to modify the color value
+            // TODO: Use lightness value to modify the color
             // int lightnessToChange = valPair.first + 100;
 
             Pair<Integer, Integer> colorIndexPair = valPair.second;
@@ -100,13 +100,7 @@ public class FabricatedUtil {
             overlay.setColor("g" + resourceName, baseColor);
         });
 
-        if (overlay.targetPackage.startsWith("com.android.systemui.clocks.")) {
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 13; j++) {
-                    overlay.setColor(colorNames[i][j], palette.get(i).get(j));
-                }
-            }
-        }
+        replaceColorsPerPackageName(overlay, palette, pitchBlackTheme);
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
             addTintlessTextColors(overlay);
@@ -215,5 +209,19 @@ public class FabricatedUtil {
         // For settings text color on android 14
         overlay.setColor("settingslib_text_color_primary_device_default", Color.WHITE, "night");
         overlay.setColor("settingslib_text_color_secondary_device_default", 0xB3FFFFFF, "night");
+    }
+
+    private static void replaceColorsPerPackageName(FabricatedOverlayResource overlay, ArrayList<ArrayList<Integer>> palette, boolean pitchBlackTheme) {
+        if (overlay.targetPackage.startsWith("com.android.systemui.clocks.")) {
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 13; j++) {
+                    overlay.setColor(colorNames[i][j], palette.get(i).get(j));
+                }
+            }
+        } else if (overlay.targetPackage.equals("com.google.android.googlequicksearchbox")) {
+            if (pitchBlackTheme) {
+                overlay.setColor("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK);
+            }
+        }
     }
 }
