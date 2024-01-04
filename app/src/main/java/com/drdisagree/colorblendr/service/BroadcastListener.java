@@ -51,19 +51,12 @@ public class BroadcastListener extends BroadcastReceiver {
                 }
             }
 
-            // Start root service on boot
-            if (!RootServiceProvider.isRootServiceBound()) {
-                RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
-                rootServiceProvider.runOnSuccess(new MethodInterface() {
-                    @Override
-                    public void run() {
-                        updateAllColors(context);
-                    }
-                });
-                rootServiceProvider.startRootService();
-            } else {
-                updateAllColors(context);
-            }
+            validateRootAndUpdateColors(context, new MethodInterface() {
+                @Override
+                public void run() {
+                    updateAllColors(context);
+                }
+            });
         }
 
         // Update wallpaper colors on wallpaper change
@@ -83,7 +76,12 @@ public class BroadcastListener extends BroadcastReceiver {
                 (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction()) &&
                         lastOrientation == currentOrientation)
         ) {
-            updateAllColors(context);
+            validateRootAndUpdateColors(context, new MethodInterface() {
+                @Override
+                public void run() {
+                    updateAllColors(context);
+                }
+            });
         } else if (lastOrientation != currentOrientation) {
             lastOrientation = currentOrientation;
         }
@@ -97,12 +95,22 @@ public class BroadcastListener extends BroadcastReceiver {
                 HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
 
                 if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
-                    OverlayManager.unregisterFabricatedOverlay(packageName);
+                    validateRootAndUpdateColors(context, new MethodInterface() {
+                        @Override
+                        public void run() {
+                            OverlayManager.unregisterFabricatedOverlay(packageName);
+                        }
+                    });
                 }
             }
         } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
             // Update fabricated colors for updated app
-            updateAllColors(context);
+            validateRootAndUpdateColors(context, new MethodInterface() {
+                @Override
+                public void run() {
+                    updateAllColors(context);
+                }
+            });
         } else if (Intent.ACTION_PACKAGE_REPLACED.equals(intent.getAction())) {
             // Update fabricated colors for updated app
             Uri data = intent.getData();
@@ -112,9 +120,24 @@ public class BroadcastListener extends BroadcastReceiver {
                 HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
 
                 if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
-                    OverlayManager.applyFabricatedColorsPerApp(context, packageName, null);
+                    validateRootAndUpdateColors(context, new MethodInterface() {
+                        @Override
+                        public void run() {
+                            OverlayManager.applyFabricatedColorsPerApp(context, packageName, null);
+                        }
+                    });
                 }
             }
+        }
+    }
+
+    private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
+        if (RootServiceProvider.isNotConnected()) {
+            RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
+            rootServiceProvider.runOnSuccess(method);
+            rootServiceProvider.startRootService();
+        } else {
+            method.run();
         }
     }
 

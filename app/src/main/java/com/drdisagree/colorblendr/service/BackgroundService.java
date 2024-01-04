@@ -114,7 +114,7 @@ public class BackgroundService extends Service {
     }
 
     private void setupSystemUIRestartListener() {
-        if (!RootServiceProvider.isRootServiceBound()) {
+        if (RootServiceProvider.isNotConnected()) {
             RootServiceProvider rootServiceProvider = new RootServiceProvider(ColorBlendr.getAppContext());
             rootServiceProvider.runOnSuccess(new MethodInterface() {
                 @Override

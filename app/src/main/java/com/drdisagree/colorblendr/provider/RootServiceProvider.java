@@ -37,8 +37,8 @@ public class RootServiceProvider implements ServiceConnection {
         return rootServiceProviderIPC;
     }
 
-    public static boolean isRootServiceBound() {
-        return isRootServiceBound;
+    public static boolean isNotConnected() {
+        return !isRootServiceBound;
     }
 
     public void startRootService() {
@@ -62,7 +62,7 @@ public class RootServiceProvider implements ServiceConnection {
         public void run() {
             try {
                 bindRootService();
-                boolean success = mRootServiceConnectionTimer.await(5, TimeUnit.SECONDS);
+                boolean success = mRootServiceConnectionTimer.await(10, TimeUnit.SECONDS);
                 new Handler(Looper.getMainLooper()).post(
                         success ?
                                 new SuccessRunnable() :
