@@ -39,7 +39,7 @@ import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding;
-import com.drdisagree.colorblendr.ui.viewmodel.SharedViewModel;
+import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel;
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.MiscUtil;

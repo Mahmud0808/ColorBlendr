@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.viewmodel;
+package com.drdisagree.colorblendr.ui.viewmodels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
