@@ -17,57 +17,14 @@
         android:paddingStart="6dp"
         android:paddingEnd="16dp">
 
-        <LinearLayout
-            android:id="@+id/colors"
+        <com.drdisagree.colorblendr.ui.views.ColorPreview
+            android:id="@+id/color_container"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginVertical="16dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/style_preview_container"
-            android:orientation="vertical"
-            android:padding="6dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/accent1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/style_preview_top_left"
-                    tools:ignore="NestedWeights" />
-
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="match_parent" />
-
-                <View
-                    android:id="@+id/accent2"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/style_preview_top_right" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp" />
-
-            <View
-                android:id="@+id/neutral"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@drawable/style_preview_bottom" />
-
-        </LinearLayout>
+            android:layout_marginStart="16dp" />
 
         <LinearLayout
             android:id="@+id/text_container"
@@ -77,7 +34,7 @@
             android:layout_marginVertical="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="10dp"
-            android:layout_toEndOf="@id/colors"
+            android:layout_toEndOf="@id/color_container"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView

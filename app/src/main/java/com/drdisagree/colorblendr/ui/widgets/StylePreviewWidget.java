@@ -15,7 +15,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,6 +23,7 @@ import androidx.annotation.Nullable;
 
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.config.RPrefs;
+import com.drdisagree.colorblendr.ui.views.ColorPreview;
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
@@ -38,8 +38,7 @@ public class StylePreviewWidget extends RelativeLayout {
     private MaterialCardView container;
     private TextView titleTextView;
     private TextView descriptionTextView;
-    private ViewGroup colorsContainer;
-    private View accent1, accent2, neutral;
+    private ColorPreview colorContainer;
     private boolean isSelected = false;
     private OnClickListener onClickListener;
     private String styleName;
@@ -106,7 +105,6 @@ public class StylePreviewWidget extends RelativeLayout {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
         container.setCardBackgroundColor(getCardBackgroundColor());
-        container.setStrokeWidth(isSelected ? 0 : 2);
         titleTextView.setTextColor(getTextColor(isSelected));
         descriptionTextView.setTextColor(getTextColor(isSelected));
     }
@@ -141,15 +139,11 @@ public class StylePreviewWidget extends RelativeLayout {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     boolean isDarkMode = SystemUtil.isDarkMode();
 
-                    accent1.getBackground().setTint(colorPalette.get(0).get(5));
-                    accent2.getBackground().setTint(colorPalette.get(2).get(5));
-                    if (!isDarkMode) {
-                        neutral.getBackground().setTint(colorPalette.get(3).get(1));
-                        colorsContainer.getBackground().setTint(colorPalette.get(1).get(3));
-                    } else {
-                        neutral.getBackground().setTint(colorPalette.get(3).get(11));
-                        colorsContainer.getBackground().setTint(colorPalette.get(1).get(9));
-                    }
+                    colorContainer.setHalfCircleColor(colorPalette.get(0).get(!isDarkMode ? 4 : 5));
+                    colorContainer.setFirstQuarterCircleColor(colorPalette.get(2).get(!isDarkMode ? 4 : 5));
+                    colorContainer.setSecondQuarterCircleColor(colorPalette.get(1).get(!isDarkMode ? 4 : 5));
+                    colorContainer.setSquareColor(colorPalette.get(4).get(!isDarkMode ? 2 : 9));
+                    colorContainer.invalidateColors();
                 });
             } catch (Exception ignored) {
             }
@@ -166,21 +160,15 @@ public class StylePreviewWidget extends RelativeLayout {
         container = findViewById(R.id.container);
         titleTextView = findViewById(R.id.title);
         descriptionTextView = findViewById(R.id.summary);
-        colorsContainer = findViewById(R.id.colors);
-        accent1 = findViewById(R.id.accent1);
-        accent2 = findViewById(R.id.accent2);
-        neutral = findViewById(R.id.neutral);
+        colorContainer = findViewById(R.id.color_container);
 
         container.setId(View.generateViewId());
         titleTextView.setId(View.generateViewId());
         descriptionTextView.setId(View.generateViewId());
-        colorsContainer.setId(View.generateViewId());
-        accent1.setId(View.generateViewId());
-        accent2.setId(View.generateViewId());
-        neutral.setId(View.generateViewId());
+        colorContainer.setId(View.generateViewId());
 
         LayoutParams layoutParams = (LayoutParams) findViewById(R.id.text_container).getLayoutParams();
-        layoutParams.addRule(RelativeLayout.END_OF, colorsContainer.getId());
+        layoutParams.addRule(RelativeLayout.END_OF, colorContainer.getId());
         findViewById(R.id.text_container).setLayoutParams(layoutParams);
     }
 
