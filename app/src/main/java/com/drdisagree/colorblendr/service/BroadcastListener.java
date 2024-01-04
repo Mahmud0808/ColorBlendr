@@ -61,6 +61,8 @@ public class BroadcastListener extends BroadcastReceiver {
                     }
                 });
                 rootServiceProvider.startRootService();
+            } else {
+                updateAllColors(context);
             }
         }
 
