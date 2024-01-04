@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (AppUtil.permissionsGranted(requireContext())) {
-                    if (!BackgroundService.isServiceRunning()) {
+                    if (BackgroundService.isServiceNotRunning()) {
                         requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
                     }
                 } else {
@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        if (!BackgroundService.isServiceRunning()) {
+        if (BackgroundService.isServiceNotRunning()) {
             requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
         }
     }

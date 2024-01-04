@@ -29,7 +29,12 @@ public class BackgroundService extends Service {
     private static boolean isRunning = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "Background Service";
-    private static final BroadcastListener myReceiver = new BroadcastListener();
+    private static BroadcastListener myReceiver;
+
+    public BackgroundService() {
+        isRunning = false;
+        myReceiver = new BroadcastListener();
+    }
 
     @Nullable
     @Override
@@ -38,18 +43,20 @@ public class BackgroundService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onCreate() {
+        super.onCreate();
+
         isRunning = true;
-
+        createNotificationChannel();
         registerReceivers();
-        startForeground();
-        setupSystemUIRestartListener();
-
-        return super.onStartCommand(intent, flags, startId);
     }
 
-    private void startForeground() {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         showNotification();
+        setupSystemUIRestartListener();
+
+        return START_STICKY;
     }
 
     private void showNotification() {
@@ -79,28 +86,30 @@ public class BackgroundService extends Service {
                 .setColor(ColorUtil.getAccentColor(this))
                 .build();
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        createChannel(notificationManager);
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);
     }
 
     @SuppressWarnings("deprecation")
     private void registerReceivers() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         intentFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_MY_PACKAGE_REPLACED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
 
         registerReceiver(myReceiver, intentFilter);
     }
 
-    public void createChannel(NotificationManager notificationManager) {
+    public void createNotificationChannel() {
         NotificationChannel channel = new NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 getString(R.string.background_service_notification_channel_title),
                 NotificationManager.IMPORTANCE_LOW
         );
         channel.setDescription(getString(R.string.background_service_notification_channel_text));
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.createNotificationChannel(channel);
     }
 
@@ -127,18 +136,22 @@ public class BackgroundService extends Service {
         }
     }
 
-    public static boolean isServiceRunning() {
-        return isRunning;
+    public static boolean isServiceNotRunning() {
+        return !isRunning;
     }
 
     @Override
     public void onDestroy() {
         isRunning = false;
+        stopForeground(true);
         try {
             unregisterReceiver(myReceiver);
         } catch (Exception ignored) {
             // Receiver was probably never registered
         }
+        Intent broadcastIntent = new Intent(this, ServiceDestroyedListener.class);
+        sendBroadcast(broadcastIntent);
+
         super.onDestroy();
     }
 }
