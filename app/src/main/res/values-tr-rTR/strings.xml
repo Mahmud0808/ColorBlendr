@@ -14,8 +14,8 @@
     <string name="accurate_shades_title">Keskin tonlar</string>
     <string name="accurate_shades_desc">Vurgu renkleri için keskin tonları sakla</string>
     <string name="monet_style_title">Monet stili</string>
-    <string name="accent_saturation">Vurgu Doygunluğu</string>
-    <string name="background_saturation">Arkaplan Doygunluğu</string>
+    <string name="accent_saturation">Vurgu doygunluğu</string>
+    <string name="background_saturation">Arkaplan doygunluğu</string>
     <string name="background_lightness">Arkaplan parlaklığı</string>
     <string name="icon">Simge</string>
     <string name="reset">Sıfırla</string>
@@ -26,7 +26,7 @@
     <string name="github">Github</string>
     <string name="version">Sürüm</string>
     <string name="pitch_black_theme_title">Zifiri karanlık tema</string>
-    <string name="pitch_black_theme_desc">Karanlık modda siyah arka plan</string>
+    <string name="pitch_black_theme_desc">Karanlık modda siyah arkaplan</string>
     <string name="change_style_to_apply">Geçişler anında uygulanmazsa, değişiklikleri hemen uygulamak için kaydırıcılardan birini ayarlamayı deneyin.</string>
     <string name="color_picker_preview">Renk seçicisini ön izle</string>
     <string name="seed_color_picker_title">Özel birincil renk</string>
@@ -47,18 +47,18 @@
     <string name="custom_primary_color_desc">Özel renkten palet oluştur</string>
     <string name="meet_the_developer">Geliştiriciyle tanış</string>
     <string name="buymeacoffee_title">Bu uygulamayı beğendiniz mi?</string>
-    <string name="buymeacoffee_desc">Bana bir kahve ısmarlamayı düşün</string>
+    <string name="buymeacoffee_desc">Bana bir kahve ısmarlamayı düşünün</string>
     <string name="override_colors_manually_title">Renkleri manuel olarak geçersiz kıl</string>
-    <string name="override_colors_manually_desc">Renkleri tek tek geçersiz kılmak için renk paleti önizlemesine dokunun; sıfırlamak için uzun basın</string>
+    <string name="override_colors_manually_desc">Renkleri tek tek geçersiz kılmak için renk paleti önizlemesine dokunun ardından sıfırlamak için uzun basın</string>
     <string name="override">Geçersiz kıl</string>
     <string name="copy">Kopyala</string>
     <string name="color_code">Renk kodu: %s</string>
     <string name="cannot_override_color">Bu renk geçersiz kılınamaz</string>
-    <string name="dismiss">Reddet</string>
+    <string name="dismiss">Kapat</string>
     <string name="color_reset_success">Özel renk başarıyla sıfırlandı</string>
     <string name="reset_all">Tümünü sıfırla</string>
     <string name="reset_all_success">Tüm renkler başarıyla sıfırlandı</string>
-    <string name="backup_restore_title">Yedekle &amp; yapılandırmaları geri yükle</string>
+    <string name="backup_restore_title">Yedekle &amp; Geri yükle</string>
     <string name="backup_restore_desc">Mutluluğu yaymak için yapılandırmanızı kaydedip paylaşarak temanızın kendine özgü estetiğini yakalayın ve paylaşın</string>
     <string name="backup">Yedekle</string>
     <string name="restore">Geri Yükle</string>
@@ -75,16 +75,16 @@
     <string name="permission_must_be_granted">İzin verilmesi gerekir</string>
     <string name="grant">İzin ver</string>
     <string name="background_service_notification_title">Arkaplan hizmeti</string>
-    <string name="background_service_notification_text">Yararsız bildirim. Devre dışı bırakmak için dokunun.</string>
+    <string name="background_service_notification_text">Yararsız bildirimdir, Devre dışı bırakmak için dokunun veya görmezden gelin.</string>
     <string name="background_service_notification_channel_title">Arkaplan hizmeti</string>
     <string name="background_service_notification_channel_text">Bu bildirimleri kapatabilirsiniz.</string>
     <string name="file_access_permission_required">Duvar kağıdı renklerini oluşturmak için dosyalara erişim gereklidir.</string>
     <string name="onboarding_image">İlk katılım resmi</string>
     <string name="perm_one_title">Bildirim Gönder</string>
-    <string name="perm_one_desc">Bu izin, hizmetin arka planda canlı kalması için gereklidir.</string>
+    <string name="perm_one_desc">Bu izin, hizmetin arkaplanda canlı kalması için gereklidir.</string>
     <string name="perm_two_title">Medya Görsellerini Oku</string>
     <string name="perm_two_desc">Bu izin, ev ve kilit ekranı duvar kağıdını almak için gereklidir.</string>
-    <string name="perm_three_title">Tüm Dosyalara Erişim</string>
+    <string name="perm_three_title">Tüm Dosyalara Eriş</string>
     <string name="perm_three_desc">Bu izin, ev ve kilit ekranı duvar kağıdını almak için gereklidir.</string>
     <string name="start">Başlat</string>
     <string name="btn_continue">Devam et</string>
@@ -99,19 +99,19 @@
     <string name="monet_content_desc">Dengeli ve sakinleştirici palet, huzur ve memnuniyet duygusunu teşvik eder.</string>
     <string name="per_app_theme_warn">MaterialComponents güncellemesinin (v1.11.0+) bir sonucu olarak bazı uygulamaların sistem temasını takip etmediğini fark etmiş olabilirsiniz. Temayı uygulamak için bu uygulamaları buradan manuel olarak seçin ve değişikliklerin etkili olduğunu görmek için bu uygulamaları kapatıp yeniden açmayı unutmayın.</string>
     <string name="colors">Renkler</string>
-    <string name="per_app_theme">Her uygulama teması için</string>
+    <string name="per_app_theme">Uygulama başına tema</string>
     <string name="settings">Ayarlar</string>
     <string name="styles">Stiller</string>
-    <string name="theme">Tema</string>
+    <string name="theme">Temalar</string>
     <string name="wallpaper_colors">Duvar kağıdı renkleri</string>
-    <string name="force_per_app_theme_title">Uygulama teması başına zorla</string>
+    <string name="force_per_app_theme_title">Uygulama başına temayı zorla</string>
     <string name="force_per_app_theme_desc">Sistem monetini takip etmeyen belirli uygulamalara özel renkler uygulayın</string>
     <string name="back">Geri</string>
     <string name="permissions">İzinler</string>
     <string name="choose_method">Yöntem seçin</string>
-    <string name="auto_startup">Otomatik başlatma</string>
+    <string name="auto_startup">Otomatik başlat</string>
     <string name="auto_startup_title">Sistem açılırken hizmeti başlat</string>
-    <string name="auto_startup_desc">Sistem açıldığında %s otomatik olarak hizmetini başlatacaktır.<![CDATA[<br /><br />]]>Eğer durum böyle değilse, lütfen sisteminizin veya herhangi bir üçüncü taraf aracın %s\'yi kısıtlayıp kısıtlamadığını doğrulayın. Ayrıntılı talimatlar için <![CDATA[<a href="https://dontkillmyapp.com"><b><u>Uygulamamı öldürme!</u></b></a>]]> bölümüne başvurabilirsiniz.</string>
+    <string name="auto_startup_desc">Sistem açıldığında %s hizmeti otomatik olarak başlatılacaktır.<![CDATA[<br /><br />]]>Eğer durum böyle değilse, lütfen sisteminizin veya herhangi bir üçüncü taraf aracın %s\'yi kısıtlayıp kısıtlamadığını doğrulayın. Ayrıntılı talimatlar için <![CDATA[<a href="https://dontkillmyapp.com"><b><u>Uygulamamı öldürme!</u></b></a>]]> bölümünden detaylı bilgilere ulaşabilirsiniz.</string>
     <string name="about_this_app_title">Uygulama hakkında</string>
     <string name="about_this_app_desc">Bu uygulama ve geliştiricisi hakkında bilgiler</string>
     <string name="search_hint">Burada ara…</string>
@@ -120,4 +120,6 @@
     <string name="app_service_title">%s hizmeti</string>
     <string name="app_service_desc_on">Temalandırma etkin</string>
     <string name="app_service_desc_off">Temalandırma etkin değil</string>
+    <string name="tint_text_title">Metin rengini renklendir</string>
+    <string name="tint_text_desc">Metin için ince bir renk tonu sağla</string>
 </resources>
