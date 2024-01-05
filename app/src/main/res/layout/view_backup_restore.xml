@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
@@ -14,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
         android:paddingHorizontal="22dp"
         android:paddingVertical="16dp">
@@ -60,10 +62,12 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/backup_restore_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:weightSum="2">
 
             <com.google.android.material.button.MaterialButton

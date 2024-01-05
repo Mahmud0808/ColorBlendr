@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:clipChildren="false"
     tools:context=".ui.fragments.SettingsFragment">
 
@@ -74,6 +75,10 @@
                 app:summaryText="@string/override_colors_manually_desc"
                 app:titleText="@string/override_colors_manually_title" />
 
+            <include
+                android:id="@+id/backup_restore"
+                layout="@layout/view_backup_restore" />
+
             <com.drdisagree.colorblendr.ui.widgets.MenuWidget
                 android:id="@+id/about"
                 android:layout_width="match_parent"
@@ -82,10 +87,6 @@
                 app:showEndArrow="true"
                 app:summaryText="@string/about_this_app_desc"
                 app:titleText="@string/about_this_app_title" />
-
-            <include
-                android:id="@+id/backup_restore"
-                layout="@layout/view_backup_restore" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

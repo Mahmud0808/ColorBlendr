@@ -165,6 +165,13 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        binding.backupRestore.container.setOnClickListener(v -> {
+            if (binding.backupRestore.backupRestoreButtons.getVisibility() == View.VISIBLE) {
+                binding.backupRestore.backupRestoreButtons.setVisibility(View.GONE);
+            } else {
+                binding.backupRestore.backupRestoreButtons.setVisibility(View.VISIBLE);
+            }
+        });
         binding.backupRestore.backup.setOnClickListener(v -> backupRestoreSettings(true));
         binding.backupRestore.restore.setOnClickListener(v -> backupRestoreSettings(false));
 
