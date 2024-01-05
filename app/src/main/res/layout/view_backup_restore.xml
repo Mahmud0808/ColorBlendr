@@ -14,26 +14,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_margin="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="16dp">
 
-        <com.google.android.material.textview.MaterialTextView
-            style="?attr/textAppearanceTitleSmall"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center"
-            android:text="@string/backup_restore_title"
-            android:textColor="?attr/colorOnSurface" />
+            android:orientation="horizontal">
 
-        <com.google.android.material.textview.MaterialTextView
-            style="?attr/textAppearanceBodySmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center"
-            android:layout_marginTop="2dp"
-            android:alpha="0.8"
-            android:text="@string/backup_restore_desc"
-            android:textColor="?attr/colorOnSurface" />
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/icon"
+                android:src="@drawable/ic_attach_file"
+                app:tint="?attr/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="?attr/textAppearanceTitleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:text="@string/backup_restore_title"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="?attr/textAppearanceBodySmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:layout_marginTop="2dp"
+                    android:alpha="0.8"
+                    android:text="@string/backup_restore_desc"
+                    android:textColor="?attr/colorOnSurface" />
+
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,7 +73,9 @@
                 android:layout_marginEnd="6dp"
                 android:layout_weight="1"
                 android:text="@string/backup"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_backup"
+                app:iconGravity="textStart" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/restore"
@@ -58,7 +84,9 @@
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
                 android:text="@string/restore"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_restore"
+                app:iconGravity="textStart" />
 
         </LinearLayout>
     </LinearLayout>

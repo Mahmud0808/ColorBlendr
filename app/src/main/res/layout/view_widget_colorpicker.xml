@@ -14,7 +14,18 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="16dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/icon"
+            app:tint="?attr/colorPrimary" />
 
         <LinearLayout
             android:id="@+id/text_container"
@@ -23,6 +34,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
             android:layout_toStartOf="@id/color_widget"
+            android:layout_toEndOf="@id/icon"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView

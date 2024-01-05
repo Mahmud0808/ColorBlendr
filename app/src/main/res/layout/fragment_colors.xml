@@ -70,65 +70,19 @@
                 android:id="@+id/seed_color_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_paint"
                 app:previewColor="@android:color/black"
                 app:summaryText="@string/seed_color_picker_desc"
                 app:titleText="@string/seed_color_picker_title" />
 
-            <com.google.android.material.card.MaterialCardView
+            <com.drdisagree.colorblendr.ui.widgets.MenuWidget
                 android:id="@+id/per_app_theme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                app:cardMaxElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceTitleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center"
-                            android:text="@string/force_per_app_theme_title"
-                            android:textColor="?attr/colorOnSurface" />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceBodySmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0.8"
-                            android:text="@string/force_per_app_theme_desc"
-                            android:textColor="?attr/colorOnSurface" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="16dp"
-                        android:contentDescription="@android:string/untitled"
-                        android:src="@drawable/ic_arrow_end"
-                        app:tint="?attr/colorOnSurface" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                app:icon="@drawable/ic_app_widgets"
+                app:showEndArrow="true"
+                app:summaryText="@string/force_per_app_theme_desc"
+                app:titleText="@string/force_per_app_theme_title" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -25,6 +25,7 @@
                 android:id="@+id/theming_enabled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_service"
                 app:isChecked="true"
                 app:isMasterSwitch="true"
                 app:summaryOffText="@string/app_service_desc_off"
@@ -35,6 +36,7 @@
                 android:id="@+id/accurate_shades"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_brush"
                 app:isChecked="true"
                 app:summaryText="@string/accurate_shades_desc"
                 app:titleText="@string/accurate_shades_title" />
@@ -43,6 +45,7 @@
                 android:id="@+id/pitch_black_theme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_invert_colors"
                 app:summaryText="@string/pitch_black_theme_desc"
                 app:titleText="@string/pitch_black_theme_title" />
 
@@ -50,6 +53,7 @@
                 android:id="@+id/custom_primary_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_color_fill"
                 app:summaryText="@string/custom_primary_color_desc"
                 app:titleText="@string/custom_primary_color_title" />
 
@@ -57,6 +61,7 @@
                 android:id="@+id/tint_text_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_text"
                 app:isChecked="true"
                 app:summaryText="@string/tint_text_desc"
                 app:titleText="@string/tint_text_title" />
@@ -65,68 +70,22 @@
                 android:id="@+id/override_colors_manually"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:icon="@drawable/ic_color_picker"
                 app:summaryText="@string/override_colors_manually_desc"
                 app:titleText="@string/override_colors_manually_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.MenuWidget
+                android:id="@+id/about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_info"
+                app:showEndArrow="true"
+                app:summaryText="@string/about_this_app_desc"
+                app:titleText="@string/about_this_app_title" />
 
             <include
                 android:id="@+id/backup_restore"
                 layout="@layout/view_backup_restore" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/about"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                app:cardMaxElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceTitleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center"
-                            android:text="@string/about_this_app_title"
-                            android:textColor="?attr/colorOnSurface" />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            style="?attr/textAppearanceBodySmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0.8"
-                            android:text="@string/about_this_app_desc"
-                            android:textColor="?attr/colorOnSurface" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="16dp"
-                        android:contentDescription="@android:string/untitled"
-                        android:src="@drawable/ic_arrow_end"
-                        app:tint="?attr/colorOnSurface" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

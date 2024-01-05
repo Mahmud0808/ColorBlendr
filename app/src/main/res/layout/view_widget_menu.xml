@@ -13,7 +13,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="16dp">
 
         <ImageView
             android:id="@+id/icon"
@@ -21,7 +23,7 @@
             android:layout_height="20dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:contentDescription="@string/icon"
             app:tint="?attr/colorPrimary" />
 
@@ -30,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_margin="16dp"
+            android:layout_toStartOf="@id/end_arrow"
             android:layout_toEndOf="@id/icon"
             android:orientation="vertical">
 
@@ -53,5 +55,19 @@
                 android:textColor="?attr/colorOnSurface" />
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/end_arrow"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/icon"
+            android:src="@drawable/ic_arrow_end"
+            android:visibility="gone"
+            app:tint="?attr/colorOnSurface" />
+
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

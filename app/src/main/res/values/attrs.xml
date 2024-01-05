@@ -47,6 +47,8 @@
         <attr name="titleText" />
         <attr name="summaryText" />
         <attr name="previewColor" format="reference" />
+        <attr name="icon" />
+        <attr name="iconSpaceReserved" />
     </declare-styleable>
 
     <declare-styleable name="FilePickerWidget">
