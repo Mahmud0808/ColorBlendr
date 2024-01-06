@@ -48,7 +48,10 @@ public class PerAppThemeFragment extends Fragment {
     private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            initAppList();
+            if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) ||
+                    Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
+                initAppList();
+            }
         }
     };
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -205,6 +208,7 @@ public class PerAppThemeFragment extends Fragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
         requireActivity().registerReceiver(packageReceiver, filter);
     }
 
