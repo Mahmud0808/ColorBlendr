@@ -19,9 +19,11 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -35,6 +37,8 @@ import com.drdisagree.colorblendr.utils.OverlayManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import eightbitlab.com.blurview.RenderEffectBlur;
 
 public class PerAppThemeFragment extends Fragment {
 
@@ -93,6 +97,7 @@ public class PerAppThemeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initAppList();
+        blurSearchView();
     }
 
     private void initAppList() {
@@ -182,6 +187,15 @@ public class PerAppThemeFragment extends Fragment {
         appList.sort((app1, app2) -> app1.appName.compareToIgnoreCase(app2.appName));
 
         return appList;
+    }
+
+    private void blurSearchView() {
+        Drawable background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_searchbox);
+        binding.searchBox.blurView.setupWith(binding.getRoot(), new RenderEffectBlur())
+                .setFrameClearDrawable(background)
+                .setBlurRadius(20f);
+        binding.searchBox.blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+        binding.searchBox.blurView.setClipToOutline(true);
     }
 
     @Override

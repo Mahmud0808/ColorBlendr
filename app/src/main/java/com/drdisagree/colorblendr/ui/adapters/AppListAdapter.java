@@ -114,6 +114,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         holder.container.setStrokeWidth(isSelected ? 0 : 2);
         holder.appName.setTextColor(getTextColor(isSelected));
         holder.packageName.setTextColor(getTextColor(isSelected));
+
+        if (holder.getBindingAdapterPosition() == 0) {
+            ((ViewGroup.MarginLayoutParams) holder.container.getLayoutParams()).topMargin = (int) (72 * context.getResources().getDisplayMetrics().density);
+        } else {
+            ((ViewGroup.MarginLayoutParams) holder.container.getLayoutParams()).topMargin = 0;
+        }
     }
 
     private @ColorInt int getCardBackgroundColor(boolean isSelected) {

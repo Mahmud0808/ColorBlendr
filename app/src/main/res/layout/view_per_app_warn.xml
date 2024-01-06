@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginBottom="12dp"
+    android:layout_marginVertical="12dp"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorPrimaryContainer"
     app:cardMaxElevation="0dp"

@@ -11,27 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        android:paddingTop="12dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include
             android:id="@+id/warn"
             layout="@layout/view_per_app_warn" />
 
-        <include
-            android:id="@+id/searchBox"
-            layout="@layout/view_searchbar" />
-
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/searchBox">
+            android:layout_below="@id/warn">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="12dp"
                 android:visibility="gone"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -45,6 +39,11 @@
                 app:trackCornerRadius="8dp" />
 
         </FrameLayout>
+
+        <include
+            android:id="@+id/searchBox"
+            layout="@layout/view_searchbar" />
+
     </RelativeLayout>
 
     <include
