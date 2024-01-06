@@ -179,13 +179,8 @@ public class OverlayManager {
             fabricatedOverlays.get(0).setColor("text_color_secondary_device_default_light", 0xB3000000);
         }
 
-        // Register system overlay first to ensure it is enabled
-        registerFabricatedOverlay(fabricatedOverlays.get(0));
-
-        for (int i = 1; i < fabricatedOverlays.size(); i++) {
-            // Register twice to ensure the overlay is enabled
-            registerFabricatedOverlay(fabricatedOverlays.get(i));
-            registerFabricatedOverlay(fabricatedOverlays.get(i));
+        for (FabricatedOverlayResource fabricatedOverlay : fabricatedOverlays) {
+            registerFabricatedOverlay(fabricatedOverlay);
         }
     }
 
