@@ -98,6 +98,7 @@ public class BackgroundService extends Service {
         intentFilter.addAction(Intent.ACTION_MY_PACKAGE_REPLACED);
         intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        intentFilter.addDataScheme("package");
 
         registerReceiver(myReceiver, intentFilter);
     }

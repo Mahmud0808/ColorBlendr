@@ -501,14 +501,6 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
             return Shell.cmd(command.toArray(new String[0])).exec().getOut().toArray(new String[0]);
         }
 
-        /**
-         * Run method interface as root.
-         */
-        @Override
-        public void runWithRoot(MethodInterface method) {
-            method.run();
-        }
-
         private void commit(Object transaction) throws Exception {
             getOMS().commit((OverlayManagerTransaction) transaction);
         }

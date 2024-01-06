@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.service;
 
 import android.content.om.OverlayIdentifier;
-import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
 interface IRootService {
@@ -24,5 +23,4 @@ interface IRootService {
     void uninstallOverlayUpdates(String packageName);
     void restartSystemUI();
     String[] runCommand(in List<String> command);
-    void runWithRoot(in MethodInterface method);
 }

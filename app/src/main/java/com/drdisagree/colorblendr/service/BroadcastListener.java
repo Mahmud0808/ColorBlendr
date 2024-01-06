@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.service;
 
+import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
@@ -98,10 +99,13 @@ public class BroadcastListener extends BroadcastReceiver {
                 HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
 
                 if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
+                    selectedApps.remove(packageName);
+                    Const.saveSelectedFabricatedApps(selectedApps);
+
                     validateRootAndUpdateColors(context, new MethodInterface() {
                         @Override
                         public void run() {
-                            OverlayManager.unregisterFabricatedOverlay(packageName);
+                            OverlayManager.unregisterFabricatedOverlay(String.format(FABRICATED_OVERLAY_NAME_APPS, packageName));
                         }
                     });
                 }
