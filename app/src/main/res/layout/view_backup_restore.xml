@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:animateLayoutChanges="true"
         android:orientation="vertical"
         android:paddingHorizontal="22dp"
         android:paddingVertical="16dp">

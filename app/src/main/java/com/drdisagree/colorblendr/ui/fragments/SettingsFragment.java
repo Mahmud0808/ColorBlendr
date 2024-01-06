@@ -10,6 +10,8 @@ import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -165,13 +167,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        binding.backupRestore.container.setOnClickListener(v -> {
-            if (binding.backupRestore.backupRestoreButtons.getVisibility() == View.VISIBLE) {
-                binding.backupRestore.backupRestoreButtons.setVisibility(View.GONE);
-            } else {
-                binding.backupRestore.backupRestoreButtons.setVisibility(View.VISIBLE);
-            }
-        });
+        binding.backupRestore.container.setOnClickListener(v -> crossfade(binding.backupRestore.backupRestoreButtons));
         binding.backupRestore.backup.setOnClickListener(v -> backupRestoreSettings(true));
         binding.backupRestore.restore.setOnClickListener(v -> backupRestoreSettings(false));
 
@@ -186,6 +182,36 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+    }
+
+    private void crossfade(View view) {
+        try {
+            int animTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+            if (view.getVisibility() == View.GONE) {
+                view.setAlpha(0f);
+                view.setVisibility(View.VISIBLE);
+                view.animate()
+                        .alpha(1f)
+                        .setDuration(animTime)
+                        .setListener(null);
+            } else {
+                view.animate()
+                        .alpha(0f)
+                        .setDuration(animTime)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                try {
+                                    view.setAlpha(0f);
+                                    view.setVisibility(View.GONE);
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        });
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private void backupRestoreSettings(boolean isBackingUp) {
