@@ -204,6 +204,7 @@ public class FabricatedUtil {
         resourcesDark.add(new Pair<>("text_color_secondary_dark", 0xB3FFFFFF));
         resourcesDark.add(new Pair<>("text_color_tertiary_dark", 0x80FFFFFF));
         resourcesDark.add(new Pair<>("google_dark_default_color_on_background", Color.WHITE));
+        resourcesDark.add(new Pair<>("gm_ref_palette_grey500", Color.WHITE));
 
         // Light mode
         ArrayList<Pair<String, Integer>> resourcesLight = new ArrayList<>();
@@ -213,6 +214,7 @@ public class FabricatedUtil {
         resourcesLight.add(new Pair<>("text_color_secondary_light", 0xB3000000));
         resourcesLight.add(new Pair<>("text_color_tertiary_light", 0x80000000));
         resourcesDark.add(new Pair<>("google_default_color_on_background", Color.BLACK));
+        resourcesDark.add(new Pair<>("gm_ref_palette_grey700", Color.BLACK));
 
         for (Pair<String, Integer> pair : resourcesDark) {
             overlay.setColor(pair.first, pair.second);
@@ -230,17 +232,17 @@ public class FabricatedUtil {
     }
 
     private static void replaceColorsPerPackageName(FabricatedOverlayResource overlay, ArrayList<ArrayList<Integer>> palette, boolean pitchBlackTheme) {
-        if (overlay.targetPackage.startsWith("com.android.systemui.clocks.")) {
+        if (overlay.targetPackage.startsWith("com.android.systemui.clocks.")) { // Android 14 clocks
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 13; j++) {
                     overlay.setColor(colorNames[i][j], palette.get(i).get(j));
                 }
             }
-        } else if (overlay.targetPackage.equals("com.google.android.googlequicksearchbox")) {
+        } else if (overlay.targetPackage.equals("com.google.android.googlequicksearchbox")) { // Google Feeds
             if (pitchBlackTheme) {
                 overlay.setColor("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK);
             }
-        } else if (overlay.targetPackage.equals("com.google.android.apps.magazines")) {
+        } else if (overlay.targetPackage.equals("com.google.android.apps.magazines")) { // Google News
             overlay.setColor("cluster_divider_bg", Color.TRANSPARENT);
             overlay.setColor("cluster_divider_border", Color.TRANSPARENT);
 
@@ -262,6 +264,18 @@ public class FabricatedUtil {
                 overlay.setColor("home_background_night", palette.get(3).get(11));
                 overlay.setColor("google_dark_default_color_background", palette.get(3).get(11));
             }
+        } else if (overlay.targetPackage.equals("com.google.android.play.games")) { // Google Play Games
+            // Light mode
+            overlay.setColor("google_white", palette.get(3).get(2));
+            overlay.setColor("gm_ref_palette_grey300", palette.get(4).get(4));
+            overlay.setColor("gm_ref_palette_grey700", palette.get(3).get(11));
+            overlay.setColor("replay__pal_games_light_600", palette.get(0).get(8));
+
+            // Dark mode
+            overlay.setColor("gm_ref_palette_grey900", pitchBlackTheme ? Color.BLACK : palette.get(3).get(11));
+            overlay.setColor("gm_ref_palette_grey600", palette.get(4).get(8));
+            overlay.setColor("gm_ref_palette_grey500", palette.get(3).get(1));
+            overlay.setColor("replay__pal_games_dark_300", palette.get(0).get(5));
         }
     }
 }
