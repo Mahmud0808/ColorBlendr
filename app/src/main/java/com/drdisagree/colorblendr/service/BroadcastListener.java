@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
@@ -135,6 +137,11 @@ public class BroadcastListener extends BroadcastReceiver {
                     });
                 }
             }
+        }
+
+        if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction()) ||
+                Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }
 
