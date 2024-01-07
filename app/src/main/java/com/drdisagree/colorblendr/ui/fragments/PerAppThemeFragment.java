@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.drdisagree.colorblendr.R;
@@ -48,10 +50,8 @@ public class PerAppThemeFragment extends Fragment {
     private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) ||
-                    Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
-                initAppList();
-            }
+            Log.d("PerAppThemeFragment", "Received intent: " + intent.getAction());
+            initAppList();
         }
     };
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -205,27 +205,18 @@ public class PerAppThemeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addDataScheme("package");
-        requireActivity().registerReceiver(packageReceiver, filter);
-    }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
 
-    @Override
-    public void onPause() {
-        try {
-            requireActivity().unregisterReceiver(packageReceiver);
-        } catch (Exception ignored) {
-            // Receiver was not registered
-        }
-        super.onPause();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(packageReceiver, intentFilter);
     }
 
     @Override
     public void onDestroy() {
         try {
-            requireActivity().unregisterReceiver(packageReceiver);
+            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(packageReceiver);
         } catch (Exception ignored) {
             // Receiver was not registered
         }
