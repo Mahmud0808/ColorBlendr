@@ -75,7 +75,7 @@
     <string name="permission_must_be_granted">İzin verilmesi gerekir</string>
     <string name="grant">İzin ver</string>
     <string name="background_service_notification_title">Arkaplan hizmeti</string>
-    <string name="background_service_notification_text">Yararsız bildirimdir, Devre dışı bırakmak için dokunun veya görmezden gelin.</string>
+    <string name="background_service_notification_text">Yararsız bildirim. Devre dışı bırakmak için dokunun.</string>
     <string name="background_service_notification_channel_title">Arkaplan hizmeti</string>
     <string name="background_service_notification_channel_text">Bu bildirimleri kapatabilirsiniz.</string>
     <string name="file_access_permission_required">Duvar kağıdı renklerini oluşturmak için dosyalara erişim gereklidir.</string>
@@ -113,7 +113,7 @@
     <string name="auto_startup_title">Sistem açılırken hizmeti başlat</string>
     <string name="auto_startup_desc">Sistem açıldığında %s hizmeti otomatik olarak başlatılacaktır.<![CDATA[<br /><br />]]>Eğer durum böyle değilse, lütfen sisteminizin veya herhangi bir üçüncü taraf aracın %s\'yi kısıtlayıp kısıtlamadığını doğrulayın. Ayrıntılı talimatlar için <![CDATA[<a href="https://dontkillmyapp.com"><b><u>Uygulamamı öldürme!</u></b></a>]]> bölümünden detaylı bilgilere ulaşabilirsiniz.</string>
     <string name="about_this_app_title">Uygulama hakkında</string>
-    <string name="about_this_app_desc">Bu uygulama ve geliştiricisi hakkında bilgiler</string>
+    <string name="about_this_app_desc">Bu uygulama ve geliştiricisi hakkında bilgiler edinin</string>
     <string name="search_hint">Burada ara…</string>
     <string name="note_title">Not:</string>
     <string name="grant_all_permissions">Lütfen devam etmek için tüm izinleri verin</string>
