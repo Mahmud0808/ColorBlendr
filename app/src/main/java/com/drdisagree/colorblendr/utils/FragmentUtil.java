@@ -4,7 +4,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.ui.fragments.AboutFragment;
 import com.drdisagree.colorblendr.ui.fragments.ColorsFragment;
+import com.drdisagree.colorblendr.ui.fragments.PerAppThemeFragment;
 import com.drdisagree.colorblendr.ui.fragments.SettingsFragment;
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment;
 import com.drdisagree.colorblendr.ui.fragments.ThemeFragment;
@@ -22,29 +24,25 @@ public class FragmentUtil {
             return TAB_SELECTION.NONE;
         }
 
-        boolean reverseAnimation;
+        TAB_SELECTION direction;
 
-        if (currentFragment instanceof ColorsFragment &&
-                (newFragment instanceof ThemeFragment || newFragment instanceof StylesFragment || newFragment instanceof SettingsFragment)
-        ) {
-            reverseAnimation = false;
-        } else if (currentFragment instanceof SettingsFragment &&
-                (newFragment instanceof ThemeFragment || newFragment instanceof StylesFragment || newFragment instanceof ColorsFragment)
-        ) {
-            reverseAnimation = true;
-        } else if (currentFragment instanceof ThemeFragment) {
-            if (newFragment instanceof ColorsFragment) {
-                reverseAnimation = true;
-            } else if (newFragment instanceof StylesFragment || newFragment instanceof SettingsFragment) {
-                reverseAnimation = false;
+        if (isInGroup1(currentFragment) && !isInGroup1(newFragment)) {
+            direction = TAB_SELECTION.FROM_LEFT_TO_RIGHT;
+        } else if (isInGroup4(currentFragment) && !isInGroup4(newFragment)) {
+            direction = TAB_SELECTION.FROM_RIGHT_TO_LEFT;
+        } else if (isInGroup2(currentFragment)) {
+            if (isInGroup1(newFragment)) {
+                direction = TAB_SELECTION.FROM_RIGHT_TO_LEFT;
+            } else if (isInGroup3(newFragment) || isInGroup4(newFragment)) {
+                direction = TAB_SELECTION.FROM_LEFT_TO_RIGHT;
             } else {
                 return TAB_SELECTION.NONE;
             }
-        } else if (currentFragment instanceof StylesFragment) {
-            if (newFragment instanceof SettingsFragment) {
-                reverseAnimation = false;
-            } else if (newFragment instanceof ColorsFragment || newFragment instanceof ThemeFragment) {
-                reverseAnimation = true;
+        } else if (isInGroup3(currentFragment)) {
+            if (isInGroup4(newFragment)) {
+                direction = TAB_SELECTION.FROM_LEFT_TO_RIGHT;
+            } else if (isInGroup1(newFragment) || isInGroup2(newFragment)) {
+                direction = TAB_SELECTION.FROM_RIGHT_TO_LEFT;
             } else {
                 return TAB_SELECTION.NONE;
             }
@@ -52,7 +50,7 @@ public class FragmentUtil {
             return TAB_SELECTION.NONE;
         }
 
-        return reverseAnimation ? TAB_SELECTION.FROM_RIGHT_TO_LEFT : TAB_SELECTION.FROM_LEFT_TO_RIGHT;
+        return direction;
     }
 
     public static void setCustomAnimations(TAB_SELECTION direction, FragmentTransaction fragmentTransaction) {
@@ -76,5 +74,21 @@ public class FragmentUtil {
                     R.anim.fade_out
             );
         }
+    }
+
+    private static boolean isInGroup1(Fragment fragment) {
+        return fragment instanceof ColorsFragment || fragment instanceof PerAppThemeFragment;
+    }
+
+    private static boolean isInGroup2(Fragment fragment) {
+        return fragment instanceof ThemeFragment;
+    }
+
+    private static boolean isInGroup3(Fragment fragment) {
+        return fragment instanceof StylesFragment;
+    }
+
+    private static boolean isInGroup4(Fragment fragment) {
+        return fragment instanceof SettingsFragment || fragment instanceof AboutFragment;
     }
 }
