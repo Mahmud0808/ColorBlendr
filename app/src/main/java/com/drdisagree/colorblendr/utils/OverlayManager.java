@@ -153,7 +153,8 @@ public class OverlayManager {
         HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
 
         for (String packageName : selectedApps.keySet()) {
-            if (Boolean.TRUE.equals(selectedApps.get(packageName))) {
+            if (Boolean.TRUE.equals(selectedApps.get(packageName)) &&
+                    SystemUtil.isAppInstalled(packageName)) {
                 FabricatedOverlayResource fabricatedOverlayPerApp = getFabricatedColorsPerApp(
                         context,
                         packageName,
