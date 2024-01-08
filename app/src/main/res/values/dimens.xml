@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="reset_icon_size">20dp</dimen>
+    <dimen name="reset_icon_size">22dp</dimen>
+    <dimen name="about_button_icon_size">22dp</dimen>
 </resources>
