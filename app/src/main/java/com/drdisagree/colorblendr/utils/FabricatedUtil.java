@@ -13,7 +13,6 @@ import android.graphics.Color;
 import androidx.annotation.ColorInt;
 import androidx.core.util.Pair;
 
-import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
@@ -125,7 +124,7 @@ public class FabricatedUtil {
         PackageManager packageManager = context.getPackageManager();
         List<ApplicationInfo> applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         HashMap<String, Boolean> selectedApps = new HashMap<>();
-        selectedApps.put(BuildConfig.APPLICATION_ID, true);
+//        selectedApps.put(BuildConfig.APPLICATION_ID, true);
 
         for (ApplicationInfo appInfo : applications) {
             String packageName = appInfo.packageName;
