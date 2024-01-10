@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
+import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM;
 import static com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
@@ -22,6 +23,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -52,6 +55,40 @@ public class SettingsFragment extends Fragment {
     private static final String TAG = SettingsFragment.class.getSimpleName();
     private FragmentSettingsBinding binding;
     private SharedViewModel sharedViewModel;
+    private boolean isMasterSwitchEnabled = true;
+    private final CompoundButton.OnCheckedChangeListener masterSwitch = (buttonView, isChecked) -> {
+        if (!isMasterSwitchEnabled) {
+            buttonView.setChecked(!isChecked);
+            return;
+        }
+
+        RPrefs.putBoolean(THEMING_ENABLED, isChecked);
+        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                if (isChecked) {
+                    OverlayManager.applyFabricatedColors(requireContext());
+                } else {
+                    OverlayManager.removeFabricatedColors();
+                }
+
+                isMasterSwitchEnabled = false;
+                boolean isOverlayEnabled = OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM);
+                buttonView.setChecked(isOverlayEnabled);
+                isMasterSwitchEnabled = true;
+
+                if (isChecked != isOverlayEnabled) {
+                    Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.something_went_wrong),
+                                    Toast.LENGTH_SHORT
+                            )
+                            .show();
+                }
+            } catch (Exception ignored) {
+            }
+        }, 300);
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,27 +98,15 @@ public class SettingsFragment extends Fragment {
 
         // ColorBlendr service
         binding.themingEnabled.setTitle(getString(R.string.app_service_title, getString(R.string.app_name)));
-        binding.themingEnabled.setSwitchChecked(RPrefs.getBoolean(THEMING_ENABLED, true));
-        binding.themingEnabled.setSwitchChangeListener((buttonView, isChecked) -> {
-            RPrefs.putBoolean(THEMING_ENABLED, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    if (isChecked) {
-                        OverlayManager.applyFabricatedColors(requireContext());
-                    } else {
-                        OverlayManager.removeFabricatedColors();
-                    }
-                } catch (Exception ignored) {
-                }
-            }, 300);
-        });
+        binding.themingEnabled.setSwitchChecked(
+                RPrefs.getBoolean(THEMING_ENABLED, true) &&
+                        OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
+        );
+        binding.themingEnabled.setSwitchChangeListener(masterSwitch);
 
         // Accurate shades
         binding.accurateShades.setSwitchChecked(RPrefs.getBoolean(MONET_ACCURATE_SHADES, true));
-        binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) ->
-
-        {
+        binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_ACCURATE_SHADES, isChecked);
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
