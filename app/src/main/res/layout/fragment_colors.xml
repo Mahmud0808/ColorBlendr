@@ -39,7 +39,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center"
-                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginHorizontal="22dp"
                         android:layout_marginTop="16dp"
                         android:text="@string/wallpaper_colors"
                         android:textColor="?attr/colorOnSurface" />

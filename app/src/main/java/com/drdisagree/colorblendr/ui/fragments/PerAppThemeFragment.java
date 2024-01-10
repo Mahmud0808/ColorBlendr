@@ -203,12 +203,17 @@ public class PerAppThemeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilter.addDataScheme("package");
+        IntentFilter intentFilterWithoutScheme = new IntentFilter();
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REMOVED);
 
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(packageReceiver, intentFilter);
+        IntentFilter intentFilterWithScheme = new IntentFilter();
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilterWithScheme.addDataScheme("package");
+
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(packageReceiver, intentFilterWithoutScheme);
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(packageReceiver, intentFilterWithScheme);
     }
 
     @Override

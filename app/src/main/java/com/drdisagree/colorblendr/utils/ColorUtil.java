@@ -97,12 +97,36 @@ public class ColorUtil {
             wallpaperColorList = WallpaperUtil.getWallpaperColors(context);
         }
 
-        ArrayList<ArrayList<Integer>> palette = ColorSchemeUtil.generateColorPalette(
+        return generateModifiedColors(
                 style,
                 RPrefs.getInt(
                         MONET_SEED_COLOR,
                         wallpaperColorList.get(0)
                 ),
+                accentSaturation,
+                backgroundSaturation,
+                backgroundLightness,
+                pitchBlackTheme,
+                accurateShades,
+                modifyPitchBlack,
+                isDark
+        );
+    }
+
+    public static ArrayList<ArrayList<Integer>> generateModifiedColors(
+            ColorSchemeUtil.MONET style,
+            @ColorInt int seedColor,
+            int accentSaturation,
+            int backgroundSaturation,
+            int backgroundLightness,
+            boolean pitchBlackTheme,
+            boolean accurateShades,
+            boolean modifyPitchBlack,
+            boolean isDark
+    ) {
+        ArrayList<ArrayList<Integer>> palette = ColorSchemeUtil.generateColorPalette(
+                style,
+                seedColor,
                 isDark
         );
 

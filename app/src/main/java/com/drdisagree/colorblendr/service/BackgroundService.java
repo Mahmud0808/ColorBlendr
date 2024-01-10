@@ -91,17 +91,23 @@ public class BackgroundService extends Service {
 
     @SuppressWarnings("deprecation")
     private void registerReceivers() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
-        intentFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        intentFilter.addAction(Intent.ACTION_MY_PACKAGE_REPLACED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        intentFilter.addDataScheme("package");
+        IntentFilter intentFilterWithoutScheme = new IntentFilter();
+        intentFilterWithoutScheme.addAction(Intent.ACTION_WALLPAPER_CHANGED);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_MY_PACKAGE_REPLACED);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REPLACED);
 
-        registerReceiver(myReceiver, intentFilter);
+        IntentFilter intentFilterWithScheme = new IntentFilter();
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        intentFilterWithScheme.addDataScheme("package");
+
+        registerReceiver(myReceiver, intentFilterWithoutScheme);
+        registerReceiver(myReceiver, intentFilterWithScheme);
     }
 
     public void createNotificationChannel() {

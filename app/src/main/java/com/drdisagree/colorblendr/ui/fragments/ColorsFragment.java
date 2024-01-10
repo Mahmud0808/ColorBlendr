@@ -34,12 +34,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding;
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel;
+import com.drdisagree.colorblendr.ui.views.WallColorPreview;
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.MiscUtil;
@@ -69,9 +71,7 @@ public class ColorsFragment extends Fragment {
     private final BroadcastReceiver wallpaperChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, android.content.Intent intent) {
-            if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction())) {
-                addWallpaperColorItems();
-            }
+            addWallpaperColorItems();
         }
     };
 
@@ -377,15 +377,15 @@ public class ColorsFragment extends Fragment {
         binding.wallpaperColorsContainer.removeAllViews();
 
         for (int i = 0; i < wallpaperColorList.size(); i++) {
-            View colorPreview = LayoutInflater.from(requireContext()).inflate(R.layout.view_wallpaper_color, binding.wallpaperColorsContainer, false);
+            int size = (int) (48 * getResources().getDisplayMetrics().density);
+            int margin = (int) (12 * getResources().getDisplayMetrics().density);
 
+            WallColorPreview colorPreview = new WallColorPreview(requireContext());
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
+            layoutParams.setMargins(margin, margin, margin, margin);
+            colorPreview.setLayoutParams(layoutParams);
+            colorPreview.setMainColor(wallpaperColorList.get(i));
             colorPreview.setTag(wallpaperColorList.get(i));
-
-            View bg = colorPreview.findViewById(R.id.color_preview_bg);
-            View fg = colorPreview.findViewById(R.id.color_preview_fg);
-
-            bg.getBackground().setTint(wallpaperColorList.get(i));
-            fg.getBackground().setTint(wallpaperColorList.get(i));
 
             colorPreview.setOnClickListener(v -> {
                 RPrefs.putInt(MONET_SEED_COLOR, (Integer) colorPreview.getTag());
@@ -426,25 +426,18 @@ public class ColorsFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
-        requireActivity().registerReceiver(wallpaperChangedReceiver, filter);
-    }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
 
-    @Override
-    public void onPause() {
-        try {
-            requireActivity().unregisterReceiver(wallpaperChangedReceiver);
-        } catch (Exception ignored) {
-        }
-        super.onPause();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(wallpaperChangedReceiver, intentFilter);
     }
 
     @Override
     public void onDestroy() {
         try {
-            requireActivity().unregisterReceiver(wallpaperChangedReceiver);
+            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(wallpaperChangedReceiver);
         } catch (Exception ignored) {
+            // Receiver was not registered
         }
         super.onDestroy();
     }

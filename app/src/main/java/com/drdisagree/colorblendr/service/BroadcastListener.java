@@ -140,7 +140,8 @@ public class BroadcastListener extends BroadcastReceiver {
         }
 
         if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction()) ||
-                Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
+                Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) ||
+                Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction())) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }
