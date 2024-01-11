@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="m3_card_stroke_color" tools:override="true">
+        @color/material_dynamic_neutral_variant20
+    </color>
+</resources>
