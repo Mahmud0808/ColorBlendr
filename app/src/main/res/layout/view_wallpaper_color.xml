@@ -3,7 +3,9 @@
     android:layout_width="48dp"
     android:layout_height="48dp"
     android:layout_gravity="center"
-    android:layout_margin="12dp">
+    android:layout_margin="12dp"
+    android:clickable="false"
+    android:focusable="false">
 
     <View
         android:id="@+id/color_preview_bg"
@@ -11,13 +13,17 @@
         android:layout_height="48dp"
         android:layout_gravity="center"
         android:alpha="0.4"
-        android:background="@drawable/wallpaper_color_preview" />
+        android:background="@drawable/wallpaper_color_preview_bg"
+        android:clickable="false"
+        android:focusable="false" />
 
     <View
         android:id="@+id/color_preview_fg"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
-        android:background="@drawable/wallpaper_color_preview" />
+        android:background="@drawable/wallpaper_color_preview_fg"
+        android:clickable="false"
+        android:focusable="false" />
 
 </FrameLayout>
