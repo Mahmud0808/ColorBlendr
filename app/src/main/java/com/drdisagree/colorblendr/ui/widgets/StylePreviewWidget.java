@@ -105,6 +105,7 @@ public class StylePreviewWidget extends RelativeLayout {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
         container.setCardBackgroundColor(getCardBackgroundColor());
+        container.setStrokeWidth(isSelected ? 2 : 0);
         titleTextView.setTextColor(getTextColor(isSelected));
         descriptionTextView.setTextColor(getTextColor(isSelected));
     }

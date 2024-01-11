@@ -190,7 +190,7 @@ public class ThemeFragment extends Fragment {
     }
 
     private void updatePreviewColors() {
-        ArrayList<ArrayList<Integer>> colors = generateModifiedColors(
+        ArrayList<ArrayList<Integer>> colorPalette = generateModifiedColors(
                 monetAccentSaturation[0],
                 monetBackgroundSaturation[0],
                 monetBackgroundLightness[0],
@@ -198,19 +198,43 @@ public class ThemeFragment extends Fragment {
                 RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
         );
 
-        if (colors != null) {
-            boolean isDark = SystemUtil.isDarkMode();
+        if (colorPalette != null) {
+            boolean isDarkMode = SystemUtil.isDarkMode();
 
-            binding.colorAccent1.colorPreviewBg.getBackground().setTint(colors.get(0).get(isDark ? 4 : 8));
-            binding.colorAccent1.colorPreviewFg.getBackground().setTint(colors.get(0).get(isDark ? 4 : 8));
-            binding.colorAccent2.colorPreviewBg.getBackground().setTint(colors.get(1).get(isDark ? 4 : 8));
-            binding.colorAccent2.colorPreviewFg.getBackground().setTint(colors.get(1).get(isDark ? 4 : 8));
-            binding.colorAccent3.colorPreviewBg.getBackground().setTint(colors.get(2).get(isDark ? 4 : 8));
-            binding.colorAccent3.colorPreviewFg.getBackground().setTint(colors.get(2).get(isDark ? 4 : 8));
-            binding.colorNeutral1.colorPreviewBg.getBackground().setTint(colors.get(3).get(isDark ? 9 : 3));
-            binding.colorNeutral1.colorPreviewFg.getBackground().setTint(colors.get(3).get(isDark ? 9 : 3));
-            binding.colorNeutral2.colorPreviewBg.getBackground().setTint(colors.get(4).get(isDark ? 9 : 3));
-            binding.colorNeutral2.colorPreviewFg.getBackground().setTint(colors.get(4).get(isDark ? 9 : 3));
+            binding.colorAccent1.colorContainer.setHalfCircleColor(colorPalette.get(0).get(4));
+            binding.colorAccent1.colorContainer.setFirstQuarterCircleColor(colorPalette.get(0).get(5));
+            binding.colorAccent1.colorContainer.setSecondQuarterCircleColor(colorPalette.get(0).get(6));
+            binding.colorAccent1.colorContainer.setSquareColor(colorPalette.get(0).get(!isDarkMode ? 3 : 9));
+            binding.colorAccent1.colorContainer.setPadding(8);
+            binding.colorAccent1.colorContainer.invalidateColors();
+
+            binding.colorAccent2.colorContainer.setHalfCircleColor(colorPalette.get(1).get(4));
+            binding.colorAccent2.colorContainer.setFirstQuarterCircleColor(colorPalette.get(1).get(5));
+            binding.colorAccent2.colorContainer.setSecondQuarterCircleColor(colorPalette.get(1).get(6));
+            binding.colorAccent2.colorContainer.setSquareColor(colorPalette.get(1).get(!isDarkMode ? 3 : 9));
+            binding.colorAccent2.colorContainer.setPadding(8);
+            binding.colorAccent2.colorContainer.invalidateColors();
+
+            binding.colorAccent3.colorContainer.setHalfCircleColor(colorPalette.get(2).get(4));
+            binding.colorAccent3.colorContainer.setFirstQuarterCircleColor(colorPalette.get(2).get(5));
+            binding.colorAccent3.colorContainer.setSecondQuarterCircleColor(colorPalette.get(2).get(6));
+            binding.colorAccent3.colorContainer.setSquareColor(colorPalette.get(2).get(!isDarkMode ? 3 : 9));
+            binding.colorAccent3.colorContainer.setPadding(8);
+            binding.colorAccent3.colorContainer.invalidateColors();
+
+            binding.colorNeutral1.colorContainer.setHalfCircleColor(colorPalette.get(3).get(4));
+            binding.colorNeutral1.colorContainer.setFirstQuarterCircleColor(colorPalette.get(3).get(5));
+            binding.colorNeutral1.colorContainer.setSecondQuarterCircleColor(colorPalette.get(3).get(6));
+            binding.colorNeutral1.colorContainer.setSquareColor(colorPalette.get(3).get(!isDarkMode ? 3 : 9));
+            binding.colorNeutral1.colorContainer.setPadding(8);
+            binding.colorNeutral1.colorContainer.invalidateColors();
+
+            binding.colorNeutral2.colorContainer.setHalfCircleColor(colorPalette.get(4).get(4));
+            binding.colorNeutral2.colorContainer.setFirstQuarterCircleColor(colorPalette.get(4).get(5));
+            binding.colorNeutral2.colorContainer.setSecondQuarterCircleColor(colorPalette.get(4).get(6));
+            binding.colorNeutral2.colorContainer.setSquareColor(colorPalette.get(4).get(!isDarkMode ? 3 : 9));
+            binding.colorNeutral2.colorContainer.setPadding(8);
+            binding.colorNeutral2.colorContainer.invalidateColors();
         }
     }
 

@@ -194,7 +194,7 @@ public class WallColorPreview extends View {
                 setHalfCircleColor(colorPalette.get(0).get(4));
                 setFirstQuarterCircleColor(colorPalette.get(2).get(5));
                 setSecondQuarterCircleColor(colorPalette.get(1).get(6));
-                setSquareColor(colorPalette.get(4).get(!isDarkMode ? 2 : 9));
+                setSquareColor(colorPalette.get(4).get(!isDarkMode ? 3 : 9));
                 setCenterCircleColor(color);
                 invalidateColors();
             } catch (Exception ignored) {

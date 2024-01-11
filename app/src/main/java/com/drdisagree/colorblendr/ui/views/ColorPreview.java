@@ -16,6 +16,7 @@ public class ColorPreview extends View {
 
     private Paint squarePaint, secondQuarterCirclePaint, firstQuarterCirclePaint, halfCirclePaint;
     private RectF squareRect, circleRect;
+    private float padding;
 
     public ColorPreview(Context context) {
         super(context);
@@ -34,6 +35,8 @@ public class ColorPreview extends View {
 
     private void init(Context context) {
         boolean isDarkMode = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
+
+        padding = 10 * getResources().getDisplayMetrics().density;
 
         squareRect = new RectF();
         circleRect = new RectF();
@@ -70,7 +73,6 @@ public class ColorPreview extends View {
         squareRect.set(0, 0, width, height);
         canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint);
 
-        float padding = 10 * getResources().getDisplayMetrics().density;
         float margin = 0 * getResources().getDisplayMetrics().density;
 
         circleRect.set(padding, padding, width - padding, height - padding - margin);
@@ -101,5 +103,9 @@ public class ColorPreview extends View {
 
     public void invalidateColors() {
         invalidate();
+    }
+
+    public void setPadding(float padding) {
+        this.padding = padding * getResources().getDisplayMetrics().density;
     }
 }

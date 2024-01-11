@@ -7,33 +7,11 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <FrameLayout
+    <com.drdisagree.colorblendr.ui.views.ColorPreview
+        android:id="@+id/color_container"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:clickable="false"
-        android:focusable="false">
-
-        <View
-            android:id="@+id/color_preview_bg"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:alpha="0.4"
-            android:background="@drawable/wallpaper_color_preview_bg"
-            android:clickable="false"
-            android:focusable="false" />
-
-        <View
-            android:id="@+id/color_preview_fg"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_gravity="center"
-            android:background="@drawable/wallpaper_color_preview_fg"
-            android:clickable="false"
-            android:focusable="false" />
-
-    </FrameLayout>
+        android:layout_gravity="center" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
