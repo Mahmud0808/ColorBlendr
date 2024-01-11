@@ -75,10 +75,10 @@ public class DynamicColors {
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_surface_variant", Pair.create(4, Pair.create(10, 2))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("outline", Pair.create(4, Pair.create(7, 6))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("outline_variant", Pair.create(4, Pair.create(4, 9))));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("error", Pair.create("#1EB326", "#B5F2B8")));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_error", Pair.create("#FFFFFF", "#106014")));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("error_container", Pair.create("#DCF9DE", "#188C1D")));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_error_container", Pair.create("#0B410E", "#DCF9DE")));
+//        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("error", Pair.create("#1EB326", "#B5F2B8")));
+//        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_error", Pair.create("#FFFFFF", "#106014")));
+//        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("error_container", Pair.create("#DCF9DE", "#188C1D")));
+//        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_error_container", Pair.create("#0B410E", "#DCF9DE")));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("control_activated", Pair.create(1, Pair.create(8, 4))));
 //        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("control_normal", ));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("control_highlight", Pair.create("#1F000000", "#33FFFFFF")));
