@@ -15,4 +15,17 @@
         <item>@string/monet_content</item>
         <item>@string/monet_fruitsalad</item>
     </string-array>
+
+    <string-array name="basic_color_codes" translatable="false">
+        <item>#f9d99a</item>
+        <item>#fa5f49</item>
+        <item>#c5c6c8</item>
+        <item>#d8af97</item>
+        <item>#d8f79a</item>
+        <item>#95b8f6</item>
+        <item>#7ff9c7</item>
+        <item>#f15fff</item>
+        <item>#f7cae4</item>
+        <item>#b186f1</item>
+    </string-array>
 </resources>

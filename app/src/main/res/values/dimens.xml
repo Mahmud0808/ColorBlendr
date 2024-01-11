@@ -2,4 +2,5 @@
 <resources>
     <dimen name="reset_icon_size">22dp</dimen>
     <dimen name="about_button_icon_size">22dp</dimen>
+    <dimen name="default_corner_radius">12dp</dimen>
 </resources>

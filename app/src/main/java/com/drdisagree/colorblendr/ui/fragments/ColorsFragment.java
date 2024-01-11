@@ -18,6 +18,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -51,7 +52,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog;
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
@@ -71,7 +75,9 @@ public class ColorsFragment extends Fragment {
     private final BroadcastReceiver wallpaperChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, android.content.Intent intent) {
-            addWallpaperColorItems();
+            if (binding.colorsToggleGroup.getCheckedButtonId() == R.id.wallpaper_colors_button) {
+                addWallpaperColorItems();
+            }
         }
     };
 
@@ -111,6 +117,28 @@ public class ColorsFragment extends Fragment {
         sharedViewModel.getBooleanStates().observe(getViewLifecycleOwner(), this::updateBooleanStates);
         sharedViewModel.getVisibilityStates().observe(getViewLifecycleOwner(), this::updateViewVisibility);
 
+        // Color codes
+        binding.colorsToggleGroup.check(
+                RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false) ?
+                        R.id.basic_colors_button :
+                        R.id.wallpaper_colors_button
+        );
+        binding.colorsToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                if (checkedId == R.id.wallpaper_colors_button) {
+                    addWallpaperColorItems();
+                } else {
+                    addBasicColorItems();
+                }
+            }
+        });
+        if (RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+            addBasicColorItems();
+        } else {
+            addWallpaperColorItems();
+        }
+
+        // Color table preview
         initColorTablePreview(colorTableRows);
 
         // Primary color
@@ -151,8 +179,6 @@ public class ColorsFragment extends Fragment {
 
         // Force per app theme
         binding.perAppTheme.setOnClickListener(v -> HomeFragment.replaceFragment(new PerAppThemeFragment()));
-
-        addWallpaperColorItems();
     }
 
     private void updateBooleanStates(Map<String, Boolean> stringBooleanMap) {
@@ -354,29 +380,34 @@ public class ColorsFragment extends Fragment {
 
     private void addWallpaperColorItems() {
         String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
-        if (wallpaperColors == null) {
-            binding.wallpaperColorsCard.setVisibility(View.GONE);
-            return;
+        ArrayList<Integer> wallpaperColorList;
+
+        if (wallpaperColors != null) {
+            wallpaperColorList = Const.GSON.fromJson(
+                    wallpaperColors,
+                    new TypeToken<ArrayList<Integer>>() {
+                    }.getType()
+            );
         } else {
-            binding.wallpaperColorsCard.setVisibility(View.VISIBLE);
+            wallpaperColorList = ColorUtil.getMonetAccentColors();
         }
 
-        ArrayList<Integer> wallpaperColorList = Const.GSON.fromJson(
-                wallpaperColors,
-                new TypeToken<ArrayList<Integer>>() {
-                }.getType()
-        );
+        addColorsToContainer(wallpaperColorList, true);
+    }
 
-        if (wallpaperColorList == null || wallpaperColorList.size() <= 1) {
-            binding.wallpaperColorsCard.setVisibility(View.GONE);
-            return;
-        } else {
-            binding.wallpaperColorsCard.setVisibility(View.VISIBLE);
-        }
+    private void addBasicColorItems() {
+        String[] basicColors = getResources().getStringArray(R.array.basic_color_codes);
+        List<Integer> basicColorList = Arrays.stream(basicColors)
+                .map(Color::parseColor)
+                .collect(Collectors.toList());
 
-        binding.wallpaperColorsContainer.removeAllViews();
+        addColorsToContainer(new ArrayList<>(basicColorList), false);
+    }
 
-        for (int i = 0; i < wallpaperColorList.size(); i++) {
+    private void addColorsToContainer(ArrayList<Integer> colorList, boolean isWallpaperColors) {
+        binding.colorsContainer.removeAllViews();
+
+        for (int i = 0; i < colorList.size(); i++) {
             int size = (int) (48 * getResources().getDisplayMetrics().density);
             int margin = (int) (12 * getResources().getDisplayMetrics().density);
 
@@ -384,22 +415,24 @@ public class ColorsFragment extends Fragment {
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
             layoutParams.setMargins(margin, margin, margin, margin);
             colorPreview.setLayoutParams(layoutParams);
-            colorPreview.setMainColor(wallpaperColorList.get(i));
-            colorPreview.setTag(wallpaperColorList.get(i));
-            colorPreview.setSelected(wallpaperColorList.get(i) == RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE));
+            colorPreview.setMainColor(colorList.get(i));
+            colorPreview.setTag(colorList.get(i));
+            colorPreview.setSelected(colorList.get(i) == RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE));
 
             colorPreview.setOnClickListener(v -> {
                 RPrefs.putInt(MONET_SEED_COLOR, (Integer) colorPreview.getTag());
+                RPrefs.putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors);
                 ArrayList<ArrayList<Integer>> modifiedColors = generateModifiedColors();
                 updatePreviewColors(
                         colorTableRows,
                         modifiedColors
                 );
+                binding.seedColorPicker.setPreviewColor((Integer) colorPreview.getTag());
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
                 OverlayManager.applyFabricatedColors(requireContext());
             });
 
-            binding.wallpaperColorsContainer.addView(colorPreview);
+            binding.colorsContainer.addView(colorPreview);
         }
     }
 

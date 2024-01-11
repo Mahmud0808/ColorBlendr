@@ -76,7 +76,7 @@
                 android:layout_marginEnd="6dp"
                 android:layout_weight="1"
                 android:text="@string/backup"
-                app:cornerRadius="12dp"
+                app:cornerRadius="@dimen/default_corner_radius"
                 app:icon="@drawable/ic_backup"
                 app:iconGravity="textStart" />
 
@@ -87,7 +87,7 @@
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
                 android:text="@string/restore"
-                app:cornerRadius="12dp"
+                app:cornerRadius="@dimen/default_corner_radius"
                 app:icon="@drawable/ic_restore"
                 app:iconGravity="textStart" />
 

@@ -118,6 +118,7 @@
     <string name="styles">Styles</string>
     <string name="theme">Theme</string>
     <string name="wallpaper_colors">Wallpaper colors</string>
+    <string name="basic_colors">Basic colors</string>
     <string name="force_per_app_theme_title">Force per app theme</string>
     <string name="force_per_app_theme_desc">Apply custom colors to specific apps which do not follow system monet</string>
     <string name="back">Back</string>
