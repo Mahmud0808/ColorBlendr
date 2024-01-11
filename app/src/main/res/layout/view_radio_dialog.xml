@@ -22,9 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/container_margin_horizontal"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="@dimen/container_margin_bottom"
             android:gravity="start|center" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -35,7 +35,7 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/container_margin_horizontal"
             android:layout_marginBottom="16dp"
             android:fadingEdgeLength="24dp"
             android:paddingTop="16dp"

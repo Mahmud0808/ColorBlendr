@@ -116,7 +116,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="@dimen/container_margin_bottom"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:cardMaxElevation="0dp"
                 app:strokeWidth="0dp">
@@ -171,7 +171,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginHorizontal="@dimen/container_margin_horizontal"
                         android:background="?attr/colorSurface" />
 
                     <LinearLayout

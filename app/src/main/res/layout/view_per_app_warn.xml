@@ -4,7 +4,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
+    android:layout_marginHorizontal="@dimen/container_margin_horizontal"
     android:layout_marginVertical="12dp"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorPrimaryContainer"

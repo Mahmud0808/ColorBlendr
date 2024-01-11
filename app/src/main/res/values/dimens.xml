@@ -3,4 +3,6 @@
     <dimen name="reset_icon_size">22dp</dimen>
     <dimen name="about_button_icon_size">22dp</dimen>
     <dimen name="default_corner_radius">12dp</dimen>
+    <dimen name="container_margin_horizontal">16dp</dimen>
+    <dimen name="container_margin_bottom">12dp</dimen>
 </resources>
