@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
@@ -31,9 +32,11 @@ public class WallColorPreview extends View {
 
     private Context context;
     private boolean isDarkMode;
-    private Paint squarePaint, centerCirclePaint, centerClearCirclePaint, secondQuarterCirclePaint, firstQuarterCirclePaint, halfCirclePaint;
+    private Paint tickPaint, squarePaint, centerCirclePaint, centerClearCirclePaint, secondQuarterCirclePaint, firstQuarterCirclePaint, halfCirclePaint;
     private RectF squareRect, circleRect;
+    private Path tickPath;
     private float clearCircleRadius, circleRadius;
+    private boolean isSelected = false;
 
     public WallColorPreview(Context context) {
         super(context);
@@ -59,6 +62,7 @@ public class WallColorPreview extends View {
 
         squareRect = new RectF();
         circleRect = new RectF();
+        tickPath = new Path();
 
         squarePaint = new Paint();
         squarePaint.setColor(ContextCompat.getColor(context,
@@ -94,6 +98,16 @@ public class WallColorPreview extends View {
                         com.google.android.material.R.color.material_dynamic_neutral10
         ));
         centerClearCirclePaint.setStyle(Paint.Style.FILL);
+
+        tickPaint = new Paint();
+        tickPaint.setColor(ContextCompat.getColor(context,
+                !isDarkMode ?
+                        com.google.android.material.R.color.material_dynamic_neutral99 :
+                        com.google.android.material.R.color.material_dynamic_neutral10
+        ));
+        tickPaint.setStyle(Paint.Style.STROKE);
+        tickPaint.setStrokeWidth(4);
+        tickPaint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     @Override
@@ -124,6 +138,13 @@ public class WallColorPreview extends View {
 
         circleRect.set(width / 2f - circleRadius, height / 2f - circleRadius, width / 2f + circleRadius, height / 2f + circleRadius);
         canvas.drawCircle(width / 2f, height / 2f, circleRadius, centerCirclePaint);
+
+        if (isSelected) {
+            tickPath.moveTo(width / 2f - circleRadius / 2, height / 2f);
+            tickPath.lineTo(width / 2f - circleRadius / 6, height / 2f + circleRadius / 3);
+            tickPath.lineTo(width / 2f + circleRadius / 2, height / 2f - circleRadius / 3);
+            canvas.drawPath(tickPath, tickPaint);
+        }
     }
 
     private void setSquareColor(@ColorInt int color) {
@@ -145,6 +166,7 @@ public class WallColorPreview extends View {
 
     private void setCenterCircleColor(@ColorInt int color) {
         centerCirclePaint.setColor(color);
+        tickPaint.setColor(ColorUtil.calculateTextColor(color));
     }
 
     private void invalidateColors() {
@@ -178,5 +200,10 @@ public class WallColorPreview extends View {
             } catch (Exception ignored) {
             }
         }).start();
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+        invalidateColors();
     }
 }

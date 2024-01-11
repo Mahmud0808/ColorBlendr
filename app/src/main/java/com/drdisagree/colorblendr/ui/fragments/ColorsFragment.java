@@ -386,6 +386,7 @@ public class ColorsFragment extends Fragment {
             colorPreview.setLayoutParams(layoutParams);
             colorPreview.setMainColor(wallpaperColorList.get(i));
             colorPreview.setTag(wallpaperColorList.get(i));
+            colorPreview.setSelected(wallpaperColorList.get(i) == RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE));
 
             colorPreview.setOnClickListener(v -> {
                 RPrefs.putInt(MONET_SEED_COLOR, (Integer) colorPreview.getTag());
