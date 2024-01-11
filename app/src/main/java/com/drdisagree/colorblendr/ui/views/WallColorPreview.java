@@ -10,6 +10,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -37,6 +38,7 @@ public class WallColorPreview extends View {
     private Path tickPath;
     private float clearCircleRadius, circleRadius;
     private boolean isSelected = false;
+    private ArrayList<ArrayList<Integer>> colorPalette;
 
     public WallColorPreview(Context context) {
         super(context);
@@ -166,7 +168,12 @@ public class WallColorPreview extends View {
 
     private void setCenterCircleColor(@ColorInt int color) {
         centerCirclePaint.setColor(color);
-        tickPaint.setColor(ColorUtil.calculateTextColor(color));
+        @ColorInt int textColor = ColorUtil.calculateTextColor(color);
+        tickPaint.setColor(
+                colorPalette != null ?
+                        colorPalette.get(4).get(textColor == Color.WHITE ? 2 : 11) :
+                        textColor
+        );
     }
 
     private void invalidateColors() {
@@ -176,7 +183,7 @@ public class WallColorPreview extends View {
     public void setMainColor(@ColorInt int color) {
         new Thread(() -> {
             try {
-                ArrayList<ArrayList<Integer>> colorPalette = ColorUtil.generateModifiedColors(
+                colorPalette = ColorUtil.generateModifiedColors(
                         ColorSchemeUtil.stringToEnumMonetStyle(
                                 context,
                                 RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
