@@ -136,4 +136,9 @@
     <string name="app_service_desc_off">Theming is inactive</string>
     <string name="tint_text_title">Tint text color</string>
     <string name="tint_text_desc">Maintain a subtle tint for text</string>
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
+    <string name="tertiary">Tertiary</string>
+    <string name="neutral_1">Neutral 1</string>
+    <string name="neutral_2">Neutral 2</string>
 </resources>

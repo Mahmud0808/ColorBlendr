@@ -46,6 +46,13 @@ public class ThemeFragment extends Fragment {
 
         MiscUtil.setToolbarTitle(requireContext(), R.string.theme, true, binding.header.toolbar);
 
+        // Color preview titles
+        binding.colorAccent1.title.setText(R.string.primary);
+        binding.colorAccent2.title.setText(R.string.secondary);
+        binding.colorAccent3.title.setText(R.string.tertiary);
+        binding.colorNeutral1.title.setText(R.string.neutral_1);
+        binding.colorNeutral2.title.setText(R.string.neutral_2);
+
         // Monet primary accent saturation
         binding.accentSaturation.setSliderValue(RPrefs.getInt(MONET_ACCENT_SATURATION, 100));
 

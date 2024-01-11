@@ -1,29 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="12dp"
-    android:clickable="false"
-    android:focusable="false">
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <View
-        android:id="@+id/color_preview_bg"
+    <FrameLayout
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center"
-        android:alpha="0.4"
-        android:background="@drawable/wallpaper_color_preview_bg"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false">
 
-    <View
-        android:id="@+id/color_preview_fg"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        <View
+            android:id="@+id/color_preview_bg"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:alpha="0.4"
+            android:background="@drawable/wallpaper_color_preview_bg"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <View
+            android:id="@+id/color_preview_fg"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/wallpaper_color_preview_fg"
+            android:clickable="false"
+            android:focusable="false" />
+
+    </FrameLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        style="?attr/textAppearanceBodySmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/wallpaper_color_preview_fg"
-        android:clickable="false"
-        android:focusable="false" />
+        android:layout_marginTop="6dp"
+        android:alpha="0.8"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnBackground" />
 
-</FrameLayout>
+</LinearLayout>
