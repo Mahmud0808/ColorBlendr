@@ -57,8 +57,8 @@ public class WallColorPreview extends View {
         this.context = context;
         isDarkMode = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
 
-        circleRadius = 8 * getResources().getDisplayMetrics().density;
-        clearCircleRadius = circleRadius + 2 * getResources().getDisplayMetrics().density;
+        circleRadius = 10 * getResources().getDisplayMetrics().density;
+        clearCircleRadius = circleRadius + 0 * getResources().getDisplayMetrics().density;
 
         squareRect = new RectF();
         circleRect = new RectF();
@@ -122,7 +122,7 @@ public class WallColorPreview extends View {
         canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint);
 
         float padding = 6 * getResources().getDisplayMetrics().density;
-        float margin = 2 * getResources().getDisplayMetrics().density;
+        float margin = 0 * getResources().getDisplayMetrics().density;
 
         circleRect.set(padding, padding, width - padding, height - padding - margin);
         canvas.drawArc(circleRect, 180, 180, true, halfCirclePaint);
@@ -191,9 +191,9 @@ public class WallColorPreview extends View {
                         SystemUtil.isDarkMode()
                 );
 
-                setHalfCircleColor(colorPalette.get(0).get(!isDarkMode ? 4 : 5));
-                setFirstQuarterCircleColor(colorPalette.get(2).get(!isDarkMode ? 4 : 5));
-                setSecondQuarterCircleColor(colorPalette.get(1).get(!isDarkMode ? 4 : 5));
+                setHalfCircleColor(colorPalette.get(0).get(4));
+                setFirstQuarterCircleColor(colorPalette.get(2).get(5));
+                setSecondQuarterCircleColor(colorPalette.get(1).get(6));
                 setSquareColor(colorPalette.get(4).get(!isDarkMode ? 2 : 9));
                 setCenterCircleColor(color);
                 invalidateColors();

@@ -139,9 +139,9 @@ public class StylePreviewWidget extends RelativeLayout {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     boolean isDarkMode = SystemUtil.isDarkMode();
 
-                    colorContainer.setHalfCircleColor(colorPalette.get(0).get(!isDarkMode ? 4 : 5));
-                    colorContainer.setFirstQuarterCircleColor(colorPalette.get(2).get(!isDarkMode ? 4 : 5));
-                    colorContainer.setSecondQuarterCircleColor(colorPalette.get(1).get(!isDarkMode ? 4 : 5));
+                    colorContainer.setHalfCircleColor(colorPalette.get(0).get(4));
+                    colorContainer.setFirstQuarterCircleColor(colorPalette.get(2).get(5));
+                    colorContainer.setSecondQuarterCircleColor(colorPalette.get(1).get(6));
                     colorContainer.setSquareColor(colorPalette.get(4).get(!isDarkMode ? 2 : 9));
                     colorContainer.invalidateColors();
                 });

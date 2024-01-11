@@ -71,7 +71,7 @@ public class ColorPreview extends View {
         canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint);
 
         float padding = 10 * getResources().getDisplayMetrics().density;
-        float margin = 2 * getResources().getDisplayMetrics().density;
+        float margin = 0 * getResources().getDisplayMetrics().density;
 
         circleRect.set(padding, padding, width - padding, height - padding - margin);
         canvas.drawArc(circleRect, 180, 180, true, halfCirclePaint);
