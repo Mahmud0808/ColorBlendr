@@ -11,16 +11,16 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
-public class MyMaterialButtonToggleGroup extends MaterialButtonToggleGroup {
-    public MyMaterialButtonToggleGroup(@NonNull Context context) {
+public class RoundedMaterialButtonToggleGroup extends MaterialButtonToggleGroup {
+    public RoundedMaterialButtonToggleGroup(@NonNull Context context) {
         super(context);
     }
 
-    public MyMaterialButtonToggleGroup(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public RoundedMaterialButtonToggleGroup(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MyMaterialButtonToggleGroup(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RoundedMaterialButtonToggleGroup(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

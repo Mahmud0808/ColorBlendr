@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.drdisagree.colorblendr.ui.views.MyMaterialButtonToggleGroup
+                    <com.drdisagree.colorblendr.ui.views.RoundedMaterialButtonToggleGroup
                         android:id="@+id/colors_toggle_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                             android:text="@string/basic_colors"
                             android:textSize="13sp" />
 
-                    </com.drdisagree.colorblendr.ui.views.MyMaterialButtonToggleGroup>
+                    </com.drdisagree.colorblendr.ui.views.RoundedMaterialButtonToggleGroup>
 
                     <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/colors_container"
