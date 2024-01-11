@@ -29,15 +29,14 @@
         <attr name="summaryOffText" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="SliderWidget">
+    <declare-styleable name="SeekbarWidget">
         <attr name="titleText" />
         <attr name="summaryText" />
-        <attr name="sliderStepSize" format="integer" />
-        <attr name="sliderValue" format="integer" />
-        <attr name="sliderValueFrom" format="integer" />
-        <attr name="sliderValueTo" format="integer" />
-        <attr name="valueFormat" format="string" />
-        <attr name="sliderDefaultValue" format="integer" />
+        <attr name="seekbarProgress" format="integer" />
+        <attr name="seekbarMinProgress" format="integer" />
+        <attr name="seekbarMaxProgress" format="integer" />
+        <attr name="progressFormat" format="string" />
+        <attr name="seekbarDefaultProgress" format="integer" />
         <attr name="isDecimalFormat" format="boolean" />
         <attr name="decimalFormat" format="string" />
         <attr name="outputScale" format="float" />

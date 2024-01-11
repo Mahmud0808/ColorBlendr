@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +29,6 @@ import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.MiscUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.SystemUtil;
-import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
 
@@ -54,21 +54,22 @@ public class ThemeFragment extends Fragment {
         binding.colorNeutral2.title.setText(R.string.neutral_2);
 
         // Monet primary accent saturation
-        binding.accentSaturation.setSliderValue(RPrefs.getInt(MONET_ACCENT_SATURATION, 100));
-
-        binding.accentSaturation.setOnSliderChangeListener((slider, value, fromUser) -> {
-            monetAccentSaturation[0] = (int) value;
-            updatePreviewColors();
-        });
-
-        binding.accentSaturation.setOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+        binding.accentSaturation.setSeekbarProgress(RPrefs.getInt(MONET_ACCENT_SATURATION, 100));
+        binding.accentSaturation.setOnSeekbarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onStartTrackingTouch(@NonNull Slider slider) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                binding.accentSaturation.setSelectedProgress();
+                monetAccentSaturation[0] = progress;
+                updatePreviewColors();
             }
 
             @Override
-            public void onStopTrackingTouch(@NonNull Slider slider) {
-                monetAccentSaturation[0] = (int) slider.getValue();
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                monetAccentSaturation[0] = seekBar.getProgress();
                 RPrefs.putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -96,21 +97,22 @@ public class ThemeFragment extends Fragment {
         });
 
         // Monet background saturation
-        binding.backgroundSaturation.setSliderValue(RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100));
-
-        binding.backgroundSaturation.setOnSliderChangeListener((slider, value, fromUser) -> {
-            monetBackgroundSaturation[0] = (int) value;
-            updatePreviewColors();
-        });
-
-        binding.backgroundSaturation.setOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+        binding.backgroundSaturation.setSeekbarProgress(RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100));
+        binding.backgroundSaturation.setOnSeekbarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onStartTrackingTouch(@NonNull Slider slider) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                binding.backgroundSaturation.setSelectedProgress();
+                monetBackgroundSaturation[0] = progress;
+                updatePreviewColors();
             }
 
             @Override
-            public void onStopTrackingTouch(@NonNull Slider slider) {
-                monetBackgroundSaturation[0] = (int) slider.getValue();
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull SeekBar seekBar) {
+                monetBackgroundSaturation[0] = seekBar.getProgress();
                 RPrefs.putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -138,21 +140,22 @@ public class ThemeFragment extends Fragment {
         });
 
         // Monet background lightness
-        binding.backgroundLightness.setSliderValue(RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100));
-
-        binding.backgroundLightness.setOnSliderChangeListener((slider, value, fromUser) -> {
-            monetBackgroundLightness[0] = (int) value;
-            updatePreviewColors();
-        });
-
-        binding.backgroundLightness.setOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+        binding.backgroundLightness.setSeekbarProgress(RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100));
+        binding.backgroundLightness.setOnSeekbarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onStartTrackingTouch(@NonNull Slider slider) {
+            public void onProgressChanged(@NonNull SeekBar seekBar, int progress, boolean fromUser) {
+                binding.backgroundLightness.setSelectedProgress();
+                monetBackgroundLightness[0] = progress;
+                updatePreviewColors();
             }
 
             @Override
-            public void onStopTrackingTouch(@NonNull Slider slider) {
-                monetBackgroundLightness[0] = (int) slider.getValue();
+            public void onStartTrackingTouch(@NonNull SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull SeekBar seekBar) {
+                monetBackgroundLightness[0] = seekBar.getProgress();
                 RPrefs.putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0]);
                 RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {

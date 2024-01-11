@@ -36,4 +36,11 @@
     </style>
 
     <style name="Toolbar.TitleText" parent="TextAppearance.Material3.TitleLarge" />
+
+    <style name="Seekbar" parent="Widget.AppCompat.SeekBar">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:thumb">@null</item>
+        <item name="android:progressDrawable">@drawable/seekbar_track</item>
+    </style>
 </resources>

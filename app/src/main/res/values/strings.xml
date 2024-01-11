@@ -142,4 +142,5 @@
     <string name="tertiary">Tertiary</string>
     <string name="neutral_1">Neutral 1</string>
     <string name="neutral_2">Neutral 2</string>
+    <string name="long_press_to_reset">Long press to reset</string>
 </resources>
