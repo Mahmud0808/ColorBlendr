@@ -5,4 +5,5 @@
     <dimen name="default_corner_radius">12dp</dimen>
     <dimen name="container_margin_horizontal">16dp</dimen>
     <dimen name="container_margin_bottom">12dp</dimen>
+    <dimen name="seekbar_height">80dp</dimen>
 </resources>

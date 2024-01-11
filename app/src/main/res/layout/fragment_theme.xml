@@ -73,50 +73,47 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.drdisagree.colorblendr.ui.widgets.SliderWidget
+            <com.drdisagree.colorblendr.ui.widgets.SeekbarWidget
                 android:id="@+id/accent_saturation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:decimalFormat="#.##"
                 app:isDecimalFormat="true"
                 app:outputScale="100.0"
-                app:sliderDefaultValue="100"
-                app:sliderStepSize="1"
-                app:sliderValue="100"
-                app:sliderValueFrom="0"
-                app:sliderValueTo="200"
-                app:titleText="@string/accent_saturation"
-                app:valueFormat="x" />
+                app:progressFormat="x"
+                app:seekbarDefaultProgress="100"
+                app:seekbarMaxProgress="200"
+                app:seekbarMinProgress="0"
+                app:seekbarProgress="100"
+                app:titleText="@string/accent_saturation" />
 
-            <com.drdisagree.colorblendr.ui.widgets.SliderWidget
+            <com.drdisagree.colorblendr.ui.widgets.SeekbarWidget
                 android:id="@+id/background_saturation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:decimalFormat="#.##"
                 app:isDecimalFormat="true"
                 app:outputScale="100.0"
-                app:sliderDefaultValue="100"
-                app:sliderStepSize="1"
-                app:sliderValue="100"
-                app:sliderValueFrom="0"
-                app:sliderValueTo="200"
-                app:titleText="@string/background_saturation"
-                app:valueFormat="x" />
+                app:progressFormat="x"
+                app:seekbarDefaultProgress="100"
+                app:seekbarMaxProgress="200"
+                app:seekbarMinProgress="0"
+                app:seekbarProgress="100"
+                app:titleText="@string/background_saturation" />
 
-            <com.drdisagree.colorblendr.ui.widgets.SliderWidget
+            <com.drdisagree.colorblendr.ui.widgets.SeekbarWidget
                 android:id="@+id/background_lightness"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:decimalFormat="#.##"
                 app:isDecimalFormat="true"
                 app:outputScale="100.0"
-                app:sliderDefaultValue="100"
-                app:sliderStepSize="1"
-                app:sliderValue="100"
-                app:sliderValueFrom="0"
-                app:sliderValueTo="200"
-                app:titleText="@string/background_lightness"
-                app:valueFormat="x" />
+                app:progressFormat="x"
+                app:seekbarDefaultProgress="100"
+                app:seekbarMaxProgress="200"
+                app:seekbarMinProgress="0"
+                app:seekbarProgress="100"
+                app:titleText="@string/background_lightness" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

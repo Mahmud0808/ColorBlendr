@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/seekbar_height"
+    android:layout_marginHorizontal="@dimen/container_margin_horizontal"
+    android:layout_marginBottom="@dimen/container_margin_bottom"
+    android:clickable="true"
+    app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:cardMaxElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <SeekBar
+        android:id="@+id/seekbar_widget"
+        style="@style/Seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:max="100"
+        android:min="0"
+        android:progress="50" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|center"
+        android:gravity="start|center"
+        android:orientation="vertical"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="16dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            style="?attr/textAppearanceTitleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center"
+            android:textColor="?attr/colorOnPrimaryContainer" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/summary"
+            style="?attr/textAppearanceBodySmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center"
+            android:layout_marginTop="2dp"
+            android:alpha="0.8"
+            android:textColor="?attr/colorOnPrimaryContainer" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/reset"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="end|center"
+        android:layout_marginVertical="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="22dp"
+        android:alpha="0.6"
+        android:contentDescription="@string/reset"
+        android:foreground="?attr/selectableItemBackground"
+        android:src="@drawable/ic_reset"
+        app:tint="?attr/colorOnPrimaryContainer" />
+
+</com.google.android.material.card.MaterialCardView>
