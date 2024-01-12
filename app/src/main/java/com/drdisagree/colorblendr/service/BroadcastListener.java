@@ -24,6 +24,7 @@ import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootServiceProvider;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
+import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.drdisagree.colorblendr.utils.WallpaperUtil;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 public class BroadcastListener extends BroadcastReceiver {
 
     private static final String TAG = BroadcastListener.class.getSimpleName();
-    private static int lastOrientation = -1;
+    public static int lastOrientation = -1;
     private static long cooldownTime = 5000;
 
     @SuppressWarnings("deprecation")
@@ -41,10 +42,10 @@ public class BroadcastListener extends BroadcastReceiver {
         Log.d(TAG, "Received intent: " + intent.getAction());
 
         if (lastOrientation == -1) {
-            lastOrientation = context.getResources().getConfiguration().orientation;
+            lastOrientation = SystemUtil.getScreenRotation(context);
         }
 
-        int currentOrientation = context.getResources().getConfiguration().orientation;
+        int currentOrientation = SystemUtil.getScreenRotation(context);
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
                 Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())
