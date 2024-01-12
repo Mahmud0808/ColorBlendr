@@ -184,10 +184,13 @@ public class ColorsFragment extends Fragment {
     private void updateBooleanStates(Map<String, Boolean> stringBooleanMap) {
         Boolean accurateShades = stringBooleanMap.get(MONET_ACCURATE_SHADES);
         if (accurateShades != null) {
-            updatePreviewColors(
-                    colorTableRows,
-                    generateModifiedColors()
-            );
+            try {
+                updatePreviewColors(
+                        colorTableRows,
+                        generateModifiedColors()
+                );
+            } catch (Exception ignored) {
+            }
         }
     }
 
