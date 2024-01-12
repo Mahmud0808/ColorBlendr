@@ -4,11 +4,11 @@
     <style name="ColorPickerDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
 
     <style name="SnackBarStyle" parent="Widget.Material3.Snackbar">
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:backgroundTint">?attr/colorSecondaryContainer</item>
     </style>
 
     <style name="SnackBarStyle.TextView" parent="Widget.Material3.Snackbar.TextView">
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColor">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <style name="SnackBarStyle.Button" parent="Widget.Material3.Button.TextButton.Snackbar">
