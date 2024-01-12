@@ -22,6 +22,7 @@ import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootServiceProvider;
 import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.SystemUtil;
 
 public class BackgroundService extends Service {
 
@@ -49,6 +50,10 @@ public class BackgroundService extends Service {
         isRunning = true;
         createNotificationChannel();
         registerReceivers();
+
+        if (BroadcastListener.lastOrientation == -1) {
+            BroadcastListener.lastOrientation = SystemUtil.getScreenRotation(this);
+        }
     }
 
     @Override
