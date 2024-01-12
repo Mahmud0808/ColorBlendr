@@ -15,8 +15,8 @@
     <string name="accurate_shades_title">Accurate shades</string>
     <string name="accurate_shades_desc">Keep accurate shades for accent colors</string>
     <string name="monet_style_title">Monet style</string>
-    <string name="accent_saturation">Accent Saturation</string>
-    <string name="background_saturation">Background Saturation</string>
+    <string name="accent_saturation">Accent saturation</string>
+    <string name="background_saturation">Background saturation</string>
     <string name="background_lightness">Background lightness</string>
     <string name="icon">Icon</string>
     <string name="reset">Reset</string>
