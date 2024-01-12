@@ -14,8 +14,8 @@
     <string name="accurate_shades_title">ظلال دقيقة</string>
     <string name="accurate_shades_desc">احتفظ بظلال دقيقة لألوان التمييز</string>
     <string name="monet_style_title">أسلوب Monet</string>
-    <string name="accent_saturation">تشبع لون التمييز</string>
-    <string name="background_saturation">تشبع الخلفية</string>
+    <string name="accent_saturation">Accent saturation</string>
+    <string name="background_saturation">Background saturation</string>
     <string name="background_lightness">سطوع الخلفية</string>
     <string name="icon">أيقونة</string>
     <string name="reset">إعادة ضبط</string>
@@ -23,6 +23,8 @@
     <string name="opt_selected2">المحدد: %s%s</string>
     <string name="btn_apply">تطبيق التخصيص</string>
     <string name="dev_bio">متعلم | مطوّر | مصمّم</string>
+    <string name="news">News</string>
+    <string name="support">Support</string>
     <string name="github">جيت هاب</string>
     <string name="version">الإصدار</string>
     <string name="pitch_black_theme_title">سمة الأسود المطفي</string>
@@ -104,6 +106,7 @@
     <string name="styles">Styles</string>
     <string name="theme">Theme</string>
     <string name="wallpaper_colors">Wallpaper colors</string>
+    <string name="basic_colors">Basic colors</string>
     <string name="force_per_app_theme_title">Force per app theme</string>
     <string name="force_per_app_theme_desc">Apply custom colors to specific apps which do not follow system monet</string>
     <string name="back">Back</string>
@@ -122,4 +125,10 @@
     <string name="app_service_desc_off">Theming is inactive</string>
     <string name="tint_text_title">Tint text color</string>
     <string name="tint_text_desc">Maintain a subtle tint for text</string>
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
+    <string name="tertiary">Tertiary</string>
+    <string name="neutral_1">Neutral 1</string>
+    <string name="neutral_2">Neutral 2</string>
+    <string name="long_press_to_reset">Long press to reset</string>
 </resources>

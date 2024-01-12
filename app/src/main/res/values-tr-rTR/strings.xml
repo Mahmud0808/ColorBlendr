@@ -23,6 +23,8 @@
     <string name="opt_selected2">Seçildi: %s%s</string>
     <string name="btn_apply">Özelleştirmeyi uygula</string>
     <string name="dev_bio">Öğrenici | Geliştirici | Tasarımcı</string>
+    <string name="news">Haberler</string>
+    <string name="support">Destek</string>
     <string name="github">Github</string>
     <string name="version">Sürüm</string>
     <string name="pitch_black_theme_title">Zifiri karanlık tema</string>
@@ -104,6 +106,7 @@
     <string name="styles">Stiller</string>
     <string name="theme">Temalar</string>
     <string name="wallpaper_colors">Duvar kağıdı renkleri</string>
+    <string name="basic_colors">Temel renkler</string>
     <string name="force_per_app_theme_title">Uygulama başına temayı zorla</string>
     <string name="force_per_app_theme_desc">Sistem monetini takip etmeyen belirli uygulamalara özel renkler uygulayın</string>
     <string name="back">Geri</string>
@@ -122,4 +125,10 @@
     <string name="app_service_desc_off">Temalandırma etkin değil</string>
     <string name="tint_text_title">Metin rengini renklendir</string>
     <string name="tint_text_desc">Metin için ince bir renk tonu sağla</string>
+    <string name="primary">Birincil</string>
+    <string name="secondary">İkincil</string>
+    <string name="tertiary">Üçüncül</string>
+    <string name="neutral_1">Nötr 1</string>
+    <string name="neutral_2">Nötr 2</string>
+    <string name="long_press_to_reset">Sıfırlamak için basılı tut</string>
 </resources>

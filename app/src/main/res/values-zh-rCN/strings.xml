@@ -14,8 +14,8 @@
     <string name="accurate_shades_title">高级阴影</string>
     <string name="accurate_shades_desc">保持强调色的精准色调</string>
     <string name="monet_style_title">Monet 样式</string>
-    <string name="accent_saturation">Accent 饱和度</string>
-    <string name="background_saturation">背景饱和度</string>
+    <string name="accent_saturation">Accent saturation</string>
+    <string name="background_saturation">Background saturation</string>
     <string name="background_lightness">背景明亮</string>
     <string name="icon">图标</string>
     <string name="reset">重置</string>
@@ -23,6 +23,8 @@
     <string name="opt_selected2">选择: %s%s</string>
     <string name="btn_apply">应用自定义</string>
     <string name="dev_bio">学习 |开发 |设计</string>
+    <string name="news">News</string>
+    <string name="support">Support</string>
     <string name="github">Github</string>
     <string name="version">版本</string>
     <string name="pitch_black_theme_title">漆黑主题</string>
@@ -104,6 +106,7 @@
     <string name="styles">样式</string>
     <string name="theme">主题</string>
     <string name="wallpaper_colors">壁纸颜色</string>
+    <string name="basic_colors">Basic colors</string>
     <string name="force_per_app_theme_title">强制执行每个应用主题</string>
     <string name="force_per_app_theme_desc">将自定义颜色应用于不遵循系统 monet 的特定应用程序</string>
     <string name="back">返回</string>
@@ -122,4 +125,10 @@
     <string name="app_service_desc_off">Theming is inactive</string>
     <string name="tint_text_title">Tint text color</string>
     <string name="tint_text_desc">Maintain a subtle tint for text</string>
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
+    <string name="tertiary">Tertiary</string>
+    <string name="neutral_1">Neutral 1</string>
+    <string name="neutral_2">Neutral 2</string>
+    <string name="long_press_to_reset">Long press to reset</string>
 </resources>

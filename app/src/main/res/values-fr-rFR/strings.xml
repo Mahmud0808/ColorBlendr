@@ -14,8 +14,8 @@
     <string name="accurate_shades_title">Nuances précises</string>
     <string name="accurate_shades_desc">Conserver les nuances précises pour les couleurs d\'accents</string>
     <string name="monet_style_title">Style monet</string>
-    <string name="accent_saturation">Saturation de l\'accent</string>
-    <string name="background_saturation">Saturation du fond</string>
+    <string name="accent_saturation">Accent saturation</string>
+    <string name="background_saturation">Background saturation</string>
     <string name="background_lightness">Luminosité du fond</string>
     <string name="icon">Icône</string>
     <string name="reset">Remise à zéro</string>
@@ -23,6 +23,8 @@
     <string name="opt_selected2">Sélection: %s%s</string>
     <string name="btn_apply">Appliquer</string>
     <string name="dev_bio">Apprenti | Développeur | Designer</string>
+    <string name="news">News</string>
+    <string name="support">Support</string>
     <string name="github">Github</string>
     <string name="version">Version</string>
     <string name="pitch_black_theme_title">Thème noir complet</string>
@@ -104,6 +106,7 @@
     <string name="styles">Styles</string>
     <string name="theme">Theme</string>
     <string name="wallpaper_colors">Wallpaper colors</string>
+    <string name="basic_colors">Basic colors</string>
     <string name="force_per_app_theme_title">Force per app theme</string>
     <string name="force_per_app_theme_desc">Apply custom colors to specific apps which do not follow system monet</string>
     <string name="back">Back</string>
@@ -122,4 +125,10 @@
     <string name="app_service_desc_off">Theming is inactive</string>
     <string name="tint_text_title">Tint text color</string>
     <string name="tint_text_desc">Maintain a subtle tint for text</string>
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
+    <string name="tertiary">Tertiary</string>
+    <string name="neutral_1">Neutral 1</string>
+    <string name="neutral_2">Neutral 2</string>
+    <string name="long_press_to_reset">Long press to reset</string>
 </resources>
