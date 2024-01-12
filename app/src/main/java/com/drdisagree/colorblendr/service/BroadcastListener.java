@@ -9,6 +9,7 @@ import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -80,7 +81,8 @@ public class BroadcastListener extends BroadcastReceiver {
         // Update fabricated colors on wallpaper change
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) ||
                 (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction()) &&
-                        lastOrientation == currentOrientation)
+                        lastOrientation == currentOrientation &&
+                        currentOrientation == Configuration.ORIENTATION_PORTRAIT)
         ) {
             validateRootAndUpdateColors(context, new MethodInterface() {
                 @Override
