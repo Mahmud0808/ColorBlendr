@@ -1,0 +1,7 @@
+Changelog:
+
+• Added support for more custom ROMs
+• Added palette generator from custom color
+• Added option to change each individual color
+• Added color picker from image
+• Added Turkish translation. Thanks to @stablelover and @popleble

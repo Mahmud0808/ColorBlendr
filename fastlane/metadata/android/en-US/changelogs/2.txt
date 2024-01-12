@@ -1,0 +1,5 @@
+Changelog:
+
+• Fixed some crashing issues
+• Added support for android 12.1
+• Added support for android 14

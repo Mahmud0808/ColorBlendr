@@ -1,0 +1,9 @@
+Changelog:
+
+• Fixed pitch black QS shade for custom roms.
+• Added support for pitch black Google News.
+• Added support for pitch black Google Feed.
+• Fixed theme resetting after SystemUI restarted.
+• Fixed an issue where colors are lost after changing wallpaper or switching dark theme.
+
+Translation credit goes to all the contributors on our crowdin platform.

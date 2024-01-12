@@ -1,0 +1,9 @@
+Changelog:
+
+• Improved colors previews in app.
+• Added a cooldown after reboot to fix freezing issues.
+• Added support for theming Google Play Games.
+• Automatically cleanup left-over overlays after app uninstallation.
+• Removed some color replacements that were causing issues.
+
+Translation credit goes to all the contributors on our crowdin platform.

@@ -1,0 +1,34 @@
+<p><b style="color: dodgerblue;">ColorBlendr</b> is an application to modify material you colors of your device.</p>
+<br>
+<p>Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</p>
+<p>
+	<b>Features:</b>
+</p>
+<ul>
+	<li>Accent saturation changer</li>
+	<li>Background saturation changer</li>
+	<li>Background lightness changer</li>
+	<li>Pitch black theme in dark mode</li>
+	<li>and many more to come...</li>
+</ul>
+<p>
+	<b>Requirements:</b>
+</p>
+<ul>
+	<li>Android 12+ Rom</li>
+	<li>Rooted device</li>
+</ul>
+<p>
+	<b>Instructions:</b>
+</p>
+<ul>
+	<li>Install and open the app.</li>
+	<li>Grant permissions and root access for the app.</li>
+	<li>That's it. Now you are good to go!</li>
+</ul>
+<p>
+	<b>Translation:</b>
+</p>
+<ul>
+	<li>Assist in translating ColorBlendr into your preferred language through <a href="https://crowdin.com/project/ColorBlendr">our Crowdin platform</a>. Your contribution will help make ColorBlendr accessible to a wider audience.</li>
+</ul>

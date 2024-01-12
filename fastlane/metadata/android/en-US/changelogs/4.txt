@@ -1,0 +1,5 @@
+Changelog:
+
+• Added support for even more custom ROMs
+• Added option to backup and restore theme configuration
+• Added Simplified Chinese translation. Thanks to @Zhang chunyu

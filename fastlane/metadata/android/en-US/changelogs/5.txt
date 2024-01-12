@@ -1,0 +1,10 @@
+Changelog:
+
+• Dropped xposed module. Now you can use directly with root.
+• Added auto wallpaper color extractor.
+• Added color preview for different monet styles.
+• Added option to remove tint from text color.
+• Added darker surface color for pitch black theme.
+• Added theming support for google apps.
+
+Translation credit goes to all the contributors on our crowdin platform.
