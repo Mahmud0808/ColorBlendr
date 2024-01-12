@@ -52,13 +52,13 @@
 
     <ImageView
         android:id="@+id/reset"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/reset_icon_size"
+        android:layout_height="@dimen/reset_icon_size"
         android:layout_gravity="end|center"
         android:layout_marginVertical="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="22dp"
-        android:alpha="0.6"
+        android:alpha="0.4"
         android:contentDescription="@string/reset"
         android:foreground="?attr/selectableItemBackground"
         android:src="@drawable/ic_reset"
