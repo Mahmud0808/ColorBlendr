@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/seekbar_height"
+    android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/container_margin_horizontal"
     android:layout_marginBottom="@dimen/container_margin_bottom"
     android:clickable="true"
@@ -11,7 +11,7 @@
     app:cardMaxElevation="0dp"
     app:strokeWidth="0dp">
 
-    <SeekBar
+    <com.drdisagree.colorblendr.ui.views.ResizableSeekbar
         android:id="@+id/seekbar_widget"
         style="@style/Seekbar"
         android:layout_width="match_parent"
