@@ -236,46 +236,49 @@ public class ColorsFragment extends Fragment {
 
     private void initColorTablePreview(LinearLayout[] colorTableRows) {
         new Thread(() -> {
-            ArrayList<ArrayList<Integer>> palette = generateModifiedColors();
+            try {
+                ArrayList<ArrayList<Integer>> palette = generateModifiedColors();
 
-            int[][] systemColors = palette == null ?
-                    ColorUtil.getSystemColors(requireContext()) :
-                    MiscUtil.convertListToIntArray(palette);
+                int[][] systemColors = palette == null ?
+                        ColorUtil.getSystemColors(requireContext()) :
+                        MiscUtil.convertListToIntArray(palette);
 
-            for (int i = 0; i < colorTableRows.length; i++) {
-                for (int j = 0; j < colorTableRows[i].getChildCount(); j++) {
-                    colorTableRows[i].getChildAt(j).getBackground().setTint(systemColors[i][j]);
-                    colorTableRows[i].getChildAt(j).setTag(systemColors[i][j]);
+                for (int i = 0; i < colorTableRows.length; i++) {
+                    for (int j = 0; j < colorTableRows[i].getChildCount(); j++) {
+                        colorTableRows[i].getChildAt(j).getBackground().setTint(systemColors[i][j]);
+                        colorTableRows[i].getChildAt(j).setTag(systemColors[i][j]);
 
-                    if (RPrefs.getInt(colorNames[i][j], Integer.MIN_VALUE) != Integer.MIN_VALUE) {
-                        colorTableRows[i].getChildAt(j).getBackground().setTint(RPrefs.getInt(colorNames[i][j], 0));
+                        if (RPrefs.getInt(colorNames[i][j], Integer.MIN_VALUE) != Integer.MIN_VALUE) {
+                            colorTableRows[i].getChildAt(j).getBackground().setTint(RPrefs.getInt(colorNames[i][j], 0));
+                        }
+
+                        TextView textView = new TextView(requireContext());
+                        textView.setText(String.valueOf(colorCodes[j]));
+                        textView.setRotation(270);
+                        textView.setTextColor(ColorUtil.calculateTextColor(systemColors[i][j]));
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+                        textView.setAlpha(0.8f);
+                        textView.setMaxLines(1);
+                        textView.setSingleLine(true);
+                        textView.setAutoSizeTextTypeUniformWithConfiguration(
+                                1,
+                                20,
+                                1,
+                                TypedValue.COMPLEX_UNIT_SP
+                        );
+
+                        int finalI = i;
+                        int finalJ = j;
+                        requireActivity().runOnUiThread(() -> {
+                            ((ViewGroup) colorTableRows[finalI].getChildAt(finalJ)).addView(textView);
+                            ((LinearLayout) colorTableRows[finalI].getChildAt(finalJ)).setGravity(Gravity.CENTER);
+                        });
                     }
-
-                    TextView textView = new TextView(requireContext());
-                    textView.setText(String.valueOf(colorCodes[j]));
-                    textView.setRotation(270);
-                    textView.setTextColor(ColorUtil.calculateTextColor(systemColors[i][j]));
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-                    textView.setAlpha(0.8f);
-                    textView.setMaxLines(1);
-                    textView.setSingleLine(true);
-                    textView.setAutoSizeTextTypeUniformWithConfiguration(
-                            1,
-                            20,
-                            1,
-                            TypedValue.COMPLEX_UNIT_SP
-                    );
-
-                    int finalI = i;
-                    int finalJ = j;
-                    requireActivity().runOnUiThread(() -> {
-                        ((ViewGroup) colorTableRows[finalI].getChildAt(finalJ)).addView(textView);
-                        ((LinearLayout) colorTableRows[finalI].getChildAt(finalJ)).setGravity(Gravity.CENTER);
-                    });
                 }
-            }
 
-            requireActivity().runOnUiThread(() -> enablePaletteOnClickListener(colorTableRows, systemColors));
+                requireActivity().runOnUiThread(() -> enablePaletteOnClickListener(colorTableRows, systemColors));
+            } catch (Exception ignored) {
+            }
         }).start();
     }
 
