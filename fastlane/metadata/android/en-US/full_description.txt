@@ -32,3 +32,10 @@
 <ul>
 	<li>Assist in translating ColorBlendr into your preferred language through <a href="https://crowdin.com/project/ColorBlendr">our Crowdin platform</a>. Your contribution will help make ColorBlendr accessible to a wider audience.</li>
 </ul>
+<p>
+	<b>Alarming permissions:</b>
+</p>
+<ul>
+	<li>QUERY_ALL_PACKAGES: Required for individually theming 3rd party apps which has monet theming support but still does not follow system colors.</li>
+	<li>MANAGE_EXTERNAL_STORAGE: Required for grabbing the current wallpaper and extract dominant colors from the wallpaper.</li>
+</ul>
