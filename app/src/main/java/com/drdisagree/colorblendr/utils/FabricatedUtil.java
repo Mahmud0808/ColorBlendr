@@ -197,7 +197,7 @@ public class FabricatedUtil {
         ArrayList<Pair<String, Integer>> resourcesDark = new ArrayList<>();
         resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral90", Color.WHITE));
         resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral95", Color.WHITE));
-        resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant70", 0xB3FFFFFF));
+        resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant70", 0xFFCCCCCC));
         resourcesDark.add(new Pair<>("m3_ref_palette_dynamic_neutral_variant80", Color.WHITE));
         resourcesDark.add(new Pair<>("text_color_primary_dark", Color.WHITE));
         resourcesDark.add(new Pair<>("text_color_secondary_dark", 0xB3FFFFFF));
