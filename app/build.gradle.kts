@@ -12,8 +12,8 @@ android {
         applicationId = "com.drdisagree.colorblendr"
         minSdk = 31
         targetSdk = 34
-        versionCode = 7
-        versionName = "1.0 beta 7"
+        versionCode = 8
+        versionName = "v1.0b8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

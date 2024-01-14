@@ -14,8 +14,8 @@
     <string name="accurate_shades_title">Точные оттенки</string>
     <string name="accurate_shades_desc">Сохраняйте точные оттенки для акцентных цветов</string>
     <string name="monet_style_title">Стиль Monet</string>
-    <string name="accent_saturation">Accent saturation</string>
-    <string name="background_saturation">Background saturation</string>
+    <string name="accent_saturation">Насыщенность акцента</string>
+    <string name="background_saturation">Насыщенность фона</string>
     <string name="background_lightness">Яркость фона</string>
     <string name="icon">Иконка</string>
     <string name="reset">Сброс</string>
@@ -106,7 +106,7 @@
     <string name="styles">Стили</string>
     <string name="theme">Тема</string>
     <string name="wallpaper_colors">Цвета обоев</string>
-    <string name="basic_colors">Basic colors</string>
+    <string name="basic_colors">Основные цвета</string>
     <string name="force_per_app_theme_title">Принудительно для каждой темы приложения</string>
     <string name="force_per_app_theme_desc">Применяйте собственные цвета к определенным приложениям которые не соответствуют системным monet</string>
     <string name="back">Назад</string>
@@ -125,10 +125,10 @@
     <string name="app_service_desc_off">Тематизация неактивна</string>
     <string name="tint_text_title">Оттенок цвета текста</string>
     <string name="tint_text_desc">Сохраняйте тонкий оттенок текста</string>
-    <string name="primary">Primary</string>
-    <string name="secondary">Secondary</string>
-    <string name="tertiary">Tertiary</string>
-    <string name="neutral_1">Neutral 1</string>
-    <string name="neutral_2">Neutral 2</string>
-    <string name="long_press_to_reset">Long press to reset</string>
+    <string name="primary">Первичный</string>
+    <string name="secondary">Вторичный</string>
+    <string name="tertiary">Третичный</string>
+    <string name="neutral_1">Нейтральный 1</string>
+    <string name="neutral_2">Нейтральный 2</string>
+    <string name="long_press_to_reset">Нажмите и удерживайте для сброса</string>
 </resources>
