@@ -106,7 +106,7 @@
     <string name="styles">Стили</string>
     <string name="theme">Тема</string>
     <string name="wallpaper_colors">Цвета обоев</string>
-    <string name="basic_colors">Выбор цвета</string>
+    <string name="basic_colors">Основные цвета</string>
     <string name="force_per_app_theme_title">Принудительно для каждой темы приложения</string>
     <string name="force_per_app_theme_desc">Применяйте собственные цвета к определенным приложениям которые не соответствуют системным monet</string>
     <string name="back">Назад</string>
