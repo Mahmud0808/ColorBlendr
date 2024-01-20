@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.service;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -31,6 +30,7 @@ public class BackgroundService extends Service {
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "Background Service";
     private static BroadcastListener myReceiver;
+    private NotificationManager notificationManager;
 
     public BackgroundService() {
         isRunning = false;
@@ -46,6 +46,10 @@ public class BackgroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (notificationManager == null) {
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        }
 
         isRunning = true;
         createNotificationChannel();
@@ -78,7 +82,7 @@ public class BackgroundService extends Service {
                 PendingIntent.FLAG_IMMUTABLE
         );
 
-        Notification notification = new NotificationCompat.Builder(
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
                 this,
                 NOTIFICATION_CHANNEL_ID
         )
@@ -88,10 +92,9 @@ public class BackgroundService extends Service {
                 .setContentText(getString(R.string.background_service_notification_text))
                 .setContentIntent(pendingIntent)
                 .setSound(null, AudioManager.STREAM_NOTIFICATION)
-                .setColor(ColorUtil.getAccentColor(this))
-                .build();
+                .setColor(ColorUtil.getAccentColor(this));
 
-        startForeground(NOTIFICATION_ID, notification);
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 
     @SuppressWarnings("deprecation")
@@ -122,7 +125,6 @@ public class BackgroundService extends Service {
                 NotificationManager.IMPORTANCE_LOW
         );
         channel.setDescription(getString(R.string.background_service_notification_channel_text));
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.createNotificationChannel(channel);
     }
 
