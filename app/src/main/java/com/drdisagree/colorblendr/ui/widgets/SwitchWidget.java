@@ -31,6 +31,7 @@ public class SwitchWidget extends RelativeLayout {
     private TextView summaryTextView;
     private ImageView iconImageView;
     private MaterialSwitch materialSwitch;
+    private MaterialSwitch.OnCheckedChangeListener switchChangeListener;
     private BeforeSwitchChangeListener beforeSwitchChangeListener;
     private boolean isMasterSwitch;
     private String summaryOnText;
@@ -80,12 +81,20 @@ public class SwitchWidget extends RelativeLayout {
 
         container.setOnClickListener(v -> {
             if (materialSwitch.isEnabled()) {
+                materialSwitch.toggle();
+            }
+        });
+
+        materialSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (materialSwitch.isEnabled()) {
                 if (beforeSwitchChangeListener != null) {
                     beforeSwitchChangeListener.beforeSwitchChanged();
                 }
 
-                materialSwitch.toggle();
                 updateSummary();
+                if (switchChangeListener != null) {
+                    switchChangeListener.onCheckedChanged(buttonView, isChecked);
+                }
             }
         });
     }
@@ -126,6 +135,9 @@ public class SwitchWidget extends RelativeLayout {
 
     public void setSwitchChecked(boolean isChecked) {
         materialSwitch.setChecked(isChecked);
+        if (switchChangeListener != null) {
+            switchChangeListener.onCheckedChanged(materialSwitch, isChecked);
+        }
     }
 
     private void updateSummary() {
@@ -171,7 +183,7 @@ public class SwitchWidget extends RelativeLayout {
     }
 
     public void setSwitchChangeListener(CompoundButton.OnCheckedChangeListener listener) {
-        materialSwitch.setOnCheckedChangeListener(listener);
+        switchChangeListener = listener;
     }
 
     public void setBeforeSwitchChangeListener(BeforeSwitchChangeListener listener) {
