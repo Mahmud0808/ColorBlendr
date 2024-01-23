@@ -276,13 +276,13 @@ public class ColorsFragment extends Fragment {
                     }
                 }
 
-                requireActivity().runOnUiThread(() -> enablePaletteOnClickListener(colorTableRows, systemColors));
+                requireActivity().runOnUiThread(() -> enablePaletteOnClickListener(colorTableRows));
             } catch (Exception ignored) {
             }
         }).start();
     }
 
-    private void enablePaletteOnClickListener(LinearLayout[] colorTableRows, int[][] systemColors) {
+    private void enablePaletteOnClickListener(LinearLayout[] colorTableRows) {
         for (int i = 0; i < colorTableRows.length; i++) {
             for (int j = 0; j < colorTableRows[i].getChildCount(); j++) {
                 int finalI = i;
@@ -350,40 +350,11 @@ public class ColorsFragment extends Fragment {
                     }
 
                     RPrefs.clearPref(colorNames[finalI][finalJ]);
-                    v.getBackground().setTint(systemColors[finalI][finalJ]);
-                    v.setTag(systemColors[finalI][finalJ]);
-                    ((TextView) ((ViewGroup) v)
-                            .getChildAt(0))
-                            .setTextColor(ColorUtil.calculateTextColor(systemColors[finalI][finalJ]));
-                    Snackbar.make(
-                                    requireView(),
-                                    getString(R.string.color_reset_success),
-                                    Snackbar.LENGTH_SHORT
-                            )
-                            .setAction(getString(R.string.reset_all), v2 -> {
-                                for (int x = 0; x < colorTableRows.length; x++) {
-                                    for (int y = 0; y < colorTableRows[x].getChildCount(); y++) {
-                                        RPrefs.clearPref(colorNames[x][y]);
-                                    }
-                                }
-                                Snackbar.make(
-                                                requireView(),
-                                                getString(R.string.reset_all_success),
-                                                Snackbar.LENGTH_SHORT
-                                        )
-                                        .setAction(getString(R.string.dismiss), v3 -> {
-                                        })
-                                        .show();
 
-                                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                                    try {
-                                        OverlayManager.applyFabricatedColors(requireContext());
-                                    } catch (Exception ignored) {
-                                    }
-                                }, 200);
-                            })
-                            .show();
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
                     return true;
                 });
             }

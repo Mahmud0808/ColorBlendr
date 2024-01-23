@@ -56,6 +56,7 @@ public class SettingsFragment extends Fragment {
     private FragmentSettingsBinding binding;
     private SharedViewModel sharedViewModel;
     private boolean isMasterSwitchEnabled = true;
+    private static final String[][] colorNames = ColorUtil.getColorNames();
     private final CompoundButton.OnCheckedChangeListener masterSwitch = (buttonView, isChecked) -> {
         if (!isMasterSwitchEnabled) {
             buttonView.setChecked(!isChecked);
@@ -109,28 +110,14 @@ public class SettingsFragment extends Fragment {
         binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_ACCURATE_SHADES, isChecked);
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    OverlayManager.applyFabricatedColors(requireContext());
-                } catch (Exception ignored) {
-                }
-            }, 300);
+            applyFabricatedColors();
         });
 
         // Pitch black theme
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
-        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) ->
-
-        {
+        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    OverlayManager.applyFabricatedColors(requireContext());
-                } catch (Exception ignored) {
-                }
-            }, 300);
+            applyFabricatedColors();
         });
 
         // Custom primary color
@@ -147,13 +134,7 @@ public class SettingsFragment extends Fragment {
                         }.getType()
                 );
                 RPrefs.putInt(MONET_SEED_COLOR, wallpaperColorList.get(0));
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    try {
-                        OverlayManager.applyFabricatedColors(requireContext());
-                    } catch (Exception ignored) {
-                    }
-                }, 300);
+                applyFabricatedColors();
             }
         });
 
@@ -161,34 +142,40 @@ public class SettingsFragment extends Fragment {
         binding.tintTextColor.setSwitchChecked(RPrefs.getBoolean(TINT_TEXT_COLOR, true));
         binding.tintTextColor.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(TINT_TEXT_COLOR, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    OverlayManager.applyFabricatedColors(requireContext());
-                } catch (Exception ignored) {
-                }
-            }, 300);
+            applyFabricatedColors();
         });
 
         // Override colors manually
         binding.overrideColorsManually.setSwitchChecked(RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false));
         binding.overrideColorsManually.setSwitchChangeListener((buttonView, isChecked) -> {
-            String[][] colorNames = ColorUtil.getColorNames();
-            for (String[] colorName : colorNames) {
-                for (String resource : colorName) {
-                    RPrefs.clearPref(resource);
-                }
-            }
-            RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, isChecked);
-
-            if (!isChecked) {
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    try {
-                        OverlayManager.applyFabricatedColors(requireContext());
-                    } catch (Exception ignored) {
+            if (isChecked) {
+                RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, true);
+            } else {
+                if (shouldConfirmBeforeClearing()) {
+                    new MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.confirmation_title))
+                            .setMessage(getString(R.string.this_cannot_be_undone))
+                            .setPositiveButton(getString(android.R.string.ok),
+                                    (dialog, which) -> {
+                                        dialog.dismiss();
+                                        RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, false);
+                                        if (numColorsOverridden() != 0) {
+                                            clearCustomColors();
+                                            applyFabricatedColors();
+                                        }
+                                    })
+                            .setNegativeButton(getString(android.R.string.cancel), (dialog, which) -> {
+                                dialog.dismiss();
+                                binding.overrideColorsManually.setSwitchChecked(true);
+                            })
+                            .show();
+                } else {
+                    RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, false);
+                    if (numColorsOverridden() != 0) {
+                        clearCustomColors();
+                        applyFabricatedColors();
                     }
-                }, 300);
+                }
             }
         });
 
@@ -354,5 +341,39 @@ public class SettingsFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void clearCustomColors() {
+        for (String[] colorName : colorNames) {
+            for (String resource : colorName) {
+                RPrefs.clearPref(resource);
+            }
+        }
+    }
+
+    private boolean shouldConfirmBeforeClearing() {
+        return numColorsOverridden() > 5;
+    }
+
+    private int numColorsOverridden() {
+        int colorOverridden = 0;
+        for (String[] colorName : colorNames) {
+            for (String resource : colorName) {
+                if (RPrefs.getInt(resource, Integer.MIN_VALUE) != Integer.MIN_VALUE) {
+                    colorOverridden++;
+                }
+            }
+        }
+        return colorOverridden;
+    }
+
+    private void applyFabricatedColors() {
+        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                OverlayManager.applyFabricatedColors(requireContext());
+            } catch (Exception ignored) {
+            }
+        }, 300);
     }
 }
