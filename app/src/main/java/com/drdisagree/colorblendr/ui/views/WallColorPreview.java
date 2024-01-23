@@ -14,6 +14,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -39,6 +41,7 @@ public class WallColorPreview extends View {
     private float clearCircleRadius, circleRadius;
     private boolean isSelected = false;
     private ArrayList<ArrayList<Integer>> colorPalette;
+    private @ColorInt int halfCircleColor, firstQuarterCircleColor, secondQuarterCircleColor, squareColor, centerCircleColor;
 
     public WallColorPreview(Context context) {
         super(context);
@@ -150,23 +153,28 @@ public class WallColorPreview extends View {
     }
 
     private void setSquareColor(@ColorInt int color) {
+        squareColor = color;
         squarePaint.setColor(color);
         centerClearCirclePaint.setColor(color);
     }
 
     private void setFirstQuarterCircleColor(@ColorInt int color) {
+        firstQuarterCircleColor = color;
         firstQuarterCirclePaint.setColor(color);
     }
 
     private void setSecondQuarterCircleColor(@ColorInt int color) {
+        secondQuarterCircleColor = color;
         secondQuarterCirclePaint.setColor(color);
     }
 
     private void setHalfCircleColor(@ColorInt int color) {
+        halfCircleColor = color;
         halfCirclePaint.setColor(color);
     }
 
     private void setCenterCircleColor(@ColorInt int color) {
+        centerCircleColor = color;
         centerCirclePaint.setColor(color);
         @ColorInt int textColor = ColorUtil.calculateTextColor(color);
         tickPaint.setColor(
@@ -195,7 +203,8 @@ public class WallColorPreview extends View {
                         RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
                         RPrefs.getBoolean(MONET_ACCURATE_SHADES, true),
                         false,
-                        SystemUtil.isDarkMode()
+                        SystemUtil.isDarkMode(),
+                        false
                 );
 
                 setHalfCircleColor(colorPalette.get(0).get(4));
@@ -212,5 +221,73 @@ public class WallColorPreview extends View {
     public void setSelected(boolean selected) {
         isSelected = selected;
         invalidateColors();
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+        ss.halfCircleColor = halfCircleColor;
+        ss.firstQuarterCircleColor = firstQuarterCircleColor;
+        ss.secondQuarterCircleColor = secondQuarterCircleColor;
+        ss.squareColor = squareColor;
+        ss.centerCircleColor = centerCircleColor;
+
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (!(state instanceof SavedState ss)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        setHalfCircleColor(ss.halfCircleColor);
+        setFirstQuarterCircleColor(ss.firstQuarterCircleColor);
+        setSecondQuarterCircleColor(ss.secondQuarterCircleColor);
+        setSquareColor(ss.squareColor);
+        setCenterCircleColor(ss.centerCircleColor);
+    }
+
+    private static class SavedState extends BaseSavedState {
+        @ColorInt
+        int halfCircleColor, firstQuarterCircleColor, secondQuarterCircleColor, squareColor, centerCircleColor;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            halfCircleColor = in.readInt();
+            firstQuarterCircleColor = in.readInt();
+            secondQuarterCircleColor = in.readInt();
+            squareColor = in.readInt();
+            centerCircleColor = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(halfCircleColor);
+            dest.writeInt(firstQuarterCircleColor);
+            dest.writeInt(secondQuarterCircleColor);
+            dest.writeInt(squareColor);
+            dest.writeInt(centerCircleColor);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }

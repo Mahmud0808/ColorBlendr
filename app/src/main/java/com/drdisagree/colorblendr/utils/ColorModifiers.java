@@ -45,6 +45,32 @@ public class ColorModifiers {
             boolean accurateShades,
             boolean modifyPitchBlack
     ) {
+        return modifyColors(
+                palette,
+                counter,
+                style,
+                monetAccentSaturation,
+                monetBackgroundSaturation,
+                monetBackgroundLightness,
+                pitchBlackTheme,
+                accurateShades,
+                modifyPitchBlack,
+                true
+        );
+    }
+
+    public static ArrayList<Integer> modifyColors(
+            ArrayList<Integer> palette,
+            AtomicInteger counter,
+            ColorSchemeUtil.MONET style,
+            int monetAccentSaturation,
+            int monetBackgroundSaturation,
+            int monetBackgroundLightness,
+            boolean pitchBlackTheme,
+            boolean accurateShades,
+            boolean modifyPitchBlack,
+            boolean overrideColors
+    ) {
         counter.getAndIncrement();
 
         boolean accentPalette = counter.get() <= 3;
@@ -84,15 +110,17 @@ public class ColorModifiers {
             }
         }
 
-        for (int j = 0; j < palette.size() - 1; j++) {
-            int i = counter.get() - 1;
+        if (overrideColors) {
+            for (int j = 0; j < palette.size() - 1; j++) {
+                int i = counter.get() - 1;
 
-            int overriddenColor = RPrefs.getInt(colorNames[i][j + 1], Integer.MIN_VALUE);
+                int overriddenColor = RPrefs.getInt(colorNames[i][j + 1], Integer.MIN_VALUE);
 
-            if (overriddenColor != Integer.MIN_VALUE) {
-                palette.set(j, overriddenColor);
-            } else if (!accurateShades && i == 0 && j == 2) {
-                palette.set(j, palette.get(j + 2));
+                if (overriddenColor != Integer.MIN_VALUE) {
+                    palette.set(j, overriddenColor);
+                } else if (!accurateShades && i == 0 && j == 2) {
+                    palette.set(j, palette.get(j + 2));
+                }
             }
         }
 
