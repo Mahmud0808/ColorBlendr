@@ -20,3 +20,4 @@ local.properties
 /app/release/
 /.idea/deploymentTargetDropDown.xml
 /.idea/dictionaries/crazy.xml
+/.idea/*
