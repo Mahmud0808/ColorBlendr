@@ -1,41 +1,25 @@
-<p><b style="color: dodgerblue;">ColorBlendr</b> is an application to modify material you colors of your device.</p>
-<br>
-<p>Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</p>
-<p>
-	<b>Features:</b>
-</p>
-<ul>
-	<li>Accent saturation changer</li>
-	<li>Background saturation changer</li>
-	<li>Background lightness changer</li>
-	<li>Pitch black theme in dark mode</li>
-	<li>and many more to come...</li>
-</ul>
-<p>
-	<b>Requirements:</b>
-</p>
-<ul>
-	<li>Android 12+ Rom</li>
-	<li>Rooted device</li>
-</ul>
-<p>
-	<b>Instructions:</b>
-</p>
-<ul>
-	<li>Install and open the app.</li>
-	<li>Grant permissions and root access for the app.</li>
-	<li>That's it. Now you are good to go!</li>
-</ul>
-<p>
-	<b>Translation:</b>
-</p>
-<ul>
-	<li>Assist in translating ColorBlendr into your preferred language through <a href="https://crowdin.com/project/ColorBlendr">our Crowdin platform</a>. Your contribution will help make ColorBlendr accessible to a wider audience.</li>
-</ul>
-<p>
-	<b>Alarming permissions:</b>
-</p>
-<ul>
-	<li>QUERY_ALL_PACKAGES: Required for individually theming 3rd party apps which has monet theming support but still does not follow system colors.</li>
-	<li>MANAGE_EXTERNAL_STORAGE: Required for grabbing the current wallpaper and extract dominant colors from the wallpaper.</li>
-</ul>
+<b style="color: dodgerblue;">ColorBlendr</b> is an application to modify material you colors of your device.
+Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.
+
+<b>Features:</b>
+• Accent saturation changer
+• Background saturation changer
+• Background lightness changer
+• Pitch black theme in dark mode
+• and many more to come...
+
+<b>Requirements:</b>
+• Android 12+ Rom
+• Rooted device
+
+<b>Instructions:</b>
+• Install and open the app.
+• Grant permissions and root access for the app.
+• That's it. Now you are good to go!
+
+<b>Translation:</b>
+Assist in translating ColorBlendr into your preferred language through <a href="https://crowdin.com/project/ColorBlendr">our Crowdin platform</a>. Your contribution will help make ColorBlendr accessible to a wider audience.
+
+<b>Alarming permissions:</b>
+• <u>QUERY_ALL_PACKAGES</u>: Required for individually theming 3rd party apps which has monet theming support but still does not follow system colors.
+• <u>MANAGE_EXTERNAL_STORAGE</u>: Required for grabbing the current wallpaper and extract dominant colors from the wallpaper.
