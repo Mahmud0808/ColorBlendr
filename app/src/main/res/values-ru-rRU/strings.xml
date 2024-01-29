@@ -131,4 +131,5 @@
     <string name="neutral_1">Нейтральный 1</string>
     <string name="neutral_2">Нейтральный 2</string>
     <string name="long_press_to_reset">Нажмите и удерживайте для сброса</string>
+    <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
 </resources>
