@@ -4,6 +4,7 @@ import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_AP
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.content.BroadcastReceiver;
@@ -158,6 +159,10 @@ public class BroadcastListener extends BroadcastReceiver {
     }
 
     private static void updateAllColors(Context context) {
+        if (!RPrefs.getBoolean(THEMING_ENABLED, true)) {
+            return;
+        }
+
         if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= cooldownTime) {
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
             new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 500);
