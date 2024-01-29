@@ -36,6 +36,27 @@ public class BroadcastListener extends BroadcastReceiver {
     public static int lastOrientation = -1;
     private static long cooldownTime = 5000;
 
+    private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
+        if (RootServiceProvider.isNotConnected()) {
+            RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
+            rootServiceProvider.runOnSuccess(method);
+            rootServiceProvider.startRootService();
+        } else {
+            method.run();
+        }
+    }
+
+    private static void updateAllColors(Context context) {
+        if (!RPrefs.getBoolean(THEMING_ENABLED, true)) {
+            return;
+        }
+
+        if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= cooldownTime) {
+            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 500);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -145,27 +166,6 @@ public class BroadcastListener extends BroadcastReceiver {
                 Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) ||
                 Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction())) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-        }
-    }
-
-    private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
-        if (RootServiceProvider.isNotConnected()) {
-            RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
-            rootServiceProvider.runOnSuccess(method);
-            rootServiceProvider.startRootService();
-        } else {
-            method.run();
-        }
-    }
-
-    private static void updateAllColors(Context context) {
-        if (!RPrefs.getBoolean(THEMING_ENABLED, true)) {
-            return;
-        }
-
-        if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= cooldownTime) {
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 500);
         }
     }
 }

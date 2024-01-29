@@ -32,6 +32,29 @@ public class ImagePickerAdapter extends RecyclerView.Adapter {
         images = getImagePaths(context);
     }
 
+    private static ArrayList<String> getImagePaths(Context context) {
+        ArrayList<String> list = new ArrayList<>();
+
+        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME},
+                null, null, null);
+
+        if (cursor == null)
+            return list;
+
+        cursor.moveToFirst();
+
+        int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+
+        while (cursor.moveToNext()) {
+            list.add(cursor.getString(index));
+        }
+
+        cursor.close();
+
+        return list;
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -75,6 +98,12 @@ public class ImagePickerAdapter extends RecyclerView.Adapter {
         return images.get(position - (hasRequestHandler ? 1 : 0));
     }
 
+    public interface Listener {
+        void onRequestImage();
+
+        void onImagePicked(Uri data);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(@NonNull View itemView) {
@@ -90,35 +119,6 @@ public class ImagePickerAdapter extends RecyclerView.Adapter {
             super(itemView);
             imageView = itemView.findViewById(R.id.image);
         }
-    }
-
-    private static ArrayList<String> getImagePaths(Context context) {
-        ArrayList<String> list = new ArrayList<>();
-
-        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME},
-                null, null, null);
-
-        if (cursor == null)
-            return list;
-
-        cursor.moveToFirst();
-
-        int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-
-        while (cursor.moveToNext()) {
-            list.add(cursor.getString(index));
-        }
-
-        cursor.close();
-
-        return list;
-    }
-
-    public interface Listener {
-        void onRequestImage();
-
-        void onImagePicked(Uri data);
     }
 
 }

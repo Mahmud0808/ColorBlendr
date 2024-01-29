@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatImageView;
+
 import me.jfenn.androidutils.DimenUtilsKt;
 
 public class RoundedSquareImageView extends AppCompatImageView {

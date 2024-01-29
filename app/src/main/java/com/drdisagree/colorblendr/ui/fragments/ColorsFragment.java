@@ -64,14 +64,13 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
 public class ColorsFragment extends Fragment {
 
     private static final String TAG = ColorsFragment.class.getSimpleName();
-    private FragmentColorsBinding binding;
-    private int[] monetSeedColor;
-    private LinearLayout[] colorTableRows;
-    private SharedViewModel sharedViewModel;
-    private final String[][] colorNames = ColorUtil.getColorNames();
     private static final int[] colorCodes = {
             0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000
     };
+    private final String[][] colorNames = ColorUtil.getColorNames();
+    private FragmentColorsBinding binding;
+    private int[] monetSeedColor;
+    private LinearLayout[] colorTableRows;
     private final BroadcastReceiver wallpaperChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, android.content.Intent intent) {
@@ -80,6 +79,7 @@ public class ColorsFragment extends Fragment {
             }
         }
     };
+    private SharedViewModel sharedViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

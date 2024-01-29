@@ -6,6 +6,17 @@ import android.os.Parcelable;
 
 public class FabricatedOverlayEntry implements Parcelable {
 
+    public static final Creator<FabricatedOverlayEntry> CREATOR = new Creator<>() {
+        @Override
+        public FabricatedOverlayEntry createFromParcel(Parcel in) {
+            return new FabricatedOverlayEntry(in);
+        }
+
+        @Override
+        public FabricatedOverlayEntry[] newArray(int size) {
+            return new FabricatedOverlayEntry[size];
+        }
+    };
     private String resourceName;
     private int resourceType;
     private int resourceValue;
@@ -20,6 +31,13 @@ public class FabricatedOverlayEntry implements Parcelable {
         this.resourceType = resourceType;
         this.resourceValue = resourceValue;
         this.configuration = configuration;
+    }
+
+    protected FabricatedOverlayEntry(Parcel in) {
+        resourceName = in.readString();
+        resourceType = in.readInt();
+        resourceValue = in.readInt();
+        configuration = in.readString();
     }
 
     public String getResourceName() {
@@ -56,25 +74,6 @@ public class FabricatedOverlayEntry implements Parcelable {
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
     }
-
-    protected FabricatedOverlayEntry(Parcel in) {
-        resourceName = in.readString();
-        resourceType = in.readInt();
-        resourceValue = in.readInt();
-        configuration = in.readString();
-    }
-
-    public static final Creator<FabricatedOverlayEntry> CREATOR = new Creator<>() {
-        @Override
-        public FabricatedOverlayEntry createFromParcel(Parcel in) {
-            return new FabricatedOverlayEntry(in);
-        }
-
-        @Override
-        public FabricatedOverlayEntry[] newArray(int size) {
-            return new FabricatedOverlayEntry[size];
-        }
-    };
 
     @Override
     public int describeContents() {

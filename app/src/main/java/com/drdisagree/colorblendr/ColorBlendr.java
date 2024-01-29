@@ -14,13 +14,6 @@ public class ColorBlendr extends Application {
     private static ColorBlendr instance;
     private static WeakReference<Context> contextReference;
 
-    public void onCreate() {
-        super.onCreate();
-        instance = this;
-        contextReference = new WeakReference<>(getApplicationContext());
-        DynamicColors.applyToActivitiesIfAvailable(this);
-    }
-
     public static Context getAppContext() {
         if (contextReference == null || contextReference.get() == null) {
             contextReference = new WeakReference<>(ColorBlendr.getInstance().getApplicationContext());
@@ -37,5 +30,12 @@ public class ColorBlendr extends Application {
 
     public static IRootService getRootService() {
         return RootServiceProvider.getRootServiceProvider();
+    }
+
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+        contextReference = new WeakReference<>(getApplicationContext());
+        DynamicColors.applyToActivitiesIfAvailable(this);
     }
 }

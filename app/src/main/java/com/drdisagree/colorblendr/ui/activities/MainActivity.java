@@ -30,8 +30,34 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
     private static FragmentManager fragmentManager;
+    private ActivityMainBinding binding;
+
+    public static void replaceFragment(Fragment fragment, boolean animate) {
+        String tag = fragment.getClass().getSimpleName();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if (animate) {
+            fragmentTransaction.setCustomAnimations(
+                    R.anim.slide_in_right,
+                    R.anim.slide_out_left,
+                    R.anim.slide_in_left,
+                    R.anim.slide_out_right
+            );
+        }
+        fragmentTransaction.replace(
+                R.id.fragmentContainer,
+                fragment
+        );
+
+        if (Objects.equals(tag, HomeFragment.class.getSimpleName())) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else if (!Objects.equals(tag, OnboardingFragment.class.getSimpleName())) {
+            fragmentTransaction.addToBackStack(tag);
+        }
+
+        fragmentTransaction.commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,32 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 return windowInsets;
             });
         }
-    }
-
-    public static void replaceFragment(Fragment fragment, boolean animate) {
-        String tag = fragment.getClass().getSimpleName();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        if (animate) {
-            fragmentTransaction.setCustomAnimations(
-                    R.anim.slide_in_right,
-                    R.anim.slide_out_left,
-                    R.anim.slide_in_left,
-                    R.anim.slide_out_right
-            );
-        }
-        fragmentTransaction.replace(
-                R.id.fragmentContainer,
-                fragment
-        );
-
-        if (Objects.equals(tag, HomeFragment.class.getSimpleName())) {
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else if (!Objects.equals(tag, OnboardingFragment.class.getSimpleName())) {
-            fragmentTransaction.addToBackStack(tag);
-        }
-
-        fragmentTransaction.commit();
     }
 
     @Override

@@ -5,9 +5,6 @@ import android.os.Parcelable;
 
 public class ProfilerInfo implements Parcelable {
 
-    protected ProfilerInfo(Parcel in) {
-    }
-
     public static final Creator<ProfilerInfo> CREATOR = new Creator<ProfilerInfo>() {
         @Override
         public ProfilerInfo createFromParcel(Parcel in) {
@@ -19,6 +16,9 @@ public class ProfilerInfo implements Parcelable {
             return new ProfilerInfo[size];
         }
     };
+
+    protected ProfilerInfo(Parcel in) {
+    }
 
     @Override
     public int describeContents() {

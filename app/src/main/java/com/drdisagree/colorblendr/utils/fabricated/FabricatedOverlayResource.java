@@ -11,10 +11,20 @@ import java.util.Map;
 
 public class FabricatedOverlayResource implements Parcelable {
 
+    public static final Creator<FabricatedOverlayResource> CREATOR = new Creator<>() {
+        @Override
+        public FabricatedOverlayResource createFromParcel(Parcel in) {
+            return new FabricatedOverlayResource(in);
+        }
+
+        @Override
+        public FabricatedOverlayResource[] newArray(int size) {
+            return new FabricatedOverlayResource[size];
+        }
+    };
     public final String overlayName;
     public final String targetPackage;
     public final String sourcePackage;
-
     public Map<String, FabricatedOverlayEntry> entries = new HashMap<>();
 
     public FabricatedOverlayResource(String overlayName, String targetPackage) {
@@ -25,6 +35,13 @@ public class FabricatedOverlayResource implements Parcelable {
         this.overlayName = overlayName;
         this.targetPackage = targetPackage;
         this.sourcePackage = sourcePackage;
+    }
+
+    protected FabricatedOverlayResource(Parcel in) {
+        overlayName = in.readString();
+        targetPackage = in.readString();
+        sourcePackage = in.readString();
+        in.readMap(entries, FabricatedOverlayEntry.class.getClassLoader());
     }
 
     public void setInteger(String name, int value) {
@@ -87,25 +104,6 @@ public class FabricatedOverlayResource implements Parcelable {
             return targetPackage + ":" + type + "/" + name;
         }
     }
-
-    protected FabricatedOverlayResource(Parcel in) {
-        overlayName = in.readString();
-        targetPackage = in.readString();
-        sourcePackage = in.readString();
-        in.readMap(entries, FabricatedOverlayEntry.class.getClassLoader());
-    }
-
-    public static final Creator<FabricatedOverlayResource> CREATOR = new Creator<>() {
-        @Override
-        public FabricatedOverlayResource createFromParcel(Parcel in) {
-            return new FabricatedOverlayResource(in);
-        }
-
-        @Override
-        public FabricatedOverlayResource[] newArray(int size) {
-            return new FabricatedOverlayResource[size];
-        }
-    };
 
     @Override
     public int describeContents() {

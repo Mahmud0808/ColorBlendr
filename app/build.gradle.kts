@@ -20,8 +20,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
 
@@ -29,18 +29,18 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
 
             applicationVariants.all {
                 val variant = this
                 variant.outputs
-                    .map { it as BaseVariantOutputImpl }
-                    .forEach { output ->
-                        val outputFileName = "ColorBlendr ${variant.versionName}.apk"
-                        output.outputFileName = outputFileName
-                    }
+                        .map { it as BaseVariantOutputImpl }
+                        .forEach { output ->
+                            val outputFileName = "ColorBlendr ${variant.versionName}.apk"
+                            output.outputFileName = outputFileName
+                        }
             }
         }
     }

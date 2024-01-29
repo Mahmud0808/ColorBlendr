@@ -53,48 +53,6 @@ public final class Frame {
     private final float mFlRoot;
     private final float mZ;
 
-    public float getAw() {
-        return mAw;
-    }
-
-    public float getN() {
-        return mN;
-    }
-
-    public float getNbb() {
-        return mNbb;
-    }
-
-    float getNcb() {
-        return mNcb;
-    }
-
-    float getC() {
-        return mC;
-    }
-
-    float getNc() {
-        return mNc;
-    }
-
-    @NonNull
-    public float[] getRgbD() {
-        return mRgbD;
-    }
-
-    float getFl() {
-        return mFl;
-    }
-
-    @NonNull
-    public float getFlRoot() {
-        return mFlRoot;
-    }
-
-    float getZ() {
-        return mZ;
-    }
-
     private Frame(float n, float aw, float nbb, float ncb, float c, float nc, float[] rgbD,
                   float fl, float fLRoot, float z) {
         mN = n;
@@ -178,5 +136,47 @@ public final class Frame {
         float aw = ((2.0f * rgbA[0]) + rgbA[1] + (0.05f * rgbA[2])) * nbb;
 
         return new Frame(n, aw, nbb, ncb, c, nc, rgbD, fl, (float) Math.pow(fl, 0.25), z);
+    }
+
+    public float getAw() {
+        return mAw;
+    }
+
+    public float getN() {
+        return mN;
+    }
+
+    public float getNbb() {
+        return mNbb;
+    }
+
+    float getNcb() {
+        return mNcb;
+    }
+
+    float getC() {
+        return mC;
+    }
+
+    float getNc() {
+        return mNc;
+    }
+
+    @NonNull
+    public float[] getRgbD() {
+        return mRgbD;
+    }
+
+    float getFl() {
+        return mFl;
+    }
+
+    @NonNull
+    public float getFlRoot() {
+        return mFlRoot;
+    }
+
+    float getZ() {
+        return mZ;
     }
 }

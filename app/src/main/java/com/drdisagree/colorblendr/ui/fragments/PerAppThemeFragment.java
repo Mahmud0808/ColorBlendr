@@ -46,12 +46,6 @@ public class PerAppThemeFragment extends Fragment {
     private FragmentPerAppThemeBinding binding;
     private List<AppInfoModel> appList;
     private AppListAdapter adapter;
-    private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            initAppList();
-        }
-    };
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -72,6 +66,36 @@ public class PerAppThemeFragment extends Fragment {
             }
         }
     };
+    private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            initAppList();
+        }
+    };
+
+    private static List<AppInfoModel> getAllInstalledApps(Context context) {
+        List<AppInfoModel> appList = new ArrayList<>();
+        PackageManager packageManager = context.getPackageManager();
+
+        List<ApplicationInfo> applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        for (ApplicationInfo appInfo : applications) {
+            String appName = appInfo.loadLabel(packageManager).toString();
+            String packageName = appInfo.packageName;
+            Drawable appIcon = appInfo.loadIcon(packageManager);
+            boolean isSelected = OverlayManager.isOverlayEnabled(
+                    String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
+            );
+
+            AppInfoModel app = new AppInfoModel(appName, packageName, appIcon);
+            app.setSelected(isSelected);
+            appList.add(app);
+        }
+
+        appList.sort((app1, app2) -> app1.appName.compareToIgnoreCase(app2.appName));
+
+        return appList;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -164,30 +188,6 @@ public class PerAppThemeFragment extends Fragment {
 
         adapter = new AppListAdapter(filteredList);
         binding.recyclerView.setAdapter(adapter);
-    }
-
-    private static List<AppInfoModel> getAllInstalledApps(Context context) {
-        List<AppInfoModel> appList = new ArrayList<>();
-        PackageManager packageManager = context.getPackageManager();
-
-        List<ApplicationInfo> applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
-
-        for (ApplicationInfo appInfo : applications) {
-            String appName = appInfo.loadLabel(packageManager).toString();
-            String packageName = appInfo.packageName;
-            Drawable appIcon = appInfo.loadIcon(packageManager);
-            boolean isSelected = OverlayManager.isOverlayEnabled(
-                    String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
-            );
-
-            AppInfoModel app = new AppInfoModel(appName, packageName, appIcon);
-            app.setSelected(isSelected);
-            appList.add(app);
-        }
-
-        appList.sort((app1, app2) -> app1.appName.compareToIgnoreCase(app2.appName));
-
-        return appList;
     }
 
     private void blurSearchView() {

@@ -254,6 +254,15 @@ public class WallColorPreview extends View {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         @ColorInt
         int halfCircleColor, firstQuarterCircleColor, secondQuarterCircleColor, squareColor, centerCircleColor;
 
@@ -279,15 +288,5 @@ public class WallColorPreview extends View {
             dest.writeInt(squareColor);
             dest.writeInt(centerCircleColor);
         }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

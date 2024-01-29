@@ -30,29 +30,23 @@ import com.drdisagree.colorblendr.utils.ColorUtil;
  * Color Psychology, 2015
  */
 public final class CamUtils {
-    private CamUtils() {
-    }
-
     // Transforms XYZ color space coordinates to 'cone'/'RGB' responses in CAM16.
     static final float[][] XYZ_TO_CAM16RGB = {
             {0.401288f, 0.650173f, -0.051461f},
             {-0.250268f, 1.204414f, 0.045854f},
             {-0.002079f, 0.048952f, 0.953127f}
     };
-
     // Transforms 'cone'/'RGB' responses in CAM16 to XYZ color space coordinates.
     static final float[][] CAM16RGB_TO_XYZ = {
             {1.86206786f, -1.01125463f, 0.14918677f},
             {0.38752654f, 0.62144744f, -0.00897398f},
             {-0.01584150f, -0.03412294f, 1.04996444f}
     };
-
-    // Need this, XYZ coordinates in internal ColorUtils are private
-
     // sRGB specification has D65 whitepoint - Stokes, Anderson, Chandrasekar, Motta - A Standard
     // Default Color Space for the Internet: sRGB, 1996
     static final float[] WHITE_POINT_D65 = {95.047f, 100.0f, 108.883f};
 
+    // Need this, XYZ coordinates in internal ColorUtils are private
     // This is a more precise sRGB to XYZ transformation matrix than traditionally
     // used. It was derived using Schlomer's technique of transforming the xyY
     // primaries to XYZ, then applying a correction to ensure mapping from sRGB
@@ -63,7 +57,6 @@ public final class CamUtils {
                     new double[]{0.2126, 0.7152, 0.0722},
                     new double[]{0.01932141, 0.11916382, 0.95034478},
             };
-
     static final double[][] XYZ_TO_SRGB =
             new double[][]{
                     new double[]{
@@ -76,6 +69,9 @@ public final class CamUtils {
                             0.05562093689691305, -0.20395524564742123, 1.0571799111220335,
                     },
             };
+
+    private CamUtils() {
+    }
 
     /**
      * The signum function.

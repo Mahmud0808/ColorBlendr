@@ -26,9 +26,9 @@ import java.util.List;
 
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHolder> {
 
-    private Context context;
     private final List<AppInfoModel> appList;
     private final HashMap<String, Boolean> selectedApps = new HashMap<>();
+    private Context context;
 
     public AppListAdapter(List<AppInfoModel> appList) {
         this.appList = appList;
@@ -87,25 +87,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         return appList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public MaterialCardView container;
-        public ImageView appIcon;
-        public TextView appName;
-        public TextView packageName;
-        public ImageView iconView;
-
-        public ViewHolder(View view) {
-            super(view);
-
-            container = view.findViewById(R.id.container);
-            appIcon = view.findViewById(R.id.app_icon);
-            appName = view.findViewById(R.id.title);
-            packageName = view.findViewById(R.id.summary);
-            iconView = view.findViewById(R.id.icon);
-        }
-    }
-
     private void setSelected(ViewHolder holder, boolean isSelected) {
         holder.iconView.setAlpha(isSelected ? 1.0f : 0.2f);
         holder.iconView.setColorFilter(getIconColor(isSelected), PorterDuff.Mode.SRC_IN);
@@ -138,5 +119,24 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         return isSelected ?
                 ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
                 ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public MaterialCardView container;
+        public ImageView appIcon;
+        public TextView appName;
+        public TextView packageName;
+        public ImageView iconView;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            container = view.findViewById(R.id.container);
+            appIcon = view.findViewById(R.id.app_icon);
+            appName = view.findViewById(R.id.title);
+            packageName = view.findViewById(R.id.summary);
+            iconView = view.findViewById(R.id.icon);
+        }
     }
 }

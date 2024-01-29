@@ -209,6 +209,15 @@ public class StylePreviewWidget extends RelativeLayout {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         boolean isSelected;
 
         SavedState(Parcelable superState) {
@@ -225,15 +234,5 @@ public class StylePreviewWidget extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeBoolean(isSelected);
         }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

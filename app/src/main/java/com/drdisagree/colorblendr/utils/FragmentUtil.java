@@ -13,12 +13,6 @@ import com.drdisagree.colorblendr.ui.fragments.ThemeFragment;
 
 public class FragmentUtil {
 
-    public enum TAB_SELECTION {
-        FROM_LEFT_TO_RIGHT,
-        FROM_RIGHT_TO_LEFT,
-        NONE
-    }
-
     public static TAB_SELECTION getSlidingDirection(Fragment currentFragment, Fragment newFragment) {
         if (currentFragment == null) {
             return TAB_SELECTION.NONE;
@@ -90,5 +84,11 @@ public class FragmentUtil {
 
     private static boolean isInGroup4(Fragment fragment) {
         return fragment instanceof SettingsFragment || fragment instanceof AboutFragment;
+    }
+
+    public enum TAB_SELECTION {
+        FROM_LEFT_TO_RIGHT,
+        FROM_RIGHT_TO_LEFT,
+        NONE
     }
 }

@@ -9,9 +9,6 @@ package com.drdisagree.colorblendr.utils.cam;
  * ColorUtils/MathUtils functions that were required were added to CamUtils.
  */
 public class HctSolver {
-    private HctSolver() {
-    }
-
     // Matrix used when converting from linear RGB to CAM16.
     static final double[][] SCALED_DISCOUNT_FROM_LINRGB =
             new double[][]{
@@ -25,7 +22,6 @@ public class HctSolver {
                             0.00010146692491640572, 0.0005364214359186694, 0.0032979401770712076,
                     },
             };
-
     // Matrix used when converting from CAM16 to linear RGB.
     static final double[][] LINRGB_FROM_SCALED_DISCOUNT =
             new double[][]{
@@ -39,10 +35,8 @@ public class HctSolver {
                             1.9622899599665666, -57.173814538844006, 308.7233197812385,
                     },
             };
-
     // Weights for transforming a set of linear RGB coordinates to Y in XYZ.
     static final double[] Y_FROM_LINRGB = new double[]{0.2126, 0.7152, 0.0722};
-
     // Lookup table for plane in XYZ's Y axis (relative luminance) that corresponds to a given
     // L* in L*a*b*. HCT's T is L*, and XYZ's Y is directly correlated to linear RGB, this table
     // allows us to thus find the intersection between HCT and RGB, giving a solution to the
@@ -305,6 +299,9 @@ public class HctSolver {
                     98.6670533535366,
                     99.55452497210776,
             };
+
+    private HctSolver() {
+    }
 
     /**
      * Sanitizes a small enough angle in radians.

@@ -33,12 +33,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
-    /** @hide */
-    @IntDef
-    /** @hide */
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface State {}
-
     /**
      * An internal state used as the initial state of an overlay. OverlayInfo
      * objects exposed outside the {@link
@@ -48,14 +42,12 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
      * @hide
      */
     public static final int STATE_UNKNOWN = -1;
-
     /**
      * The target package of the overlay is not installed. The overlay cannot be enabled.
      *
      * @hide
      */
     public static final int STATE_MISSING_TARGET = 0;
-
     /**
      * Creation of idmap file failed (e.g. no matching resources). The overlay
      * cannot be enabled.
@@ -63,28 +55,25 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
      * @hide
      */
     public static final int STATE_NO_IDMAP = 1;
-
     /**
      * The overlay is currently disabled. It can be enabled.
      *
-     * @see IOverlayManager#setEnabled
      * @hide
+     * @see IOverlayManager#setEnabled
      */
     public static final int STATE_DISABLED = 2;
-
     /**
      * The overlay is currently enabled. It can be disabled.
      *
-     * @see IOverlayManager#setEnabled
      * @hide
+     * @see IOverlayManager#setEnabled
      */
     public static final int STATE_ENABLED = 3;
-
     /**
      * The target package is currently being upgraded or downgraded; the state
      * will change once the package installation has finished.
-     * @hide
      *
+     * @hide
      * @deprecated No longer used. Caused invalid transitions from enabled -> upgrading -> enabled,
      * where an update is propagated when nothing has changed. Can occur during --dont-kill
      * installs when code and resources are hot swapped and the Activity should not be relaunched.
@@ -93,23 +82,22 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
      */
     @Deprecated
     public static final int STATE_TARGET_IS_BEING_REPLACED = 4;
-
     /**
      * The overlay package is currently being upgraded or downgraded; the state
      * will change once the package installation has finished.
+     *
      * @hide
      */
     public static final int STATE_OVERLAY_IS_BEING_REPLACED = 5;
-
     /**
      * The overlay package is currently enabled because it is marked as
      * 'immutable'. It cannot be disabled but will change state if for instance
      * its target is uninstalled.
+     *
      * @hide
      */
     @Deprecated
     public static final int STATE_ENABLED_IMMUTABLE = 6;
-
     /**
      * Overlay category: theme.
      * <p>
@@ -118,7 +106,18 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
      * @hide
      */
     public static final String CATEGORY_THEME = "android.theme";
+    public static final @NonNull Parcelable.Creator<OverlayInfo> CREATOR =
+            new Parcelable.Creator<OverlayInfo>() {
+                @Override
+                public OverlayInfo createFromParcel(Parcel source) {
+                    return new OverlayInfo(source);
+                }
 
+                @Override
+                public OverlayInfo[] newArray(int size) {
+                    return new OverlayInfo[size];
+                }
+            };
     /**
      * Package name of the overlay package
      *
@@ -159,6 +158,7 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * Full path to the base APK for this overlay package
+     *
      * @hide
      */
     @NonNull
@@ -166,12 +166,14 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * The state of this OverlayInfo as defined by the STATE_* constants in this class.
+     *
      * @hide
      */
     public final @State int state;
 
     /**
      * User handle for which this overlay applies
+     *
      * @hide
      */
     public final int userId;
@@ -194,7 +196,6 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
     public final boolean isMutable;
 
     /**
-     *
      * @hide
      */
     public final boolean isFabricated;
@@ -203,37 +204,54 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
      * Create a new OverlayInfo based on source with an updated state.
      *
      * @param source the source OverlayInfo to base the new instance on
-     * @param state the new state for the source OverlayInfo
-     *
+     * @param state  the new state for the source OverlayInfo
      * @hide
      */
     public OverlayInfo(@NonNull OverlayInfo source, @State int state) {
         throw new RuntimeException("Stub!");
     }
 
-    /** @hide */
+    /**
+     * @hide
+     */
     @VisibleForTesting
     public OverlayInfo(@NonNull String packageName, @NonNull String targetPackageName,
-            @Nullable String targetOverlayableName, @Nullable String category,
-            @NonNull String baseCodePath, int state, int userId, int priority, boolean isMutable) {
+                       @Nullable String targetOverlayableName, @Nullable String category,
+                       @NonNull String baseCodePath, int state, int userId, int priority, boolean isMutable) {
         throw new RuntimeException("Stub!");
     }
 
-    /** @hide */
+    /**
+     * @hide
+     */
     public OverlayInfo(@NonNull String packageName, @Nullable String overlayName,
-            @NonNull String targetPackageName, @Nullable String targetOverlayableName,
-            @Nullable String category, @NonNull String baseCodePath, int state, int userId,
-            int priority, boolean isMutable, boolean isFabricated) {
+                       @NonNull String targetPackageName, @Nullable String targetOverlayableName,
+                       @Nullable String category, @NonNull String baseCodePath, int state, int userId,
+                       int priority, boolean isMutable, boolean isFabricated) {
         throw new RuntimeException("Stub!");
     }
 
-    /** @hide */
+    /**
+     * @hide
+     */
     public OverlayInfo(Parcel source) {
         throw new RuntimeException("Stub!");
     }
 
     /**
+     * Translate a state to a human readable string. Only intended for
+     * debugging purposes.
+     *
+     * @return a human readable String representing the state.
+     * @hide
+     */
+    public static String stateToString(@State int state) {
+        throw new RuntimeException("Stub!");
+    }
+
+    /**
      * {@inheritDoc}
+     *
      * @hide
      */
     @Override
@@ -244,6 +262,7 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * {@inheritDoc}
+     *
      * @hide
      */
     @Override
@@ -254,6 +273,7 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * {@inheritDoc}
+     *
      * @hide
      */
     @Override
@@ -283,6 +303,7 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * {@inheritDoc}
+     *
      * @hide
      */
     @Override
@@ -293,6 +314,7 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * {@inheritDoc}
+     *
      * @hide
      */
     @Override
@@ -311,6 +333,7 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
 
     /**
      * {@inheritDoc}
+     *
      * @hide
      */
     @Override
@@ -329,40 +352,16 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
         throw new RuntimeException("Stub!");
     }
 
-    public static final @NonNull Parcelable.Creator<OverlayInfo> CREATOR =
-            new Parcelable.Creator<OverlayInfo>() {
-        @Override
-        public OverlayInfo createFromParcel(Parcel source) {
-            return new OverlayInfo(source);
-        }
-
-        @Override
-        public OverlayInfo[] newArray(int size) {
-            return new OverlayInfo[size];
-        }
-    };
-
     /**
      * Return true if this overlay is enabled, i.e. should be used to overlay
      * the resources in the target package.
-     *
+     * <p>
      * Disabled overlay packages are installed but are currently not in use.
      *
      * @return true if the overlay is enabled, else false.
      * @hide
      */
     public boolean isEnabled() {
-        throw new RuntimeException("Stub!");
-    }
-
-    /**
-     * Translate a state to a human readable string. Only intended for
-     * debugging purposes.
-     *
-     * @return a human readable String representing the state.
-     * @hide
-     */
-    public static String stateToString(@State int state) {
         throw new RuntimeException("Stub!");
     }
 
@@ -380,5 +379,14 @@ public final class OverlayInfo implements CriticalOverlayInfo, Parcelable {
     @Override
     public String toString() {
         throw new RuntimeException("Stub!");
+    }
+
+    /**
+     * @hide
+     */
+    @IntDef
+    /** @hide */
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface State {
     }
 }

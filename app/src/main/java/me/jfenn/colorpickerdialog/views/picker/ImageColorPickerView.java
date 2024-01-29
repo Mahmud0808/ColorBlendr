@@ -15,9 +15,10 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.drdisagree.colorblendr.R;
+
 import me.jfenn.androidutils.DimenUtilsKt;
 import me.jfenn.androidutils.anim.AnimatedInteger;
-import com.drdisagree.colorblendr.R;
 import me.jfenn.colorpickerdialog.utils.ColorUtils;
 
 public class ImageColorPickerView extends PickerView<ImageColorPickerView.ImageState> {
@@ -101,8 +102,8 @@ public class ImageColorPickerView extends PickerView<ImageColorPickerView.ImageS
     /**
      * Specify a bitmap for the image picker to pick its color from.
      *
-     * @param bitmap            The bitmap to pick a color from.
-     * @return                  "This" view instance, for method chaining.
+     * @param bitmap The bitmap to pick a color from.
+     * @return "This" view instance, for method chaining.
      */
     public ImageColorPickerView withBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;

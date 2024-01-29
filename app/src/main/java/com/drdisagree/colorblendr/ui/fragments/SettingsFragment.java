@@ -53,10 +53,10 @@ import java.util.concurrent.Executors;
 public class SettingsFragment extends Fragment {
 
     private static final String TAG = SettingsFragment.class.getSimpleName();
+    private static final String[][] colorNames = ColorUtil.getColorNames();
     private FragmentSettingsBinding binding;
     private SharedViewModel sharedViewModel;
     private boolean isMasterSwitchEnabled = true;
-    private static final String[][] colorNames = ColorUtil.getColorNames();
     private final CompoundButton.OnCheckedChangeListener masterSwitch = (buttonView, isChecked) -> {
         if (!isMasterSwitchEnabled) {
             buttonView.setChecked(!isChecked);
@@ -238,7 +238,14 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    ActivityResultLauncher<Intent> startBackupActivityIntent = registerForActivityResult(
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            getParentFragmentManager().popBackStackImmediate();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }    ActivityResultLauncher<Intent> startBackupActivityIntent = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -284,7 +291,13 @@ public class SettingsFragment extends Fragment {
                 }
             });
 
-    ActivityResultLauncher<Intent> startRestoreActivityIntent = registerForActivityResult(
+    private void clearCustomColors() {
+        for (String[] colorName : colorNames) {
+            for (String resource : colorName) {
+                RPrefs.clearPref(resource);
+            }
+        }
+    }    ActivityResultLauncher<Intent> startRestoreActivityIntent = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -334,23 +347,6 @@ public class SettingsFragment extends Fragment {
                 }
             });
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            getParentFragmentManager().popBackStackImmediate();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void clearCustomColors() {
-        for (String[] colorName : colorNames) {
-            for (String resource : colorName) {
-                RPrefs.clearPref(resource);
-            }
-        }
-    }
-
     private boolean shouldConfirmBeforeClearing() {
         return numColorsOverridden() > 5;
     }
@@ -376,4 +372,8 @@ public class SettingsFragment extends Fragment {
             }
         }, 300);
     }
+
+
+
+
 }

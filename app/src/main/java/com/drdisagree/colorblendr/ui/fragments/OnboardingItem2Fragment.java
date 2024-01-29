@@ -27,8 +27,36 @@ public class OnboardingItem2Fragment extends Fragment {
 
     private FragmentOnboardingItem2Binding binding;
     private boolean hasNotificationPermission = false;
+    private final ActivityResultLauncher<String> requestNotificationPermission = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            result -> {
+                if (result) {
+                    binding.postNotifications.setSelected(true);
+                    hasNotificationPermission = true;
+                } else {
+                    binding.postNotifications.setSelected(false);
+                    hasNotificationPermission = false;
+                }
+            }
+    );
     private boolean hasMediaPermission = false;
+    private final ActivityResultLauncher<String[]> requestMediaPermission = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            this::handleMediaPermissionsResult
+    );
     private boolean hasStoragePermission = false;
+    private final ActivityResultLauncher<Intent> requestAllFilesPermission = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (AppUtil.hasStoragePermission()) {
+                    binding.allFilesAccess.setSelected(true);
+                    hasStoragePermission = true;
+                } else {
+                    binding.allFilesAccess.setSelected(false);
+                    hasStoragePermission = false;
+                }
+            }
+    );
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,24 +133,6 @@ public class OnboardingItem2Fragment extends Fragment {
         }
     }
 
-    private final ActivityResultLauncher<String> requestNotificationPermission = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(),
-            result -> {
-                if (result) {
-                    binding.postNotifications.setSelected(true);
-                    hasNotificationPermission = true;
-                } else {
-                    binding.postNotifications.setSelected(false);
-                    hasNotificationPermission = false;
-                }
-            }
-    );
-
-    private final ActivityResultLauncher<String[]> requestMediaPermission = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            this::handleMediaPermissionsResult
-    );
-
     private void handleMediaPermissionsResult(Map<String, Boolean> result) {
         for (Map.Entry<String, Boolean> pair : result.entrySet()) {
             if (!pair.getValue()) {
@@ -135,19 +145,6 @@ public class OnboardingItem2Fragment extends Fragment {
             hasMediaPermission = true;
         }
     }
-
-    private final ActivityResultLauncher<Intent> requestAllFilesPermission = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (AppUtil.hasStoragePermission()) {
-                    binding.allFilesAccess.setSelected(true);
-                    hasStoragePermission = true;
-                } else {
-                    binding.allFilesAccess.setSelected(false);
-                    hasStoragePermission = false;
-                }
-            }
-    );
 
     private boolean checkSelfPermission(String permission) {
         return ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED;

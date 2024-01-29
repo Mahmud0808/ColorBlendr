@@ -205,6 +205,15 @@ public class ColorPickerWidget extends RelativeLayout {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Creator<SavedState> CREATOR = new Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         int selectedColor;
 
         SavedState(Parcelable superState) {
@@ -221,15 +230,5 @@ public class ColorPickerWidget extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeInt(selectedColor);
         }
-
-        public static final Creator<SavedState> CREATOR = new Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

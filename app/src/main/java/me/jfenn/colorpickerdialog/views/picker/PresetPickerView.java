@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.drdisagree.colorblendr.R;
+
 import me.jfenn.colorpickerdialog.adapters.PresetColorAdapter;
 
 public class PresetPickerView extends PickerView {

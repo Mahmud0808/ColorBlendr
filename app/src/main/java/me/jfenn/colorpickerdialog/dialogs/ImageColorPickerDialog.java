@@ -64,8 +64,8 @@ public class ImageColorPickerDialog extends PickerDialog<ImageColorPickerDialog>
     /**
      * Specify an image path to load the picker dialog's image from.
      *
-     * @param path          The string path of the image to load.
-     * @return              "This" dialog instance, for method chaining.
+     * @param path The string path of the image to load.
+     * @return "This" dialog instance, for method chaining.
      */
     public ImageColorPickerDialog withImagePath(Context context, String path) {
         imageUriString = path;
@@ -81,8 +81,8 @@ public class ImageColorPickerDialog extends PickerDialog<ImageColorPickerDialog>
     /**
      * Specify an image uri to load the picker dialog's image from.
      *
-     * @param imageUri      The string uri of the image to load.
-     * @return              "This" dialog instance, for method chaining.
+     * @param imageUri The string uri of the image to load.
+     * @return "This" dialog instance, for method chaining.
      */
     public ImageColorPickerDialog withImageUri(Context context, Uri imageUri) {
         if (imageUri.toString().startsWith("/"))
@@ -101,8 +101,8 @@ public class ImageColorPickerDialog extends PickerDialog<ImageColorPickerDialog>
     /**
      * Specify an image bitmap to use as the picker dialog's image.
      *
-     * @param bitmap        The bitmap image to use.
-     * @return              "This" dialog instance, for method chaining.
+     * @param bitmap The bitmap image to use.
+     * @return "This" dialog instance, for method chaining.
      */
     public ImageColorPickerDialog withBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;

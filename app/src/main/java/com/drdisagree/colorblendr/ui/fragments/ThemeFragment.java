@@ -35,10 +35,10 @@ import java.util.ArrayList;
 public class ThemeFragment extends Fragment {
 
     private static final String TAG = ThemeFragment.class.getSimpleName();
-    private FragmentThemeBinding binding;
     private final int[] monetAccentSaturation = new int[]{RPrefs.getInt(MONET_ACCENT_SATURATION, 100)};
     private final int[] monetBackgroundSaturation = new int[]{RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100)};
     private final int[] monetBackgroundLightness = new int[]{RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100)};
+    private FragmentThemeBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -22,18 +22,6 @@ import java.util.ArrayList;
 
 public class ColorSchemeUtil {
 
-    public enum MONET {
-        SPRITZ,
-        MONOCHROMATIC,
-        TONAL_SPOT,
-        VIBRANT,
-        RAINBOW,
-        EXPRESSIVE,
-        FIDELITY,
-        CONTENT,
-        FRUIT_SALAD
-    }
-
     public static final int[] tones = {100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0};
 
     public static ArrayList<ArrayList<Integer>> generateColorPalette(MONET style, @ColorInt int color) {
@@ -108,5 +96,17 @@ public class ColorSchemeUtil {
         } else {
             return MONET.TONAL_SPOT;
         }
+    }
+
+    public enum MONET {
+        SPRITZ,
+        MONOCHROMATIC,
+        TONAL_SPOT,
+        VIBRANT,
+        RAINBOW,
+        EXPRESSIVE,
+        FIDELITY,
+        CONTENT,
+        FRUIT_SALAD
     }
 }

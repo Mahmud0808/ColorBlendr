@@ -35,79 +35,6 @@ public class Cam {
     private final float mBstar;
 
     /**
-     * Hue in CAM16
-     */
-    public float getHue() {
-        return mHue;
-    }
-
-    /**
-     * Chroma in CAM16
-     */
-    public float getChroma() {
-        return mChroma;
-    }
-
-    /**
-     * Lightness in CAM16
-     */
-    public float getJ() {
-        return mJ;
-    }
-
-    /**
-     * Brightness in CAM16.
-     *
-     * <p>Prefer lightness, brightness is an absolute quantity. For example, a sheet of white paper
-     * is much brighter viewed in sunlight than in indoor light, but it is the lightest object under
-     * any lighting.
-     */
-    public float getQ() {
-        return mQ;
-    }
-
-    /**
-     * Colorfulness in CAM16.
-     *
-     * <p>Prefer chroma, colorfulness is an absolute quantity. For example, a yellow toy car is much
-     * more colorful outside than inside, but it has the same chroma in both environments.
-     */
-    public float getM() {
-        return mM;
-    }
-
-    /**
-     * Saturation in CAM16.
-     *
-     * <p>Colorfulness in proportion to brightness. Prefer chroma, saturation measures colorfulness
-     * relative to the color's own brightness, where chroma is colorfulness relative to white.
-     */
-    public float getS() {
-        return mS;
-    }
-
-    /**
-     * Lightness coordinate in CAM16-UCS
-     */
-    public float getJstar() {
-        return mJstar;
-    }
-
-    /**
-     * a* coordinate in CAM16-UCS
-     */
-    public float getAstar() {
-        return mAstar;
-    }
-
-    /**
-     * b* coordinate in CAM16-UCS
-     */
-    public float getBstar() {
-        return mBstar;
-    }
-
-    /**
      * Construct a CAM16 color
      */
     Cam(float hue, float chroma, float j, float q, float m, float s, float jstar, float astar,
@@ -253,82 +180,6 @@ public class Cam {
         float astar = mstar * (float) Math.cos(hueRadians);
         float bstar = mstar * (float) Math.sin(hueRadians);
         return new Cam(h, c, j, q, m, s, jstar, astar, bstar);
-    }
-
-    /**
-     * Distance in CAM16-UCS space between two colors.
-     *
-     * <p>Much like L*a*b* was designed to measure distance between colors, the CAM16 standard
-     * defined a color space called CAM16-UCS to measure distance between CAM16 colors.
-     */
-    public float distance(@NonNull Cam other) {
-        float dJ = getJstar() - other.getJstar();
-        float dA = getAstar() - other.getAstar();
-        float dB = getBstar() - other.getBstar();
-        double dEPrime = Math.sqrt(dJ * dJ + dA * dA + dB * dB);
-        double dE = 1.41 * Math.pow(dEPrime, 0.63);
-        return (float) dE;
-    }
-
-    /**
-     * Returns perceived color as an ARGB integer, as viewed in standard sRGB frame.
-     */
-    public int viewedInSrgb() {
-        return viewed(Frame.DEFAULT);
-    }
-
-    /**
-     * Returns color perceived in a frame as an ARGB integer.
-     */
-    public int viewed(@NonNull Frame frame) {
-        float alpha =
-                (getChroma() == 0.0 || getJ() == 0.0)
-                        ? 0.0f
-                        : getChroma() / (float) Math.sqrt(getJ() / 100.0);
-
-        float t =
-                (float) Math.pow(alpha / Math.pow(1.64 - Math.pow(0.29, frame.getN()), 0.73),
-                        1.0 / 0.9);
-        float hRad = getHue() * (float) Math.PI / 180.0f;
-
-        float eHue = 0.25f * (float) (Math.cos(hRad + 2.0) + 3.8);
-        float ac = frame.getAw() * (float) Math.pow(getJ() / 100.0,
-                1.0 / frame.getC() / frame.getZ());
-        float p1 = eHue * (50000.0f / 13.0f) * frame.getNc() * frame.getNcb();
-        float p2 = (ac / frame.getNbb());
-
-        float hSin = (float) Math.sin(hRad);
-        float hCos = (float) Math.cos(hRad);
-
-        float gamma =
-                23.0f * (p2 + 0.305f) * t / (23.0f * p1 + 11.0f * t * hCos + 108.0f * t * hSin);
-        float a = gamma * hCos;
-        float b = gamma * hSin;
-        float rA = (460.0f * p2 + 451.0f * a + 288.0f * b) / 1403.0f;
-        float gA = (460.0f * p2 - 891.0f * a - 261.0f * b) / 1403.0f;
-        float bA = (460.0f * p2 - 220.0f * a - 6300.0f * b) / 1403.0f;
-
-        float rCBase = (float) Math.max(0, (27.13 * Math.abs(rA)) / (400.0 - Math.abs(rA)));
-        float rC = Math.signum(rA) * (100.0f / frame.getFl()) * (float) Math.pow(rCBase,
-                1.0 / 0.42);
-        float gCBase = (float) Math.max(0, (27.13 * Math.abs(gA)) / (400.0 - Math.abs(gA)));
-        float gC = Math.signum(gA) * (100.0f / frame.getFl()) * (float) Math.pow(gCBase,
-                1.0 / 0.42);
-        float bCBase = (float) Math.max(0, (27.13 * Math.abs(bA)) / (400.0 - Math.abs(bA)));
-        float bC = Math.signum(bA) * (100.0f / frame.getFl()) * (float) Math.pow(bCBase,
-                1.0 / 0.42);
-        float rF = rC / frame.getRgbD()[0];
-        float gF = gC / frame.getRgbD()[1];
-        float bF = bC / frame.getRgbD()[2];
-
-
-        float[][] matrix = CamUtils.CAM16RGB_TO_XYZ;
-        float x = (rF * matrix[0][0]) + (gF * matrix[0][1]) + (bF * matrix[0][2]);
-        float y = (rF * matrix[1][0]) + (gF * matrix[1][1]) + (bF * matrix[1][2]);
-        float z = (rF * matrix[2][0]) + (gF * matrix[2][1]) + (bF * matrix[2][2]);
-
-        int argb = ColorUtil.XYZToColor(x, y, z);
-        return argb;
     }
 
     /**
@@ -513,6 +364,155 @@ public class Cam {
         }
 
         return bestCam;
+    }
+
+    /**
+     * Hue in CAM16
+     */
+    public float getHue() {
+        return mHue;
+    }
+
+    /**
+     * Chroma in CAM16
+     */
+    public float getChroma() {
+        return mChroma;
+    }
+
+    /**
+     * Lightness in CAM16
+     */
+    public float getJ() {
+        return mJ;
+    }
+
+    /**
+     * Brightness in CAM16.
+     *
+     * <p>Prefer lightness, brightness is an absolute quantity. For example, a sheet of white paper
+     * is much brighter viewed in sunlight than in indoor light, but it is the lightest object under
+     * any lighting.
+     */
+    public float getQ() {
+        return mQ;
+    }
+
+    /**
+     * Colorfulness in CAM16.
+     *
+     * <p>Prefer chroma, colorfulness is an absolute quantity. For example, a yellow toy car is much
+     * more colorful outside than inside, but it has the same chroma in both environments.
+     */
+    public float getM() {
+        return mM;
+    }
+
+    /**
+     * Saturation in CAM16.
+     *
+     * <p>Colorfulness in proportion to brightness. Prefer chroma, saturation measures colorfulness
+     * relative to the color's own brightness, where chroma is colorfulness relative to white.
+     */
+    public float getS() {
+        return mS;
+    }
+
+    /**
+     * Lightness coordinate in CAM16-UCS
+     */
+    public float getJstar() {
+        return mJstar;
+    }
+
+    /**
+     * a* coordinate in CAM16-UCS
+     */
+    public float getAstar() {
+        return mAstar;
+    }
+
+    /**
+     * b* coordinate in CAM16-UCS
+     */
+    public float getBstar() {
+        return mBstar;
+    }
+
+    /**
+     * Distance in CAM16-UCS space between two colors.
+     *
+     * <p>Much like L*a*b* was designed to measure distance between colors, the CAM16 standard
+     * defined a color space called CAM16-UCS to measure distance between CAM16 colors.
+     */
+    public float distance(@NonNull Cam other) {
+        float dJ = getJstar() - other.getJstar();
+        float dA = getAstar() - other.getAstar();
+        float dB = getBstar() - other.getBstar();
+        double dEPrime = Math.sqrt(dJ * dJ + dA * dA + dB * dB);
+        double dE = 1.41 * Math.pow(dEPrime, 0.63);
+        return (float) dE;
+    }
+
+    /**
+     * Returns perceived color as an ARGB integer, as viewed in standard sRGB frame.
+     */
+    public int viewedInSrgb() {
+        return viewed(Frame.DEFAULT);
+    }
+
+    /**
+     * Returns color perceived in a frame as an ARGB integer.
+     */
+    public int viewed(@NonNull Frame frame) {
+        float alpha =
+                (getChroma() == 0.0 || getJ() == 0.0)
+                        ? 0.0f
+                        : getChroma() / (float) Math.sqrt(getJ() / 100.0);
+
+        float t =
+                (float) Math.pow(alpha / Math.pow(1.64 - Math.pow(0.29, frame.getN()), 0.73),
+                        1.0 / 0.9);
+        float hRad = getHue() * (float) Math.PI / 180.0f;
+
+        float eHue = 0.25f * (float) (Math.cos(hRad + 2.0) + 3.8);
+        float ac = frame.getAw() * (float) Math.pow(getJ() / 100.0,
+                1.0 / frame.getC() / frame.getZ());
+        float p1 = eHue * (50000.0f / 13.0f) * frame.getNc() * frame.getNcb();
+        float p2 = (ac / frame.getNbb());
+
+        float hSin = (float) Math.sin(hRad);
+        float hCos = (float) Math.cos(hRad);
+
+        float gamma =
+                23.0f * (p2 + 0.305f) * t / (23.0f * p1 + 11.0f * t * hCos + 108.0f * t * hSin);
+        float a = gamma * hCos;
+        float b = gamma * hSin;
+        float rA = (460.0f * p2 + 451.0f * a + 288.0f * b) / 1403.0f;
+        float gA = (460.0f * p2 - 891.0f * a - 261.0f * b) / 1403.0f;
+        float bA = (460.0f * p2 - 220.0f * a - 6300.0f * b) / 1403.0f;
+
+        float rCBase = (float) Math.max(0, (27.13 * Math.abs(rA)) / (400.0 - Math.abs(rA)));
+        float rC = Math.signum(rA) * (100.0f / frame.getFl()) * (float) Math.pow(rCBase,
+                1.0 / 0.42);
+        float gCBase = (float) Math.max(0, (27.13 * Math.abs(gA)) / (400.0 - Math.abs(gA)));
+        float gC = Math.signum(gA) * (100.0f / frame.getFl()) * (float) Math.pow(gCBase,
+                1.0 / 0.42);
+        float bCBase = (float) Math.max(0, (27.13 * Math.abs(bA)) / (400.0 - Math.abs(bA)));
+        float bC = Math.signum(bA) * (100.0f / frame.getFl()) * (float) Math.pow(bCBase,
+                1.0 / 0.42);
+        float rF = rC / frame.getRgbD()[0];
+        float gF = gC / frame.getRgbD()[1];
+        float bF = bC / frame.getRgbD()[2];
+
+
+        float[][] matrix = CamUtils.CAM16RGB_TO_XYZ;
+        float x = (rF * matrix[0][0]) + (gF * matrix[0][1]) + (bF * matrix[0][2]);
+        float y = (rF * matrix[1][0]) + (gF * matrix[1][1]) + (bF * matrix[1][2]);
+        float z = (rF * matrix[2][0]) + (gF * matrix[2][1]) + (bF * matrix[2][2]);
+
+        int argb = ColorUtil.XYZToColor(x, y, z);
+        return argb;
     }
 
 }

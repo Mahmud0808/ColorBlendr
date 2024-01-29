@@ -30,9 +30,39 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
-    private FragmentHomeBinding binding;
     private static Fragment currentFragment;
     private static FragmentManager fragmentManager;
+    private FragmentHomeBinding binding;
+
+    public static void replaceFragment(Fragment fragment) {
+        String tag = fragment.getClass().getSimpleName();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        FragmentUtil.TAB_SELECTION direction = FragmentUtil.getSlidingDirection(currentFragment, fragment);
+        if (currentFragment != null) {
+            FragmentUtil.setCustomAnimations(direction, fragmentTransaction);
+        }
+
+        fragmentTransaction.replace(
+                R.id.fragmentContainer,
+                fragment
+        );
+
+        if (Objects.equals(tag, ColorsFragment.class.getSimpleName())) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else if (Objects.equals(tag, ThemeFragment.class.getSimpleName()) ||
+                Objects.equals(tag, StylesFragment.class.getSimpleName()) ||
+                Objects.equals(tag, SettingsFragment.class.getSimpleName())
+        ) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.addToBackStack(tag);
+        } else {
+            fragmentTransaction.addToBackStack(tag);
+        }
+
+        fragmentTransaction.commit();
+        currentFragment = fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,36 +96,6 @@ public class HomeFragment extends Fragment {
         }, 2000);
 
         registerOnBackPressedCallback();
-    }
-
-    public static void replaceFragment(Fragment fragment) {
-        String tag = fragment.getClass().getSimpleName();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        FragmentUtil.TAB_SELECTION direction = FragmentUtil.getSlidingDirection(currentFragment, fragment);
-        if (currentFragment != null) {
-            FragmentUtil.setCustomAnimations(direction, fragmentTransaction);
-        }
-
-        fragmentTransaction.replace(
-                R.id.fragmentContainer,
-                fragment
-        );
-
-        if (Objects.equals(tag, ColorsFragment.class.getSimpleName())) {
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else if (Objects.equals(tag, ThemeFragment.class.getSimpleName()) ||
-                Objects.equals(tag, StylesFragment.class.getSimpleName()) ||
-                Objects.equals(tag, SettingsFragment.class.getSimpleName())
-        ) {
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.addToBackStack(tag);
-        } else {
-            fragmentTransaction.addToBackStack(tag);
-        }
-
-        fragmentTransaction.commit();
-        currentFragment = fragment;
     }
 
     private void setupBottomNavigationView() {
@@ -148,11 +148,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private final ActivityResultLauncher<String[]> requestPermissionsLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            this::handlePermissionsResult
-    );
-
     private void handlePermissionsResult(Map<String, Boolean> result) {
         for (Map.Entry<String, Boolean> pair : result.entrySet()) {
             if (!pair.getValue()) {
@@ -169,7 +164,10 @@ public class HomeFragment extends Fragment {
         if (BackgroundService.isServiceNotRunning()) {
             requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
         }
-    }
+    }    private final ActivityResultLauncher<String[]> requestPermissionsLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            this::handlePermissionsResult
+    );
 
     private void showGeneralPermissionSnackbar(String permission) {
         Snackbar snackbar = Snackbar.make(
@@ -219,4 +217,6 @@ public class HomeFragment extends Fragment {
 
         return fragment[0];
     }
+
+
 }

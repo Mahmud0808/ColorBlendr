@@ -80,73 +80,6 @@ public class WallpaperUtil {
         return ColorUtil.getMonetAccentColors();
     }
 
-    private static class WallpaperLoader {
-
-        private static final String TAG = WallpaperLoader.class.getSimpleName();
-        private static final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        private static final Handler mainHandler = new Handler(Looper.getMainLooper());
-
-        public interface WallpaperLoadListener {
-            void onWallpaperLoaded(Bitmap bitmap);
-        }
-
-        public static Future<Bitmap> loadWallpaperAsync(Context context, int which, WallpaperLoadListener listener) {
-            Callable<Bitmap> callable = () -> loadWallpaper(context, which);
-            Future<Bitmap> future = executorService.submit(callable);
-
-            if (listener != null) {
-                executorService.execute(() -> {
-                    try {
-                        Bitmap result = future.get();
-                        notifyOnMainThread(listener, result);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error getting wallpaper bitmap async", e);
-                    }
-                });
-            }
-
-            return future;
-        }
-
-        private static Bitmap loadWallpaper(Context context, int which) {
-            try {
-                ParcelFileDescriptor wallpaperFile;
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
-
-                if (which == WallpaperManager.FLAG_SYSTEM) {
-                    wallpaperFile = wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_SYSTEM);
-                } else {
-                    wallpaperFile = wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_LOCK);
-                }
-
-                if (wallpaperFile == null) {
-                    Log.e(TAG, "Error getting wallpaper bitmap: wallpaperFile is null");
-                    return null;
-                }
-
-                Bitmap decodeFileDescriptor = createMiniBitmap(
-                        BitmapFactory.decodeFileDescriptor(
-                                wallpaperFile.getFileDescriptor()
-                        )
-                );
-                wallpaperFile.close();
-
-                return decodeFileDescriptor;
-            } catch (IOException e) {
-                Log.e(TAG, "Error getting wallpaper bitmap", e);
-                return null;
-            }
-        }
-
-        private static void notifyOnMainThread(WallpaperLoadListener listener, Bitmap bitmap) {
-            mainHandler.post(() -> {
-                if (listener != null) {
-                    listener.onWallpaperLoaded(bitmap);
-                }
-            });
-        }
-    }
-
     private static Bitmap createMiniBitmap(@NonNull Bitmap bitmap) {
         int smallestSide = Math.min(bitmap.getWidth(), bitmap.getHeight());
         float scale = Math.min(1.0f, (float) SMALL_SIDE / smallestSide);
@@ -244,5 +177,72 @@ public class WallpaperUtil {
     private static boolean isColorInRange(int color) {
         double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
         return darkness >= MINIMUM_DARKNESS && darkness <= MAXIMUM_DARKNESS;
+    }
+
+    private static class WallpaperLoader {
+
+        private static final String TAG = WallpaperLoader.class.getSimpleName();
+        private static final ExecutorService executorService = Executors.newFixedThreadPool(2);
+        private static final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+        public static Future<Bitmap> loadWallpaperAsync(Context context, int which, WallpaperLoadListener listener) {
+            Callable<Bitmap> callable = () -> loadWallpaper(context, which);
+            Future<Bitmap> future = executorService.submit(callable);
+
+            if (listener != null) {
+                executorService.execute(() -> {
+                    try {
+                        Bitmap result = future.get();
+                        notifyOnMainThread(listener, result);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error getting wallpaper bitmap async", e);
+                    }
+                });
+            }
+
+            return future;
+        }
+
+        private static Bitmap loadWallpaper(Context context, int which) {
+            try {
+                ParcelFileDescriptor wallpaperFile;
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+
+                if (which == WallpaperManager.FLAG_SYSTEM) {
+                    wallpaperFile = wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_SYSTEM);
+                } else {
+                    wallpaperFile = wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_LOCK);
+                }
+
+                if (wallpaperFile == null) {
+                    Log.e(TAG, "Error getting wallpaper bitmap: wallpaperFile is null");
+                    return null;
+                }
+
+                Bitmap decodeFileDescriptor = createMiniBitmap(
+                        BitmapFactory.decodeFileDescriptor(
+                                wallpaperFile.getFileDescriptor()
+                        )
+                );
+                wallpaperFile.close();
+
+                return decodeFileDescriptor;
+            } catch (IOException e) {
+                Log.e(TAG, "Error getting wallpaper bitmap", e);
+                return null;
+            }
+        }
+
+        private static void notifyOnMainThread(WallpaperLoadListener listener, Bitmap bitmap) {
+            mainHandler.post(() -> {
+                if (listener != null) {
+                    listener.onWallpaperLoaded(bitmap);
+                }
+            });
+        }
+
+        public interface WallpaperLoadListener {
+            void onWallpaperLoaded(Bitmap bitmap);
+        }
     }
 }

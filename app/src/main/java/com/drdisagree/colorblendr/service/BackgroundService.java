@@ -26,15 +26,19 @@ import com.drdisagree.colorblendr.utils.SystemUtil;
 public class BackgroundService extends Service {
 
     private static final String TAG = BackgroundService.class.getSimpleName();
-    private static boolean isRunning = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "Background Service";
+    private static boolean isRunning = false;
     private static BroadcastListener myReceiver;
     private NotificationManager notificationManager;
 
     public BackgroundService() {
         isRunning = false;
         myReceiver = new BroadcastListener();
+    }
+
+    public static boolean isServiceNotRunning() {
+        return !isRunning;
     }
 
     @Nullable
@@ -149,10 +153,6 @@ public class BackgroundService extends Service {
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to set SystemUI restart listener", e);
         }
-    }
-
-    public static boolean isServiceNotRunning() {
-        return !isRunning;
     }
 
     @Override

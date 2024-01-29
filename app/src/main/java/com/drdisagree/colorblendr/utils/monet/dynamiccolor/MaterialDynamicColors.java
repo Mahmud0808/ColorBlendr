@@ -49,6 +49,39 @@ public final class MaterialDynamicColors {
         this.isExtendedFidelity = isExtendedFidelity;
     }
 
+    private static boolean isMonochrome(DynamicScheme scheme) {
+        return scheme.variant == Variant.MONOCHROME;
+    }
+
+    static double findDesiredChromaByTone(
+            double hue, double chroma, double tone, boolean byDecreasingTone) {
+        double answer = tone;
+
+        Hct closestToChroma = Hct.from(hue, chroma, tone);
+        if (closestToChroma.getChroma() < chroma) {
+            double chromaPeak = closestToChroma.getChroma();
+            while (closestToChroma.getChroma() < chroma) {
+                answer += byDecreasingTone ? -1.0 : 1.0;
+                Hct potentialSolution = Hct.from(hue, chroma, answer);
+                if (chromaPeak > potentialSolution.getChroma()) {
+                    break;
+                }
+                if (Math.abs(potentialSolution.getChroma() - chroma) < 0.4) {
+                    break;
+                }
+
+                double potentialDelta = Math.abs(potentialSolution.getChroma() - chroma);
+                double currentDelta = Math.abs(closestToChroma.getChroma() - chroma);
+                if (potentialDelta < currentDelta) {
+                    closestToChroma = potentialSolution;
+                }
+                chromaPeak = Math.max(chromaPeak, potentialSolution.getChroma());
+            }
+        }
+
+        return answer;
+    }
+
     @NonNull
     public DynamicColor highestSurface(@NonNull DynamicScheme s) {
         return s.isDark ? surfaceBright() : surfaceDim();
@@ -939,38 +972,5 @@ public final class MaterialDynamicColors {
             return true;
         }
         return scheme.variant == Variant.FIDELITY || scheme.variant == Variant.CONTENT;
-    }
-
-    private static boolean isMonochrome(DynamicScheme scheme) {
-        return scheme.variant == Variant.MONOCHROME;
-    }
-
-    static double findDesiredChromaByTone(
-            double hue, double chroma, double tone, boolean byDecreasingTone) {
-        double answer = tone;
-
-        Hct closestToChroma = Hct.from(hue, chroma, tone);
-        if (closestToChroma.getChroma() < chroma) {
-            double chromaPeak = closestToChroma.getChroma();
-            while (closestToChroma.getChroma() < chroma) {
-                answer += byDecreasingTone ? -1.0 : 1.0;
-                Hct potentialSolution = Hct.from(hue, chroma, answer);
-                if (chromaPeak > potentialSolution.getChroma()) {
-                    break;
-                }
-                if (Math.abs(potentialSolution.getChroma() - chroma) < 0.4) {
-                    break;
-                }
-
-                double potentialDelta = Math.abs(potentialSolution.getChroma() - chroma);
-                double currentDelta = Math.abs(closestToChroma.getChroma() - chroma);
-                if (potentialDelta < currentDelta) {
-                    closestToChroma = potentialSolution;
-                }
-                chromaPeak = Math.max(chromaPeak, potentialSolution.getChroma());
-            }
-        }
-
-        return answer;
     }
 }

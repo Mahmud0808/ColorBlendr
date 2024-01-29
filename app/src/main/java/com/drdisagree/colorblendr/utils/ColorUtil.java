@@ -23,6 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorUtil {
 
+    private static final double XYZ_WHITE_REFERENCE_X = 95.047;
+    private static final double XYZ_WHITE_REFERENCE_Y = 100;
+    private static final double XYZ_WHITE_REFERENCE_Z = 108.883;
+
     public static @ColorInt int getColorFromAttribute(Context context, int attr) {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(attr, typedValue, true);
@@ -350,10 +354,6 @@ public class ColorUtil {
     public static int CAMToColor(float hue, float chroma, float lstar) {
         return Cam.getInt(hue, chroma, lstar);
     }
-
-    private static final double XYZ_WHITE_REFERENCE_X = 95.047;
-    private static final double XYZ_WHITE_REFERENCE_Y = 100;
-    private static final double XYZ_WHITE_REFERENCE_Z = 108.883;
 
     /**
      * Converts a color from CIE XYZ to its RGB representation.

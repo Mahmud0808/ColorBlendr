@@ -49,9 +49,9 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
     static class RootServiceImpl extends IRootService.Stub {
 
         private static final String TAG = RootServiceImpl.class.getSimpleName();
-        private static Context context = Utils.getContext();
         private static final UserHandle currentUser;
         private static final int currentUserId;
+        private static Context context = Utils.getContext();
         private static IOverlayManager mOMS;
         private static Class<?> oiClass;
         private static Class<?> foClass;
@@ -60,31 +60,6 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
         private static int SystemUI_UID = -1;
         private static IActivityManager mActivityManager;
         private static MethodInterface onSystemUIRestartedListener;
-
-        private IProcessObserver.Stub processListener = new IProcessObserver.Stub() {
-            @Override
-            public void onForegroundActivitiesChanged(int pid, int uid, boolean foregroundActivities) throws RemoteException {
-                // Do nothing
-            }
-
-            @Override
-            public void onForegroundServicesChanged(int pid, int uid, int serviceTypes) throws RemoteException {
-                // Do nothing
-            }
-
-            @Override
-            public void onProcessDied(int pid, int uid) {
-                if (uid == getSystemUI_UID()) {
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        try {
-                            enableOverlayWithIdentifier(Collections.singletonList(FABRICATED_OVERLAY_NAME_SYSTEM));
-                        } catch (RemoteException ignored) {
-                            // Overlay was never registered
-                        }
-                    }, 3000);
-                }
-            }
-        };
 
         static {
             currentUser = getCurrentUser();
@@ -134,6 +109,31 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
             }
         }
 
+        private IProcessObserver.Stub processListener = new IProcessObserver.Stub() {
+            @Override
+            public void onForegroundActivitiesChanged(int pid, int uid, boolean foregroundActivities) throws RemoteException {
+                // Do nothing
+            }
+
+            @Override
+            public void onForegroundServicesChanged(int pid, int uid, int serviceTypes) throws RemoteException {
+                // Do nothing
+            }
+
+            @Override
+            public void onProcessDied(int pid, int uid) {
+                if (uid == getSystemUI_UID()) {
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        try {
+                            enableOverlayWithIdentifier(Collections.singletonList(FABRICATED_OVERLAY_NAME_SYSTEM));
+                        } catch (RemoteException ignored) {
+                            // Overlay was never registered
+                        }
+                    }, 3000);
+                }
+            }
+        };
+
         private static UserHandle getCurrentUser() {
             return Process.myUserHandle();
         }
@@ -172,6 +172,21 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
                 }
             }
             return SystemUI_UID;
+        }
+
+        private static OverlayIdentifier generateOverlayIdentifier(String packageName, String sourcePackage) {
+            try {
+                return (OverlayIdentifier) oiClass.getConstructor(
+                        String.class,
+                        String.class
+                ).newInstance(
+                        sourcePackage,
+                        packageName
+                );
+            } catch (Exception e) {
+                Log.e(TAG, "generateOverlayIdentifier: ", e);
+                return null;
+            }
         }
 
         @Override
@@ -426,21 +441,6 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService {
         @Override
         public void invalidateCachesForOverlay(String packageName) throws RemoteException {
             getOMS().invalidateCachesForOverlay(packageName, currentUserId);
-        }
-
-        private static OverlayIdentifier generateOverlayIdentifier(String packageName, String sourcePackage) {
-            try {
-                return (OverlayIdentifier) oiClass.getConstructor(
-                        String.class,
-                        String.class
-                ).newInstance(
-                        sourcePackage,
-                        packageName
-                );
-            } catch (Exception e) {
-                Log.e(TAG, "generateOverlayIdentifier: ", e);
-                return null;
-            }
         }
 
         private void switchOverlay(String packageName, boolean enable) {

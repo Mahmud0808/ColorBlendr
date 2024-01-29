@@ -21,22 +21,25 @@ import androidx.annotation.Nullable;
 
 /**
  * Fabricated Runtime Resource Overlays (FRROs) are overlays generated ar runtime.
- *
+ * <p>
  * Fabricated overlays are enabled, disabled, and reordered just like normal overlays. The
  * overlayable policies a fabricated overlay fulfills are the same policies the creator of the
  * overlay fulfill. For example, a fabricated overlay created by a platform signed package on the
  * system partition would fulfil the {@code system} and {@code signature} policies.
- *
+ * <p>
  * The owner of a fabricated overlay is the UID that created it. Overlays commit to the overlay
  * manager persist across reboots. When the UID is uninstalled, its fabricated overlays are wiped.
- *
+ * <p>
  * Processes with {@link Android.Manifest.permission.CHANGE_OVERLAY_PACKAGES} can manage normal
  * overlays and fabricated overlays.
+ *
  * @hide
  */
 public class FabricatedOverlay {
 
-    /** Retrieves the identifier for this fabricated overlay. */
+    /**
+     * Retrieves the identifier for this fabricated overlay.
+     */
     public OverlayIdentifier getIdentifier() {
         throw new RuntimeException("Stub!");
     }
@@ -48,12 +51,12 @@ public class FabricatedOverlay {
          *
          * @param owningPackage the name of the package that owns the fabricated overlay (must
          *                      be a package name of this UID).
-         * @param name a name used to uniquely identify the fabricated overlay owned by
-         *             {@param owningPackageName}
+         * @param name          a name used to uniquely identify the fabricated overlay owned by
+         *                      {@param owningPackageName}
          * @param targetPackage the name of the package to overlay
          */
         public Builder(@NonNull String owningPackage, @NonNull String name,
-                @NonNull String targetPackage) {
+                       @NonNull String targetPackage) {
             throw new RuntimeException("Stub!");
         }
 
@@ -69,16 +72,17 @@ public class FabricatedOverlay {
          *
          * @param resourceName name of the target resource to overlay (in the form
          *                     [package]:type/entry)
-         * @param dataType the data type of the new value
-         * @param value the unsigned 32 bit integer representing the new value
-         *
+         * @param dataType     the data type of the new value
+         * @param value        the unsigned 32 bit integer representing the new value
          * @see android.util.TypedValue#type
          */
         public Builder setResourceValue(@NonNull String resourceName, int dataType, int value) {
             throw new RuntimeException("Stub!");
         }
 
-        /** Builds an immutable fabricated overlay. */
+        /**
+         * Builds an immutable fabricated overlay.
+         */
         public FabricatedOverlay build() {
             throw new RuntimeException("Stub!");
         }

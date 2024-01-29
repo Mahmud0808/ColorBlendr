@@ -22,12 +22,12 @@ import java.util.concurrent.TimeUnit;
 public class RootServiceProvider implements ServiceConnection {
 
     private static final String TAG = RootServiceProvider.class.getSimpleName();
-    private final Context context;
+    private static final CountDownLatch mRootServiceConnectionTimer = new CountDownLatch(1);
     private static IRootService rootServiceProviderIPC;
     private static boolean isRootServiceBound = false;
     private static MethodInterface methodRunOnSuccess;
     private static MethodInterface methodRunOnFailure;
-    private static final CountDownLatch mRootServiceConnectionTimer = new CountDownLatch(1);
+    private final Context context;
 
     public RootServiceProvider(Context context) {
         this.context = context;
@@ -57,28 +57,6 @@ public class RootServiceProvider implements ServiceConnection {
         ));
     }
 
-    public class RootServiceThread extends Thread {
-        @Override
-        public void run() {
-            try {
-                bindRootService();
-                boolean success = mRootServiceConnectionTimer.await(10, TimeUnit.SECONDS);
-                new Handler(Looper.getMainLooper()).post(
-                        success ?
-                                new SuccessRunnable() :
-                                new FailureRunnable()
-                );
-            } catch (Exception e) {
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(
-                        ColorBlendr.getAppContext(),
-                        R.string.something_went_wrong,
-                        Toast.LENGTH_LONG
-                ).show());
-                Log.e(TAG, "Error starting root service", e);
-            }
-        }
-    }
-
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         rootServiceProviderIPC = IRootService.Stub.asInterface(binder);
@@ -93,6 +71,14 @@ public class RootServiceProvider implements ServiceConnection {
         isRootServiceBound = false;
         Log.d(TAG, "Service disconnected");
         bindRootService();
+    }
+
+    public void runOnSuccess(MethodInterface method) {
+        methodRunOnSuccess = method;
+    }
+
+    public void runOnFailure(MethodInterface method) {
+        methodRunOnFailure = method;
     }
 
     static class FailureRunnable implements Runnable {
@@ -123,11 +109,25 @@ public class RootServiceProvider implements ServiceConnection {
         }
     }
 
-    public void runOnSuccess(MethodInterface method) {
-        methodRunOnSuccess = method;
-    }
-
-    public void runOnFailure(MethodInterface method) {
-        methodRunOnFailure = method;
+    public class RootServiceThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                bindRootService();
+                boolean success = mRootServiceConnectionTimer.await(10, TimeUnit.SECONDS);
+                new Handler(Looper.getMainLooper()).post(
+                        success ?
+                                new SuccessRunnable() :
+                                new FailureRunnable()
+                );
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(
+                        ColorBlendr.getAppContext(),
+                        R.string.something_went_wrong,
+                        Toast.LENGTH_LONG
+                ).show());
+                Log.e(TAG, "Error starting root service", e);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Base.Theme.ColorBlendr" parent="Theme.Material3.DayNight">
         <!-- Window layout. -->
         <item name="windowActionBar">false</item>
