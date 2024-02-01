@@ -131,4 +131,5 @@
     <string name="neutral_1">Nötr 1</string>
     <string name="neutral_2">Nötr 2</string>
     <string name="long_press_to_reset">Sıfırlamak için basılı tut</string>
+    <string name="this_cannot_be_undone">Lütfen bu eylemin sonucunun kesin olduğunu ve geri döndürülemeyeceğini unutmayın.</string>
 </resources>

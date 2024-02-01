@@ -131,4 +131,5 @@
     <string name="neutral_1">中性 1</string>
     <string name="neutral_2">中性 2</string>
     <string name="long_press_to_reset">长按重置</string>
+    <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
 </resources>
