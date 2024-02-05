@@ -21,7 +21,7 @@ import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.provider.RootServiceProvider;
+import com.drdisagree.colorblendr.provider.RootConnectionProvider;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.SystemUtil;
@@ -149,10 +149,10 @@ public class BroadcastListener extends BroadcastReceiver {
     }
 
     private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
-        if (RootServiceProvider.isNotConnected()) {
-            RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
-            rootServiceProvider.runOnSuccess(method);
-            rootServiceProvider.startRootService();
+        if (RootConnectionProvider.isNotConnected()) {
+            RootConnectionProvider.builder(context)
+                    .runOnSuccess(method)
+                    .run();
         } else {
             method.run();
         }

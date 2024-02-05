@@ -9,8 +9,11 @@ import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
+import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
 import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
+import static com.drdisagree.colorblendr.utils.ShizukuUtil.mShizukuShell;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -21,38 +24,49 @@ import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.service.IRootService;
+import com.drdisagree.colorblendr.extension.ThemeOverlayPackage;
+import com.drdisagree.colorblendr.service.IRootConnection;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+@SuppressWarnings("unused")
 public class OverlayManager {
 
     private static final String TAG = OverlayManager.class.getSimpleName();
-    private static final IRootService mRootService = ColorBlendr.getRootService();
+    private static final IRootConnection mServiceConnection = ColorBlendr.getServiceConnection();
     private static final String[][] colorNames = ColorUtil.getColorNames();
 
     public static void enableOverlay(String packageName) {
+        if (mServiceConnection == null) return;
+
         try {
-            mRootService.enableOverlay(Collections.singletonList(packageName));
+            mServiceConnection.enableOverlay(Collections.singletonList(packageName));
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to enable overlay: " + packageName, e);
         }
     }
 
     public static void disableOverlay(String packageName) {
+        if (mServiceConnection == null) return;
+
         try {
-            mRootService.disableOverlay(Collections.singletonList(packageName));
+            mServiceConnection.disableOverlay(Collections.singletonList(packageName));
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to disable overlay: " + packageName, e);
         }
     }
 
     public static boolean isOverlayInstalled(String packageName) {
+        if (mServiceConnection == null) return false;
+
         try {
-            return mRootService.isOverlayInstalled(packageName);
+            return mServiceConnection.isOverlayInstalled(packageName);
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to check if overlay is installed: " + packageName, e);
             return false;
@@ -60,8 +74,10 @@ public class OverlayManager {
     }
 
     public static boolean isOverlayEnabled(String packageName) {
+        if (mServiceConnection == null) return false;
+
         try {
-            return mRootService.isOverlayEnabled(packageName);
+            return mServiceConnection.isOverlayEnabled(packageName);
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to check if overlay is enabled: " + packageName, e);
             return false;
@@ -69,32 +85,42 @@ public class OverlayManager {
     }
 
     public static void uninstallOverlayUpdates(String packageName) {
+        if (mServiceConnection == null) return;
+
         try {
-            mRootService.uninstallOverlayUpdates(packageName);
+            mServiceConnection.uninstallOverlayUpdates(packageName);
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to uninstall overlay updates: " + packageName, e);
         }
     }
 
     public static void registerFabricatedOverlay(FabricatedOverlayResource fabricatedOverlay) {
+        if (mServiceConnection == null) return;
+
         try {
-            mRootService.registerFabricatedOverlay(fabricatedOverlay);
-            mRootService.enableOverlayWithIdentifier(Collections.singletonList(fabricatedOverlay.overlayName));
+            mServiceConnection.registerFabricatedOverlay(fabricatedOverlay);
+            mServiceConnection.enableOverlayWithIdentifier(Collections.singletonList(fabricatedOverlay.overlayName));
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to register fabricated overlay: " + fabricatedOverlay.overlayName, e);
         }
     }
 
     public static void unregisterFabricatedOverlay(String packageName) {
+        if (mServiceConnection == null) return;
+
         try {
-            mRootService.unregisterFabricatedOverlay(packageName);
+            mServiceConnection.unregisterFabricatedOverlay(packageName);
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to unregister fabricated overlay: " + packageName, e);
         }
     }
 
     public static void applyFabricatedColors(Context context) {
-        if (!RPrefs.getBoolean(THEMING_ENABLED, true)) {
+        if (!RPrefs.getBoolean(THEMING_ENABLED, true) || !RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
+            return;
+        }
+
+        if (applyFabricatedColorsNonRoot(context)) {
             return;
         }
 
@@ -195,7 +221,11 @@ public class OverlayManager {
         );
     }
 
-    public static void removeFabricatedColors() {
+    public static void removeFabricatedColors(Context context) {
+        if (removeFabricatedColorsNonRoot(context)) {
+            return;
+        }
+
         ArrayList<String> fabricatedOverlays = new ArrayList<>();
         HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
 
@@ -237,5 +267,78 @@ public class OverlayManager {
         FabricatedUtil.assignPerAppColorsToOverlay(fabricatedOverlay, palette);
 
         return fabricatedOverlay;
+    }
+
+    public static boolean applyFabricatedColorsNonRoot(Context context) {
+        if (Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU) {
+            return false;
+        }
+
+        if (!ShizukuUtil.isShizukuAvailable() || (ShizukuUtil.isShizukuAvailable() && !ShizukuUtil.hasShizukuPermission(context))) {
+            return true;
+        }
+
+        ExecutorService mExecutors = Executors.newSingleThreadExecutor();
+        mExecutors.execute(() -> {
+            List<String> mResult = new ArrayList<>();
+            final String jsonString = ThemeOverlayPackage.getThemeCustomizationOverlayPackages().toString();
+            final String mCommand = "settings put secure " + THEME_CUSTOMIZATION_OVERLAY_PACKAGES + " '" + jsonString + "'";
+
+            try {
+                mShizukuShell = new ShizukuShell(mCommand, mResult);
+                mShizukuShell.exec();
+
+                if (mResult.isEmpty()) {
+                    RPrefs.putBoolean(SHIZUKU_THEMING_ENABLED, true);
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Command: " + mCommand);
+                Log.d(TAG, "Output: " + mResult);
+                Log.d(TAG, "Exception: ", e);
+            } finally {
+                mShizukuShell.destroy();
+            }
+
+            if (!mExecutors.isShutdown()) {
+                mExecutors.shutdown();
+            }
+        });
+
+        return true;
+    }
+
+    public static boolean removeFabricatedColorsNonRoot(Context context) {
+        if (Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU) {
+            return false;
+        }
+
+        if (!ShizukuUtil.isShizukuAvailable() || (mShizukuShell != null && mShizukuShell.isBusy())) {
+            return true;
+        }
+
+        ExecutorService mExecutors = Executors.newSingleThreadExecutor();
+        mExecutors.execute(() -> {
+            List<String> mResult = new ArrayList<>();
+            final String mCommand = "settings delete secure " + THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
+
+            try {
+                mShizukuShell = new ShizukuShell(mCommand, mResult);
+                mShizukuShell.exec();
+
+                if (mResult.isEmpty()) {
+                    RPrefs.putBoolean(SHIZUKU_THEMING_ENABLED, false);
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Command: " + mCommand);
+                Log.d(TAG, "Output: " + mResult);
+                Log.d(TAG, "Exception: ", e);
+            }
+
+            if (!mExecutors.isShutdown()) {
+                mExecutors.shutdown();
+            }
+        });
+
+        return true;
     }
 }

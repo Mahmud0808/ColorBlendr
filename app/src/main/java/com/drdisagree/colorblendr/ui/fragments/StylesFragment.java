@@ -45,7 +45,7 @@ public class StylesFragment extends Fragment {
             binding.monetMonochrome.applyColorScheme();
         });
 
-        binding.monetTonalspot.setSelected(getString(R.string.monet_tonalspot).equals(selectedStyle));
+        binding.monetTonalspot.setSelected(getString(R.string.monet_tonalspot).equals(selectedStyle) || selectedStyle == null);
         binding.monetTonalspot.setOnClickListener(v -> {
             binding.monetTonalspot.setSelected(true);
             unSelectOthers(binding.monetTonalspot);

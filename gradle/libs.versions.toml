@@ -10,6 +10,7 @@ coreSplashscreen = "1.0.1"
 flexbox = "3.0.0"
 glide = "4.16.0"
 gson = "2.10.1"
+hiddenapibypassVersion = "4.3"
 libsuVersion = "5.2.2"
 material = "1.11.0"
 palette = "1.0.0"
@@ -17,7 +18,7 @@ preferenceKtx = "1.2.1"
 recyclerview = "1.3.2"
 recyclerviewSelection = "1.1.0"
 remotepreferences = "0.8"
-shizukuApi = "12.1.0"
+shizuku = "12.1.0"
 workRuntime = "2.9.0"
 
 [plugins]
@@ -38,11 +39,13 @@ glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuVersion" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsuVersion" }
+lsposed-hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypassVersion" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 palette = { module = "androidx.palette:palette", version.ref = "palette" }
 preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
 remotepreferences = { module = "com.crossbowffs.remotepreferences:remotepreferences", version.ref = "remotepreferences" }
-shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizukuApi" }
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }

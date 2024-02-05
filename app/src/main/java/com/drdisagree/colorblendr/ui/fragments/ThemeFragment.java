@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding;
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil;
@@ -39,6 +40,7 @@ public class ThemeFragment extends Fragment {
     private final int[] monetAccentSaturation = new int[]{RPrefs.getInt(MONET_ACCENT_SATURATION, 100)};
     private final int[] monetBackgroundSaturation = new int[]{RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100)};
     private final int[] monetBackgroundLightness = new int[]{RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100)};
+    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class ThemeFragment extends Fragment {
             }, 200);
             return true;
         });
+        binding.accentSaturation.setEnabled(notShizukuMode);
 
         // Monet background saturation
         binding.backgroundSaturation.setSeekbarProgress(RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100));
@@ -138,6 +141,7 @@ public class ThemeFragment extends Fragment {
             }, 200);
             return true;
         });
+        binding.backgroundSaturation.setEnabled(notShizukuMode);
 
         // Monet background lightness
         binding.backgroundLightness.setSeekbarProgress(RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100));
@@ -181,6 +185,7 @@ public class ThemeFragment extends Fragment {
             }, 200);
             return true;
         });
+        binding.backgroundLightness.setEnabled(notShizukuMode);
 
         return binding.getRoot();
     }

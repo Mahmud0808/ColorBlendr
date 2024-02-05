@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- color, size, shape height of seekbar -->
     <item android:gravity="center_vertical">
         <shape android:shape="rectangle">
             <solid android:color="?attr/colorSurfaceContainer" />
             <corners android:radius="@dimen/default_corner_radius" />
         </shape>
     </item>
-    <!-- color, size, shape height of seekbar when u drag it-->
     <item android:gravity="fill_horizontal|center">
         <clip
             android:clipOrientation="horizontal"
             android:gravity="left">
             <selector>
                 <item
-                    android:drawable="@color/white"
+                    android:drawable="@color/color_seekbar_progress_disabled"
                     android:state_enabled="false" />
                 <item>
                     <shape android:shape="rectangle">

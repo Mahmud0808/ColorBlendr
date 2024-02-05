@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.common;
 
 import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.config.RPrefs;
+import com.drdisagree.colorblendr.config.XPrefs;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -18,6 +19,7 @@ public class Const {
     // System packages
     public static final String FRAMEWORK_PACKAGE = "android";
     public static final String SYSTEMUI_PACKAGE = "com.android.systemui";
+    public static final String SHELL_PACKAGE = "com.android.shell";
 
     // General preferences
     public static final String FIRST_RUN = "firstRun";
@@ -39,6 +41,9 @@ public class Const {
     public static final String FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState";
     public static final String SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn";
     public static final String TINT_TEXT_COLOR = "tintTextColor";
+    public static final int SHIZUKU_PERMISSION_REQUEST_ID = 100;
+    public static final String THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages";
+    public static final String SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled";
 
     // Service preferences
     public static final Gson GSON = new Gson();
@@ -63,5 +68,34 @@ public class Const {
 
         return Const.GSON.fromJson(selectedApps, new TypeToken<HashMap<String, Boolean>>() {
         }.getType());
+    }
+
+    // Working method of app
+    public enum WORK_METHOD {
+        NULL,
+        ROOT,
+        SHIZUKU;
+
+        public static WORK_METHOD fromString(String str) {
+            try {
+                return valueOf(str);
+            } catch (Exception e) {
+                return NULL;
+            }
+        }
+    }
+
+    public static WORK_METHOD WORKING_METHOD = WORK_METHOD.NULL;
+
+    public static WORK_METHOD getWorkingMethod() {
+        try {
+            return WORK_METHOD.fromString(RPrefs.getString(PREF_WORKING_METHOD, WORK_METHOD.NULL.toString()));
+        } catch (Exception e) {
+            return WORK_METHOD.fromString(XPrefs.getString(PREF_WORKING_METHOD, WORK_METHOD.NULL.toString()));
+        }
+    }
+
+    public static void saveWorkingMethod(WORK_METHOD workMethod) {
+        RPrefs.putString(PREF_WORKING_METHOD, workMethod.toString());
     }
 }

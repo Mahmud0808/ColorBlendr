@@ -19,7 +19,7 @@ import androidx.core.app.NotificationCompat;
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.provider.RootServiceProvider;
+import com.drdisagree.colorblendr.provider.RootConnectionProvider;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 
@@ -129,15 +129,15 @@ public class BackgroundService extends Service {
     }
 
     private void setupSystemUIRestartListener() {
-        if (RootServiceProvider.isNotConnected()) {
-            RootServiceProvider rootServiceProvider = new RootServiceProvider(ColorBlendr.getAppContext());
-            rootServiceProvider.runOnSuccess(new MethodInterface() {
-                @Override
-                public void run() {
-                    setupSysUIRestartListener();
-                }
-            });
-            rootServiceProvider.startRootService();
+        if (RootConnectionProvider.isNotConnected()) {
+            RootConnectionProvider.builder(ColorBlendr.getAppContext())
+                    .runOnSuccess(new MethodInterface() {
+                        @Override
+                        public void run() {
+                            setupSysUIRestartListener();
+                        }
+                    })
+                    .run();
         } else {
             setupSysUIRestartListener();
         }
@@ -145,7 +145,7 @@ public class BackgroundService extends Service {
 
     private void setupSysUIRestartListener() {
         try {
-            ColorBlendr.getRootService().setSystemUIRestartListener();
+            ColorBlendr.getServiceConnection().setSystemUIRestartListener();
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to set SystemUI restart listener", e);
         }

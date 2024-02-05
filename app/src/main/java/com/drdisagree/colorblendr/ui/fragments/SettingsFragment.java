@@ -7,6 +7,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
@@ -57,6 +58,7 @@ public class SettingsFragment extends Fragment {
     private SharedViewModel sharedViewModel;
     private boolean isMasterSwitchEnabled = true;
     private static final String[][] colorNames = ColorUtil.getColorNames();
+    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
     private final CompoundButton.OnCheckedChangeListener masterSwitch = (buttonView, isChecked) -> {
         if (!isMasterSwitchEnabled) {
             buttonView.setChecked(!isChecked);
@@ -64,17 +66,20 @@ public class SettingsFragment extends Fragment {
         }
 
         RPrefs.putBoolean(THEMING_ENABLED, isChecked);
+        RPrefs.putBoolean(SHIZUKU_THEMING_ENABLED, isChecked);
         RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (isChecked) {
                     OverlayManager.applyFabricatedColors(requireContext());
                 } else {
-                    OverlayManager.removeFabricatedColors();
+                    OverlayManager.removeFabricatedColors(requireContext());
                 }
 
                 isMasterSwitchEnabled = false;
-                boolean isOverlayEnabled = OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM);
+                boolean isOverlayEnabled = OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) ||
+                        RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true);
                 buttonView.setChecked(isOverlayEnabled);
                 isMasterSwitchEnabled = true;
 
@@ -100,8 +105,9 @@ public class SettingsFragment extends Fragment {
         // ColorBlendr service
         binding.themingEnabled.setTitle(getString(R.string.app_service_title, getString(R.string.app_name)));
         binding.themingEnabled.setSwitchChecked(
-                RPrefs.getBoolean(THEMING_ENABLED, true) &&
-                        OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
+                (RPrefs.getBoolean(THEMING_ENABLED, true) &&
+                        OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) ||
+                        RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)
         );
         binding.themingEnabled.setSwitchChangeListener(masterSwitch);
 
@@ -112,6 +118,7 @@ public class SettingsFragment extends Fragment {
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
             applyFabricatedColors();
         });
+        binding.accurateShades.setEnabled(notShizukuMode);
 
         // Pitch black theme
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
@@ -119,6 +126,7 @@ public class SettingsFragment extends Fragment {
             RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked);
             applyFabricatedColors();
         });
+        binding.pitchBlackTheme.setEnabled(notShizukuMode);
 
         // Custom primary color
         binding.customPrimaryColor.setSwitchChecked(RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false));
@@ -144,6 +152,7 @@ public class SettingsFragment extends Fragment {
             RPrefs.putBoolean(TINT_TEXT_COLOR, isChecked);
             applyFabricatedColors();
         });
+        binding.tintTextColor.setEnabled(notShizukuMode);
 
         // Override colors manually
         binding.overrideColorsManually.setSwitchChecked(RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false));
@@ -178,6 +187,7 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+        binding.overrideColorsManually.setEnabled(notShizukuMode);
 
         binding.backupRestore.container.setOnClickListener(v -> crossfade(binding.backupRestore.backupRestoreButtons));
         binding.backupRestore.backup.setOnClickListener(v -> backupRestoreSettings(true));

@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (RPrefs.getBoolean(FIRST_RUN, true) ||
+                    Const.getWorkingMethod() == Const.WORK_METHOD.NULL ||
                     !getIntent().getBooleanExtra("success", false)
             ) {
                 replaceFragment(new OnboardingFragment(), false);

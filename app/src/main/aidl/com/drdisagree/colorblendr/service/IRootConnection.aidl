@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.service;
 import android.content.om.OverlayIdentifier;
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource;
 
-interface IRootService {
+interface IRootConnection {
     boolean isRooted();
     void setSystemUIRestartListener();
     boolean isOverlayInstalled(String packageName);
