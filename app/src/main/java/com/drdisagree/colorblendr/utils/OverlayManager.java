@@ -44,6 +44,7 @@ public class OverlayManager {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return;
             }
         }
@@ -60,6 +61,7 @@ public class OverlayManager {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return;
             }
         }
@@ -76,6 +78,7 @@ public class OverlayManager {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return false;
             }
         }
@@ -93,6 +96,7 @@ public class OverlayManager {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return false;
             }
         }
@@ -110,6 +114,7 @@ public class OverlayManager {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return;
             }
         }
@@ -122,10 +127,15 @@ public class OverlayManager {
     }
 
     public static void registerFabricatedOverlay(FabricatedOverlayResource fabricatedOverlay) {
+        if (Const.getWorkingMethod() != Const.WORK_METHOD.ROOT) {
+            return;
+        }
+
         if (mRootConnection == null) {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return;
             }
         }
@@ -139,10 +149,15 @@ public class OverlayManager {
     }
 
     public static void unregisterFabricatedOverlay(String packageName) {
+        if (Const.getWorkingMethod() != Const.WORK_METHOD.ROOT) {
+            return;
+        }
+
         if (mRootConnection == null) {
             mRootConnection = ColorBlendr.getRootConnection();
 
             if (mRootConnection == null) {
+                Log.w(TAG, "Root service connection is null");
                 return;
             }
         }
@@ -314,11 +329,17 @@ public class OverlayManager {
         }
 
         if (!ShizukuUtil.isShizukuAvailable() || !ShizukuUtil.hasShizukuPermission(context)) {
+            Log.w(TAG, "Shizuku permission not available");
             return true;
         }
 
         if (mShizukuConnection == null) {
             mShizukuConnection = ColorBlendr.getShizukuConnection();
+
+            if (mShizukuConnection == null) {
+                Log.w(TAG, "Shizuku service connection is null");
+                return true;
+            }
         }
 
         try {
@@ -339,7 +360,17 @@ public class OverlayManager {
         }
 
         if (!ShizukuUtil.isShizukuAvailable() || !ShizukuUtil.hasShizukuPermission(context)) {
+            Log.w(TAG, "Shizuku permission not available");
             return true;
+        }
+
+        if (mShizukuConnection == null) {
+            mShizukuConnection = ColorBlendr.getShizukuConnection();
+
+            if (mShizukuConnection == null) {
+                Log.w(TAG, "Shizuku service connection is null");
+                return true;
+            }
         }
 
         try {
