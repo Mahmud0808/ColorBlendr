@@ -18,9 +18,12 @@ import androidx.core.app.NotificationCompat;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
 import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.ShizukuUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 
 public class BackgroundService extends Service {
@@ -129,7 +132,9 @@ public class BackgroundService extends Service {
     }
 
     private void setupSystemUIRestartListener() {
-        if (RootConnectionProvider.isNotConnected()) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT &&
+                RootConnectionProvider.isNotConnected()
+        ) {
             RootConnectionProvider.builder(ColorBlendr.getAppContext())
                     .runOnSuccess(new MethodInterface() {
                         @Override
@@ -138,7 +143,14 @@ public class BackgroundService extends Service {
                         }
                     })
                     .run();
-        } else {
+        } else if (Const.getWorkingMethod() == Const.WORK_METHOD.SHIZUKU &&
+                ShizukuConnectionProvider.isNotConnected()
+        ) {
+            ShizukuUtil.bindUserService(
+                    ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
+                    ShizukuConnectionProvider.serviceConnection
+            );
+        } else if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT) {
             setupSysUIRestartListener();
         }
     }
