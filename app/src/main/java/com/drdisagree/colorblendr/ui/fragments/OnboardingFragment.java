@@ -110,6 +110,7 @@ public class OnboardingFragment extends Fragment {
                             ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
                             ShizukuConnectionProvider.serviceConnection
                     );
+                    goToHomeFragment();
                 } else {
                     Toast.makeText(
                             ColorBlendr.getAppContext(),
