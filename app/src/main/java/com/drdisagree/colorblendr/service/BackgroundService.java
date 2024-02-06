@@ -144,7 +144,9 @@ public class BackgroundService extends Service {
                     })
                     .run();
         } else if (Const.getWorkingMethod() == Const.WORK_METHOD.SHIZUKU &&
-                ShizukuConnectionProvider.isNotConnected()
+                ShizukuConnectionProvider.isNotConnected() &&
+                ShizukuUtil.isShizukuAvailable() &&
+                ShizukuUtil.hasShizukuPermission(ColorBlendr.getAppContext())
         ) {
             ShizukuUtil.bindUserService(
                     ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
