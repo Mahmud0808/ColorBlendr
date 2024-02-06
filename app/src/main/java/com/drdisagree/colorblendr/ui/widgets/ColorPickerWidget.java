@@ -142,12 +142,18 @@ public class ColorPickerWidget extends RelativeLayout {
             a.recycle();
 
             iconImageView.setImageTintList(ColorStateList.valueOf(color));
+
+            titleTextView.setAlpha(1.0f);
+            summaryTextView.setAlpha(0.8f);
         } else {
             if (SystemUtil.isDarkMode()) {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.DKGRAY));
             } else {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
             }
+
+            titleTextView.setAlpha(0.6f);
+            summaryTextView.setAlpha(0.4f);
         }
 
         container.setEnabled(enabled);

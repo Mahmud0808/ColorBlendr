@@ -180,7 +180,7 @@ public class ColorsFragment extends Fragment {
 
         // Force per app theme
         binding.perAppTheme.setOnClickListener(v -> HomeFragment.replaceFragment(new PerAppThemeFragment()));
-        binding.perAppTheme.setVisibility(notShizukuMode ? View.VISIBLE : View.GONE);
+        binding.perAppTheme.setEnabled(notShizukuMode);
     }
 
     private void updateBooleanStates(Map<String, Boolean> stringBooleanMap) {

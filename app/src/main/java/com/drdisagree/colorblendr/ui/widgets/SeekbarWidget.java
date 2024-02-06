@@ -201,6 +201,14 @@ public class SeekbarWidget extends RelativeLayout {
         summaryTextView.setEnabled(enabled);
         resetIcon.setEnabled(enabled);
         seekBar.setEnabled(enabled);
+
+        if (enabled) {
+            titleTextView.setAlpha(1.0f);
+            summaryTextView.setAlpha(0.8f);
+        } else {
+            titleTextView.setAlpha(0.6f);
+            summaryTextView.setAlpha(0.4f);
+        }
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view

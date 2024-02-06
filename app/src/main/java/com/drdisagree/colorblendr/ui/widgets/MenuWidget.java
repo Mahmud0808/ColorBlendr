@@ -130,6 +130,9 @@ public class MenuWidget extends RelativeLayout {
             endArrowImageView.setImageTintList(ColorStateList.valueOf(
                     ColorUtil.getColorFromAttribute(getContext(), com.google.android.material.R.attr.colorOnSurface)
             ));
+
+            titleTextView.setAlpha(1.0f);
+            summaryTextView.setAlpha(0.8f);
         } else {
             if (SystemUtil.isDarkMode()) {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.DKGRAY));
@@ -138,6 +141,9 @@ public class MenuWidget extends RelativeLayout {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
                 endArrowImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
             }
+
+            titleTextView.setAlpha(0.6f);
+            summaryTextView.setAlpha(0.4f);
         }
 
         container.setEnabled(enabled);

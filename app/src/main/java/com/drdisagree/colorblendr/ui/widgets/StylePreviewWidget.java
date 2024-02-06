@@ -236,4 +236,17 @@ public class StylePreviewWidget extends RelativeLayout {
             }
         };
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        if (enabled) {
+            titleTextView.setAlpha(1.0f);
+            descriptionTextView.setAlpha(0.8f);
+        } else {
+            titleTextView.setAlpha(0.6f);
+            descriptionTextView.setAlpha(0.4f);
+        }
+    }
 }
