@@ -353,7 +353,7 @@ public class SettingsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void clearCustomColors() {
+    public static void clearCustomColors() {
         for (String[] colorName : colorNames) {
             for (String resource : colorName) {
                 RPrefs.clearPref(resource);

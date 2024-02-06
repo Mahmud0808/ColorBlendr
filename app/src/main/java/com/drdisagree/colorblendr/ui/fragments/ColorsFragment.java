@@ -87,6 +87,10 @@ public class ColorsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        if (!notShizukuMode) {
+            SettingsFragment.clearCustomColors();
+        }
     }
 
     @Override
