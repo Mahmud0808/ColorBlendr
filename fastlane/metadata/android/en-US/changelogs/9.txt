@@ -1,0 +1,9 @@
+Changelog:
+
+• Added rootless theming support using Shizuku.
+• Fixed crash in certain situations after reboot.
+• Fixed wallpaper extracted color previews.
+• Added confirmation before clearing overridden colors.
+• Optimized and reduced APK size.
+
+Translation credit goes to all the contributors on our Crowdin platform.
