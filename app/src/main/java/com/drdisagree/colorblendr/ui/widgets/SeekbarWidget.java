@@ -251,6 +251,15 @@ public class SeekbarWidget extends RelativeLayout {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Creator<SavedState> CREATOR = new Creator<>() {
+            public SeekbarWidget.SavedState createFromParcel(Parcel in) {
+                return new SeekbarWidget.SavedState(in);
+            }
+
+            public SeekbarWidget.SavedState[] newArray(int size) {
+                return new SeekbarWidget.SavedState[size];
+            }
+        };
         int seekbarProgress;
 
         SavedState(Parcelable superState) {
@@ -267,15 +276,5 @@ public class SeekbarWidget extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeFloat(seekbarProgress);
         }
-
-        public static final Creator<SavedState> CREATOR = new Creator<>() {
-            public SeekbarWidget.SavedState createFromParcel(Parcel in) {
-                return new SeekbarWidget.SavedState(in);
-            }
-
-            public SeekbarWidget.SavedState[] newArray(int size) {
-                return new SeekbarWidget.SavedState[size];
-            }
-        };
     }
 }

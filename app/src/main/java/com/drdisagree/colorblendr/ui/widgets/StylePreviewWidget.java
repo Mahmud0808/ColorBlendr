@@ -29,6 +29,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.ArrayList;
 
@@ -175,14 +176,14 @@ public class StylePreviewWidget extends RelativeLayout {
 
     private @ColorInt int getCardBackgroundColor() {
         return isSelected() ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorSurfaceContainer);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainer);
     }
 
     private @ColorInt int getTextColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     @Override
@@ -208,7 +209,32 @@ public class StylePreviewWidget extends RelativeLayout {
         setColorPreview();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled) {
+            titleTextView.setAlpha(1.0f);
+            descriptionTextView.setAlpha(0.8f);
+        } else {
+            titleTextView.setAlpha(0.6f);
+            descriptionTextView.setAlpha(0.4f);
+        }
+
+        container.setEnabled(enabled);
+        titleTextView.setEnabled(enabled);
+        descriptionTextView.setEnabled(enabled);
+        colorContainer.setEnabled(enabled);
+    }
+
     private static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         boolean isSelected;
 
         SavedState(Parcelable superState) {
@@ -224,29 +250,6 @@ public class StylePreviewWidget extends RelativeLayout {
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeBoolean(isSelected);
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-
-        if (enabled) {
-            titleTextView.setAlpha(1.0f);
-            descriptionTextView.setAlpha(0.8f);
-        } else {
-            titleTextView.setAlpha(0.6f);
-            descriptionTextView.setAlpha(0.4f);
         }
     }
 }

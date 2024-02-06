@@ -20,9 +20,9 @@ import androidx.annotation.Nullable;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 
 public class SelectableViewWidget extends RelativeLayout {
 
@@ -154,20 +154,20 @@ public class SelectableViewWidget extends RelativeLayout {
 
     private @ColorInt int getCardBackgroundColor() {
         return isSelected() ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorSurfaceContainer);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainer);
     }
 
     private @ColorInt int getIconColor() {
         return isSelected() ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimary) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     private @ColorInt int getTextColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     private void updateViewOnOrientation() {
@@ -216,6 +216,15 @@ public class SelectableViewWidget extends RelativeLayout {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         boolean isSelected;
 
         SavedState(Parcelable superState) {
@@ -232,15 +241,5 @@ public class SelectableViewWidget extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeBoolean(isSelected);
         }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

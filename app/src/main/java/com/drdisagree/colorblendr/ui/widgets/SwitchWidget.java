@@ -18,9 +18,9 @@ import androidx.annotation.ColorInt;
 import androidx.core.graphics.ColorUtils;
 
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 public class SwitchWidget extends RelativeLayout {
@@ -163,23 +163,23 @@ public class SwitchWidget extends RelativeLayout {
 
     private @ColorInt int getCardBackgroundColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer) :
                 ColorUtils.setAlphaComponent(
-                        ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer),
+                        MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer),
                         64
                 );
     }
 
     private @ColorInt int getIconColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimary) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     private @ColorInt int getTextColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     public void setSwitchChangeListener(CompoundButton.OnCheckedChangeListener listener) {

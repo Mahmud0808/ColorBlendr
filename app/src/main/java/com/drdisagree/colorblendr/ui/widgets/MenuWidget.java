@@ -15,9 +15,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 
 public class MenuWidget extends RelativeLayout {
 
@@ -128,7 +128,7 @@ public class MenuWidget extends RelativeLayout {
 
             iconImageView.setImageTintList(ColorStateList.valueOf(color));
             endArrowImageView.setImageTintList(ColorStateList.valueOf(
-                    ColorUtil.getColorFromAttribute(getContext(), com.google.android.material.R.attr.colorOnSurface)
+                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
             ));
 
             titleTextView.setAlpha(1.0f);
