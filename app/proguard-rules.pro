@@ -19,7 +19,8 @@
 
 # AIDL
 -keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.extension.MethodInterface { *; }
--keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.service.IRootService { *; }
+-keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.service.IRootConnection { *; }
+-keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.service.IShizukuConnection { *; }
 -keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource { *; }
 
 # Gson
