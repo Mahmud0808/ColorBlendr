@@ -4,6 +4,7 @@ import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_AP
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
@@ -149,7 +150,9 @@ public class BroadcastListener extends BroadcastReceiver {
     }
 
     private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
-        if (RootConnectionProvider.isNotConnected()) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT &&
+                RootConnectionProvider.isNotConnected()
+        ) {
             RootConnectionProvider.builder(context)
                     .runOnSuccess(method)
                     .run();
@@ -159,7 +162,7 @@ public class BroadcastListener extends BroadcastReceiver {
     }
 
     private static void updateAllColors(Context context) {
-        if (!RPrefs.getBoolean(THEMING_ENABLED, true)) {
+        if (!RPrefs.getBoolean(THEMING_ENABLED, true) && !RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
             return;
         }
 
