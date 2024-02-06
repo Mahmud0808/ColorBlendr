@@ -35,12 +35,18 @@ import java.util.HashMap;
 public class OverlayManager {
 
     private static final String TAG = OverlayManager.class.getSimpleName();
-    private static final IRootConnection mRootConnection = ColorBlendr.getRootConnection();
-    private static final IShizukuConnection mShizukuConnection = ColorBlendr.getShizukuConnection();
+    private static IRootConnection mRootConnection = ColorBlendr.getRootConnection();
+    private static IShizukuConnection mShizukuConnection = ColorBlendr.getShizukuConnection();
     private static final String[][] colorNames = ColorUtil.getColorNames();
 
     public static void enableOverlay(String packageName) {
-        if (mRootConnection == null) return;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return;
+            }
+        }
 
         try {
             mRootConnection.enableOverlay(Collections.singletonList(packageName));
@@ -50,7 +56,13 @@ public class OverlayManager {
     }
 
     public static void disableOverlay(String packageName) {
-        if (mRootConnection == null) return;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return;
+            }
+        }
 
         try {
             mRootConnection.disableOverlay(Collections.singletonList(packageName));
@@ -60,7 +72,13 @@ public class OverlayManager {
     }
 
     public static boolean isOverlayInstalled(String packageName) {
-        if (mRootConnection == null) return false;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return false;
+            }
+        }
 
         try {
             return mRootConnection.isOverlayInstalled(packageName);
@@ -71,7 +89,13 @@ public class OverlayManager {
     }
 
     public static boolean isOverlayEnabled(String packageName) {
-        if (mRootConnection == null) return false;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return false;
+            }
+        }
 
         try {
             return mRootConnection.isOverlayEnabled(packageName);
@@ -82,7 +106,13 @@ public class OverlayManager {
     }
 
     public static void uninstallOverlayUpdates(String packageName) {
-        if (mRootConnection == null) return;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return;
+            }
+        }
 
         try {
             mRootConnection.uninstallOverlayUpdates(packageName);
@@ -92,7 +122,13 @@ public class OverlayManager {
     }
 
     public static void registerFabricatedOverlay(FabricatedOverlayResource fabricatedOverlay) {
-        if (mRootConnection == null) return;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return;
+            }
+        }
 
         try {
             mRootConnection.registerFabricatedOverlay(fabricatedOverlay);
@@ -103,7 +139,13 @@ public class OverlayManager {
     }
 
     public static void unregisterFabricatedOverlay(String packageName) {
-        if (mRootConnection == null) return;
+        if (mRootConnection == null) {
+            mRootConnection = ColorBlendr.getRootConnection();
+
+            if (mRootConnection == null) {
+                return;
+            }
+        }
 
         try {
             mRootConnection.unregisterFabricatedOverlay(packageName);
@@ -273,6 +315,10 @@ public class OverlayManager {
 
         if (!ShizukuUtil.isShizukuAvailable() || !ShizukuUtil.hasShizukuPermission(context)) {
             return true;
+        }
+
+        if (mShizukuConnection == null) {
+            mShizukuConnection = ColorBlendr.getShizukuConnection();
         }
 
         try {
