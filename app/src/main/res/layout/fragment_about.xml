@@ -49,60 +49,79 @@
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="13sp" />
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="24dp"
-                android:alpha="0.8"
-                android:orientation="horizontal">
+                android:layout_marginVertical="24dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardMaxElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_news"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_news_scaled"
-                    android:drawableTint="?attr/colorOnBackground"
-                    android:paddingVertical="6dp"
-                    android:text="@string/news"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="13sp"
-                    app:iconPadding="2dp"
-                    app:iconSize="16dp" />
+                    android:alpha="0.8"
+                    android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_support"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_help_scaled"
-                    android:drawableTint="?attr/colorOnBackground"
-                    android:paddingVertical="6dp"
-                    android:text="@string/support"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="13sp"
-                    app:iconPadding="2dp"
-                    app:iconSize="16dp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_news"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableTop="@drawable/ic_news_scaled"
+                        android:drawableTint="?attr/colorOnBackground"
+                        android:text="@string/news"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="13sp"
+                        app:cornerRadius="@dimen/default_corner_radius"
+                        app:iconPadding="2dp"
+                        app:iconSize="16dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_github"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_github_scaled"
-                    android:drawableTint="?attr/colorOnBackground"
-                    android:paddingVertical="6dp"
-                    android:text="@string/github"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="13sp"
-                    app:iconPadding="2dp"
-                    app:iconSize="16dp" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="@dimen/container_margin_horizontal"
+                        android:background="?attr/colorSurface" />
 
-            </LinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_support"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableTop="@drawable/ic_help_scaled"
+                        android:drawableTint="?attr/colorOnBackground"
+                        android:text="@string/support"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="13sp"
+                        app:cornerRadius="@dimen/default_corner_radius"
+                        app:iconPadding="2dp"
+                        app:iconSize="16dp" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="@dimen/container_margin_horizontal"
+                        android:background="?attr/colorSurface" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_github"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableTop="@drawable/ic_github_scaled"
+                        android:drawableTint="?attr/colorOnBackground"
+                        android:text="@string/github"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="13sp"
+                        app:cornerRadius="@dimen/default_corner_radius"
+                        app:iconPadding="2dp"
+                        app:iconSize="16dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.textview.MaterialTextView
                 style="?attr/textAppearanceTitleMedium"

@@ -243,6 +243,10 @@ public class ColorUtil {
         return String.format("#%06X", (0xFFFFFF & colorInt));
     }
 
+    public static String intToHexColorNoHash(int colorInt) {
+        return String.format("%06X", (0xFFFFFF & colorInt));
+    }
+
     public static int[][] getSystemColors(Context context) {
         return new int[][]{
                 new int[]{

@@ -290,4 +290,10 @@ public class WallColorPreview extends View {
             }
         };
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        this.setAlpha(enabled ? 1.0f : 0.6f);
+    }
 }

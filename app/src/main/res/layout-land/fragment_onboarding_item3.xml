@@ -11,69 +11,39 @@
         style="@style/TextAppearance.Material3.HeadlineLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/auto_startup"
+        android:text="@string/choose_method"
         app:layout_constraintBottom_toBottomOf="@id/guidelineBottom"
         app:layout_constraintEnd_toEndOf="@id/guidelineMiddle"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
         app:layout_constraintTop_toTopOf="@id/guidelineTop" />
 
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.Material3.CardView.Outlined"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:clickable="true"
         android:gravity="center"
-        app:cardBackgroundColor="?attr/colorSurfaceContainer"
-        app:cardCornerRadius="12dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@id/guidelineBottom"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineMiddle"
         app:layout_constraintTop_toTopOf="@id/guidelineTop">
 
-        <LinearLayout
+        <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
+            android:id="@+id/post_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            app:descriptionText="@string/mode_one_desc"
+            app:titleText="@string/mode_one_title" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/container_margin_bottom"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+        <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
+            android:id="@+id/read_media_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:descriptionText="@string/mode_two_desc"
+            app:titleText="@string/mode_two_title" />
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@drawable/bg_icon_rounded"
-                    android:contentDescription="@android:string/untitled"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_extension"
-                    app:tint="?attr/colorOnPrimaryContainer" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/title"
-                    style="@style/TextAppearance.Material3.TitleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/auto_startup_title"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/description"
-                style="@style/TextAppearance.Material3.BodySmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.8"
-                android:text="@string/auto_startup_desc" />
-
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineTop"

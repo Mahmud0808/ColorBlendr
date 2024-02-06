@@ -69,6 +69,7 @@ public class ColorsFragment extends Fragment {
     private LinearLayout[] colorTableRows;
     private SharedViewModel sharedViewModel;
     private final String[][] colorNames = ColorUtil.getColorNames();
+    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
     private static final int[] colorCodes = {
             0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000
     };
@@ -179,6 +180,7 @@ public class ColorsFragment extends Fragment {
 
         // Force per app theme
         binding.perAppTheme.setOnClickListener(v -> HomeFragment.replaceFragment(new PerAppThemeFragment()));
+        binding.perAppTheme.setEnabled(notShizukuMode);
     }
 
     private void updateBooleanStates(Map<String, Boolean> stringBooleanMap) {
@@ -297,7 +299,7 @@ public class ColorsFragment extends Fragment {
                                     getString(R.string.color_code, ColorUtil.intToHexColor((Integer) v.getTag())),
                                     Snackbar.LENGTH_INDEFINITE)
                             .setAction(snackbarButton, v1 -> {
-                                if (!manualOverride) {
+                                if (!manualOverride || !notShizukuMode) {
                                     ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
                                     ClipData clip = ClipData.newPlainText(ColorUtil.getColorNames()[finalI][finalJ], ColorUtil.intToHexColor((Integer) v.getTag()));
                                     clipboard.setPrimaryClip(clip);

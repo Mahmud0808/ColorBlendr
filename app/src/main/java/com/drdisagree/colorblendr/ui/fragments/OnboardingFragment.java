@@ -16,16 +16,20 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding;
 import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.provider.RootServiceProvider;
+import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
+import com.drdisagree.colorblendr.service.ShizukuConnection;
 import com.drdisagree.colorblendr.ui.activities.MainActivity;
 import com.drdisagree.colorblendr.ui.adapters.OnboardingAdapter;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.FabricatedUtil;
+import com.drdisagree.colorblendr.utils.ShizukuUtil;
 import com.drdisagree.colorblendr.utils.WallpaperUtil;
 
 import java.util.ArrayList;
@@ -67,7 +71,14 @@ public class OnboardingFragment extends Fragment {
                     return;
                 }
 
-                checkRootConnection();
+                if (Const.WORKING_METHOD == Const.WORK_METHOD.NULL) {
+                    Toast.makeText(requireContext(), R.string.select_method, Toast.LENGTH_SHORT).show();
+                } else if (Const.WORKING_METHOD == Const.WORK_METHOD.ROOT) {
+                    checkRootConnection();
+                } else if (Const.WORKING_METHOD == Const.WORK_METHOD.SHIZUKU) {
+                    checkShizukuConnection();
+                }
+
                 return;
             }
 
@@ -82,19 +93,45 @@ public class OnboardingFragment extends Fragment {
     }
 
     private void checkRootConnection() {
-        RootServiceProvider rootServiceProvider = new RootServiceProvider(requireContext());
-        rootServiceProvider.runOnSuccess(new MethodInterface() {
-            @Override
-            public void run() {
-                WallpaperUtil.getAndSaveWallpaperColors(requireContext());
-                FabricatedUtil.getAndSaveSelectedFabricatedApps(requireContext());
-                goToHomeFragment();
-            }
-        });
-        rootServiceProvider.startRootService();
+        RootConnectionProvider.builder(requireContext())
+                .runOnSuccess(new MethodInterface() {
+                    @Override
+                    public void run() {
+                        goToHomeFragment();
+                    }
+                }).run();
+    }
+
+    private void checkShizukuConnection() {
+        if (ShizukuUtil.isShizukuAvailable()) {
+            ShizukuUtil.requestShizukuPermission(requireActivity(), granted -> {
+                if (granted) {
+                    ShizukuUtil.bindUserService(
+                            ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
+                            ShizukuConnectionProvider.serviceConnection
+                    );
+                    goToHomeFragment();
+                } else {
+                    Toast.makeText(
+                            ColorBlendr.getAppContext(),
+                            R.string.shizuku_service_not_found,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
+        } else {
+            Toast.makeText(
+                    ColorBlendr.getAppContext(),
+                    R.string.shizuku_service_not_found,
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     private void goToHomeFragment() {
+        Const.saveWorkingMethod(Const.WORKING_METHOD);
+        WallpaperUtil.getAndSaveWallpaperColors(requireContext());
+        FabricatedUtil.getAndSaveSelectedFabricatedApps(requireContext());
         RPrefs.putBoolean(FIRST_RUN, false);
         MainActivity.replaceFragment(new HomeFragment(), true);
     }

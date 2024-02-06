@@ -18,9 +18,12 @@ import androidx.core.app.NotificationCompat;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.provider.RootServiceProvider;
+import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
 import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.ShizukuUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 
 public class BackgroundService extends Service {
@@ -129,23 +132,34 @@ public class BackgroundService extends Service {
     }
 
     private void setupSystemUIRestartListener() {
-        if (RootServiceProvider.isNotConnected()) {
-            RootServiceProvider rootServiceProvider = new RootServiceProvider(ColorBlendr.getAppContext());
-            rootServiceProvider.runOnSuccess(new MethodInterface() {
-                @Override
-                public void run() {
-                    setupSysUIRestartListener();
-                }
-            });
-            rootServiceProvider.startRootService();
-        } else {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT &&
+                RootConnectionProvider.isNotConnected()
+        ) {
+            RootConnectionProvider.builder(ColorBlendr.getAppContext())
+                    .runOnSuccess(new MethodInterface() {
+                        @Override
+                        public void run() {
+                            setupSysUIRestartListener();
+                        }
+                    })
+                    .run();
+        } else if (Const.getWorkingMethod() == Const.WORK_METHOD.SHIZUKU &&
+                ShizukuConnectionProvider.isNotConnected() &&
+                ShizukuUtil.isShizukuAvailable() &&
+                ShizukuUtil.hasShizukuPermission(ColorBlendr.getAppContext())
+        ) {
+            ShizukuUtil.bindUserService(
+                    ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
+                    ShizukuConnectionProvider.serviceConnection
+            );
+        } else if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT) {
             setupSysUIRestartListener();
         }
     }
 
     private void setupSysUIRestartListener() {
         try {
-            ColorBlendr.getRootService().setSystemUIRestartListener();
+            ColorBlendr.getRootConnection().setSystemUIRestartListener();
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to set SystemUI restart listener", e);
         }

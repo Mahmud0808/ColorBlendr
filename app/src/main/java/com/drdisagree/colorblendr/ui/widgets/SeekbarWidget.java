@@ -201,6 +201,14 @@ public class SeekbarWidget extends RelativeLayout {
         summaryTextView.setEnabled(enabled);
         resetIcon.setEnabled(enabled);
         seekBar.setEnabled(enabled);
+
+        if (enabled) {
+            titleTextView.setAlpha(1.0f);
+            summaryTextView.setAlpha(0.8f);
+        } else {
+            titleTextView.setAlpha(0.6f);
+            summaryTextView.setAlpha(0.4f);
+        }
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view
@@ -243,6 +251,15 @@ public class SeekbarWidget extends RelativeLayout {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Creator<SavedState> CREATOR = new Creator<>() {
+            public SeekbarWidget.SavedState createFromParcel(Parcel in) {
+                return new SeekbarWidget.SavedState(in);
+            }
+
+            public SeekbarWidget.SavedState[] newArray(int size) {
+                return new SeekbarWidget.SavedState[size];
+            }
+        };
         int seekbarProgress;
 
         SavedState(Parcelable superState) {
@@ -259,15 +276,5 @@ public class SeekbarWidget extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeFloat(seekbarProgress);
         }
-
-        public static final Creator<SavedState> CREATOR = new Creator<>() {
-            public SeekbarWidget.SavedState createFromParcel(Parcel in) {
-                return new SeekbarWidget.SavedState(in);
-            }
-
-            public SeekbarWidget.SavedState[] newArray(int size) {
-                return new SeekbarWidget.SavedState[size];
-            }
-        };
     }
 }
