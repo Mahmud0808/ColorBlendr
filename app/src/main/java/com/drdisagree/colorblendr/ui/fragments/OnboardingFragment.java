@@ -23,6 +23,8 @@ import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding;
 import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
+import com.drdisagree.colorblendr.service.ShizukuConnection;
 import com.drdisagree.colorblendr.ui.activities.MainActivity;
 import com.drdisagree.colorblendr.ui.adapters.OnboardingAdapter;
 import com.drdisagree.colorblendr.utils.AppUtil;
@@ -104,7 +106,10 @@ public class OnboardingFragment extends Fragment {
         if (ShizukuUtil.isShizukuAvailable()) {
             ShizukuUtil.requestShizukuPermission(requireActivity(), granted -> {
                 if (granted) {
-                    goToHomeFragment();
+                    ShizukuUtil.bindUserService(
+                            ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
+                            ShizukuConnectionProvider.serviceConnection
+                    );
                 } else {
                     Toast.makeText(
                             ColorBlendr.getAppContext(),

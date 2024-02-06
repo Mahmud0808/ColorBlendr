@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 
 import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
 import com.drdisagree.colorblendr.service.IRootConnection;
+import com.drdisagree.colorblendr.service.IShizukuConnection;
 import com.google.android.material.color.DynamicColors;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
@@ -37,8 +39,12 @@ public class ColorBlendr extends Application {
         return instance;
     }
 
-    public static IRootConnection getServiceConnection() {
+    public static IRootConnection getRootConnection() {
         return RootConnectionProvider.getServiceProvider();
+    }
+
+    public static IShizukuConnection getShizukuConnection() {
+        return ShizukuConnectionProvider.getServiceProvider();
     }
 
     @Override

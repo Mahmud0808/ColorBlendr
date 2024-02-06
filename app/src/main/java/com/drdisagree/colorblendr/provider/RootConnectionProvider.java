@@ -59,7 +59,7 @@ public class RootConnectionProvider implements ServiceConnection {
     }
 
     @Override
-    public void onServiceConnected(ComponentName componentName, IBinder binder) {
+    public void onServiceConnected(ComponentName name, IBinder binder) {
         if (binder == null || !binder.pingBinder()) {
             Log.w(TAG, "Service binder is null or not alive");
             return;
@@ -68,14 +68,14 @@ public class RootConnectionProvider implements ServiceConnection {
         serviceProviderIPC = IRootConnection.Stub.asInterface(binder);
         isServiceConnected = true;
         mServiceConnectionTimer.countDown();
-        Log.d(TAG, "Service connected");
+        Log.i(TAG, "Service connected");
     }
 
     @Override
-    public void onServiceDisconnected(ComponentName componentName) {
+    public void onServiceDisconnected(ComponentName name) {
         serviceProviderIPC = null;
         isServiceConnected = false;
-        Log.d(TAG, "Service disconnected");
+        Log.w(TAG, "Service disconnected");
         bindServiceConnection();
     }
 

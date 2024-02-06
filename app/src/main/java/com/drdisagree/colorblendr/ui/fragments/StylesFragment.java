@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.ui.fragments;
 
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
+import static com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import com.drdisagree.colorblendr.R;
@@ -34,6 +36,7 @@ public class StylesFragment extends Fragment {
             binding.monetNeutral.setSelected(true);
             unSelectOthers(binding.monetNeutral);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_neutral));
             binding.monetNeutral.applyColorScheme();
         });
 
@@ -42,6 +45,7 @@ public class StylesFragment extends Fragment {
             binding.monetMonochrome.setSelected(true);
             unSelectOthers(binding.monetMonochrome);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_monochrome));
             binding.monetMonochrome.applyColorScheme();
         });
 
@@ -50,6 +54,7 @@ public class StylesFragment extends Fragment {
             binding.monetTonalspot.setSelected(true);
             unSelectOthers(binding.monetTonalspot);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_tonalspot));
             binding.monetTonalspot.applyColorScheme();
         });
 
@@ -58,6 +63,7 @@ public class StylesFragment extends Fragment {
             binding.monetVibrant.setSelected(true);
             unSelectOthers(binding.monetVibrant);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_vibrant));
             binding.monetVibrant.applyColorScheme();
         });
 
@@ -66,6 +72,7 @@ public class StylesFragment extends Fragment {
             binding.monetRainbow.setSelected(true);
             unSelectOthers(binding.monetRainbow);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_rainbow));
             binding.monetRainbow.applyColorScheme();
         });
 
@@ -74,6 +81,7 @@ public class StylesFragment extends Fragment {
             binding.monetExpressive.setSelected(true);
             unSelectOthers(binding.monetExpressive);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_expressive));
             binding.monetExpressive.applyColorScheme();
         });
 
@@ -82,6 +90,7 @@ public class StylesFragment extends Fragment {
             binding.monetFidelity.setSelected(true);
             unSelectOthers(binding.monetFidelity);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fidelity));
             binding.monetFidelity.applyColorScheme();
         });
 
@@ -90,6 +99,7 @@ public class StylesFragment extends Fragment {
             binding.monetContent.setSelected(true);
             unSelectOthers(binding.monetContent);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_content));
             binding.monetContent.applyColorScheme();
         });
 
@@ -98,6 +108,7 @@ public class StylesFragment extends Fragment {
             binding.monetFruitsalad.setSelected(true);
             unSelectOthers(binding.monetFruitsalad);
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fruitsalad));
             binding.monetFruitsalad.applyColorScheme();
         });
 
@@ -131,5 +142,29 @@ public class StylesFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getOriginalName(@StringRes int id) {
+        String name = getString(id);
+
+        if (name.equals(getString(R.string.monet_neutral))) {
+            return "SPRITZ";
+        } else if (name.equals(getString(R.string.monet_vibrant))) {
+            return "VIBRANT";
+        } else if (name.equals(getString(R.string.monet_expressive))) {
+            return "EXPRESSIVE";
+        } else if (name.equals(getString(R.string.monet_rainbow))) {
+            return "RAINBOW";
+        } else if (name.equals(getString(R.string.monet_fruitsalad))) {
+            return "FRUIT_SALAD";
+        } else if (name.equals(getString(R.string.monet_content))) {
+            return "CONTENT";
+        } else if (name.equals(getString(R.string.monet_monochrome))) {
+            return "MONOCHROMATIC";
+        } else if (name.equals(getString(R.string.monet_fidelity))) {
+            return "FIDELITY";
+        } else {
+            return "TONAL_SPOT";
+        }
     }
 }

@@ -145,7 +145,7 @@ public class BackgroundService extends Service {
 
     private void setupSysUIRestartListener() {
         try {
-            ColorBlendr.getServiceConnection().setSystemUIRestartListener();
+            ColorBlendr.getRootConnection().setSystemUIRestartListener();
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to set SystemUI restart listener", e);
         }

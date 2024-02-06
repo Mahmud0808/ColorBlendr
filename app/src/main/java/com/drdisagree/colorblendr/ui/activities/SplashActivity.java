@@ -14,6 +14,8 @@ import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
+import com.drdisagree.colorblendr.service.ShizukuConnection;
 import com.drdisagree.colorblendr.utils.FabricatedUtil;
 import com.drdisagree.colorblendr.utils.ShizukuUtil;
 import com.drdisagree.colorblendr.utils.WallpaperUtil;
@@ -55,7 +57,15 @@ public class SplashActivity extends AppCompatActivity {
                         })
                         .run();
             } else if (Const.getWorkingMethod() == Const.WORK_METHOD.SHIZUKU) {
-                success.set(ShizukuUtil.isShizukuAvailable() && ShizukuUtil.hasShizukuPermission(this));
+                if (ShizukuUtil.isShizukuAvailable() && ShizukuUtil.hasShizukuPermission(this)) {
+                    ShizukuUtil.bindUserService(
+                            ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
+                            ShizukuConnectionProvider.serviceConnection
+                    );
+                    success.set(true);
+                } else {
+                    success.set(false);
+                }
                 keepShowing = false;
                 countDownLatch.countDown();
             }

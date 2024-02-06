@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.common;
 
 import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.config.XPrefs;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -34,6 +33,7 @@ public class Const {
     public static final String MONET_SEED_COLOR_ENABLED = "monetSeedColorEnabled";
     public static final String MANUAL_OVERRIDE_COLORS = "manualOverrideColors";
     public static final String MONET_LAST_UPDATED = "monetLastUpdated";
+    public static final String MONET_STYLE_ORIGINAL_NAME = "monetStyleOriginalName";
     public static final String FABRICATED_OVERLAY_SOURCE_PACKAGE = FRAMEWORK_PACKAGE;
     public static final String FABRICATED_OVERLAY_NAME_SYSTEM = BuildConfig.APPLICATION_ID + "_dynamic_theme";
     public static final String FABRICATED_OVERLAY_NAME_APPS = BuildConfig.APPLICATION_ID + ".%s_dynamic_theme";
@@ -88,11 +88,7 @@ public class Const {
     public static WORK_METHOD WORKING_METHOD = WORK_METHOD.NULL;
 
     public static WORK_METHOD getWorkingMethod() {
-        try {
-            return WORK_METHOD.fromString(RPrefs.getString(PREF_WORKING_METHOD, WORK_METHOD.NULL.toString()));
-        } catch (Exception e) {
-            return WORK_METHOD.fromString(XPrefs.getString(PREF_WORKING_METHOD, WORK_METHOD.NULL.toString()));
-        }
+        return WORK_METHOD.fromString(RPrefs.getString(PREF_WORKING_METHOD, WORK_METHOD.NULL.toString()));
     }
 
     public static void saveWorkingMethod(WORK_METHOD workMethod) {
