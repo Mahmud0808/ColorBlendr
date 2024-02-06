@@ -2,24 +2,31 @@
 Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.
 
 <b>Features:</b>
-• Accent saturation changer
-• Background saturation changer
-• Background lightness changer
-• Pitch black theme in dark mode
-• and many more to come...
+
+- Accent saturation changer
+- Background saturation changer
+- Background lightness changer
+- Pitch black theme in dark mode
+- Manual color overriding
+- and many more...
 
 <b>Requirements:</b>
-• Android 12+ Rom
-• Rooted device
+
+- Android 12+ device
+- Working Root or Shizuku environment
 
 <b>Instructions:</b>
-• Install and open the app.
-• Grant permissions and root access for the app.
-• That's it. Now you are good to go!
+
+- Install and open the app
+- Allow permissions for the app
+- Select root or shizuku mode
+- That's it. Now you are good to go!
 
 <b>Translation:</b>
+
 Assist in translating ColorBlendr into your preferred language through <a href="https://crowdin.com/project/ColorBlendr">our Crowdin platform</a>. Your contribution will help make ColorBlendr accessible to a wider audience.
 
 <b>Alarming permissions:</b>
-• <u>QUERY_ALL_PACKAGES</u>: Required for individually theming 3rd party apps which has monet theming support but still does not follow system colors.
-• <u>MANAGE_EXTERNAL_STORAGE</u>: Required for grabbing the current wallpaper and extract dominant colors from the wallpaper.
+
+- <u>QUERY_ALL_PACKAGES</u>: Required for individually theming 3rd party apps which has monet theming support but still does not follow system colors.
+- <u>MANAGE_EXTERNAL_STORAGE</u>: Required for grabbing the current wallpaper and extract dominant colors from the wallpaper.
