@@ -1,1 +1,1 @@
-ColorBlendr [Root]
+ColorBlendr

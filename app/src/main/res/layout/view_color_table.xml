@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     style="@style/Widget.Material3.CardView.Outlined"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/container_margin_horizontal"
     android:layout_marginBottom="@dimen/container_margin_bottom">
@@ -22,12 +22,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.0"
-                android:background="@drawable/color_table_top_left" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.0"
                 android:background="@drawable/color_table_square" />
 
             <LinearLayout
@@ -94,7 +88,13 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.0"
-                android:background="@drawable/color_table_top_right" />
+                android:background="@drawable/color_table_square" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:background="@drawable/color_table_square" />
 
         </LinearLayout>
 
@@ -370,12 +370,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.0"
-                android:background="@drawable/color_table_bottom_left" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.0"
                 android:background="@drawable/color_table_square" />
 
             <LinearLayout
@@ -442,7 +436,13 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.0"
-                android:background="@drawable/color_table_bottom_right" />
+                android:background="@drawable/color_table_square" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:background="@drawable/color_table_square" />
 
         </LinearLayout>
     </LinearLayout>

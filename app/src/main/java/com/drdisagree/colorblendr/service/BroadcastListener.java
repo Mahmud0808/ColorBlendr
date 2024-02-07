@@ -4,12 +4,13 @@ import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_AP
 import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,7 +22,7 @@ import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.provider.RootServiceProvider;
+import com.drdisagree.colorblendr.provider.RootConnectionProvider;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.SystemUtil;
@@ -82,8 +83,7 @@ public class BroadcastListener extends BroadcastReceiver {
         // Update fabricated colors on wallpaper change
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) ||
                 (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction()) &&
-                        lastOrientation == currentOrientation &&
-                        currentOrientation == Configuration.ORIENTATION_PORTRAIT)
+                        lastOrientation == currentOrientation)
         ) {
             validateRootAndUpdateColors(context, new MethodInterface() {
                 @Override
@@ -150,16 +150,22 @@ public class BroadcastListener extends BroadcastReceiver {
     }
 
     private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
-        if (RootServiceProvider.isNotConnected()) {
-            RootServiceProvider rootServiceProvider = new RootServiceProvider(context);
-            rootServiceProvider.runOnSuccess(method);
-            rootServiceProvider.startRootService();
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT &&
+                RootConnectionProvider.isNotConnected()
+        ) {
+            RootConnectionProvider.builder(context)
+                    .runOnSuccess(method)
+                    .run();
         } else {
             method.run();
         }
     }
 
     private static void updateAllColors(Context context) {
+        if (!RPrefs.getBoolean(THEMING_ENABLED, true) && !RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
+            return;
+        }
+
         if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= cooldownTime) {
             RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
             new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 500);

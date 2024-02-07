@@ -7,6 +7,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
 import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
@@ -56,6 +57,8 @@ public class SettingsFragment extends Fragment {
     private FragmentSettingsBinding binding;
     private SharedViewModel sharedViewModel;
     private boolean isMasterSwitchEnabled = true;
+    private static final String[][] colorNames = ColorUtil.getColorNames();
+    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
     private final CompoundButton.OnCheckedChangeListener masterSwitch = (buttonView, isChecked) -> {
         if (!isMasterSwitchEnabled) {
             buttonView.setChecked(!isChecked);
@@ -63,17 +66,20 @@ public class SettingsFragment extends Fragment {
         }
 
         RPrefs.putBoolean(THEMING_ENABLED, isChecked);
+        RPrefs.putBoolean(SHIZUKU_THEMING_ENABLED, isChecked);
         RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (isChecked) {
                     OverlayManager.applyFabricatedColors(requireContext());
                 } else {
-                    OverlayManager.removeFabricatedColors();
+                    OverlayManager.removeFabricatedColors(requireContext());
                 }
 
                 isMasterSwitchEnabled = false;
-                boolean isOverlayEnabled = OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM);
+                boolean isOverlayEnabled = OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) ||
+                        RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true);
                 buttonView.setChecked(isOverlayEnabled);
                 isMasterSwitchEnabled = true;
 
@@ -99,8 +105,9 @@ public class SettingsFragment extends Fragment {
         // ColorBlendr service
         binding.themingEnabled.setTitle(getString(R.string.app_service_title, getString(R.string.app_name)));
         binding.themingEnabled.setSwitchChecked(
-                RPrefs.getBoolean(THEMING_ENABLED, true) &&
-                        OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
+                (RPrefs.getBoolean(THEMING_ENABLED, true) &&
+                        OverlayManager.isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) ||
+                        RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)
         );
         binding.themingEnabled.setSwitchChangeListener(masterSwitch);
 
@@ -109,29 +116,17 @@ public class SettingsFragment extends Fragment {
         binding.accurateShades.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_ACCURATE_SHADES, isChecked);
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    OverlayManager.applyFabricatedColors(requireContext());
-                } catch (Exception ignored) {
-                }
-            }, 300);
+            applyFabricatedColors();
         });
+        binding.accurateShades.setEnabled(notShizukuMode);
 
         // Pitch black theme
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
-        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) ->
-
-        {
+        binding.pitchBlackTheme.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    OverlayManager.applyFabricatedColors(requireContext());
-                } catch (Exception ignored) {
-                }
-            }, 300);
+            applyFabricatedColors();
         });
+        binding.pitchBlackTheme.setEnabled(notShizukuMode);
 
         // Custom primary color
         binding.customPrimaryColor.setSwitchChecked(RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false));
@@ -147,13 +142,7 @@ public class SettingsFragment extends Fragment {
                         }.getType()
                 );
                 RPrefs.putInt(MONET_SEED_COLOR, wallpaperColorList.get(0));
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    try {
-                        OverlayManager.applyFabricatedColors(requireContext());
-                    } catch (Exception ignored) {
-                    }
-                }, 300);
+                applyFabricatedColors();
             }
         });
 
@@ -161,36 +150,44 @@ public class SettingsFragment extends Fragment {
         binding.tintTextColor.setSwitchChecked(RPrefs.getBoolean(TINT_TEXT_COLOR, true));
         binding.tintTextColor.setSwitchChangeListener((buttonView, isChecked) -> {
             RPrefs.putBoolean(TINT_TEXT_COLOR, isChecked);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                try {
-                    OverlayManager.applyFabricatedColors(requireContext());
-                } catch (Exception ignored) {
-                }
-            }, 300);
+            applyFabricatedColors();
         });
+        binding.tintTextColor.setEnabled(notShizukuMode);
 
         // Override colors manually
         binding.overrideColorsManually.setSwitchChecked(RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false));
         binding.overrideColorsManually.setSwitchChangeListener((buttonView, isChecked) -> {
-            String[][] colorNames = ColorUtil.getColorNames();
-            for (String[] colorName : colorNames) {
-                for (String resource : colorName) {
-                    RPrefs.clearPref(resource);
+            if (isChecked) {
+                RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, true);
+            } else {
+                if (shouldConfirmBeforeClearing()) {
+                    new MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.confirmation_title))
+                            .setMessage(getString(R.string.this_cannot_be_undone))
+                            .setPositiveButton(getString(android.R.string.ok),
+                                    (dialog, which) -> {
+                                        dialog.dismiss();
+                                        RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, false);
+                                        if (numColorsOverridden() != 0) {
+                                            clearCustomColors();
+                                            applyFabricatedColors();
+                                        }
+                                    })
+                            .setNegativeButton(getString(android.R.string.cancel), (dialog, which) -> {
+                                dialog.dismiss();
+                                binding.overrideColorsManually.setSwitchChecked(true);
+                            })
+                            .show();
+                } else {
+                    RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, false);
+                    if (numColorsOverridden() != 0) {
+                        clearCustomColors();
+                        applyFabricatedColors();
+                    }
                 }
             }
-            RPrefs.putBoolean(MANUAL_OVERRIDE_COLORS, isChecked);
-
-            if (!isChecked) {
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    try {
-                        OverlayManager.applyFabricatedColors(requireContext());
-                    } catch (Exception ignored) {
-                    }
-                }, 300);
-            }
         });
+        binding.overrideColorsManually.setEnabled(notShizukuMode);
 
         binding.backupRestore.container.setOnClickListener(v -> crossfade(binding.backupRestore.backupRestoreButtons));
         binding.backupRestore.backup.setOnClickListener(v -> backupRestoreSettings(true));
@@ -354,5 +351,39 @@ public class SettingsFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void clearCustomColors() {
+        for (String[] colorName : colorNames) {
+            for (String resource : colorName) {
+                RPrefs.clearPref(resource);
+            }
+        }
+    }
+
+    private boolean shouldConfirmBeforeClearing() {
+        return numColorsOverridden() > 5;
+    }
+
+    private int numColorsOverridden() {
+        int colorOverridden = 0;
+        for (String[] colorName : colorNames) {
+            for (String resource : colorName) {
+                if (RPrefs.getInt(resource, Integer.MIN_VALUE) != Integer.MIN_VALUE) {
+                    colorOverridden++;
+                }
+            }
+        }
+        return colorOverridden;
+    }
+
+    private void applyFabricatedColors() {
+        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                OverlayManager.applyFabricatedColors(requireContext());
+            } catch (Exception ignored) {
+            }
+        }, 300);
     }
 }

@@ -131,4 +131,5 @@
     <string name="neutral_1">Neutral 1</string>
     <string name="neutral_2">Neutral 2</string>
     <string name="long_press_to_reset">Long press to reset</string>
+    <string name="this_cannot_be_undone">Please note that the outcome of this action is final and irreversible.</string>
 </resources>

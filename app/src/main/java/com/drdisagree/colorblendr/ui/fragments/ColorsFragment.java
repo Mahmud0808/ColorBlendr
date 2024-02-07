@@ -69,6 +69,7 @@ public class ColorsFragment extends Fragment {
     private LinearLayout[] colorTableRows;
     private SharedViewModel sharedViewModel;
     private final String[][] colorNames = ColorUtil.getColorNames();
+    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
     private static final int[] colorCodes = {
             0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000
     };
@@ -86,6 +87,10 @@ public class ColorsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        if (!notShizukuMode) {
+            SettingsFragment.clearCustomColors();
+        }
     }
 
     @Override
@@ -179,6 +184,7 @@ public class ColorsFragment extends Fragment {
 
         // Force per app theme
         binding.perAppTheme.setOnClickListener(v -> HomeFragment.replaceFragment(new PerAppThemeFragment()));
+        binding.perAppTheme.setEnabled(notShizukuMode);
     }
 
     private void updateBooleanStates(Map<String, Boolean> stringBooleanMap) {
@@ -276,13 +282,13 @@ public class ColorsFragment extends Fragment {
                     }
                 }
 
-                requireActivity().runOnUiThread(() -> enablePaletteOnClickListener(colorTableRows, systemColors));
+                requireActivity().runOnUiThread(() -> enablePaletteOnClickListener(colorTableRows));
             } catch (Exception ignored) {
             }
         }).start();
     }
 
-    private void enablePaletteOnClickListener(LinearLayout[] colorTableRows, int[][] systemColors) {
+    private void enablePaletteOnClickListener(LinearLayout[] colorTableRows) {
         for (int i = 0; i < colorTableRows.length; i++) {
             for (int j = 0; j < colorTableRows[i].getChildCount(); j++) {
                 int finalI = i;
@@ -297,7 +303,7 @@ public class ColorsFragment extends Fragment {
                                     getString(R.string.color_code, ColorUtil.intToHexColor((Integer) v.getTag())),
                                     Snackbar.LENGTH_INDEFINITE)
                             .setAction(snackbarButton, v1 -> {
-                                if (!manualOverride) {
+                                if (!manualOverride || !notShizukuMode) {
                                     ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
                                     ClipData clip = ClipData.newPlainText(ColorUtil.getColorNames()[finalI][finalJ], ColorUtil.intToHexColor((Integer) v.getTag()));
                                     clipboard.setPrimaryClip(clip);
@@ -350,40 +356,11 @@ public class ColorsFragment extends Fragment {
                     }
 
                     RPrefs.clearPref(colorNames[finalI][finalJ]);
-                    v.getBackground().setTint(systemColors[finalI][finalJ]);
-                    v.setTag(systemColors[finalI][finalJ]);
-                    ((TextView) ((ViewGroup) v)
-                            .getChildAt(0))
-                            .setTextColor(ColorUtil.calculateTextColor(systemColors[finalI][finalJ]));
-                    Snackbar.make(
-                                    requireView(),
-                                    getString(R.string.color_reset_success),
-                                    Snackbar.LENGTH_SHORT
-                            )
-                            .setAction(getString(R.string.reset_all), v2 -> {
-                                for (int x = 0; x < colorTableRows.length; x++) {
-                                    for (int y = 0; y < colorTableRows[x].getChildCount(); y++) {
-                                        RPrefs.clearPref(colorNames[x][y]);
-                                    }
-                                }
-                                Snackbar.make(
-                                                requireView(),
-                                                getString(R.string.reset_all_success),
-                                                Snackbar.LENGTH_SHORT
-                                        )
-                                        .setAction(getString(R.string.dismiss), v3 -> {
-                                        })
-                                        .show();
 
-                                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                                    try {
-                                        OverlayManager.applyFabricatedColors(requireContext());
-                                    } catch (Exception ignored) {
-                                    }
-                                }, 200);
-                            })
-                            .show();
+                    try {
+                        OverlayManager.applyFabricatedColors(requireContext());
+                    } catch (Exception ignored) {
+                    }
                     return true;
                 });
             }

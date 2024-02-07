@@ -109,7 +109,8 @@ public class ColorUtil {
                 pitchBlackTheme,
                 accurateShades,
                 modifyPitchBlack,
-                isDark
+                isDark,
+                true
         );
     }
 
@@ -122,7 +123,8 @@ public class ColorUtil {
             boolean pitchBlackTheme,
             boolean accurateShades,
             boolean modifyPitchBlack,
-            boolean isDark
+            boolean isDark,
+            boolean overrideColors
     ) {
         ArrayList<ArrayList<Integer>> palette = ColorSchemeUtil.generateColorPalette(
                 style,
@@ -141,7 +143,8 @@ public class ColorUtil {
                     backgroundLightness,
                     pitchBlackTheme,
                     accurateShades,
-                    modifyPitchBlack
+                    modifyPitchBlack,
+                    overrideColors
             );
             for (int j = 1; j < palette.get(i).size(); j++) {
                 palette.get(i).set(j, modifiedShades.get(j - 1));
@@ -238,6 +241,10 @@ public class ColorUtil {
 
     public static String intToHexColor(int colorInt) {
         return String.format("#%06X", (0xFFFFFF & colorInt));
+    }
+
+    public static String intToHexColorNoHash(int colorInt) {
+        return String.format("%06X", (0xFFFFFF & colorInt));
     }
 
     public static int[][] getSystemColors(Context context) {

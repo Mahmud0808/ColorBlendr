@@ -18,7 +18,9 @@
 Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.
 </p>
 <div align="center">
-  
+  <br>
+  <a href="https://www.buymeacoffee.com/DrDisagree"><img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/bmc-button.png" width="30%" alt="Buy me a coffee" /></a>
+  <br><br>
   <img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/features.png" width="100%" alt="Features">
 </div>
 
@@ -31,26 +33,36 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 - Background lightness changer
   
 - Pitch black theme in dark mode
+
+- Manual color overriding
   
-- and many more to come...
+- and many more...
+
+## Requirements 🛠
+
+- Android 12+ device
+
+- Working Root or Shizuku environment
 
 ## How to Use 🚀
 
-- Download and install the apk.
+- Download and install the apk
   
-- Allow permissions and root access for the app.
+- Allow permissions for the app
+  
+- Select root or shizuku mode
   
 - That's it. Now you are good to go!
+
+## Note 📝
+
+- Root is recommended if you want to have the full experience
+
+- Shizuku is also supported but customizations are limited
 
 ## Translation 🌐
 
 - Assist in translating ColorBlendr into your preferred language through [our Crowdin platform](https://crowdin.com/project/ColorBlendr). Your contribution will help make ColorBlendr accessible to a wider audience.
-
-## Donation 💰
-
-If this project help you in any way, you can give me a cup of coffee :)
-
-<a href="https://www.buymeacoffee.com/DrDisagree"><img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/bmc-button.png" width="30%" alt="Buy me a coffee" /></a>
 
 ## Credits 🤝
 

@@ -142,12 +142,18 @@ public class ColorPickerWidget extends RelativeLayout {
             a.recycle();
 
             iconImageView.setImageTintList(ColorStateList.valueOf(color));
+
+            titleTextView.setAlpha(1.0f);
+            summaryTextView.setAlpha(0.8f);
         } else {
             if (SystemUtil.isDarkMode()) {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.DKGRAY));
             } else {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
             }
+
+            titleTextView.setAlpha(0.6f);
+            summaryTextView.setAlpha(0.4f);
         }
 
         container.setEnabled(enabled);
@@ -205,6 +211,15 @@ public class ColorPickerWidget extends RelativeLayout {
     }
 
     private static class SavedState extends BaseSavedState {
+        public static final Creator<SavedState> CREATOR = new Creator<>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         int selectedColor;
 
         SavedState(Parcelable superState) {
@@ -221,15 +236,5 @@ public class ColorPickerWidget extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeInt(selectedColor);
         }
-
-        public static final Creator<SavedState> CREATOR = new Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

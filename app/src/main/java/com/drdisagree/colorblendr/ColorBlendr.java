@@ -3,9 +3,13 @@ package com.drdisagree.colorblendr;
 import android.app.Application;
 import android.content.Context;
 
-import com.drdisagree.colorblendr.provider.RootServiceProvider;
-import com.drdisagree.colorblendr.service.IRootService;
+import com.drdisagree.colorblendr.provider.RootConnectionProvider;
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
+import com.drdisagree.colorblendr.service.IRootConnection;
+import com.drdisagree.colorblendr.service.IShizukuConnection;
 import com.google.android.material.color.DynamicColors;
+
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.lang.ref.WeakReference;
 
@@ -35,7 +39,17 @@ public class ColorBlendr extends Application {
         return instance;
     }
 
-    public static IRootService getRootService() {
-        return RootServiceProvider.getRootServiceProvider();
+    public static IRootConnection getRootConnection() {
+        return RootConnectionProvider.getServiceProvider();
+    }
+
+    public static IShizukuConnection getShizukuConnection() {
+        return ShizukuConnectionProvider.getServiceProvider();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        HiddenApiBypass.addHiddenApiExemptions("L");
     }
 }

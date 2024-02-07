@@ -18,9 +18,9 @@ import androidx.annotation.ColorInt;
 import androidx.core.graphics.ColorUtils;
 
 import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 public class SwitchWidget extends RelativeLayout {
@@ -31,6 +31,7 @@ public class SwitchWidget extends RelativeLayout {
     private TextView summaryTextView;
     private ImageView iconImageView;
     private MaterialSwitch materialSwitch;
+    private MaterialSwitch.OnCheckedChangeListener switchChangeListener;
     private BeforeSwitchChangeListener beforeSwitchChangeListener;
     private boolean isMasterSwitch;
     private String summaryOnText;
@@ -80,12 +81,20 @@ public class SwitchWidget extends RelativeLayout {
 
         container.setOnClickListener(v -> {
             if (materialSwitch.isEnabled()) {
+                materialSwitch.toggle();
+            }
+        });
+
+        materialSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (materialSwitch.isEnabled()) {
                 if (beforeSwitchChangeListener != null) {
                     beforeSwitchChangeListener.beforeSwitchChanged();
                 }
 
-                materialSwitch.toggle();
                 updateSummary();
+                if (switchChangeListener != null) {
+                    switchChangeListener.onCheckedChanged(buttonView, isChecked);
+                }
             }
         });
     }
@@ -126,6 +135,9 @@ public class SwitchWidget extends RelativeLayout {
 
     public void setSwitchChecked(boolean isChecked) {
         materialSwitch.setChecked(isChecked);
+        if (switchChangeListener != null) {
+            switchChangeListener.onCheckedChanged(materialSwitch, isChecked);
+        }
     }
 
     private void updateSummary() {
@@ -151,27 +163,27 @@ public class SwitchWidget extends RelativeLayout {
 
     private @ColorInt int getCardBackgroundColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer) :
                 ColorUtils.setAlphaComponent(
-                        ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimaryContainer),
+                        MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer),
                         64
                 );
     }
 
     private @ColorInt int getIconColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorPrimary) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     private @ColorInt int getTextColor(boolean isSelected) {
         return isSelected ?
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnPrimaryContainer) :
-                ColorUtil.getColorFromAttribute(context, com.google.android.material.R.attr.colorOnSurface);
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimaryContainer) :
+                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
     }
 
     public void setSwitchChangeListener(CompoundButton.OnCheckedChangeListener listener) {
-        materialSwitch.setOnCheckedChangeListener(listener);
+        switchChangeListener = listener;
     }
 
     public void setBeforeSwitchChangeListener(BeforeSwitchChangeListener listener) {
@@ -192,12 +204,18 @@ public class SwitchWidget extends RelativeLayout {
             a.recycle();
 
             iconImageView.setImageTintList(ColorStateList.valueOf(color));
+
+            titleTextView.setAlpha(1.0f);
+            summaryTextView.setAlpha(0.8f);
         } else {
             if (SystemUtil.isDarkMode()) {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.DKGRAY));
             } else {
                 iconImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
             }
+
+            titleTextView.setAlpha(0.6f);
+            summaryTextView.setAlpha(0.4f);
         }
 
         container.setEnabled(enabled);

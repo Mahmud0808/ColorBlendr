@@ -108,4 +108,10 @@ public class ColorPreview extends View {
     public void setPadding(float padding) {
         this.padding = padding * getResources().getDisplayMetrics().density;
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        this.setAlpha(enabled ? 1.0f : 0.6f);
+    }
 }

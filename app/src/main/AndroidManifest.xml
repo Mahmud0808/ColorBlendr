@@ -25,6 +25,7 @@
         android:name=".ColorBlendr"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -32,7 +33,8 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Base.Theme">
+        android:theme="@style/Base.Theme"
+        tools:targetApi="tiramisu">
         <activity
             android:name=".ui.activities.SplashActivity"
             android:exported="true"
@@ -65,7 +67,8 @@
             android:name=".service.BackgroundService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse"
+            tools:ignore="ExportedService" />
 
         <provider
             android:name=".provider.RemotePrefProvider"
@@ -73,6 +76,15 @@
             android:directBootAware="true"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
     </application>
 
 </manifest>

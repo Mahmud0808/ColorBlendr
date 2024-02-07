@@ -1,7 +1,7 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.agp.app)
 }
 
 android {
@@ -9,18 +9,25 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.drdisagree.colorblendr"
         minSdk = 31
         targetSdk = 34
-        versionCode = 8
-        versionName = "v1.0b8"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        versionCode = 9
+        versionName = "v1.1"
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,45 +44,50 @@ android {
             }
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+
     buildFeatures {
         viewBinding = true
         dataBinding = true
         buildConfig = true
         aidl = true
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError = true
+        checkReleaseBuilds = false
+    }
 }
 
 dependencies {
     compileOnly(project(":systemstubs"))
 
-    val libsuVersion = "5.2.1"
-    implementation("com.github.topjohnwu.libsu:core:${libsuVersion}")
-    implementation("com.github.topjohnwu.libsu:service:${libsuVersion}")
-    implementation("dev.rikka.shizuku:api:12.1.0")
+    implementation(libs.libsu.core)
+    implementation(libs.libsu.service)
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
+    implementation(libs.lsposed.hiddenapibypass)
 
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
 
-    implementation("com.crossbowffs.remotepreferences:remotepreferences:0.8")
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
-    implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("me.jfenn:AndroidUtils:0.0.5")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.work:work-runtime:2.9.0")
-    implementation("androidx.palette:palette:1.0.0")
-    implementation("com.google.android.flexbox:flexbox:3.0.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
-    implementation("com.github.Dimezis:BlurView:version-2.0.3")
+    implementation(libs.remotepreferences)
+    implementation(libs.circleimageview)
+    implementation(libs.glide)
+    implementation(libs.preference.ktx)
+    implementation(libs.androidUtils)
+    implementation(libs.core.splashscreen)
+    implementation(libs.work.runtime)
+    implementation(libs.palette)
+    implementation(libs.flexbox)
+    implementation(libs.gson)
+    implementation(libs.recyclerview)
+    implementation(libs.recyclerview.selection)
+    implementation(libs.blurView)
+    annotationProcessor(libs.glide.compiler)
 }
