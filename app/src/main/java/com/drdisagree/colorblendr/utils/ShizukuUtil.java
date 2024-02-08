@@ -18,8 +18,6 @@ import rikka.shizuku.ShizukuProvider;
 
 public class ShizukuUtil {
 
-    public static ShizukuShell mShizukuShell = null;
-
     public static boolean isShizukuAvailable() {
         return Shizuku.pingBinder();
     }
