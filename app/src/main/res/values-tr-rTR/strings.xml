@@ -73,6 +73,7 @@
     <string name="confirmation_title">Emin misiniz?</string>
     <string name="confirmation_desc">Bu, mevcut temanızı ve yapılandırmanızı geçersiz kılacaktır.</string>
     <string name="root_service_not_found">Root (kök) izni verilmedi.</string>
+    <string name="shizuku_service_not_found">Shizuku izni verilmedi.</string>
     <string name="something_went_wrong">Bir şeyler ters gitti.</string>
     <string name="permission_must_be_granted">İzin verilmesi gerekir</string>
     <string name="grant">İzin ver</string>
@@ -132,4 +133,9 @@
     <string name="neutral_2">Nötr 2</string>
     <string name="long_press_to_reset">Sıfırlamak için basılı tut</string>
     <string name="this_cannot_be_undone">Lütfen bu eylemin sonucunun kesin olduğunu ve geri döndürülemeyeceğini unutmayın.</string>
+    <string name="select_method">Devam etmek için bir yöntem seçin</string>
+    <string name="mode_one_title">Root</string>
+    <string name="mode_one_desc">Renkleri değiştirmek için root erişimini kullanın. Tüm özelleştirme seçenekleri mevcut olacaktır.</string>
+    <string name="mode_two_title">Shizuku</string>
+    <string name="mode_two_desc">Root olmadan çalışmasını sağlamak için shizuku kullanın. Sınırlı özelleştirme seçenekleri mevcut olacaktır.</string>
 </resources>

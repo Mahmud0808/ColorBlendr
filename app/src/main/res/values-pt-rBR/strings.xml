@@ -73,6 +73,7 @@
     <string name="confirmation_title">Tem certeza?</string>
     <string name="confirmation_desc">Isso substituirá seu tema e configuração atuais.</string>
     <string name="root_service_not_found">Permissão de Root não concedida.</string>
+    <string name="shizuku_service_not_found">Shizuku permission not granted.</string>
     <string name="something_went_wrong">Algo deu errado.</string>
     <string name="permission_must_be_granted">A permissão deve ser concedida</string>
     <string name="grant">Conceder</string>
@@ -131,5 +132,10 @@
     <string name="neutral_1">Neutro 1</string>
     <string name="neutral_2">Neutro 2</string>
     <string name="long_press_to_reset">Pressione longamente para redefinir</string>
-    <string name="this_cannot_be_undone">Esteja ciente que o resultado desta ação é definitivo e não pode ser revertido.</string>
+    <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
+    <string name="select_method">Select a method to proceed</string>
+    <string name="mode_one_title">Root</string>
+    <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
+    <string name="mode_two_title">Shizuku</string>
+    <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
 </resources>
