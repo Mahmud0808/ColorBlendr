@@ -73,6 +73,7 @@
     <string name="confirmation_title">Вы уверены?</string>
     <string name="confirmation_desc">Это переопределит вашу текущую тему и конфигурацию.</string>
     <string name="root_service_not_found">Рут права не предоставлены.</string>
+    <string name="shizuku_service_not_found">Shizuku permission not granted.</string>
     <string name="something_went_wrong">Что-то пошло не так.</string>
     <string name="permission_must_be_granted">Разрешение должно быть предоставлено</string>
     <string name="grant">Предоставить</string>
@@ -131,5 +132,10 @@
     <string name="neutral_1">Нейтральный 1</string>
     <string name="neutral_2">Нейтральный 2</string>
     <string name="long_press_to_reset">Нажмите и удерживайте для сброса</string>
-    <string name="this_cannot_be_undone">Please note that the outcome of this action is final and irreversible.</string>
+    <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
+    <string name="select_method">Select a method to proceed</string>
+    <string name="mode_one_title">Root</string>
+    <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
+    <string name="mode_two_title">Shizuku</string>
+    <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
 </resources>
