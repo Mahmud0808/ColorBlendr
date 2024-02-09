@@ -25,7 +25,7 @@
     <string name="dev_bio">Learner | Developer | Designer</string>
     <string name="news">News</string>
     <string name="support">Support</string>
-    <string name="github">Github</string>
+    <string name="github">GitHub</string>
     <string name="version">Version</string>
     <string name="pitch_black_theme_title">Pitch black theme</string>
     <string name="pitch_black_theme_desc">Black background in dark mode</string>
@@ -73,6 +73,7 @@
     <string name="confirmation_title">Are you sure?</string>
     <string name="confirmation_desc">This will override your current theme and configuration.</string>
     <string name="root_service_not_found">Root permission not granted.</string>
+    <string name="shizuku_service_not_found">Shizuku permission not granted.</string>
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="permission_must_be_granted">Permission must be granted</string>
     <string name="grant">Grant</string>
@@ -131,5 +132,10 @@
     <string name="neutral_1">Neutral 1</string>
     <string name="neutral_2">Neutral 2</string>
     <string name="long_press_to_reset">Long press to reset</string>
-    <string name="this_cannot_be_undone">Please note that the outcome of this action is final and irreversible.</string>
+    <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
+    <string name="select_method">Select a method to proceed</string>
+    <string name="mode_one_title">Root</string>
+    <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
+    <string name="mode_two_title">Shizuku</string>
+    <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
 </resources>

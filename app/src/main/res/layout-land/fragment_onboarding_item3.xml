@@ -29,14 +29,14 @@
         app:layout_constraintTop_toTopOf="@id/guidelineTop">
 
         <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-            android:id="@+id/post_notifications"
+            android:id="@+id/root"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:descriptionText="@string/mode_one_desc"
             app:titleText="@string/mode_one_title" />
 
         <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-            android:id="@+id/read_media_images"
+            android:id="@+id/shizuku"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

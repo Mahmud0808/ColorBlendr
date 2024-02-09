@@ -1,0 +1,6 @@
+Changelog:
+
+• Fixed onboarding page crash in landscape mode.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
