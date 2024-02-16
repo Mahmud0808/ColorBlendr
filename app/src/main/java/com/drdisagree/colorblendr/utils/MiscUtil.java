@@ -8,7 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MiscUtil {
 
@@ -41,5 +45,28 @@ public class MiscUtil {
             ((AppCompatActivity) context).getSupportActionBar().setDisplayHomeAsUpEnabled(showBackButton);
             ((AppCompatActivity) context).getSupportActionBar().setDisplayShowHomeEnabled(showBackButton);
         }
+    }
+
+    public static String mergeJsonStrings(String target, String source) throws JSONException {
+        if (target == null || target.isEmpty()) {
+            target = new JSONObject().toString();
+        }
+
+        if (source == null || source.isEmpty()) {
+            source = new JSONObject().toString();
+        }
+
+        JSONObject targetJson = new JSONObject(target);
+        JSONObject sourceJson = new JSONObject(source);
+        return mergeJsonObjects(targetJson, sourceJson).toString();
+    }
+
+    public static JSONObject mergeJsonObjects(JSONObject target, JSONObject source) throws JSONException {
+        Iterator<String> keys = source.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            target.put(key, source.get(key));
+        }
+        return target;
     }
 }

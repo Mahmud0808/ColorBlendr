@@ -14,9 +14,10 @@ import org.json.JSONObject;
 public class ThemeOverlayPackage {
 
     private static final String TAG = ThemeOverlayPackage.class.getSimpleName();
-    private static final String THEME_STYLE = "android.theme.customization.theme_style";
-    private static final String COLOR_SOURCE = "android.theme.customization.color_source";
-    private static final String SYSTEM_PALETTE = "android.theme.customization.system_palette";
+    public static final String THEME_STYLE = "android.theme.customization.theme_style";
+    public static final String COLOR_SOURCE = "android.theme.customization.color_source";
+    public static final String SYSTEM_PALETTE = "android.theme.customization.system_palette";
+    private static final String APPLIED_TIMESTAMP = "_applied_timestamp";
 
     public static JSONObject getThemeCustomizationOverlayPackages() {
         JSONObject object = new JSONObject();
@@ -31,6 +32,7 @@ public class ThemeOverlayPackage {
                     SYSTEM_PALETTE,
                     ColorUtil.intToHexColorNoHash(RPrefs.getInt(MONET_SEED_COLOR, Color.BLUE))
             );
+            object.putOpt(APPLIED_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
         } catch (Exception e) {
             Log.e(TAG, "getThemeCustomizationOverlayPackages:", e);
         }

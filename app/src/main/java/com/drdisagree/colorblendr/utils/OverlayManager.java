@@ -343,9 +343,13 @@ public class OverlayManager {
         }
 
         try {
+            String currentSettings = mShizukuConnection.getCurrentSettings();
             String jsonString = ThemeOverlayPackage.getThemeCustomizationOverlayPackages().toString();
+
             if (!jsonString.isEmpty()) {
-                mShizukuConnection.applyFabricatedColors(jsonString);
+                mShizukuConnection.applyFabricatedColors(
+                        MiscUtil.mergeJsonStrings(currentSettings, jsonString)
+                );
             }
         } catch (Exception e) {
             Log.d(TAG, "applyFabricatedColorsNonRoot: ", e);
