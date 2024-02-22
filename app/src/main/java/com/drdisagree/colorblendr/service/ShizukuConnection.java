@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.service;
 import static com.drdisagree.colorblendr.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Keep;
@@ -56,6 +57,14 @@ public class ShizukuConnection extends IShizukuConnection.Stub {
             for (String key : keysToRemove) {
                 jsonObject.remove(key);
             }
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                jsonObject.remove(ThemeOverlayPackage.ACCENT_COLOR);
+            }
+
+            jsonObject.putOpt(ThemeOverlayPackage.COLOR_BOTH, "0");
+            jsonObject.putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper");
+            jsonObject.putOpt(ThemeOverlayPackage.APPLIED_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
 
             applyFabricatedColors(jsonObject.toString());
         } catch (Exception e) {
