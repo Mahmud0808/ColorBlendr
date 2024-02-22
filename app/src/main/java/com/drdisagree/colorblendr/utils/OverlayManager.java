@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.utils;
 
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM;
+import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEMUI;
 import static com.drdisagree.colorblendr.common.Const.FRAMEWORK_PACKAGE;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
@@ -10,6 +11,7 @@ import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATIO
 import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
 import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
 import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE;
 import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 import static com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR;
 
@@ -260,6 +262,13 @@ public class OverlayManager {
             fabricatedOverlays.get(0).setColor("text_color_secondary_device_default_light", 0xB3000000);
         }
 
+        fabricatedOverlays.add(new FabricatedOverlayResource(
+                FABRICATED_OVERLAY_NAME_SYSTEMUI,
+                SYSTEMUI_PACKAGE
+        ));
+
+        fabricatedOverlays.get(fabricatedOverlays.size() - 1).setBoolean("flag_monet", false);
+
         for (FabricatedOverlayResource fabricatedOverlay : fabricatedOverlays) {
             registerFabricatedOverlay(fabricatedOverlay);
         }
@@ -290,6 +299,7 @@ public class OverlayManager {
         }
 
         fabricatedOverlays.add(FABRICATED_OVERLAY_NAME_SYSTEM);
+        fabricatedOverlays.add(FABRICATED_OVERLAY_NAME_SYSTEMUI);
 
         for (String packageName : fabricatedOverlays) {
             unregisterFabricatedOverlay(packageName);
