@@ -16,21 +16,6 @@ import java.util.Iterator;
 
 public class MiscUtil {
 
-    public static ArrayList<ArrayList<Integer>> convertIntArrayToList(int[][] array) {
-        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
-
-        for (int[] row : array) {
-            ArrayList<Integer> rowList = new ArrayList<>();
-            for (int value : row) {
-                rowList.add(value);
-            }
-
-            result.add(rowList);
-        }
-
-        return result;
-    }
-
     public static int[][] convertListToIntArray(ArrayList<ArrayList<Integer>> arrayList) {
         return arrayList.stream()
                 .map(row -> row.stream().mapToInt(Integer::intValue).toArray())
@@ -68,5 +53,24 @@ public class MiscUtil {
             target.put(key, source.get(key));
         }
         return target;
+    }
+
+    public static int[] convertToIntArray(ArrayList<ArrayList<Integer>> arrayList) {
+        int totalSize = 0;
+
+        for (ArrayList<Integer> innerList : arrayList) {
+            totalSize += innerList.size();
+        }
+
+        int[] result = new int[totalSize];
+        int index = 0;
+
+        for (ArrayList<Integer> innerList : arrayList) {
+            for (Integer value : innerList) {
+                result[index++] = value;
+            }
+        }
+
+        return result;
     }
 }

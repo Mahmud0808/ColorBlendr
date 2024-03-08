@@ -3,19 +3,34 @@ package com.drdisagree.colorblendr.service;
 import static com.drdisagree.colorblendr.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
 
 import android.content.Context;
+import android.content.om.IOverlayManager;
 import android.os.Build;
+import android.os.RemoteException;
 import android.util.Log;
 
 import androidx.annotation.Keep;
 
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage;
+import com.drdisagree.colorblendr.utils.RomUtil;
 import com.topjohnwu.superuser.Shell;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import rikka.shizuku.SystemServiceHelper;
+
 public class ShizukuConnection extends IShizukuConnection.Stub {
 
     private static final String TAG = ShizukuConnection.class.getSimpleName();
+    private static IOverlayManager mOMS;
+
+    static {
+        if (mOMS == null) {
+            mOMS = IOverlayManager.Stub.asInterface(SystemServiceHelper.getSystemService("overlay"));
+        }
+    }
 
     public ShizukuConnection() {
         Log.i(TAG, "Constructed with no arguments");
@@ -24,6 +39,13 @@ public class ShizukuConnection extends IShizukuConnection.Stub {
     @Keep
     public ShizukuConnection(Context context) {
         Log.i(TAG, "Constructed with context: " + context.toString());
+    }
+
+    private static IOverlayManager getOMS() {
+        if (mOMS == null) {
+            mOMS = IOverlayManager.Stub.asInterface(SystemServiceHelper.getSystemService("overlay"));
+        }
+        return mOMS;
     }
 
     @Override
@@ -76,5 +98,29 @@ public class ShizukuConnection extends IShizukuConnection.Stub {
     public String getCurrentSettings() {
         final String mCommand = "settings get secure " + THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
         return Shell.cmd(mCommand).exec().getOut().get(0);
+    }
+
+    @Override
+    public void applySamsungColors(int[] colors) throws RemoteException {
+        if (!RomUtil.isSamsung()) {
+            Log.w(TAG, "applySamsungColors: Not a Samsung device. Skipping...");
+            return;
+        }
+
+        List<Integer> wallpaperColors = new ArrayList<>();
+
+        try {
+            if (colors != null) {
+                for (int color : colors) {
+                    wallpaperColors.add(color);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to apply wallpaper colors", e);
+        }
+
+        if (!wallpaperColors.isEmpty()) {
+            getOMS().applyWallpaperColors(wallpaperColors, 5, 13);
+        }
     }
 }

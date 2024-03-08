@@ -24,7 +24,7 @@ import com.drdisagree.colorblendr.utils.MiscUtil;
 public class StylesFragment extends Fragment {
 
     private FragmentStylesBinding binding;
-    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
+    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU || Const.isSamsungDevice;
     private final boolean isAtleastA13 = notShizukuMode || Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
     private final boolean isAtleastA14 = notShizukuMode || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 

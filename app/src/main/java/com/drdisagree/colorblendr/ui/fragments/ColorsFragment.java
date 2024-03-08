@@ -303,7 +303,7 @@ public class ColorsFragment extends Fragment {
                                     getString(R.string.color_code, ColorUtil.intToHexColor((Integer) v.getTag())),
                                     Snackbar.LENGTH_INDEFINITE)
                             .setAction(snackbarButton, v1 -> {
-                                if (!manualOverride || !notShizukuMode) {
+                                if (!manualOverride || (!notShizukuMode && !Const.isSamsungDevice)) {
                                     ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
                                     ClipData clip = ClipData.newPlainText(ColorUtil.getColorNames()[finalI][finalJ], ColorUtil.intToHexColor((Integer) v.getTag()));
                                     clipboard.setPrimaryClip(clip);

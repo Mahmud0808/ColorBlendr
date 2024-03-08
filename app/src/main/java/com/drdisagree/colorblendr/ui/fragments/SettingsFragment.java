@@ -118,7 +118,7 @@ public class SettingsFragment extends Fragment {
             sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked);
             applyFabricatedColors();
         });
-        binding.accurateShades.setEnabled(notShizukuMode);
+        binding.accurateShades.setEnabled(notShizukuMode || Const.isSamsungDevice);
 
         // Pitch black theme
         binding.pitchBlackTheme.setSwitchChecked(RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false));
@@ -126,7 +126,7 @@ public class SettingsFragment extends Fragment {
             RPrefs.putBoolean(MONET_PITCH_BLACK_THEME, isChecked);
             applyFabricatedColors();
         });
-        binding.pitchBlackTheme.setEnabled(notShizukuMode);
+        binding.pitchBlackTheme.setEnabled(notShizukuMode || Const.isSamsungDevice);
 
         // Custom primary color
         binding.customPrimaryColor.setSwitchChecked(RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false));
@@ -187,7 +187,7 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-        binding.overrideColorsManually.setEnabled(notShizukuMode);
+        binding.overrideColorsManually.setEnabled(notShizukuMode || Const.isSamsungDevice);
 
         binding.backupRestore.container.setOnClickListener(v -> crossfade(binding.backupRestore.backupRestoreButtons));
         binding.backupRestore.backup.setOnClickListener(v -> backupRestoreSettings(true));

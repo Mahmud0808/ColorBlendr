@@ -176,7 +176,10 @@ public class OverlayManager {
             return;
         }
 
-        if (applyFabricatedColorsNonRoot(context)) {
+        boolean isShizukuMode = Const.getWorkingMethod() == Const.WORK_METHOD.SHIZUKU;
+
+        if (isShizukuMode && !Const.isSamsungDevice) {
+            applyFabricatedColorsNonRoot(context);
             return;
         }
 
@@ -213,6 +216,15 @@ public class OverlayManager {
                 false,
                 true
         );
+
+        if (isShizukuMode) {
+            applyFabricatedColorsSamsung(MiscUtil.convertToIntArray(
+                    SystemUtil.isDarkMode() ?
+                            paletteDark :
+                            paletteLight
+            ));
+            return;
+        }
 
         ArrayList<FabricatedOverlayResource> fabricatedOverlays = new ArrayList<>();
         fabricatedOverlays.add(new FabricatedOverlayResource(
@@ -285,7 +297,12 @@ public class OverlayManager {
     }
 
     public static void removeFabricatedColors(Context context) {
-        if (removeFabricatedColorsNonRoot(context)) {
+        if (Const.getWorkingMethod() == Const.WORK_METHOD.SHIZUKU) {
+            if (Const.isSamsungDevice) {
+                removeFabricatedColorsSamsung();
+            } else {
+                removeFabricatedColorsNonRoot(context);
+            }
             return;
         }
 
@@ -333,14 +350,10 @@ public class OverlayManager {
         return fabricatedOverlay;
     }
 
-    public static boolean applyFabricatedColorsNonRoot(Context context) {
-        if (Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU) {
-            return false;
-        }
-
+    public static void applyFabricatedColorsNonRoot(Context context) {
         if (!ShizukuUtil.isShizukuAvailable() || !ShizukuUtil.hasShizukuPermission(context)) {
             Log.w(TAG, "Shizuku permission not available");
-            return true;
+            return;
         }
 
         if (mShizukuConnection == null) {
@@ -348,7 +361,7 @@ public class OverlayManager {
 
             if (mShizukuConnection == null) {
                 Log.w(TAG, "Shizuku service connection is null");
-                return true;
+                return;
             }
         }
 
@@ -364,18 +377,12 @@ public class OverlayManager {
         } catch (Exception e) {
             Log.d(TAG, "applyFabricatedColorsNonRoot: ", e);
         }
-
-        return true;
     }
 
-    public static boolean removeFabricatedColorsNonRoot(Context context) {
-        if (Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU) {
-            return false;
-        }
-
+    public static void removeFabricatedColorsNonRoot(Context context) {
         if (!ShizukuUtil.isShizukuAvailable() || !ShizukuUtil.hasShizukuPermission(context)) {
             Log.w(TAG, "Shizuku permission not available");
-            return true;
+            return;
         }
 
         if (mShizukuConnection == null) {
@@ -383,7 +390,7 @@ public class OverlayManager {
 
             if (mShizukuConnection == null) {
                 Log.w(TAG, "Shizuku service connection is null");
-                return true;
+                return;
             }
         }
 
@@ -392,7 +399,39 @@ public class OverlayManager {
         } catch (Exception e) {
             Log.d(TAG, "removeFabricatedColorsNonRoot: ", e);
         }
+    }
 
-        return true;
+    public static void applyFabricatedColorsSamsung(int[] colors) {
+        if (mShizukuConnection == null) {
+            mShizukuConnection = ColorBlendr.getShizukuConnection();
+
+            if (mShizukuConnection == null) {
+                Log.w(TAG, "Shizuku service connection is null");
+                return;
+            }
+        }
+
+        try {
+            mShizukuConnection.applySamsungColors(colors);
+        } catch (Exception e) {
+            Log.d(TAG, "applyFabricatedColorsSamsung: ", e);
+        }
+    }
+
+    public static void removeFabricatedColorsSamsung() {
+        if (mShizukuConnection == null) {
+            mShizukuConnection = ColorBlendr.getShizukuConnection();
+
+            if (mShizukuConnection == null) {
+                Log.w(TAG, "Shizuku service connection is null");
+                return;
+            }
+        }
+
+        try {
+            mShizukuConnection.applySamsungColors(null);
+        } catch (Exception e) {
+            Log.d(TAG, "removeFabricatedColorsSamsung: ", e);
+        }
     }
 }

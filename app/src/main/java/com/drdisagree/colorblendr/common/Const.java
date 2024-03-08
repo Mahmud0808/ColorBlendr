@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.common;
 
 import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.config.RPrefs;
+import com.drdisagree.colorblendr.utils.RomUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -45,6 +46,7 @@ public class Const {
     public static final int SHIZUKU_PERMISSION_REQUEST_ID = 100;
     public static final String THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages";
     public static final String SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled";
+    public static final boolean isSamsungDevice = RomUtil.isSamsung();
 
     // Service preferences
     public static final Gson GSON = new Gson();

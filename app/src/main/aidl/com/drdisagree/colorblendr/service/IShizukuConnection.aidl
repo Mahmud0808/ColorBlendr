@@ -6,4 +6,5 @@ interface IShizukuConnection {
     void applyFabricatedColors(String jsonString) = 2;
     void removeFabricatedColors() = 3;
     String getCurrentSettings() = 4;
+    void applySamsungColors(in int[] colors) = 5;
 }
