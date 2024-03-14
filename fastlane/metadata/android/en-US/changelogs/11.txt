@@ -1,0 +1,8 @@
+Changelog:
+
+• Resolved issue causing loss of system customizations.
+• Fixed applying colors for rootless android 12 theming.
+• Disable system monet automatically for rooted theming.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
