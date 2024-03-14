@@ -36,6 +36,7 @@ public class Const {
     public static final String MONET_STYLE_ORIGINAL_NAME = "monetStyleOriginalName";
     public static final String FABRICATED_OVERLAY_SOURCE_PACKAGE = FRAMEWORK_PACKAGE;
     public static final String FABRICATED_OVERLAY_NAME_SYSTEM = BuildConfig.APPLICATION_ID + "_dynamic_theme";
+    public static final String FABRICATED_OVERLAY_NAME_SYSTEMUI = BuildConfig.APPLICATION_ID + "_dynamic_theme_system";
     public static final String FABRICATED_OVERLAY_NAME_APPS = BuildConfig.APPLICATION_ID + ".%s_dynamic_theme";
     public static final String WALLPAPER_COLOR_LIST = "wallpaperColorList";
     public static final String FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState";
