@@ -1,5 +1,7 @@
 package com.drdisagree.colorblendr.utils;
 
+import android.os.Build;
+
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
@@ -67,7 +69,7 @@ public class DynamicColors {
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_low", Pair.create(3, Pair.create(2, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_lowest", Pair.create(3, Pair.create(1, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container", Pair.create(3, Pair.create(2, 10))));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_high", Pair.create(3, Pair.create(2, 10))));
+        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_high", Pair.create(3, Pair.create(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ? 1 : 2, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_highest", Pair.create(3, Pair.create(3, 9))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_bright", Pair.create(3, Pair.create(2, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_dim", Pair.create(3, Pair.create(2, 11))));
