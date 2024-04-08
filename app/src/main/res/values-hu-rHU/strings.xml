@@ -121,11 +121,11 @@
     <string name="search_hint">Keress itt…</string>
     <string name="note_title">Megjegyzés:</string>
     <string name="grant_all_permissions">Please grant all permissions to proceed</string>
-    <string name="app_service_title">%s service</string>
-    <string name="app_service_desc_on">Theming is active</string>
-    <string name="app_service_desc_off">Theming is inactive</string>
-    <string name="tint_text_title">Tint text color</string>
-    <string name="tint_text_desc">Maintain a subtle tint for text</string>
+    <string name="app_service_title">%s szolgáltatás</string>
+    <string name="app_service_desc_on">A tematizálás aktív</string>
+    <string name="app_service_desc_off">A tematizálás inaktív</string>
+    <string name="tint_text_title">Szöveg színárnyalat</string>
+    <string name="tint_text_desc">A szöveg finom árnyalatának fenntartása</string>
     <string name="primary">Elsődleges</string>
     <string name="secondary">Másodlagos</string>
     <string name="tertiary">Harmadlagos</string>
