@@ -310,18 +310,6 @@ public class ColorsFragment extends Fragment {
                                     return;
                                 }
 
-                                if (finalJ == 0 || finalJ == 12) {
-                                    Snackbar.make(
-                                                    requireView(),
-                                                    getString(R.string.cannot_override_color),
-                                                    Snackbar.LENGTH_SHORT
-                                            )
-                                            .setAction(getString(R.string.override), v2 -> {
-                                            })
-                                            .show();
-                                    return;
-                                }
-
                                 new ColorPickerDialog()
                                         .withCornerRadius(10)
                                         .withColor((Integer) v.getTag())
