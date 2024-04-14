@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_moto">Express yourself with colors</string>
+    <string name="app_moto"></string>
     <string name="app_description">Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</string>
     <string name="monet_neutral">Neutral</string>
     <string name="monet_monochrome">Monochrome</string>
