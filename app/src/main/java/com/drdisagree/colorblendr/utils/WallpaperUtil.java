@@ -18,6 +18,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.palette.graphics.Palette;
 
+import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 
@@ -51,7 +52,7 @@ public class WallpaperUtil {
         if (RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE) == Integer.MIN_VALUE &&
                 AppUtil.permissionsGranted(context)
         ) {
-            ArrayList<Integer> wallpaperColors = WallpaperUtil.getWallpaperColors(context);
+            ArrayList<Integer> wallpaperColors = getWallpaperColors(context);
             RPrefs.putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors));
             RPrefs.putInt(MONET_SEED_COLOR, wallpaperColors.get(0));
         }
@@ -112,6 +113,14 @@ public class WallpaperUtil {
             try {
                 ParcelFileDescriptor wallpaperFile;
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+
+                if (wallpaperManager.getWallpaperInfo() != null) {
+                    return MiscUtil.drawableToBitmap(
+                            wallpaperManager.getWallpaperInfo().loadThumbnail(
+                                    ColorBlendr.getAppContext().getPackageManager()
+                            )
+                    );
+                }
 
                 if (which == WallpaperManager.FLAG_SYSTEM) {
                     wallpaperFile = wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_SYSTEM);
