@@ -2,6 +2,8 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 plugins {
     alias(libs.plugins.agp.app)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -19,6 +21,7 @@ android {
         debug {
             isMinifyEnabled = true
             isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -28,6 +31,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -61,11 +65,16 @@ android {
         abortOnError = true
         checkReleaseBuilds = false
     }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 dependencies {
     compileOnly(project(":systemstubs"))
 
+    implementation(libs.core.ktx)
     implementation(libs.libsu.core)
     implementation(libs.libsu.service)
     implementation(libs.shizuku.api)
