@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.ui.fragments.AboutFragment;
+import com.drdisagree.colorblendr.ui.fragments.ColorPaletteFragment;
 import com.drdisagree.colorblendr.ui.fragments.ColorsFragment;
 import com.drdisagree.colorblendr.ui.fragments.PerAppThemeFragment;
 import com.drdisagree.colorblendr.ui.fragments.SettingsFragment;
@@ -77,7 +78,9 @@ public class FragmentUtil {
     }
 
     private static boolean isInGroup1(Fragment fragment) {
-        return fragment instanceof ColorsFragment || fragment instanceof PerAppThemeFragment;
+        return fragment instanceof ColorsFragment ||
+                fragment instanceof PerAppThemeFragment ||
+                fragment instanceof ColorPaletteFragment;
     }
 
     private static boolean isInGroup2(Fragment fragment) {
@@ -89,6 +92,7 @@ public class FragmentUtil {
     }
 
     private static boolean isInGroup4(Fragment fragment) {
-        return fragment instanceof SettingsFragment || fragment instanceof AboutFragment;
+        return fragment instanceof SettingsFragment ||
+                fragment instanceof AboutFragment;
     }
 }
