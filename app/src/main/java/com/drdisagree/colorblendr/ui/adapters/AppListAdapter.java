@@ -1,6 +1,8 @@
 package com.drdisagree.colorblendr.ui.adapters;
 
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
+import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
+import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
+import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.ui.models.AppInfoModel;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
@@ -33,13 +36,17 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     public AppListAdapter(List<AppInfoModel> appList) {
         this.appList = appList;
 
-        for (AppInfoModel appInfo : appList) {
-            if (appInfo.isSelected()) {
-                selectedApps.put(appInfo.packageName, appInfo.isSelected());
+        if (RPrefs.getBoolean(THEMING_ENABLED, false) ||
+                RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, false)
+        ) {
+            for (AppInfoModel appInfo : appList) {
+                if (appInfo.isSelected()) {
+                    selectedApps.put(appInfo.packageName, appInfo.isSelected());
+                }
             }
-        }
 
-        Const.saveSelectedFabricatedApps(selectedApps);
+            Const.saveSelectedFabricatedApps(selectedApps);
+        }
     }
 
     @NonNull
