@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
+import static com.drdisagree.colorblendr.common.Const.APP_LIST_FILTER_METHOD;
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
 import static com.drdisagree.colorblendr.common.Const.SHOW_PER_APP_THEME_WARN;
 
@@ -29,12 +30,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.common.Const.AppType;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding;
 import com.drdisagree.colorblendr.ui.adapters.AppListAdapter;
 import com.drdisagree.colorblendr.ui.models.AppInfoModel;
 import com.drdisagree.colorblendr.utils.MiscUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,11 @@ public class PerAppThemeFragment extends Fragment {
     private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            initAppList();
+            AppType appType = AppType.values()[
+                    RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.BOTH.ordinal())
+                    ];
+
+            initAppList(appType);
         }
     };
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -97,17 +104,23 @@ public class PerAppThemeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initAppList();
+        binding.searchBox.filter.setOnClickListener(v -> showFilterDialog());
+
+        AppType appType = AppType.values()[
+                RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.BOTH.ordinal())
+                ];
+
+        initAppList(appType);
         blurSearchView();
     }
 
-    private void initAppList() {
+    private void initAppList(AppType appType) {
         binding.recyclerView.setVisibility(View.GONE);
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.searchBox.search.removeTextChangedListener(textWatcher);
 
         new Thread(() -> {
-            appList = getAllInstalledApps(requireContext());
+            appList = getAllInstalledApps(requireContext(), appType);
             adapter = new AppListAdapter(appList);
 
             try {
@@ -166,7 +179,7 @@ public class PerAppThemeFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
     }
 
-    private static List<AppInfoModel> getAllInstalledApps(Context context) {
+    private static List<AppInfoModel> getAllInstalledApps(Context context, AppType appType) {
         List<AppInfoModel> appList = new ArrayList<>();
         PackageManager packageManager = context.getPackageManager();
 
@@ -180,9 +193,19 @@ public class PerAppThemeFragment extends Fragment {
                     String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
             );
 
-            AppInfoModel app = new AppInfoModel(appName, packageName, appIcon);
-            app.setSelected(isSelected);
-            appList.add(app);
+            boolean isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+
+            boolean includeApp = switch (appType) {
+                case SYSTEM -> isSystemApp;
+                case USER -> !isSystemApp;
+                case BOTH -> true;
+            };
+
+            if (includeApp) {
+                AppInfoModel app = new AppInfoModel(appName, packageName, appIcon);
+                app.setSelected(isSelected);
+                appList.add(app);
+            }
         }
 
         appList.sort((app1, app2) -> {
@@ -205,6 +228,30 @@ public class PerAppThemeFragment extends Fragment {
                 .setBlurRadius(20f);
         binding.searchBox.blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
         binding.searchBox.blurView.setClipToOutline(true);
+    }
+
+    private void showFilterDialog() {
+        String[] items = {
+                getString(R.string.filter_system_apps),
+                getString(R.string.filter_user_apps),
+                getString(R.string.filter_both)
+        };
+
+        int selectedFilterIndex = RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.BOTH.ordinal());
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.filter_app_category))
+                .setSingleChoiceItems(items, selectedFilterIndex, (dialog, which) -> {
+                    RPrefs.putInt(APP_LIST_FILTER_METHOD, which);
+
+                    AppType appType = AppType.values()[which];
+
+                    initAppList(appType);
+
+                    dialog.dismiss();
+                })
+                .setCancelable(true)
+                .show();
     }
 
     @Override
