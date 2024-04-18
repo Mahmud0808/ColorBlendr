@@ -185,7 +185,15 @@ public class PerAppThemeFragment extends Fragment {
             appList.add(app);
         }
 
-        appList.sort((app1, app2) -> app1.appName.compareToIgnoreCase(app2.appName));
+        appList.sort((app1, app2) -> {
+            if (app1.isSelected() && !app2.isSelected()) {
+                return -1;
+            } else if (!app1.isSelected() && app2.isSelected()) {
+                return 1;
+            } else {
+                return app1.appName.compareToIgnoreCase(app2.appName);
+            }
+        });
 
         return appList;
     }
