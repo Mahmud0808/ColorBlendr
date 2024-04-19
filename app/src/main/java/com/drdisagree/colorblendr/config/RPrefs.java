@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.config;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.drdisagree.colorblendr.common.Const.EXCLUDED_PREFS_FROM_BACKUP;
+import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
 
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -133,6 +134,10 @@ public class RPrefs {
 
         // Retrieve excluded prefs from current prefs
         Map<String, Object> excludedPrefs = new HashMap<>();
+
+        // Restoring config will enable theming service
+        excludedPrefs.put(THEMING_ENABLED, true);
+
         for (String excludedPref : EXCLUDED_PREFS_FROM_BACKUP) {
             Object prefValue = prefs.getAll().get(excludedPref);
             if (prefValue != null) {

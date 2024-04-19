@@ -173,7 +173,7 @@ public class OverlayManager {
     }
 
     public static void applyFabricatedColors(Context context) {
-        if (!RPrefs.getBoolean(THEMING_ENABLED, true) || !RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
+        if (!RPrefs.getBoolean(THEMING_ENABLED, true) && !RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
             return;
         }
 

@@ -53,8 +53,12 @@ public class Const {
 
     public static Set<String> EXCLUDED_PREFS_FROM_BACKUP = new HashSet<>(
             Arrays.asList(
+                    FIRST_RUN,
                     PREF_WORKING_METHOD,
-                    MONET_LAST_UPDATED
+                    MONET_LAST_UPDATED,
+                    THEMING_ENABLED,
+                    SHIZUKU_THEMING_ENABLED,
+                    WALLPAPER_COLOR_LIST
             )
     );
 
