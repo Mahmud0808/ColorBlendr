@@ -1,0 +1,9 @@
+Changelog:
+
+• Added support for live wallpaper color extraction.
+• Allow changing white and black shade in color palette (Root).
+• Fixed notification background color on android 14 (Root).
+• Improved per app theming categorization and filtering (Root).
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
