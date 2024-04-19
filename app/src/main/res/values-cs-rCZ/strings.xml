@@ -138,4 +138,13 @@
     <string name="mode_one_desc">Použít root přístup pro změnu barev. Všechny možnosti přizpůsobení budou k dispozici.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Použijte shizuku místo rootu. Budou k dispozici omezené možnosti přizpůsobení.</string>
+    <string name="color_palette_title">Barevná paleta</string>
+    <string name="color_palette_desc">Prozkoumejte všechny barvy Material palety</string>
+    <string name="color_palette_root_warn">Klepnutím na libovolnou barvu v paletě upravíte její vzhled; dlouhým stiskem obnovíte výchozí barvu.</string>
+    <string name="color_palette_rootless_warn">Klepnutím na libovolnou barvu v paletě zkopírujete její hexadecimální kód barvy.</string>
+    <string name="filter_app_category">Vyberte kategorii aplikace</string>
+    <string name="filter_system_apps">Systémové aplikace</string>
+    <string name="filter_user_apps">Uživatelské aplikace</string>
+    <string name="filter_launchable_apps">Launchable apps</string>
+    <string name="filter_all">All apps</string>
 </resources>

@@ -138,4 +138,13 @@
     <string name="mode_one_desc">Renkleri değiştirmek için root erişimini kullanın. Tüm özelleştirme seçenekleri mevcut olacaktır.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Root olmadan çalışmasını sağlamak için shizuku kullanın. Sınırlı özelleştirme seçenekleri mevcut olacaktır.</string>
+    <string name="color_palette_title">Renk paleti</string>
+    <string name="color_palette_desc">Malzeme paletinizin tüm renklerini keşfedin</string>
+    <string name="color_palette_root_warn">Görünümünü özelleştirmek için paletteki herhangi bir renge dokunun; varsayılan renge sıfırlamak için uzun basın.</string>
+    <string name="color_palette_rootless_warn">Onaltılık renk kodunu kopyalamak için paletteki herhangi bir rengin üzerine dokunun.</string>
+    <string name="filter_app_category">Uygulama kategorisi seç</string>
+    <string name="filter_system_apps">Sistem uygulamaları</string>
+    <string name="filter_user_apps">Kullanıcı uygulamaları</string>
+    <string name="filter_launchable_apps">Launchable apps</string>
+    <string name="filter_all">All apps</string>
 </resources>
