@@ -1,10 +1,6 @@
 package com.drdisagree.colorblendr.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
@@ -19,21 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MiscUtil {
-
-    public static ArrayList<ArrayList<Integer>> convertIntArrayToList(int[][] array) {
-        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
-
-        for (int[] row : array) {
-            ArrayList<Integer> rowList = new ArrayList<>();
-            for (int value : row) {
-                rowList.add(value);
-            }
-
-            result.add(rowList);
-        }
-
-        return result;
-    }
 
     public static int[][] convertListToIntArray(ArrayList<ArrayList<Integer>> arrayList) {
         return arrayList.stream()
@@ -72,27 +53,5 @@ public class MiscUtil {
             target.put(key, source.get(key));
         }
         return target;
-    }
-
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap;
-
-        if (drawable instanceof BitmapDrawable bitmapDrawable) {
-            if (bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
-
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
     }
 }

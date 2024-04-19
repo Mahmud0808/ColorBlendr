@@ -7,7 +7,10 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
@@ -24,7 +27,6 @@ import com.drdisagree.colorblendr.config.RPrefs;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +117,7 @@ public class WallpaperUtil {
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
 
                 if (wallpaperManager.getWallpaperInfo() != null) {
-                    return MiscUtil.drawableToBitmap(
+                    return drawableToBitmap(
                             wallpaperManager.getWallpaperInfo().loadThumbnail(
                                     ColorBlendr.getAppContext().getPackageManager()
                             )
@@ -191,7 +193,7 @@ public class WallpaperUtil {
 
     private static ArrayList<Integer> getDominantColors(Bitmap bitmap) {
         if (bitmap == null) {
-            return new ArrayList<>(Collections.singletonList(Color.BLUE));
+            return ColorUtil.getMonetAccentColors();
         }
 
         int bitmapArea = bitmap.getWidth() * bitmap.getHeight();
@@ -210,7 +212,7 @@ public class WallpaperUtil {
 
         ArrayList<Integer> wallpaperColors = filteredSwatches.stream().map(Palette.Swatch::getRgb).collect(Collectors.toCollection(ArrayList::new));
 
-        return wallpaperColors.isEmpty() ? new ArrayList<>(Collections.singletonList(Color.BLUE)) : wallpaperColors;
+        return wallpaperColors.isEmpty() ? ColorUtil.getMonetAccentColors() : wallpaperColors;
     }
 
     private static Palette createPalette(Bitmap bitmap) {
@@ -253,5 +255,51 @@ public class WallpaperUtil {
     private static boolean isColorInRange(int color) {
         double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
         return darkness >= MINIMUM_DARKNESS && darkness <= MAXIMUM_DARKNESS;
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap;
+
+        if (drawable instanceof BitmapDrawable bitmapDrawable) {
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        int intrinsicWidth = drawable.getIntrinsicWidth();
+        int intrinsicHeight = drawable.getIntrinsicHeight();
+
+        if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
+            ArrayList<Integer> colors = ColorUtil.getMonetAccentColors();
+            int colorCount = colors.size();
+
+            bitmap = Bitmap.createBitmap(colorCount, 1, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+
+            int colorIndex = 0;
+            if (colorCount > 0) {
+                int rectWidth = canvas.getWidth() / colorCount;
+                for (Integer color : colors) {
+                    canvas.save();
+                    canvas.clipRect(colorIndex * rectWidth, 0, (colorIndex + 1) * rectWidth, canvas.getHeight());
+                    canvas.drawColor(color);
+                    canvas.restore();
+                    colorIndex++;
+                }
+            }
+        } else {
+            bitmap = createMiniBitmap(
+                    Bitmap.createBitmap(
+                            intrinsicWidth,
+                            intrinsicHeight,
+                            Bitmap.Config.ARGB_8888
+                    )
+            );
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, intrinsicWidth, intrinsicHeight);
+            drawable.draw(canvas);
+        }
+
+        return bitmap;
     }
 }
