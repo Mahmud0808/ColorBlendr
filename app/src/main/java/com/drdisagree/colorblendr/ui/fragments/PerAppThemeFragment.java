@@ -53,7 +53,7 @@ public class PerAppThemeFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             AppType appType = AppType.values()[
-                    RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.BOTH.ordinal())
+                    RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal())
                     ];
 
             initAppList(appType);
@@ -107,7 +107,7 @@ public class PerAppThemeFragment extends Fragment {
         binding.searchBox.filter.setOnClickListener(v -> showFilterDialog());
 
         AppType appType = AppType.values()[
-                RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.BOTH.ordinal())
+                RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal())
                 ];
 
         initAppList(appType);
@@ -186,8 +186,16 @@ public class PerAppThemeFragment extends Fragment {
         List<ApplicationInfo> applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
 
         for (ApplicationInfo appInfo : applications) {
-            String appName = appInfo.loadLabel(packageManager).toString();
             String packageName = appInfo.packageName;
+
+            if (appType == AppType.LAUNCHABLE) {
+                Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
+                if (launchIntent == null) {
+                    continue;
+                }
+            }
+
+            String appName = appInfo.loadLabel(packageManager).toString();
             Drawable appIcon = appInfo.loadIcon(packageManager);
             boolean isSelected = OverlayManager.isOverlayEnabled(
                     String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
@@ -198,7 +206,7 @@ public class PerAppThemeFragment extends Fragment {
             boolean includeApp = switch (appType) {
                 case SYSTEM -> isSystemApp;
                 case USER -> !isSystemApp;
-                case BOTH -> true;
+                case LAUNCHABLE, ALL -> true;
             };
 
             if (includeApp) {
@@ -234,10 +242,11 @@ public class PerAppThemeFragment extends Fragment {
         String[] items = {
                 getString(R.string.filter_system_apps),
                 getString(R.string.filter_user_apps),
-                getString(R.string.filter_both)
+                getString(R.string.filter_launchable_apps),
+                getString(R.string.filter_all)
         };
 
-        int selectedFilterIndex = RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.BOTH.ordinal());
+        int selectedFilterIndex = RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal());
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.filter_app_category))

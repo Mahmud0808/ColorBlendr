@@ -100,6 +100,7 @@ public class Const {
     public enum AppType {
         SYSTEM,
         USER,
-        BOTH
+        LAUNCHABLE,
+        ALL
     }
 }
