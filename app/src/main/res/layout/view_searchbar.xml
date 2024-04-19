@@ -53,11 +53,23 @@
                 android:id="@+id/clear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@android:string/untitled"
                 android:padding="4dp"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_clear"
+                app:tint="?android:textColorSecondary" />
+
+            <ImageView
+                android:id="@+id/filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@android:string/untitled"
+                android:padding="4dp"
+                app:srcCompat="@drawable/ic_filter_list"
                 app:tint="?android:textColorSecondary" />
 
         </LinearLayout>

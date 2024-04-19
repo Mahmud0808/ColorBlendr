@@ -25,7 +25,7 @@
     <string name="dev_bio">Learner | Developer | Designer</string>
     <string name="news">News</string>
     <string name="support">Support</string>
-    <string name="github">GitHub</string>
+    <string name="github">Github</string>
     <string name="version">Version</string>
     <string name="pitch_black_theme_title">Pitch black theme</string>
     <string name="pitch_black_theme_desc">Black background in dark mode</string>
@@ -138,4 +138,13 @@
     <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
+    <string name="color_palette_title">Color palette</string>
+    <string name="color_palette_desc">Explore all the colors of your material palette</string>
+    <string name="color_palette_root_warn">Tap on any color in the palette to customize its appearance; long press to reset to the default color.</string>
+    <string name="color_palette_rootless_warn">Tap on any color in the palette to copy its hexadecimal color code.</string>
+    <string name="filter_app_category">Select app category</string>
+    <string name="filter_system_apps">System apps</string>
+    <string name="filter_user_apps">User apps</string>
+    <string name="filter_launchable_apps">Launchable apps</string>
+    <string name="filter_all">All apps</string>
 </resources>

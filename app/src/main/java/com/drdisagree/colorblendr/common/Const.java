@@ -45,6 +45,7 @@ public class Const {
     public static final int SHIZUKU_PERMISSION_REQUEST_ID = 100;
     public static final String THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages";
     public static final String SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled";
+    public static final String APP_LIST_FILTER_METHOD = "appListFilterMethod";
 
     // Service preferences
     public static final Gson GSON = new Gson();
@@ -94,5 +95,12 @@ public class Const {
 
     public static void saveWorkingMethod(WORK_METHOD workMethod) {
         RPrefs.putString(PREF_WORKING_METHOD, workMethod.toString());
+    }
+
+    public enum AppType {
+        SYSTEM,
+        USER,
+        LAUNCHABLE,
+        ALL
     }
 }
