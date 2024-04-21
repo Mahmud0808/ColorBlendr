@@ -145,6 +145,6 @@
     <string name="filter_app_category">Uygulama kategorisi seç</string>
     <string name="filter_system_apps">Sistem uygulamaları</string>
     <string name="filter_user_apps">Kullanıcı uygulamaları</string>
-    <string name="filter_launchable_apps">Launchable apps</string>
-    <string name="filter_all">All apps</string>
+    <string name="filter_launchable_apps">Başlatılabilir uygulamalar</string>
+    <string name="filter_all">Tüm uygulamalar</string>
 </resources>

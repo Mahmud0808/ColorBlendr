@@ -138,13 +138,13 @@
     <string name="mode_one_desc">استخدم صلاحيات الروت لتغيير الألوان. جميع خيارات التخصيص ستكون متاحة.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">استخدم Shizuku للعمل بدون روت. ستكون خيارات التخصيص المحدودة متاحة.</string>
-    <string name="color_palette_title">Color palette</string>
-    <string name="color_palette_desc">Explore all the colors of your material palette</string>
-    <string name="color_palette_root_warn">Tap on any color in the palette to customize its appearance; long press to reset to the default color.</string>
-    <string name="color_palette_rootless_warn">Tap on any color in the palette to copy its hexadecimal color code.</string>
-    <string name="filter_app_category">Select app category</string>
-    <string name="filter_system_apps">System apps</string>
-    <string name="filter_user_apps">User apps</string>
-    <string name="filter_launchable_apps">Launchable apps</string>
-    <string name="filter_all">All apps</string>
+    <string name="color_palette_title">لوحة الألوان</string>
+    <string name="color_palette_desc">استكشف جميع ألوان لوحة Material You الخاصة بك</string>
+    <string name="color_palette_root_warn">اضغط على أي لون في اللوحة لتخصيص مظهرها؛ اضغط لفترة طويلة لإعادة التعيين لللون الافتراضي.</string>
+    <string name="color_palette_rootless_warn">اضغط على أي لون في اللوحة لنسخ رمز اللون سداسي المستوى الخاص بها.</string>
+    <string name="filter_app_category">اختر فئة التطبيق</string>
+    <string name="filter_system_apps">تطبيقات النظام</string>
+    <string name="filter_user_apps">تطبيقات المستخدم</string>
+    <string name="filter_launchable_apps">تطبيقات قابلة للتشغيل</string>
+    <string name="filter_all">كل التطبيقات</string>
 </resources>
