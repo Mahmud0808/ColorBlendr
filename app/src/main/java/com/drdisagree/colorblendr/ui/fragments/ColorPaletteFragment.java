@@ -228,10 +228,6 @@ public class ColorPaletteFragment extends Fragment {
                 });
 
                 colorTableRows[i].getChildAt(j).setOnLongClickListener(v -> {
-                    if (finalJ == 0 || finalJ == 12) {
-                        return true;
-                    }
-
                     RPrefs.clearPref(colorNames[finalI][finalJ]);
 
                     try {
