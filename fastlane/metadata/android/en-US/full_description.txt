@@ -1,4 +1,4 @@
-<b style="color: dodgerblue;">ColorBlendr</b> is an application to modify material you colors of your device.
+<b style="color: dodgerblue;">ColorBlendr</b> is an application to modify Material You colors of your device.
 Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.
 
 <b>Features:</b>
