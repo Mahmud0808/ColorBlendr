@@ -205,7 +205,7 @@ public class ColorPaletteFragment extends Fragment {
                                                     getString(R.string.cannot_override_color),
                                                     Snackbar.LENGTH_SHORT
                                             )
-                                            .setAction(getString(R.string.override), v2 -> {
+                                            .setAction(getString(R.string.dismiss), v2 -> {
                                             })
                                             .show();
                                     return;
