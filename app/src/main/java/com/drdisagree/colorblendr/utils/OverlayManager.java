@@ -4,7 +4,6 @@ import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_AP
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM;
 import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEMUI;
 import static com.drdisagree.colorblendr.common.Const.FRAMEWORK_PACKAGE;
-import static com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
 import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
 import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
@@ -190,7 +189,6 @@ public class OverlayManager {
         int monetBackgroundLightness = RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100);
         boolean pitchBlackTheme = RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false);
         boolean accurateShades = RPrefs.getBoolean(MONET_ACCURATE_SHADES, true);
-        boolean overrideColors = RPrefs.getBoolean(MANUAL_OVERRIDE_COLORS, false);
 
         ArrayList<ArrayList<Integer>> paletteLight = ColorUtil.generateModifiedColors(
                 context,
@@ -255,22 +253,6 @@ public class OverlayManager {
             fabricatedOverlays.get(0).setColor("surface_header_dark_sysui", Color.BLACK);
             fabricatedOverlays.get(0).setColor(colorNames[3][11], Color.BLACK);
             fabricatedOverlays.get(0).setColor(colorNames[4][11], Color.BLACK);
-        }
-
-        // Override white and black shades
-        if (overrideColors) {
-            for (String[] colorName : colorNames) {
-                int overriddenColorWhite = RPrefs.getInt(colorName[0], Integer.MIN_VALUE);
-                int overriddenColorBlack = RPrefs.getInt(colorName[colorName.length - 1], Integer.MIN_VALUE);
-
-                if (overriddenColorWhite != Integer.MIN_VALUE) {
-                    fabricatedOverlays.get(0).setColor(colorName[0], overriddenColorWhite);
-                }
-
-                if (overriddenColorBlack != Integer.MIN_VALUE) {
-                    fabricatedOverlays.get(0).setColor(colorName[colorName.length - 1], overriddenColorBlack);
-                }
-            }
         }
 
         if (!RPrefs.getBoolean(TINT_TEXT_COLOR, true)) {
