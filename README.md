@@ -12,7 +12,7 @@
 
 # ColorBlendr
 
-### An application to modify material you colors of your device.
+### Customize Material You colors of your device.
 </div>
 <p align="center">
 Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.
