@@ -50,7 +50,7 @@
     <string name="meet_the_developer">Meet the developer</string>
     <string name="buymeacoffee_title">Enjoying this app?</string>
     <string name="buymeacoffee_desc">Consider buying me a coffee</string>
-    <string name="override_colors_manually_title">Override colors manually</string>
+    <string name="override_colors_manually_title">色の編集</string>
     <string name="override_colors_manually_desc">Tap on the color palette preview to override individual colors; long press to reset</string>
     <string name="override">Override</string>
     <string name="copy">Copy</string>
@@ -138,7 +138,7 @@
     <string name="mode_one_desc">Use root access to change colors. All customization options will be available.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
-    <string name="color_palette_title">Color palette</string>
+    <string name="color_palette_title">カラーパレット</string>
     <string name="color_palette_desc">Explore all the colors of your material palette</string>
     <string name="color_palette_root_warn">Tap on any color in the palette to customize its appearance; long press to reset to the default color.</string>
     <string name="color_palette_rootless_warn">Tap on any color in the palette to copy its hexadecimal color code.</string>
