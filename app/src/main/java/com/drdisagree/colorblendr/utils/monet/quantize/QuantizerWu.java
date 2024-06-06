@@ -49,33 +49,17 @@ public final class QuantizerWu implements Quantizer {
     }
 
     static int volume(Box cube, int[] moment) {
-        return (moment[getIndex(cube.r1, cube.g1, cube.b1)]
-                - moment[getIndex(cube.r1, cube.g1, cube.b0)]
-                - moment[getIndex(cube.r1, cube.g0, cube.b1)]
-                + moment[getIndex(cube.r1, cube.g0, cube.b0)]
-                - moment[getIndex(cube.r0, cube.g1, cube.b1)]
-                + moment[getIndex(cube.r0, cube.g1, cube.b0)]
-                + moment[getIndex(cube.r0, cube.g0, cube.b1)]
-                - moment[getIndex(cube.r0, cube.g0, cube.b0)]);
+        return (moment[getIndex(cube.r1, cube.g1, cube.b1)] - moment[getIndex(cube.r1, cube.g1, cube.b0)] - moment[getIndex(cube.r1, cube.g0, cube.b1)] + moment[getIndex(cube.r1, cube.g0, cube.b0)] - moment[getIndex(cube.r0, cube.g1, cube.b1)] + moment[getIndex(cube.r0, cube.g1, cube.b0)] + moment[getIndex(cube.r0, cube.g0, cube.b1)] - moment[getIndex(cube.r0, cube.g0, cube.b0)]);
     }
 
     static int bottom(Box cube, Direction direction, int[] moment) {
         switch (direction) {
             case RED:
-                return -moment[getIndex(cube.r0, cube.g1, cube.b1)]
-                        + moment[getIndex(cube.r0, cube.g1, cube.b0)]
-                        + moment[getIndex(cube.r0, cube.g0, cube.b1)]
-                        - moment[getIndex(cube.r0, cube.g0, cube.b0)];
+                return -moment[getIndex(cube.r0, cube.g1, cube.b1)] + moment[getIndex(cube.r0, cube.g1, cube.b0)] + moment[getIndex(cube.r0, cube.g0, cube.b1)] - moment[getIndex(cube.r0, cube.g0, cube.b0)];
             case GREEN:
-                return -moment[getIndex(cube.r1, cube.g0, cube.b1)]
-                        + moment[getIndex(cube.r1, cube.g0, cube.b0)]
-                        + moment[getIndex(cube.r0, cube.g0, cube.b1)]
-                        - moment[getIndex(cube.r0, cube.g0, cube.b0)];
+                return -moment[getIndex(cube.r1, cube.g0, cube.b1)] + moment[getIndex(cube.r1, cube.g0, cube.b0)] + moment[getIndex(cube.r0, cube.g0, cube.b1)] - moment[getIndex(cube.r0, cube.g0, cube.b0)];
             case BLUE:
-                return -moment[getIndex(cube.r1, cube.g1, cube.b0)]
-                        + moment[getIndex(cube.r1, cube.g0, cube.b0)]
-                        + moment[getIndex(cube.r0, cube.g1, cube.b0)]
-                        - moment[getIndex(cube.r0, cube.g0, cube.b0)];
+                return -moment[getIndex(cube.r1, cube.g1, cube.b0)] + moment[getIndex(cube.r1, cube.g0, cube.b0)] + moment[getIndex(cube.r0, cube.g1, cube.b0)] - moment[getIndex(cube.r0, cube.g0, cube.b0)];
         }
         throw new IllegalArgumentException("unexpected direction " + direction);
     }
@@ -83,20 +67,11 @@ public final class QuantizerWu implements Quantizer {
     static int top(Box cube, Direction direction, int position, int[] moment) {
         switch (direction) {
             case RED:
-                return (moment[getIndex(position, cube.g1, cube.b1)]
-                        - moment[getIndex(position, cube.g1, cube.b0)]
-                        - moment[getIndex(position, cube.g0, cube.b1)]
-                        + moment[getIndex(position, cube.g0, cube.b0)]);
+                return (moment[getIndex(position, cube.g1, cube.b1)] - moment[getIndex(position, cube.g1, cube.b0)] - moment[getIndex(position, cube.g0, cube.b1)] + moment[getIndex(position, cube.g0, cube.b0)]);
             case GREEN:
-                return (moment[getIndex(cube.r1, position, cube.b1)]
-                        - moment[getIndex(cube.r1, position, cube.b0)]
-                        - moment[getIndex(cube.r0, position, cube.b1)]
-                        + moment[getIndex(cube.r0, position, cube.b0)]);
+                return (moment[getIndex(cube.r1, position, cube.b1)] - moment[getIndex(cube.r1, position, cube.b0)] - moment[getIndex(cube.r0, position, cube.b1)] + moment[getIndex(cube.r0, position, cube.b0)]);
             case BLUE:
-                return (moment[getIndex(cube.r1, cube.g1, position)]
-                        - moment[getIndex(cube.r1, cube.g0, position)]
-                        - moment[getIndex(cube.r0, cube.g1, position)]
-                        + moment[getIndex(cube.r0, cube.g0, position)]);
+                return (moment[getIndex(cube.r1, cube.g1, position)] - moment[getIndex(cube.r1, cube.g0, position)] - moment[getIndex(cube.r0, cube.g1, position)] + moment[getIndex(cube.r0, cube.g0, position)]);
         }
         throw new IllegalArgumentException("unexpected direction " + direction);
     }
@@ -240,15 +215,7 @@ public final class QuantizerWu implements Quantizer {
         int dr = volume(cube, momentsR);
         int dg = volume(cube, momentsG);
         int db = volume(cube, momentsB);
-        double xx =
-                moments[getIndex(cube.r1, cube.g1, cube.b1)]
-                        - moments[getIndex(cube.r1, cube.g1, cube.b0)]
-                        - moments[getIndex(cube.r1, cube.g0, cube.b1)]
-                        + moments[getIndex(cube.r1, cube.g0, cube.b0)]
-                        - moments[getIndex(cube.r0, cube.g1, cube.b1)]
-                        + moments[getIndex(cube.r0, cube.g1, cube.b0)]
-                        + moments[getIndex(cube.r0, cube.g0, cube.b1)]
-                        - moments[getIndex(cube.r0, cube.g0, cube.b0)];
+        double xx = moments[getIndex(cube.r1, cube.g1, cube.b1)] - moments[getIndex(cube.r1, cube.g1, cube.b0)] - moments[getIndex(cube.r1, cube.g0, cube.b1)] + moments[getIndex(cube.r1, cube.g0, cube.b0)] - moments[getIndex(cube.r0, cube.g1, cube.b1)] + moments[getIndex(cube.r0, cube.g1, cube.b0)] + moments[getIndex(cube.r0, cube.g0, cube.b1)] - moments[getIndex(cube.r0, cube.g0, cube.b0)];
 
         int hypotenuse = dr * dr + dg * dg + db * db;
         int volume = volume(cube, weights);
@@ -261,12 +228,9 @@ public final class QuantizerWu implements Quantizer {
         int wholeB = volume(one, momentsB);
         int wholeW = volume(one, weights);
 
-        MaximizeResult maxRResult =
-                maximize(one, Direction.RED, one.r0 + 1, one.r1, wholeR, wholeG, wholeB, wholeW);
-        MaximizeResult maxGResult =
-                maximize(one, Direction.GREEN, one.g0 + 1, one.g1, wholeR, wholeG, wholeB, wholeW);
-        MaximizeResult maxBResult =
-                maximize(one, Direction.BLUE, one.b0 + 1, one.b1, wholeR, wholeG, wholeB, wholeW);
+        MaximizeResult maxRResult = maximize(one, Direction.RED, one.r0 + 1, one.r1, wholeR, wholeG, wholeB, wholeW);
+        MaximizeResult maxGResult = maximize(one, Direction.GREEN, one.g0 + 1, one.g1, wholeR, wholeG, wholeB, wholeW);
+        MaximizeResult maxBResult = maximize(one, Direction.BLUE, one.b0 + 1, one.b1, wholeR, wholeG, wholeB, wholeW);
         Direction cutDirection;
         double maxR = maxRResult.maximum;
         double maxG = maxGResult.maximum;
@@ -313,15 +277,7 @@ public final class QuantizerWu implements Quantizer {
         return true;
     }
 
-    MaximizeResult maximize(
-            Box cube,
-            Direction direction,
-            int first,
-            int last,
-            int wholeR,
-            int wholeG,
-            int wholeB,
-            int wholeW) {
+    MaximizeResult maximize(Box cube, Direction direction, int first, int last, int wholeR, int wholeG, int wholeB, int wholeW) {
         int bottomR = bottom(cube, direction, momentsR);
         int bottomG = bottom(cube, direction, momentsG);
         int bottomB = bottom(cube, direction, momentsB);
@@ -368,9 +324,7 @@ public final class QuantizerWu implements Quantizer {
     }
 
     private enum Direction {
-        RED,
-        GREEN,
-        BLUE
+        RED, GREEN, BLUE
     }
 
     private static final class MaximizeResult {

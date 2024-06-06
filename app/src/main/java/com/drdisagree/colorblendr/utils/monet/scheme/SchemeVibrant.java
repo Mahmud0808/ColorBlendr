@@ -15,6 +15,8 @@
  */
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 
@@ -27,17 +29,6 @@ public class SchemeVibrant extends DynamicScheme {
     private static final double[] TERTIARY_ROTATIONS = {35, 30, 20, 25, 30, 35, 30, 25, 25};
 
     public SchemeVibrant(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(
-                sourceColorHct,
-                Variant.VIBRANT,
-                isDark,
-                contrastLevel,
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 200.0),
-                TonalPalette.fromHueAndChroma(
-                        DynamicScheme.getRotatedHue(sourceColorHct, HUES, SECONDARY_ROTATIONS), 24.0),
-                TonalPalette.fromHueAndChroma(
-                        DynamicScheme.getRotatedHue(sourceColorHct, HUES, TERTIARY_ROTATIONS), 32.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 10.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 12.0));
+        super(sourceColorHct, Variant.VIBRANT, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 200.0), TonalPalette.fromHueAndChroma(DynamicScheme.getRotatedHue(sourceColorHct, HUES, SECONDARY_ROTATIONS), 24.0), TonalPalette.fromHueAndChroma(DynamicScheme.getRotatedHue(sourceColorHct, HUES, TERTIARY_ROTATIONS), 32.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 10.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 12.0));
     }
 }

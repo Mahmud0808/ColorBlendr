@@ -16,6 +16,8 @@
 
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 
@@ -24,15 +26,6 @@ import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
  */
 public class SchemeMonochrome extends DynamicScheme {
     public SchemeMonochrome(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(
-                sourceColorHct,
-                Variant.MONOCHROME,
-                isDark,
-                contrastLevel,
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0));
+        super(sourceColorHct, Variant.MONOCHROME, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0));
     }
 }

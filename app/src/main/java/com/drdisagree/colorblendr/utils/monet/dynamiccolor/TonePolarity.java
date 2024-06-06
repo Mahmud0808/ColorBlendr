@@ -26,8 +26,5 @@ package com.drdisagree.colorblendr.utils.monet.dynamiccolor;
  * <p>See `ToneDeltaPair` for details.
  */
 public enum TonePolarity {
-    DARKER,
-    LIGHTER,
-    NEARER,
-    FARTHER
+    DARKER, LIGHTER, NEARER, FARTHER
 }

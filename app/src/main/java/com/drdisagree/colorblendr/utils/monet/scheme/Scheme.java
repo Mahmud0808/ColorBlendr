@@ -18,11 +18,18 @@
 
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
+import androidx.annotation.NonNull;
+
 import com.drdisagree.colorblendr.utils.monet.palettes.CorePalette;
 
 /**
  * Represents a Material color scheme, a mapping of color roles to colors.
+ *
+ * @deprecated Please use dynamiccolor.DynamicScheme instead. Refer
+ * to <a href="https://github.com/material-foundation/material-color-utilities/blob/main/make_schemes.md">...</a>
+ * for migration guidance.
  */
+@Deprecated
 public class Scheme {
     private int primary;
     private int onPrimary;
@@ -57,36 +64,7 @@ public class Scheme {
     public Scheme() {
     }
 
-    public Scheme(
-            int primary,
-            int onPrimary,
-            int primaryContainer,
-            int onPrimaryContainer,
-            int secondary,
-            int onSecondary,
-            int secondaryContainer,
-            int onSecondaryContainer,
-            int tertiary,
-            int onTertiary,
-            int tertiaryContainer,
-            int onTertiaryContainer,
-            int error,
-            int onError,
-            int errorContainer,
-            int onErrorContainer,
-            int background,
-            int onBackground,
-            int surface,
-            int onSurface,
-            int surfaceVariant,
-            int onSurfaceVariant,
-            int outline,
-            int outlineVariant,
-            int shadow,
-            int scrim,
-            int inverseSurface,
-            int inverseOnSurface,
-            int inversePrimary) {
+    public Scheme(int primary, int onPrimary, int primaryContainer, int onPrimaryContainer, int secondary, int onSecondary, int secondaryContainer, int onSecondaryContainer, int tertiary, int onTertiary, int tertiaryContainer, int onTertiaryContainer, int error, int onError, int errorContainer, int onErrorContainer, int background, int onBackground, int surface, int onSurface, int surfaceVariant, int onSurfaceVariant, int outline, int outlineVariant, int shadow, int scrim, int inverseSurface, int inverseOnSurface, int inversePrimary) {
         super();
         this.primary = primary;
         this.onPrimary = onPrimary;
@@ -148,69 +126,11 @@ public class Scheme {
     }
 
     private static Scheme lightFromCorePalette(CorePalette core) {
-        return new Scheme()
-                .withPrimary(core.a1.tone(40))
-                .withOnPrimary(core.a1.tone(100))
-                .withPrimaryContainer(core.a1.tone(90))
-                .withOnPrimaryContainer(core.a1.tone(10))
-                .withSecondary(core.a2.tone(40))
-                .withOnSecondary(core.a2.tone(100))
-                .withSecondaryContainer(core.a2.tone(90))
-                .withOnSecondaryContainer(core.a2.tone(10))
-                .withTertiary(core.a3.tone(40))
-                .withOnTertiary(core.a3.tone(100))
-                .withTertiaryContainer(core.a3.tone(90))
-                .withOnTertiaryContainer(core.a3.tone(10))
-                .withError(core.error.tone(40))
-                .withOnError(core.error.tone(100))
-                .withErrorContainer(core.error.tone(90))
-                .withOnErrorContainer(core.error.tone(10))
-                .withBackground(core.n1.tone(99))
-                .withOnBackground(core.n1.tone(10))
-                .withSurface(core.n1.tone(99))
-                .withOnSurface(core.n1.tone(10))
-                .withSurfaceVariant(core.n2.tone(90))
-                .withOnSurfaceVariant(core.n2.tone(30))
-                .withOutline(core.n2.tone(50))
-                .withOutlineVariant(core.n2.tone(80))
-                .withShadow(core.n1.tone(0))
-                .withScrim(core.n1.tone(0))
-                .withInverseSurface(core.n1.tone(20))
-                .withInverseOnSurface(core.n1.tone(95))
-                .withInversePrimary(core.a1.tone(80));
+        return new Scheme().withPrimary(core.a1.tone(40)).withOnPrimary(core.a1.tone(100)).withPrimaryContainer(core.a1.tone(90)).withOnPrimaryContainer(core.a1.tone(10)).withSecondary(core.a2.tone(40)).withOnSecondary(core.a2.tone(100)).withSecondaryContainer(core.a2.tone(90)).withOnSecondaryContainer(core.a2.tone(10)).withTertiary(core.a3.tone(40)).withOnTertiary(core.a3.tone(100)).withTertiaryContainer(core.a3.tone(90)).withOnTertiaryContainer(core.a3.tone(10)).withError(core.error.tone(40)).withOnError(core.error.tone(100)).withErrorContainer(core.error.tone(90)).withOnErrorContainer(core.error.tone(10)).withBackground(core.n1.tone(99)).withOnBackground(core.n1.tone(10)).withSurface(core.n1.tone(99)).withOnSurface(core.n1.tone(10)).withSurfaceVariant(core.n2.tone(90)).withOnSurfaceVariant(core.n2.tone(30)).withOutline(core.n2.tone(50)).withOutlineVariant(core.n2.tone(80)).withShadow(core.n1.tone(0)).withScrim(core.n1.tone(0)).withInverseSurface(core.n1.tone(20)).withInverseOnSurface(core.n1.tone(95)).withInversePrimary(core.a1.tone(80));
     }
 
     private static Scheme darkFromCorePalette(CorePalette core) {
-        return new Scheme()
-                .withPrimary(core.a1.tone(80))
-                .withOnPrimary(core.a1.tone(20))
-                .withPrimaryContainer(core.a1.tone(30))
-                .withOnPrimaryContainer(core.a1.tone(90))
-                .withSecondary(core.a2.tone(80))
-                .withOnSecondary(core.a2.tone(20))
-                .withSecondaryContainer(core.a2.tone(30))
-                .withOnSecondaryContainer(core.a2.tone(90))
-                .withTertiary(core.a3.tone(80))
-                .withOnTertiary(core.a3.tone(20))
-                .withTertiaryContainer(core.a3.tone(30))
-                .withOnTertiaryContainer(core.a3.tone(90))
-                .withError(core.error.tone(80))
-                .withOnError(core.error.tone(20))
-                .withErrorContainer(core.error.tone(30))
-                .withOnErrorContainer(core.error.tone(80))
-                .withBackground(core.n1.tone(10))
-                .withOnBackground(core.n1.tone(90))
-                .withSurface(core.n1.tone(10))
-                .withOnSurface(core.n1.tone(90))
-                .withSurfaceVariant(core.n2.tone(30))
-                .withOnSurfaceVariant(core.n2.tone(80))
-                .withOutline(core.n2.tone(60))
-                .withOutlineVariant(core.n2.tone(30))
-                .withShadow(core.n1.tone(0))
-                .withScrim(core.n1.tone(0))
-                .withInverseSurface(core.n1.tone(90))
-                .withInverseOnSurface(core.n1.tone(20))
-                .withInversePrimary(core.a1.tone(40));
+        return new Scheme().withPrimary(core.a1.tone(80)).withOnPrimary(core.a1.tone(20)).withPrimaryContainer(core.a1.tone(30)).withOnPrimaryContainer(core.a1.tone(90)).withSecondary(core.a2.tone(80)).withOnSecondary(core.a2.tone(20)).withSecondaryContainer(core.a2.tone(30)).withOnSecondaryContainer(core.a2.tone(90)).withTertiary(core.a3.tone(80)).withOnTertiary(core.a3.tone(20)).withTertiaryContainer(core.a3.tone(30)).withOnTertiaryContainer(core.a3.tone(90)).withError(core.error.tone(80)).withOnError(core.error.tone(20)).withErrorContainer(core.error.tone(30)).withOnErrorContainer(core.error.tone(80)).withBackground(core.n1.tone(10)).withOnBackground(core.n1.tone(90)).withSurface(core.n1.tone(10)).withOnSurface(core.n1.tone(90)).withSurfaceVariant(core.n2.tone(30)).withOnSurfaceVariant(core.n2.tone(80)).withOutline(core.n2.tone(60)).withOutlineVariant(core.n2.tone(30)).withShadow(core.n1.tone(0)).withScrim(core.n1.tone(0)).withInverseSurface(core.n1.tone(90)).withInverseOnSurface(core.n1.tone(20)).withInversePrimary(core.a1.tone(40));
     }
 
     public int getPrimary() {
@@ -590,68 +510,10 @@ public class Scheme {
         return this;
     }
 
+    @NonNull
     @Override
     public String toString() {
-        return "Scheme{"
-                + "primary="
-                + primary
-                + ", onPrimary="
-                + onPrimary
-                + ", primaryContainer="
-                + primaryContainer
-                + ", onPrimaryContainer="
-                + onPrimaryContainer
-                + ", secondary="
-                + secondary
-                + ", onSecondary="
-                + onSecondary
-                + ", secondaryContainer="
-                + secondaryContainer
-                + ", onSecondaryContainer="
-                + onSecondaryContainer
-                + ", tertiary="
-                + tertiary
-                + ", onTertiary="
-                + onTertiary
-                + ", tertiaryContainer="
-                + tertiaryContainer
-                + ", onTertiaryContainer="
-                + onTertiaryContainer
-                + ", error="
-                + error
-                + ", onError="
-                + onError
-                + ", errorContainer="
-                + errorContainer
-                + ", onErrorContainer="
-                + onErrorContainer
-                + ", background="
-                + background
-                + ", onBackground="
-                + onBackground
-                + ", surface="
-                + surface
-                + ", onSurface="
-                + onSurface
-                + ", surfaceVariant="
-                + surfaceVariant
-                + ", onSurfaceVariant="
-                + onSurfaceVariant
-                + ", outline="
-                + outline
-                + ", outlineVariant="
-                + outlineVariant
-                + ", shadow="
-                + shadow
-                + ", scrim="
-                + scrim
-                + ", inverseSurface="
-                + inverseSurface
-                + ", inverseOnSurface="
-                + inverseOnSurface
-                + ", inversePrimary="
-                + inversePrimary
-                + '}';
+        return "Scheme{" + "primary=" + primary + ", onPrimary=" + onPrimary + ", primaryContainer=" + primaryContainer + ", onPrimaryContainer=" + onPrimaryContainer + ", secondary=" + secondary + ", onSecondary=" + onSecondary + ", secondaryContainer=" + secondaryContainer + ", onSecondaryContainer=" + onSecondaryContainer + ", tertiary=" + tertiary + ", onTertiary=" + onTertiary + ", tertiaryContainer=" + tertiaryContainer + ", onTertiaryContainer=" + onTertiaryContainer + ", error=" + error + ", onError=" + onError + ", errorContainer=" + errorContainer + ", onErrorContainer=" + onErrorContainer + ", background=" + background + ", onBackground=" + onBackground + ", surface=" + surface + ", onSurface=" + onSurface + ", surfaceVariant=" + surfaceVariant + ", onSurfaceVariant=" + onSurfaceVariant + ", outline=" + outline + ", outlineVariant=" + outlineVariant + ", shadow=" + shadow + ", scrim=" + scrim + ", inverseSurface=" + inverseSurface + ", inverseOnSurface=" + inverseOnSurface + ", inversePrimary=" + inversePrimary + '}';
     }
 
     @Override
@@ -660,9 +522,6 @@ public class Scheme {
             return true;
         }
         if (!(object instanceof Scheme scheme)) {
-            return false;
-        }
-        if (!super.equals(object)) {
             return false;
         }
 
@@ -755,7 +614,7 @@ public class Scheme {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result = System.identityHashCode(this);
         result = 31 * result + primary;
         result = 31 * result + onPrimary;
         result = 31 * result + primaryContainer;

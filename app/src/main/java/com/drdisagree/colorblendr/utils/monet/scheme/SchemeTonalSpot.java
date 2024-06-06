@@ -15,6 +15,8 @@
  */
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
@@ -24,16 +26,6 @@ import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
  */
 public class SchemeTonalSpot extends DynamicScheme {
     public SchemeTonalSpot(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(
-                sourceColorHct,
-                Variant.TONAL_SPOT,
-                isDark,
-                contrastLevel,
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 36.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 16.0),
-                TonalPalette.fromHueAndChroma(
-                        MathUtils.sanitizeDegreesDouble(sourceColorHct.getHue() + 60.0), 24.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 6.0),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 8.0));
+        super(sourceColorHct, Variant.TONAL_SPOT, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 36.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 16.0), TonalPalette.fromHueAndChroma(MathUtils.sanitizeDegreesDouble(sourceColorHct.getHue() + 60.0), 24.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 6.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 8.0));
     }
 }

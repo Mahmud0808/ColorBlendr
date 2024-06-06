@@ -54,8 +54,7 @@ public final class QuantizerWsmeans {
      * @return Map with keys of colors in ARGB format, values of how many of the input pixels belong
      * to the color.
      */
-    public static Map<Integer, Integer> quantize(
-            int[] inputPixels, int[] startingClusters, int maxColors) {
+    public static Map<Integer, Integer> quantize(int[] inputPixels, int[] startingClusters, int maxColors) {
         // Uses a seeded random number generator to ensure consistent results.
         Random random = new Random(0x42688);
 
@@ -158,8 +157,7 @@ public final class QuantizerWsmeans {
                     }
                 }
                 if (newClusterIndex != -1) {
-                    double distanceChange =
-                            Math.abs(Math.sqrt(minimumDistance) - Math.sqrt(previousDistance));
+                    double distanceChange = Math.abs(Math.sqrt(minimumDistance) - Math.sqrt(previousDistance));
                     if (distanceChange > MIN_MOVEMENT_DISTANCE) {
                         pointsMoved++;
                         clusterIndices[i] = newClusterIndex;

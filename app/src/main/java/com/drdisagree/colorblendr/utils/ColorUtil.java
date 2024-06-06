@@ -94,7 +94,7 @@ public class ColorUtil {
                     }.getType()
             );
         } else {
-            wallpaperColorList = WallpaperUtil.getWallpaperColors(context);
+            wallpaperColorList = WallpaperColorUtil.getWallpaperColors(context);
         }
 
         return generateModifiedColors(

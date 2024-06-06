@@ -52,8 +52,7 @@ public final class Score {
         return score(colorsToPopulation, desired, 0xff4285f4, true);
     }
 
-    public static List<Integer> score(
-            Map<Integer, Integer> colorsToPopulation, int desired, int fallbackColorArgb) {
+    public static List<Integer> score(Map<Integer, Integer> colorsToPopulation, int desired, int fallbackColorArgb) {
         return score(colorsToPopulation, desired, fallbackColorArgb, true);
     }
 
@@ -71,11 +70,7 @@ public final class Score {
      * the input colors were not suitable for a theme, a default fallback color will be provided,
      * Google Blue.
      */
-    public static List<Integer> score(
-            Map<Integer, Integer> colorsToPopulation,
-            int desired,
-            int fallbackColorArgb,
-            boolean filter) {
+    public static List<Integer> score(Map<Integer, Integer> colorsToPopulation, int desired, int fallbackColorArgb, boolean filter) {
 
         // Get the HCT color for each Argb value, while finding the per hue count and
         // total count.
@@ -111,8 +106,7 @@ public final class Score {
             }
 
             double proportionScore = proportion * 100.0 * WEIGHT_PROPORTION;
-            double chromaWeight =
-                    hct.getChroma() < TARGET_CHROMA ? WEIGHT_CHROMA_BELOW : WEIGHT_CHROMA_ABOVE;
+            double chromaWeight = hct.getChroma() < TARGET_CHROMA ? WEIGHT_CHROMA_BELOW : WEIGHT_CHROMA_ABOVE;
             double chromaScore = (hct.getChroma() - TARGET_CHROMA) * chromaWeight;
             double score = proportionScore + chromaScore;
             scoredHcts.add(new ScoredHCT(hct, score));

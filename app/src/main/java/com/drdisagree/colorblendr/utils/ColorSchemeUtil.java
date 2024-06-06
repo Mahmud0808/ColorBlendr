@@ -7,7 +7,7 @@ import androidx.annotation.ColorInt;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
-import com.drdisagree.colorblendr.utils.monet.scheme.DynamicScheme;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeContent;
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeExpressive;
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeFidelity;
