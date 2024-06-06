@@ -26,7 +26,7 @@ import com.drdisagree.colorblendr.provider.RootConnectionProvider;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
 import com.drdisagree.colorblendr.utils.SystemUtil;
-import com.drdisagree.colorblendr.utils.WallpaperUtil;
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +72,7 @@ public class BroadcastListener extends BroadcastReceiver {
         if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) &&
                 AppUtil.permissionsGranted(context)
         ) {
-            ArrayList<Integer> wallpaperColors = WallpaperUtil.getWallpaperColors(context);
+            ArrayList<Integer> wallpaperColors = WallpaperColorUtil.getWallpaperColors(context);
             RPrefs.putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors));
 
             if (!RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {

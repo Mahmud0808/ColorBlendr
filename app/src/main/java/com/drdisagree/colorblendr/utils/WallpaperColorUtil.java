@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -19,36 +18,27 @@ import android.util.Size;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.palette.graphics.Palette;
 
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
+import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi;
+import com.drdisagree.colorblendr.utils.monet.score.Score;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class WallpaperUtil {
+public class WallpaperColorUtil {
 
-    private static final String TAG = WallpaperUtil.class.getSimpleName();
+    private static final String TAG = WallpaperColorUtil.class.getSimpleName();
     private static final int SMALL_SIDE = 128;
     private static final int MAX_BITMAP_SIZE = 112;
     private static final int MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE;
-    private static final double MINIMUM_DARKNESS = 0.1;
-    private static final double MAXIMUM_DARKNESS = 0.8;
-    private static final float HUE_THRESHOLD = 25f;
 
     public static void getAndSaveWallpaperColors(Context context) {
         if (RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE) == Integer.MIN_VALUE &&
@@ -74,7 +64,7 @@ public class WallpaperUtil {
         try {
             Bitmap wallpaperBitmap = wallpaperFuture.get();
             if (wallpaperBitmap != null) {
-                return WallpaperUtil.getDominantColors(wallpaperBitmap);
+                return WallpaperColorUtil.getWallpaperColors(wallpaperBitmap);
             }
         } catch (ExecutionException | InterruptedException e) {
             Log.e(TAG, "Error getting wallpaper color", e);
@@ -191,7 +181,7 @@ public class WallpaperUtil {
         return new Size(newWidth, newHeight);
     }
 
-    private static ArrayList<Integer> getDominantColors(Bitmap bitmap) {
+    private static ArrayList<Integer> getWallpaperColors(Bitmap bitmap) {
         if (bitmap == null) {
             return ColorUtil.getMonetAccentColors();
         }
@@ -202,59 +192,19 @@ public class WallpaperUtil {
             bitmap = Bitmap.createScaledBitmap(bitmap, optimalSize.getWidth(), optimalSize.getHeight(), false);
         }
 
-        Palette palette = createPalette(bitmap);
-        List<Palette.Swatch> sortedSwatches = sortSwatches(palette.getSwatches());
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[width * height];
 
-        List<Palette.Swatch> uniqueSwatches = getUniqueSwatches(palette);
-        sortedSwatches.addAll(0, uniqueSwatches);
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 
-        List<Palette.Swatch> filteredSwatches = filterColors(sortedSwatches);
-
-        ArrayList<Integer> wallpaperColors = filteredSwatches.stream().map(Palette.Swatch::getRgb).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Integer> wallpaperColors = new ArrayList<>(
+                Score.score(
+                        QuantizerCelebi.quantize(pixels, 25)
+                )
+        );
 
         return wallpaperColors.isEmpty() ? ColorUtil.getMonetAccentColors() : wallpaperColors;
-    }
-
-    private static Palette createPalette(Bitmap bitmap) {
-        return Palette.from(bitmap)
-                .maximumColorCount(25)
-                .resizeBitmapArea(MAX_WALLPAPER_EXTRACTION_AREA)
-                .generate();
-    }
-
-    private static List<Palette.Swatch> sortSwatches(List<Palette.Swatch> swatches) {
-        List<Palette.Swatch> sortedSwatches = new ArrayList<>(swatches);
-        sortedSwatches.sort(Comparator.comparingInt(Palette.Swatch::getPopulation).reversed());
-        return sortedSwatches;
-    }
-
-    private static List<Palette.Swatch> getUniqueSwatches(Palette palette) {
-        return Stream.of(
-                palette.getVibrantSwatch(),
-                palette.getDarkVibrantSwatch(),
-                palette.getLightVibrantSwatch(),
-                palette.getMutedSwatch(),
-                palette.getDarkMutedSwatch(),
-                palette.getLightMutedSwatch()
-        ).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    private static List<Palette.Swatch> filterColors(List<Palette.Swatch> swatches) {
-        Set<Float> addedHues = new HashSet<>();
-        return swatches.stream()
-                .filter(swatch -> isColorInRange(swatch.getRgb()) && !hasSimilarHue(addedHues, swatch.getRgb()))
-                .peek(swatch -> addedHues.add(ColorUtil.getHue(swatch.getRgb())))
-                .collect(Collectors.toList());
-    }
-
-    private static boolean hasSimilarHue(Set<Float> addedHues, int color) {
-        float hue = ColorUtil.getHue(color);
-        return addedHues.stream().anyMatch(addedHue -> Math.abs(hue - addedHue) < HUE_THRESHOLD);
-    }
-
-    private static boolean isColorInRange(int color) {
-        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
-        return darkness >= MINIMUM_DARKNESS && darkness <= MAXIMUM_DARKNESS;
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {

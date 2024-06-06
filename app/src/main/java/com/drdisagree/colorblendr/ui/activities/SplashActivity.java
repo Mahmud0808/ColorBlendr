@@ -18,7 +18,7 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider;
 import com.drdisagree.colorblendr.service.ShizukuConnection;
 import com.drdisagree.colorblendr.utils.FabricatedUtil;
 import com.drdisagree.colorblendr.utils.ShizukuUtil;
-import com.drdisagree.colorblendr.utils.WallpaperUtil;
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
 import com.google.android.material.color.DynamicColors;
 
 import java.util.concurrent.CountDownLatch;
@@ -40,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
                         .runOnSuccess(new MethodInterface() {
                             @Override
                             public void run() {
-                                WallpaperUtil.getAndSaveWallpaperColors(getApplicationContext());
+                                WallpaperColorUtil.getAndSaveWallpaperColors(getApplicationContext());
                                 FabricatedUtil.getAndSaveSelectedFabricatedApps(getApplicationContext());
                                 success.set(true);
                                 keepShowing = false;
