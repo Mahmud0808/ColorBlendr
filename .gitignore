@@ -14,3 +14,4 @@ local.properties
 /app/release/
 /*.hprof
 /.idea/deploymentTargetDropDown.xml
+/.kotlin/sessions/*.salive
