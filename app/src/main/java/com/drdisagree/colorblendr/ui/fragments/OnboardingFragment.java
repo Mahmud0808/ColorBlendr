@@ -30,7 +30,7 @@ import com.drdisagree.colorblendr.ui.adapters.OnboardingAdapter;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.FabricatedUtil;
 import com.drdisagree.colorblendr.utils.ShizukuUtil;
-import com.drdisagree.colorblendr.utils.WallpaperUtil;
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
 
 import java.util.ArrayList;
 
@@ -130,7 +130,7 @@ public class OnboardingFragment extends Fragment {
 
     private void goToHomeFragment() {
         Const.saveWorkingMethod(Const.WORKING_METHOD);
-        WallpaperUtil.getAndSaveWallpaperColors(requireContext());
+        WallpaperColorUtil.getAndSaveWallpaperColors(requireContext());
         FabricatedUtil.getAndSaveSelectedFabricatedApps(requireContext());
         RPrefs.putBoolean(FIRST_RUN, false);
         MainActivity.replaceFragment(new HomeFragment(), true);
@@ -140,44 +140,58 @@ public class OnboardingFragment extends Fragment {
         int duration = 300;
 
         if (position == 0 && binding.btnPrev.getVisibility() == View.VISIBLE) {
-            AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
-            fadeOut.setDuration(duration);
-            fadeOut.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    binding.btnPrev.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-
+            AlphaAnimation fadeOut = getFadeOutAnimation(duration);
             binding.btnPrev.startAnimation(fadeOut);
         } else if (position != 0 && binding.btnPrev.getVisibility() != View.VISIBLE) {
-            AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
-            fadeIn.setDuration(duration);
-            fadeIn.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    binding.btnPrev.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-
+            AlphaAnimation fadeIn = getFadeInAnimation(duration);
             binding.btnPrev.startAnimation(fadeIn);
         }
+    }
+
+    private @NonNull AlphaAnimation getFadeOutAnimation(int duration) {
+        AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
+
+        fadeOut.setDuration(duration);
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.btnPrev.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        return fadeOut;
+    }
+
+    private @NonNull AlphaAnimation getFadeInAnimation(int duration) {
+        AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+
+        fadeIn.setDuration(duration);
+
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                binding.btnPrev.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        return fadeIn;
     }
 
     private void changeContinueButtonText(int position) {
@@ -187,7 +201,7 @@ public class OnboardingFragment extends Fragment {
             new Thread(() -> {
                 try {
                     if (AppUtil.hasStoragePermission()) {
-                        ArrayList<Integer> wallpaperColors = WallpaperUtil.getWallpaperColors(requireContext());
+                        ArrayList<Integer> wallpaperColors = WallpaperColorUtil.getWallpaperColors(requireContext());
                         RPrefs.putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors));
                     }
                 } catch (Exception ignored) {

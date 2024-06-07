@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.service;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,7 +16,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
@@ -26,18 +29,34 @@ import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.ShizukuUtil;
 import com.drdisagree.colorblendr.utils.SystemUtil;
 
-public class BackgroundService extends Service {
+import java.util.Timer;
+import java.util.TimerTask;
 
-    private static final String TAG = BackgroundService.class.getSimpleName();
+public class AutoStartService extends Service {
+
+    private static final String TAG = AutoStartService.class.getSimpleName();
     private static boolean isRunning = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "Background Service";
     private static BroadcastListener myReceiver;
     private NotificationManager notificationManager;
 
-    public BackgroundService() {
+    // for testing background running service
+    private final boolean TEST_BACKGROUND_SERVICE = false;
+    private final boolean debugging = BuildConfig.DEBUG && TEST_BACKGROUND_SERVICE;
+    public int counter = 0;
+    private Timer timer;
+    private static final String packageName = ColorBlendr.getAppContext().getPackageName();
+    public static final String ACTION_FOO = packageName + ".FOO";
+    public static final String EXTRA_PARAM_A = packageName + ".PARAM_A";
+
+    public AutoStartService() {
         isRunning = false;
         myReceiver = new BroadcastListener();
+    }
+
+    public static boolean isServiceNotRunning() {
+        return !isRunning;
     }
 
     @Nullable
@@ -51,11 +70,12 @@ public class BackgroundService extends Service {
         super.onCreate();
 
         if (notificationManager == null) {
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager = getSystemService(NotificationManager.class);
         }
 
         isRunning = true;
         createNotificationChannel();
+        showNotification();
         registerReceivers();
 
         if (BroadcastListener.lastOrientation == -1) {
@@ -65,10 +85,48 @@ public class BackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        showNotification();
+        super.onStartCommand(intent, flags, startId);
+
+        if (debugging) {
+            // for testing background running service
+            startTimer(this);
+        }
+
         setupSystemUIRestartListener();
 
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        isRunning = false;
+        Log.i(TAG, "onDestroy: Service is destroyed :(");
+
+        try {
+            unregisterReceiver(myReceiver);
+        } catch (Exception ignored) {
+            // Receiver was probably never registered
+        }
+
+        Intent broadcastIntent = new Intent(this, RestartBroadcastReceiver.class);
+        sendBroadcast(broadcastIntent);
+
+        if (debugging) {
+            // for testing background running service
+            stopTimerTask();
+        }
+    }
+
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                getString(R.string.background_service_notification_channel_title),
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        channel.setDescription(getString(R.string.background_service_notification_channel_text));
+        notificationManager.createNotificationChannel(channel);
     }
 
     private void showNotification() {
@@ -85,7 +143,7 @@ public class BackgroundService extends Service {
                 PendingIntent.FLAG_IMMUTABLE
         );
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
+        Notification notification = new NotificationCompat.Builder(
                 this,
                 NOTIFICATION_CHANNEL_ID
         )
@@ -95,12 +153,13 @@ public class BackgroundService extends Service {
                 .setContentText(getString(R.string.background_service_notification_text))
                 .setContentIntent(pendingIntent)
                 .setSound(null, AudioManager.STREAM_NOTIFICATION)
-                .setColor(ColorUtil.getAccentColor(this));
+                .setColor(ColorUtil.getAccentColor(this))
+                .build();
 
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+        startForeground(NOTIFICATION_ID, notification);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("all")
     private void registerReceivers() {
         IntentFilter intentFilterWithoutScheme = new IntentFilter();
         intentFilterWithoutScheme.addAction(Intent.ACTION_WALLPAPER_CHANGED);
@@ -121,16 +180,6 @@ public class BackgroundService extends Service {
         registerReceiver(myReceiver, intentFilterWithScheme);
     }
 
-    public void createNotificationChannel() {
-        NotificationChannel channel = new NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                getString(R.string.background_service_notification_channel_title),
-                NotificationManager.IMPORTANCE_LOW
-        );
-        channel.setDescription(getString(R.string.background_service_notification_channel_text));
-        notificationManager.createNotificationChannel(channel);
-    }
-
     private void setupSystemUIRestartListener() {
         if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT &&
                 RootConnectionProvider.isNotConnected()
@@ -139,7 +188,7 @@ public class BackgroundService extends Service {
                     .runOnSuccess(new MethodInterface() {
                         @Override
                         public void run() {
-                            setupSysUIRestartListener();
+                            initSystemUIRestartListener();
                         }
                     })
                     .run();
@@ -153,11 +202,11 @@ public class BackgroundService extends Service {
                     ShizukuConnectionProvider.serviceConnection
             );
         } else if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT) {
-            setupSysUIRestartListener();
+            initSystemUIRestartListener();
         }
     }
 
-    private void setupSysUIRestartListener() {
+    private void initSystemUIRestartListener() {
         try {
             ColorBlendr.getRootConnection().setSystemUIRestartListener();
         } catch (RemoteException e) {
@@ -165,22 +214,28 @@ public class BackgroundService extends Service {
         }
     }
 
-    public static boolean isServiceNotRunning() {
-        return !isRunning;
+    public void startTimer(Context context) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Timer is running " + counter++);
+                broadcastActionTest(context, String.valueOf(counter));
+            }
+        }, 1000, 1000);
     }
 
-    @Override
-    public void onDestroy() {
-        isRunning = false;
-        stopForeground(true);
-        try {
-            unregisterReceiver(myReceiver);
-        } catch (Exception ignored) {
-            // Receiver was probably never registered
-        }
-        Intent broadcastIntent = new Intent(this, ServiceDestroyedListener.class);
-        sendBroadcast(broadcastIntent);
+    public static void broadcastActionTest(Context context, String param) {
+        Intent intent = new Intent(ACTION_FOO);
+        intent.putExtra(EXTRA_PARAM_A, param);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
+        bm.sendBroadcast(intent);
+    }
 
-        super.onDestroy();
+    public void stopTimerTask() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 }

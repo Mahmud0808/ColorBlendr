@@ -44,10 +44,7 @@ public class Blend {
         Hct toHct = Hct.fromInt(sourceColor);
         double differenceDegrees = MathUtils.differenceDegrees(fromHct.getHue(), toHct.getHue());
         double rotationDegrees = Math.min(differenceDegrees * 0.5, 15.0);
-        double outputHue =
-                MathUtils.sanitizeDegreesDouble(
-                        fromHct.getHue()
-                                + rotationDegrees * MathUtils.rotationDirection(fromHct.getHue(), toHct.getHue()));
+        double outputHue = MathUtils.sanitizeDegreesDouble(fromHct.getHue() + rotationDegrees * MathUtils.rotationDirection(fromHct.getHue(), toHct.getHue()));
         return Hct.from(outputHue, fromHct.getChroma(), fromHct.getTone()).toInt();
     }
 

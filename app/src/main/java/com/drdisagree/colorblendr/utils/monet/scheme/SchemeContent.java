@@ -17,6 +17,8 @@
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
 import com.drdisagree.colorblendr.utils.monet.dislike.DislikeAnalyzer;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 import com.drdisagree.colorblendr.utils.monet.temperature.TemperatureCache;
@@ -35,22 +37,6 @@ import com.drdisagree.colorblendr.utils.monet.temperature.TemperatureCache;
  */
 public class SchemeContent extends DynamicScheme {
     public SchemeContent(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(
-                sourceColorHct,
-                Variant.CONTENT,
-                isDark,
-                contrastLevel,
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), sourceColorHct.getChroma()),
-                TonalPalette.fromHueAndChroma(
-                        sourceColorHct.getHue(),
-                        Math.max(sourceColorHct.getChroma() - 32.0, sourceColorHct.getChroma() * 0.5)),
-                TonalPalette.fromHct(
-                        DislikeAnalyzer.fixIfDisliked(
-                                new TemperatureCache(sourceColorHct)
-                                        .getAnalogousColors(/* count= */ 3, /* divisions= */ 6)
-                                        .get(2))),
-                TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), sourceColorHct.getChroma() / 8.0),
-                TonalPalette.fromHueAndChroma(
-                        sourceColorHct.getHue(), (sourceColorHct.getChroma() / 8.0) + 4.0));
+        super(sourceColorHct, Variant.CONTENT, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), sourceColorHct.getChroma()), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), Math.max(sourceColorHct.getChroma() - 32.0, sourceColorHct.getChroma() * 0.5)), TonalPalette.fromHct(DislikeAnalyzer.fixIfDisliked(new TemperatureCache(sourceColorHct).getAnalogousColors(/* count= */ 3, /* divisions= */ 6).get(2))), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), sourceColorHct.getChroma() / 8.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), (sourceColorHct.getChroma() / 8.0) + 4.0));
     }
 }

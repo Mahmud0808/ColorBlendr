@@ -33,7 +33,7 @@ import com.drdisagree.colorblendr.ui.views.WallColorPreview;
 import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.MiscUtil;
 import com.drdisagree.colorblendr.utils.OverlayManager;
-import com.drdisagree.colorblendr.utils.WallpaperUtil;
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class ColorsFragment extends Fragment {
 
         monetSeedColor = new int[]{RPrefs.getInt(
                 MONET_SEED_COLOR,
-                WallpaperUtil.getWallpaperColor(requireContext())
+                WallpaperColorUtil.getWallpaperColor(requireContext())
         )};
 
         return binding.getRoot();

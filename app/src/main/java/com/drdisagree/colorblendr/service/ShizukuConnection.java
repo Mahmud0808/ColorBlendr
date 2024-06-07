@@ -7,10 +7,12 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage;
 import com.topjohnwu.superuser.Shell;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ShizukuConnection extends IShizukuConnection.Stub {
@@ -45,28 +47,7 @@ public class ShizukuConnection extends IShizukuConnection.Stub {
     @Override
     public void removeFabricatedColors() {
         try {
-            String currentSettings = getCurrentSettings();
-            JSONObject jsonObject = new JSONObject(currentSettings);
-
-            String[] keysToRemove = new String[]{
-                    ThemeOverlayPackage.THEME_STYLE,
-                    ThemeOverlayPackage.COLOR_SOURCE,
-                    ThemeOverlayPackage.SYSTEM_PALETTE
-            };
-
-            for (String key : keysToRemove) {
-                jsonObject.remove(key);
-            }
-
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                jsonObject.remove(ThemeOverlayPackage.ACCENT_COLOR);
-            }
-
-            jsonObject.putOpt(ThemeOverlayPackage.COLOR_BOTH, "0");
-            jsonObject.putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper");
-            jsonObject.putOpt(ThemeOverlayPackage.APPLIED_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
-
-            applyFabricatedColors(jsonObject.toString());
+            applyFabricatedColors(getOriginalSettings().toString());
         } catch (Exception e) {
             Log.e(TAG, "removeFabricatedColors: ", e);
         }
@@ -76,5 +57,30 @@ public class ShizukuConnection extends IShizukuConnection.Stub {
     public String getCurrentSettings() {
         final String mCommand = "settings get secure " + THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
         return Shell.cmd(mCommand).exec().getOut().get(0);
+    }
+
+    private @NonNull JSONObject getOriginalSettings() throws JSONException {
+        String currentSettings = getCurrentSettings();
+        JSONObject jsonObject = new JSONObject(currentSettings);
+
+        String[] keysToRemove = new String[]{
+                ThemeOverlayPackage.THEME_STYLE,
+                ThemeOverlayPackage.COLOR_SOURCE,
+                ThemeOverlayPackage.SYSTEM_PALETTE
+        };
+
+        for (String key : keysToRemove) {
+            jsonObject.remove(key);
+        }
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            jsonObject.remove(ThemeOverlayPackage.ACCENT_COLOR);
+        }
+
+        jsonObject.putOpt(ThemeOverlayPackage.COLOR_BOTH, "0");
+        jsonObject.putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper");
+        jsonObject.putOpt(ThemeOverlayPackage.APPLIED_TIMESTAMP, System.currentTimeMillis());
+
+        return jsonObject;
     }
 }

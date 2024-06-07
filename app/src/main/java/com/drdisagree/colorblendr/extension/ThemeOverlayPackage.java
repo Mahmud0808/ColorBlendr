@@ -41,7 +41,7 @@ public class ThemeOverlayPackage {
                         ColorUtil.intToHexColorNoHash(RPrefs.getInt(MONET_SEED_COLOR, Color.BLUE))
                 );
             }
-            object.putOpt(APPLIED_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+            object.putOpt(APPLIED_TIMESTAMP, System.currentTimeMillis());
         } catch (Exception e) {
             Log.e(TAG, "getThemeCustomizationOverlayPackages:", e);
         }

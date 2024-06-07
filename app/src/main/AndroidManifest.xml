@@ -70,11 +70,20 @@
         </receiver>
 
         <service
-            android:name=".service.BackgroundService"
+            android:name=".service.ScheduledJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".service.AutoStartService"
+            android:enabled="true"
+            android:foregroundServiceType="specialUse" />
+
+        <receiver
+            android:name=".service.RestartBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="specialUse"
-            tools:ignore="ExportedService" />
+            android:label="RestartServiceWhenStopped"
+            tools:ignore="ExportedReceiver" />
 
         <provider
             android:name=".provider.RemotePrefProvider"

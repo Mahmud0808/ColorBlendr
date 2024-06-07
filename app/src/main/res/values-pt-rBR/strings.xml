@@ -145,6 +145,6 @@
     <string name="filter_app_category">Selecionar categoria do app</string>
     <string name="filter_system_apps">Apps do sistema</string>
     <string name="filter_user_apps">Apps do usuário</string>
-    <string name="filter_launchable_apps">Launchable apps</string>
-    <string name="filter_all">All apps</string>
+    <string name="filter_launchable_apps">Apps iniciáveis</string>
+    <string name="filter_all">Todos os apps</string>
 </resources>

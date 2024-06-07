@@ -73,12 +73,7 @@ public final class ToneDeltaPair {
      * @param stayTogether Whether these two roles should stay on the same side of the "awkward zone"
      *                     (T50-59). This is necessary for certain cases where one role has two backgrounds.
      */
-    public ToneDeltaPair(
-            DynamicColor roleA,
-            DynamicColor roleB,
-            double delta,
-            TonePolarity polarity,
-            boolean stayTogether) {
+    public ToneDeltaPair(DynamicColor roleA, DynamicColor roleB, double delta, TonePolarity polarity, boolean stayTogether) {
         this.roleA = roleA;
         this.roleB = roleB;
         this.delta = delta;

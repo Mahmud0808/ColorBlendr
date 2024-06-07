@@ -25,7 +25,6 @@ import androidx.annotation.Nullable;
 import com.drdisagree.colorblendr.utils.monet.contrast.Contrast;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
-import com.drdisagree.colorblendr.utils.monet.scheme.DynamicScheme;
 import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
 
 import java.util.ArrayList;
@@ -265,6 +264,69 @@ public final class DynamicColor {
     }
 
     /**
+     * Given a background tone, find a foreground tone, while ensuring they reach a contrast ratio
+     * that is as close to ratio as possible.
+     */
+    public static double foregroundTone(double bgTone, double ratio) {
+        double lighterTone = Contrast.lighterUnsafe(bgTone, ratio);
+        double darkerTone = Contrast.darkerUnsafe(bgTone, ratio);
+        double lighterRatio = Contrast.ratioOfTones(lighterTone, bgTone);
+        double darkerRatio = Contrast.ratioOfTones(darkerTone, bgTone);
+        boolean preferLighter = tonePrefersLightForeground(bgTone);
+
+        if (preferLighter) {
+            // "Neglible difference" handles an edge case where the initial contrast ratio is high
+            // (ex. 13.0), and the ratio passed to the function is that high ratio, and both the lighter
+            // and darker ratio fails to pass that ratio.
+            //
+            // This was observed with Tonal Spot's On Primary Container turning black momentarily between
+            // high and max contrast in light mode. PC's standard tone was T90, OPC's was T10, it was
+            // light mode, and the contrast level was 0.6568521221032331.
+            boolean negligibleDifference =
+                    Math.abs(lighterRatio - darkerRatio) < 0.1 && lighterRatio < ratio && darkerRatio < ratio;
+            if (lighterRatio >= ratio || lighterRatio >= darkerRatio || negligibleDifference) {
+                return lighterTone;
+            } else {
+                return darkerTone;
+            }
+        } else {
+            return darkerRatio >= ratio || darkerRatio >= lighterRatio ? darkerTone : lighterTone;
+        }
+    }
+
+    /**
+     * Adjust a tone down such that white has 4.5 contrast, if the tone is reasonably close to
+     * supporting it.
+     */
+    public static double enableLightForeground(double tone) {
+        if (tonePrefersLightForeground(tone) && !toneAllowsLightForeground(tone)) {
+            return 49.0;
+        }
+        return tone;
+    }
+
+    /**
+     * People prefer white foregrounds on ~T60-70. Observed over time, and also by Andrew Somers
+     * during research for APCA.
+     *
+     * <p>T60 used as to create the smallest discontinuity possible when skipping down to T49 in order
+     * to ensure light foregrounds.
+     *
+     * <p>Since `tertiaryContainer` in dark monochrome scheme requires a tone of 60, it should not be
+     * adjusted. Therefore, 60 is excluded here.
+     */
+    public static boolean tonePrefersLightForeground(double tone) {
+        return Math.round(tone) < 60;
+    }
+
+    /**
+     * Tones less than ~T50 always permit white at 4.5 contrast.
+     */
+    public static boolean toneAllowsLightForeground(double tone) {
+        return Math.round(tone) <= 49;
+    }
+
+    /**
      * Returns an ARGB integer (i.e. a hex code).
      *
      * @param scheme Defines the conditions of the user interface, for example, whether or not it is
@@ -483,68 +545,5 @@ public final class DynamicColor {
 
             return answer;
         }
-    }
-
-    /**
-     * Given a background tone, find a foreground tone, while ensuring they reach a contrast ratio
-     * that is as close to ratio as possible.
-     */
-    public static double foregroundTone(double bgTone, double ratio) {
-        double lighterTone = Contrast.lighterUnsafe(bgTone, ratio);
-        double darkerTone = Contrast.darkerUnsafe(bgTone, ratio);
-        double lighterRatio = Contrast.ratioOfTones(lighterTone, bgTone);
-        double darkerRatio = Contrast.ratioOfTones(darkerTone, bgTone);
-        boolean preferLighter = tonePrefersLightForeground(bgTone);
-
-        if (preferLighter) {
-            // "Neglible difference" handles an edge case where the initial contrast ratio is high
-            // (ex. 13.0), and the ratio passed to the function is that high ratio, and both the lighter
-            // and darker ratio fails to pass that ratio.
-            //
-            // This was observed with Tonal Spot's On Primary Container turning black momentarily between
-            // high and max contrast in light mode. PC's standard tone was T90, OPC's was T10, it was
-            // light mode, and the contrast level was 0.6568521221032331.
-            boolean negligibleDifference =
-                    Math.abs(lighterRatio - darkerRatio) < 0.1 && lighterRatio < ratio && darkerRatio < ratio;
-            if (lighterRatio >= ratio || lighterRatio >= darkerRatio || negligibleDifference) {
-                return lighterTone;
-            } else {
-                return darkerTone;
-            }
-        } else {
-            return darkerRatio >= ratio || darkerRatio >= lighterRatio ? darkerTone : lighterTone;
-        }
-    }
-
-    /**
-     * Adjust a tone down such that white has 4.5 contrast, if the tone is reasonably close to
-     * supporting it.
-     */
-    public static double enableLightForeground(double tone) {
-        if (tonePrefersLightForeground(tone) && !toneAllowsLightForeground(tone)) {
-            return 49.0;
-        }
-        return tone;
-    }
-
-    /**
-     * People prefer white foregrounds on ~T60-70. Observed over time, and also by Andrew Somers
-     * during research for APCA.
-     *
-     * <p>T60 used as to create the smallest discontinuity possible when skipping down to T49 in order
-     * to ensure light foregrounds.
-     *
-     * <p>Since `tertiaryContainer` in dark monochrome scheme requires a tone of 60, it should not be
-     * adjusted. Therefore, 60 is excluded here.
-     */
-    public static boolean tonePrefersLightForeground(double tone) {
-        return Math.round(tone) < 60;
-    }
-
-    /**
-     * Tones less than ~T50 always permit white at 4.5 contrast.
-     */
-    public static boolean toneAllowsLightForeground(double tone) {
-        return Math.round(tone) <= 49;
     }
 }

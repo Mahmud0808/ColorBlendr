@@ -25,24 +25,8 @@ package com.drdisagree.colorblendr.utils.monet.utils;
  * CAM16.
  */
 public class ColorUtils {
-    static final double[][] SRGB_TO_XYZ =
-            new double[][]{
-                    new double[]{0.41233895, 0.35762064, 0.18051042},
-                    new double[]{0.2126, 0.7152, 0.0722},
-                    new double[]{0.01932141, 0.11916382, 0.95034478},
-            };
-    static final double[][] XYZ_TO_SRGB =
-            new double[][]{
-                    new double[]{
-                            3.2413774792388685, -1.5376652402851851, -0.49885366846268053,
-                    },
-                    new double[]{
-                            -0.9691452513005321, 1.8758853451067872, 0.04156585616912061,
-                    },
-                    new double[]{
-                            0.05562093689691305, -0.20395524564742123, 1.0571799111220335,
-                    },
-            };
+    static final double[][] SRGB_TO_XYZ = new double[][]{new double[]{0.41233895, 0.35762064, 0.18051042}, new double[]{0.2126, 0.7152, 0.0722}, new double[]{0.01932141, 0.11916382, 0.95034478},};
+    static final double[][] XYZ_TO_SRGB = new double[][]{new double[]{3.2413774792388685, -1.5376652402851851, -0.49885366846268053,}, new double[]{-0.9691452513005321, 1.8758853451067872, 0.04156585616912061,}, new double[]{0.05562093689691305, -0.20395524564742123, 1.0571799111220335,},};
     static final double[] WHITE_POINT_D65 = new double[]{95.047, 100.0, 108.883};
 
     private ColorUtils() {

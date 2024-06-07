@@ -309,8 +309,6 @@ public class SettingsFragment extends Fragment {
                                         dialog.dismiss();
                                         Executors.newSingleThreadExecutor().execute(() -> {
                                             try {
-                                                RPrefs.clearAllPrefs();
-
                                                 RPrefs.restorePrefs(
                                                         Objects.requireNonNull(
                                                                 ColorBlendr.getAppContext()
