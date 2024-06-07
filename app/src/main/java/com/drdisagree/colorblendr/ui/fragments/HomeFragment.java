@@ -20,7 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding;
-import com.drdisagree.colorblendr.service.BackgroundService;
+import com.drdisagree.colorblendr.service.AutoStartService;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.FragmentUtil;
 import com.google.android.material.snackbar.Snackbar;
@@ -55,8 +55,8 @@ public class HomeFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 if (AppUtil.permissionsGranted(requireContext())) {
-                    if (BackgroundService.isServiceNotRunning()) {
-                        requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
+                    if (AutoStartService.isServiceNotRunning()) {
+                        requireContext().startForegroundService(new Intent(requireContext(), AutoStartService.class));
                     }
                 } else {
                     requestPermissionsLauncher.launch(AppUtil.REQUIRED_PERMISSIONS);
@@ -166,8 +166,8 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        if (BackgroundService.isServiceNotRunning()) {
-            requireContext().startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
+        if (AutoStartService.isServiceNotRunning()) {
+            requireContext().startForegroundService(new Intent(requireContext(), AutoStartService.class));
         }
     }
 

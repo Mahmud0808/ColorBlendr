@@ -22,6 +22,7 @@ import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
+import com.drdisagree.colorblendr.service.RestartBroadcastReceiver;
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment;
 import com.drdisagree.colorblendr.ui.fragments.OnboardingFragment;
 import com.google.android.material.appbar.AppBarLayout;
@@ -119,5 +120,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        RestartBroadcastReceiver.scheduleJob(getApplicationContext());
     }
 }

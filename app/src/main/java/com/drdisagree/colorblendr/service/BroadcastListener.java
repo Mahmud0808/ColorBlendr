@@ -18,7 +18,6 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.extension.MethodInterface;
@@ -52,10 +51,8 @@ public class BroadcastListener extends BroadcastReceiver {
                 Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())
         ) {
             // Start background service on boot
-            if (AppUtil.permissionsGranted(context)) {
-                if (BackgroundService.isServiceNotRunning()) {
-                    context.startService(new Intent(ColorBlendr.getAppContext(), BackgroundService.class));
-                }
+            if (AppUtil.permissionsGranted(context) && AutoStartService.isServiceNotRunning()) {
+                context.startForegroundService(new Intent(context, AutoStartService.class));
             }
 
             validateRootAndUpdateColors(context, new MethodInterface() {
