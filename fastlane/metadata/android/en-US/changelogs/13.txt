@@ -1,0 +1,11 @@
+Changelog:
+
+• Enhanced color extraction algorithm.
+• Improved theme configuration restoration.
+• Better live wallpaper color extraction.
+• Prevented changes to black and white shades to resolve specific issues.
+• Optimized background running service.
+• Bug fixes and various improvements.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
