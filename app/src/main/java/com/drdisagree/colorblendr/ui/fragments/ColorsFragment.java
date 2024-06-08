@@ -1,18 +1,10 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
-import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,21 +18,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.config.RPrefs;
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding;
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel;
+import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel;
 import com.drdisagree.colorblendr.ui.views.WallColorPreview;
-import com.drdisagree.colorblendr.utils.ColorUtil;
 import com.drdisagree.colorblendr.utils.MiscUtil;
-import com.drdisagree.colorblendr.utils.OverlayManager;
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
-import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog;
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
@@ -48,16 +31,16 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
 @SuppressWarnings("deprecation")
 public class ColorsFragment extends Fragment {
 
-    private static final String TAG = ColorsFragment.class.getSimpleName();
     private FragmentColorsBinding binding;
-    private int[] monetSeedColor;
-    private SharedViewModel sharedViewModel;
+    private ColorsViewModel colorsViewModel;
+    private int monetSeedColor;
     private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
+
     private final BroadcastReceiver wallpaperChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, android.content.Intent intent) {
             if (binding.colorsToggleGroup.getCheckedButtonId() == R.id.wallpaper_colors_button) {
-                addWallpaperColorItems();
+                colorsViewModel.loadWallpaperColors();
             }
         }
     };
@@ -66,7 +49,7 @@ public class ColorsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        colorsViewModel = new ViewModelProvider(requireActivity()).get(ColorsViewModel.class);
 
         if (!notShizukuMode) {
             SettingsFragment.clearCustomColors();
@@ -77,74 +60,57 @@ public class ColorsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentColorsBinding.inflate(inflater, container, false);
 
-        MiscUtil.setToolbarTitle(requireContext(), R.string.app_name, false, binding.header.toolbar);
-
-        monetSeedColor = new int[]{RPrefs.getInt(
-                MONET_SEED_COLOR,
-                WallpaperColorUtil.getWallpaperColor(requireContext())
-        )};
+        setupViews();
+        observeViewModel();
 
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private void setupViews() {
+        MiscUtil.setToolbarTitle(requireContext(), R.string.app_name, false, binding.header.toolbar);
 
-        sharedViewModel.getVisibilityStates().observe(getViewLifecycleOwner(), this::updateViewVisibility);
-
-        // Color codes
+        // Color preview container
         binding.colorsToggleGroup.check(
-                RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false) ?
+                colorsViewModel.isMonetSeedColorEnabled() ?
                         R.id.basic_colors_button :
                         R.id.wallpaper_colors_button
         );
         binding.colorsToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (isChecked) {
                 if (checkedId == R.id.wallpaper_colors_button) {
-                    addWallpaperColorItems();
+                    binding.wallpaperColorsContainer.setVisibility(View.VISIBLE);
+                    binding.basicColorsContainer.setVisibility(View.GONE);
                 } else {
-                    addBasicColorItems();
+                    binding.wallpaperColorsContainer.setVisibility(View.GONE);
+                    binding.basicColorsContainer.setVisibility(View.VISIBLE);
                 }
             }
         });
-        if (RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-            addBasicColorItems();
+        if (binding.colorsToggleGroup.getCheckedButtonId() == R.id.wallpaper_colors_button) {
+            binding.wallpaperColorsContainer.setVisibility(View.VISIBLE);
+            binding.basicColorsContainer.setVisibility(View.GONE);
         } else {
-            addWallpaperColorItems();
+            binding.wallpaperColorsContainer.setVisibility(View.GONE);
+            binding.basicColorsContainer.setVisibility(View.VISIBLE);
         }
 
-        // Primary color
-        binding.seedColorPicker.setPreviewColor(RPrefs.getInt(
-                MONET_SEED_COLOR,
-                monetSeedColor[0]
-        ));
+        // Primary color picker
         binding.seedColorPicker.setOnClickListener(v -> new ColorPickerDialog()
                 .withCornerRadius(10)
-                .withColor(monetSeedColor[0])
+                .withColor(monetSeedColor)
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView.class)
                 .withListener((pickerView, color) -> {
-                    if (monetSeedColor[0] != color) {
-                        monetSeedColor[0] = color;
+                    if (monetSeedColor != color) {
+                        monetSeedColor = color;
                         binding.seedColorPicker.setPreviewColor(color);
-                        RPrefs.putInt(MONET_SEED_COLOR, monetSeedColor[0]);
-                        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                            try {
-                                OverlayManager.applyFabricatedColors(requireContext());
-                            } catch (Exception ignored) {
-                            }
-                        }, 300);
+                        colorsViewModel.setMonetSeedColor(color);
                     }
                 })
                 .show(getChildFragmentManager(), "seedColorPicker")
         );
-        binding.seedColorPicker.setVisibility(
-                RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false) ?
-                        View.VISIBLE :
-                        View.GONE
-        );
+
+        reinitSeedColorPickerVisibility();
 
         // Color palette
         binding.colorPalette.setOnClickListener(v -> HomeFragment.replaceFragment(new ColorPaletteFragment()));
@@ -154,83 +120,90 @@ public class ColorsFragment extends Fragment {
         binding.perAppTheme.setEnabled(notShizukuMode);
     }
 
-    private void updateViewVisibility(Map<String, Integer> visibilityStates) {
-        Integer seedColorVisibility = visibilityStates.get(MONET_SEED_COLOR_ENABLED);
-        if (seedColorVisibility != null && binding.seedColorPicker.getVisibility() != seedColorVisibility) {
-            binding.seedColorPicker.setVisibility(seedColorVisibility);
+    private void observeViewModel() {
+        colorsViewModel.getMonetSeedColorLiveData().observe(getViewLifecycleOwner(), color -> {
+            monetSeedColor = color;
+            binding.seedColorPicker.setPreviewColor(color);
+        });
 
-            String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
-            ArrayList<Integer> wallpaperColorList = Const.GSON.fromJson(
-                    wallpaperColors,
-                    new TypeToken<ArrayList<Integer>>() {
-                    }.getType()
-            );
+        colorsViewModel.getWallpaperColorsLiveData().observe(getViewLifecycleOwner(), this::addWallpaperColorsToContainer);
+        colorsViewModel.getBasicColorsLiveData().observe(getViewLifecycleOwner(), this::addBasicColorsToContainer);
+    }
 
-            if (seedColorVisibility == View.GONE) {
-                monetSeedColor = new int[]{wallpaperColorList.get(0)};
-                binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
-            } else {
-                monetSeedColor = new int[]{RPrefs.getInt(
-                        MONET_SEED_COLOR,
-                        wallpaperColorList.get(0)
-                )};
-                binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
+    private void addWallpaperColorsToContainer(List<Integer> colorList) {
+        binding.wallpaperColorsContainer.removeAllViews();
+
+        for (int color : colorList) {
+            WallColorPreview colorPreview = createWallColorPreview(color, true);
+            binding.wallpaperColorsContainer.addView(colorPreview);
+        }
+    }
+
+    private void addBasicColorsToContainer(List<Integer> colorList) {
+        binding.basicColorsContainer.removeAllViews();
+
+        for (int color : colorList) {
+            WallColorPreview colorPreview = createWallColorPreview(color, false);
+            binding.basicColorsContainer.addView(colorPreview);
+        }
+    }
+
+    @SuppressWarnings("all")
+    private @NonNull WallColorPreview createWallColorPreview(int color, boolean isWallpaperColor) {
+        WallColorPreview colorPreview = new WallColorPreview(requireContext());
+
+        int size = (int) (48 * getResources().getDisplayMetrics().density);
+        int margin = (int) (12 * getResources().getDisplayMetrics().density);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
+        layoutParams.setMargins(margin, margin, margin, margin);
+
+        colorPreview.setLayoutParams(layoutParams);
+        colorPreview.setMainColor(color);
+        colorPreview.setTag(color);
+        colorPreview.setSelected(color == colorsViewModel.getMonetSeedColorLiveData().getValue());
+
+        colorPreview.setOnClickListener(v -> {
+            updateColorSelection(color, isWallpaperColor);
+            binding.seedColorPicker.setPreviewColor(color);
+            colorsViewModel.setMonetSeedColorEnabled(!isWallpaperColor);
+            reinitSeedColorPickerVisibility();
+            colorsViewModel.setMonetSeedColor(color);
+        });
+
+        return colorPreview;
+    }
+
+    private void updateColorSelection(int selectedColor, boolean isWallpaperColor) {
+        ViewGroup parent = isWallpaperColor ?
+                binding.wallpaperColorsContainer :
+                binding.basicColorsContainer;
+        ViewGroup otherParent = isWallpaperColor ?
+                binding.basicColorsContainer :
+                binding.wallpaperColorsContainer;
+
+        int count = parent.getChildCount();
+        int otherCount = otherParent.getChildCount();
+
+        for (int i = 0; i < count; i++) {
+            if (parent.getChildAt(i) instanceof WallColorPreview colorPreview) {
+                colorPreview.setSelected((Integer) colorPreview.getTag() == selectedColor);
+            }
+        }
+
+        for (int i = 0; i < otherCount; i++) {
+            if (otherParent.getChildAt(i) instanceof WallColorPreview colorPreview) {
+                colorPreview.setSelected(false);
             }
         }
     }
 
-    private void addWallpaperColorItems() {
-        String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
-        ArrayList<Integer> wallpaperColorList;
-
-        if (wallpaperColors != null) {
-            wallpaperColorList = Const.GSON.fromJson(
-                    wallpaperColors,
-                    new TypeToken<ArrayList<Integer>>() {
-                    }.getType()
-            );
-        } else {
-            wallpaperColorList = ColorUtil.getMonetAccentColors();
-        }
-
-        addColorsToContainer(wallpaperColorList, true);
-    }
-
-    @SuppressWarnings("all")
-    private void addBasicColorItems() {
-        String[] basicColors = getResources().getStringArray(R.array.basic_color_codes);
-        List<Integer> basicColorList = Arrays.stream(basicColors)
-                .map(Color::parseColor)
-                .collect(Collectors.toList());
-
-        addColorsToContainer(new ArrayList<>(basicColorList), false);
-    }
-
-    private void addColorsToContainer(ArrayList<Integer> colorList, boolean isWallpaperColors) {
-        binding.colorsContainer.removeAllViews();
-
-        for (int i = 0; i < colorList.size(); i++) {
-            int size = (int) (48 * getResources().getDisplayMetrics().density);
-            int margin = (int) (12 * getResources().getDisplayMetrics().density);
-
-            WallColorPreview colorPreview = new WallColorPreview(requireContext());
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
-            layoutParams.setMargins(margin, margin, margin, margin);
-            colorPreview.setLayoutParams(layoutParams);
-            colorPreview.setMainColor(colorList.get(i));
-            colorPreview.setTag(colorList.get(i));
-            colorPreview.setSelected(colorList.get(i) == RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE));
-
-            colorPreview.setOnClickListener(v -> {
-                RPrefs.putInt(MONET_SEED_COLOR, (Integer) colorPreview.getTag());
-                RPrefs.putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors);
-                binding.seedColorPicker.setPreviewColor((Integer) colorPreview.getTag());
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                OverlayManager.applyFabricatedColors(requireContext());
-            });
-
-            binding.colorsContainer.addView(colorPreview);
-        }
+    private void reinitSeedColorPickerVisibility() {
+        binding.seedColorPicker.setVisibility(
+                colorsViewModel.isMonetSeedColorEnabled() ?
+                        View.VISIBLE :
+                        View.GONE
+        );
     }
 
     @Override
