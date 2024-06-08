@@ -43,8 +43,8 @@ public class ColorRepository {
         RPrefs.putBoolean(MONET_SEED_COLOR_ENABLED, enabled);
     }
 
-    public void setLastUpdated(long timestamp) {
-        RPrefs.putLong(MONET_LAST_UPDATED, timestamp);
+    public void setMonetLastUpdated() {
+        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
     }
 
     public List<Integer> getWallpaperColorList() {

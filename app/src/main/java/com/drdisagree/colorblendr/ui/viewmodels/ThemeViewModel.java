@@ -142,7 +142,7 @@ public class ThemeViewModel extends AndroidViewModel {
     }
 
     private void applyFabricatedColors() {
-        themeRepository.setLastUpdated(System.currentTimeMillis());
+        themeRepository.setMonetLastUpdated();
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {

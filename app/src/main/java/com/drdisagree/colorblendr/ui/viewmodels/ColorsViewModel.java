@@ -54,7 +54,7 @@ public class ColorsViewModel extends AndroidViewModel {
     public void setMonetSeedColor(int color) {
         colorRepository.setMonetSeedColor(color);
         monetSeedColorLiveData.setValue(color);
-        colorRepository.setLastUpdated(System.currentTimeMillis());
+        colorRepository.setMonetLastUpdated();
         OverlayManager.applyFabricatedColors(getApplication().getApplicationContext());
     }
 

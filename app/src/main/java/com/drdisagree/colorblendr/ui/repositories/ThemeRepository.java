@@ -74,8 +74,8 @@ public class ThemeRepository {
         );
     }
 
-    public void setLastUpdated(long timestamp) {
-        RPrefs.putLong(MONET_LAST_UPDATED, timestamp);
+    public void setMonetLastUpdated() {
+        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
     }
 
     public boolean isNotShizukuMode() {
