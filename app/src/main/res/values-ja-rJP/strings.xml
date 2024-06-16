@@ -4,7 +4,7 @@
     <string name="app_description">マテリアルを簡単にカスタマイズして、創造性を高めましょう。 数回タップをするだけで、パーソナライズされたカラーへ瞬時に微調整ができます。</string>
     <string name="monet_neutral">ニュートラル</string>
     <string name="monet_monochrome">モノクロ</string>
-    <string name="monet_tonalspot">トーン スポット</string>
+    <string name="monet_tonalspot">トーンスポット</string>
     <string name="monet_vibrant">バイブラント</string>
     <string name="monet_rainbow">レインボー</string>
     <string name="monet_expressive">エクスプレッシブ</string>
@@ -46,7 +46,7 @@
     <string name="colorPickerDialog_msg_permissions_denied">権限が拒否されました。</string>
     <string name="colorPickerDialog_msg_permissions_button">許可</string>
     <string name="custom_primary_color_title">カスタムプライマリカラー</string>
-    <string name="custom_primary_color_desc">カスタムカラーからパレットを生成</string>
+    <string name="custom_primary_color_desc">カスタムカラーからパレットを生成します</string>
     <string name="meet_the_developer">開発者に会う</string>
     <string name="buymeacoffee_title">アプリに満足していただいていますか?</string>
     <string name="buymeacoffee_desc">コーヒーを奢ってくれると嬉しいです</string>
@@ -107,7 +107,7 @@
     <string name="styles">スタイル</string>
     <string name="theme">外観</string>
     <string name="wallpaper_colors">壁紙</string>
-    <string name="basic_colors">プリセット</string>
+    <string name="basic_colors">ベーシックカラー</string>
     <string name="force_per_app_theme_title">アプリにテーマを強制</string>
     <string name="force_per_app_theme_desc">Monetに従わないアプリにテーマを適用する</string>
     <string name="back">戻る</string>
@@ -121,7 +121,7 @@
     <string name="search_hint">検索…</string>
     <string name="note_title">注意:</string>
     <string name="grant_all_permissions">続行するにはすべての権限を許可してください</string>
-    <string name="app_service_title">%s 個のサービス</string>
+    <string name="app_service_title">%s のサービス</string>
     <string name="app_service_desc_on">テーマはアクティブです</string>
     <string name="app_service_desc_off">テーマは非アクティブです</string>
     <string name="tint_text_title">テキストの色を着色する</string>
@@ -139,7 +139,7 @@
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">カラーの変更に Shizuku を使用します。これは 非 root 環境でも使用可能です。一部のカスタマイズオプションが使用可能です。</string>
     <string name="color_palette_title">カラーパレット</string>
-    <string name="color_palette_desc">マテリアルパレットのすべてのカラーを探します</string>
+    <string name="color_palette_desc">マテリアルパレットのすべての色を探します</string>
     <string name="color_palette_root_warn">パレット内の任意の色をタップして外観をカスタマイズします。長押しするとデフォルトの色にリセットされます。</string>
     <string name="color_palette_rootless_warn">パレット内の任意の色をタップすると、16 進数のカラーコードをコピーできます。</string>
     <string name="filter_app_category">アプリのカテゴリーを選択</string>
