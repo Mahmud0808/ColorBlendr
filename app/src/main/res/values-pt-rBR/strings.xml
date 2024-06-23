@@ -80,7 +80,7 @@
     <string name="background_service_notification_title">Serviço em segundo plano</string>
     <string name="background_service_notification_text">Notificação inútil. Toque para desativar.</string>
     <string name="background_service_notification_channel_title">Serviço em segundo plano</string>
-    <string name="background_service_notification_channel_text">Você pode desativar essas notificações.</string>
+    <string name="background_service_notification_channel_text">Você pode desativar essa notificação</string>
     <string name="file_access_permission_required">Acesso aos arquivos necessário para gerar as cores do plano de fundo.</string>
     <string name="onboarding_image">Imagem de integração</string>
     <string name="perm_one_title">Enviar notificações</string>
