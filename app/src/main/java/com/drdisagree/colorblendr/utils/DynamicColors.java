@@ -71,7 +71,7 @@ public class DynamicColors {
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container", Pair.create(3, Pair.create(2, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_high", Pair.create(3, Pair.create(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ? 1 : 2, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_container_highest", Pair.create(3, Pair.create(3, 9))));
-        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_bright", Pair.create(3, Pair.create(2, 11))));
+        ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_bright", Pair.create(3, Pair.create(1, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_dim", Pair.create(3, Pair.create(2, 11))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("surface_variant", Pair.create(4, Pair.create(2, 10))));
         ALL_DYNAMIC_COLORS_MAPPED.add(Pair.create("on_surface_variant", Pair.create(4, Pair.create(10, 2))));
