@@ -138,7 +138,7 @@
     <string name="mode_one_desc">使用 root 权限更改颜色。所有自定义选项都是可用的。</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">在没有 root 的情况下使用 Shizuku 工作。只有部分自定义选项是可用的。</string>
-    <string name="color_palette_title">Color palette</string>
+    <string name="color_palette_title">调色板</string>
     <string name="color_palette_desc">探索 Material 调色板的所有颜色</string>
     <string name="color_palette_root_warn">点击调色板中的任意颜色以自定义它的颜色；长按将重置为默认颜色。</string>
     <string name="color_palette_rootless_warn">点击调色板中的任意颜色将复制其十六进制颜色代码。</string>
