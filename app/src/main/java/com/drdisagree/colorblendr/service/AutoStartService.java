@@ -21,6 +21,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.drdisagree.colorblendr.BuildConfig;
 import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
+import com.drdisagree.colorblendr.utils.annotations.TestingOnly;
 import com.drdisagree.colorblendr.common.Const;
 import com.drdisagree.colorblendr.extension.MethodInterface;
 import com.drdisagree.colorblendr.provider.RootConnectionProvider;
@@ -41,15 +42,6 @@ public class AutoStartService extends Service {
     private static BroadcastListener myReceiver;
     private NotificationManager notificationManager;
 
-    // for testing background running service
-    private final boolean TEST_BACKGROUND_SERVICE = false;
-    private final boolean debugging = BuildConfig.DEBUG && TEST_BACKGROUND_SERVICE;
-    public int counter = 0;
-    private Timer timer;
-    private static final String packageName = ColorBlendr.getAppContext().getPackageName();
-    public static final String ACTION_FOO = packageName + ".FOO";
-    public static final String EXTRA_PARAM_A = packageName + ".PARAM_A";
-
     public AutoStartService() {
         isRunning = false;
         myReceiver = new BroadcastListener();
@@ -69,11 +61,8 @@ public class AutoStartService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        if (notificationManager == null) {
-            notificationManager = getSystemService(NotificationManager.class);
-        }
-
         isRunning = true;
+        registerSystemServices();
         createNotificationChannel();
         showNotification();
         registerReceivers();
@@ -87,12 +76,12 @@ public class AutoStartService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        if (debugging) {
-            // for testing background running service
+        setupSystemUIRestartListener();
+
+        if (isTestingService) {
+            // Testing purposes only
             startTimer(this);
         }
-
-        setupSystemUIRestartListener();
 
         return START_STICKY;
     }
@@ -113,9 +102,15 @@ public class AutoStartService extends Service {
         Intent broadcastIntent = new Intent(this, RestartBroadcastReceiver.class);
         sendBroadcast(broadcastIntent);
 
-        if (debugging) {
-            // for testing background running service
-            stopTimerTask();
+        if (isTestingService) {
+            // Testing purposes only
+            stopTimer();
+        }
+    }
+
+    private void registerSystemServices() {
+        if (notificationManager == null) {
+            notificationManager = getSystemService(NotificationManager.class);
         }
     }
 
@@ -214,17 +209,39 @@ public class AutoStartService extends Service {
         }
     }
 
+    /*
+     * The following fields and methods are for testing purposes only
+     */
+    @TestingOnly
+    private static final String TEST_TAG = AutoStartService.class.getSimpleName() + "_TEST";
+    @TestingOnly
+    private final boolean TEST_BACKGROUND_SERVICE = false;
+    @TestingOnly
+    private final boolean isTestingService = BuildConfig.DEBUG && TEST_BACKGROUND_SERVICE;
+    @TestingOnly
+    public int counter = 0;
+    @TestingOnly
+    private Timer timer;
+    @TestingOnly
+    private static final String packageName = ColorBlendr.getAppContext().getPackageName();
+    @TestingOnly
+    public static final String ACTION_FOO = packageName + ".FOO";
+    @TestingOnly
+    public static final String EXTRA_PARAM_A = packageName + ".PARAM_A";
+
+    @TestingOnly
     public void startTimer(Context context) {
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Log.i(TAG, "Timer is running " + counter++);
+                Log.i(TEST_TAG, "Timer is running " + counter++);
                 broadcastActionTest(context, String.valueOf(counter));
             }
         }, 1000, 1000);
     }
 
+    @TestingOnly
     public static void broadcastActionTest(Context context, String param) {
         Intent intent = new Intent(ACTION_FOO);
         intent.putExtra(EXTRA_PARAM_A, param);
@@ -232,7 +249,8 @@ public class AutoStartService extends Service {
         bm.sendBroadcast(intent);
     }
 
-    public void stopTimerTask() {
+    @TestingOnly
+    public void stopTimer() {
         if (timer != null) {
             timer.cancel();
             timer = null;
