@@ -1,5 +1,7 @@
 package com.drdisagree.colorblendr.service;
 
+import static com.drdisagree.colorblendr.utils.SystemUtil.sensorEventListener;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,6 +10,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -41,6 +45,7 @@ public class AutoStartService extends Service {
     private static final String NOTIFICATION_CHANNEL_ID = "Background Service";
     private static BroadcastListener myReceiver;
     private NotificationManager notificationManager;
+    public static SensorManager sensorManager;
 
     public AutoStartService() {
         isRunning = false;
@@ -111,6 +116,16 @@ public class AutoStartService extends Service {
     private void registerSystemServices() {
         if (notificationManager == null) {
             notificationManager = getSystemService(NotificationManager.class);
+        }
+
+        if (sensorManager == null) {
+            sensorManager = getSystemService(SensorManager.class);
+
+            if (sensorManager != null) {
+                sensorManager.registerListener(sensorEventListener,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                        SensorManager.SENSOR_DELAY_UI);
+            }
         }
     }
 

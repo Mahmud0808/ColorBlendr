@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Const {
 
@@ -46,6 +47,7 @@ public class Const {
     public static final String THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages";
     public static final String SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled";
     public static final String APP_LIST_FILTER_METHOD = "appListFilterMethod";
+    public static final AtomicInteger screenOrientation = new AtomicInteger(-1);
 
     // Service preferences
     public static final Gson GSON = new Gson();
