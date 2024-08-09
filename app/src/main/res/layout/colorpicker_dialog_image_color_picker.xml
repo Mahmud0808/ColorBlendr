@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,26 +6,31 @@
     app:cardCornerRadius="8dp"
     app:strokeWidth="0dp">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <me.jfenn.colorpickerdialog.views.picker.ImageColorPickerView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="64dp"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:minWidth="300dp"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toTopOf="@+id/button_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/button_container"
+            android:layout_width="0dp"
             android:layout_height="64dp"
-            android:layout_gravity="bottom|end"
-            android:gravity="end"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0">
 
             <TextView
                 android:id="@+id/cancel"
@@ -57,5 +61,5 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
