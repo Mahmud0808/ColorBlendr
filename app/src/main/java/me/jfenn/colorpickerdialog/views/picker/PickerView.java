@@ -12,6 +12,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -278,8 +279,13 @@ public abstract class PickerView<S extends PickerView.SavedState> extends Linear
 
     @Override
     public void handleActivityRequest(ActivityResultHandler resultHandler, Intent intent) {
-        if (requestHandler != null)
-            requestHandler.handleActivityRequest(resultHandler, intent);
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            if (requestHandler != null)
+                requestHandler.handleActivityRequest(resultHandler, intent);
+        } else {
+            // Handle the case where no activity is available
+            Toast.makeText(getContext(), "No application available to pick an image", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Nullable
