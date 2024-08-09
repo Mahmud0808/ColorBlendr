@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,22 +8,24 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.drdisagree.colorblendr.ColorBlendr;
 import com.drdisagree.colorblendr.R;
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding;
 import com.drdisagree.colorblendr.service.AutoStartService;
 import com.drdisagree.colorblendr.utils.AppUtil;
 import com.drdisagree.colorblendr.utils.FragmentUtil;
+import com.drdisagree.colorblendr.utils.SystemUtil;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Map;
@@ -155,8 +158,14 @@ public class HomeFragment extends Fragment {
 
     private void handlePermissionsResult(Map<String, Boolean> result) {
         for (Map.Entry<String, Boolean> pair : result.entrySet()) {
-            if (!pair.getValue()) {
-                showGeneralPermissionSnackbar(pair.getKey());
+            String permission = pair.getKey();
+            boolean granted = pair.getValue();
+
+            if (!granted) {
+                showGeneralPermissionSnackbar(
+                        permission,
+                        !ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permission)
+                );
                 return;
             }
         }
@@ -171,14 +180,18 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void showGeneralPermissionSnackbar(String permission) {
+    private void showGeneralPermissionSnackbar(String permission, boolean permanentlyDenied) {
         Snackbar snackbar = Snackbar.make(
                 requireActivity().findViewById(android.R.id.content),
                 R.string.permission_must_be_granted,
                 Snackbar.LENGTH_INDEFINITE
         );
         snackbar.setAction(R.string.grant, v -> {
-            requestPermissionsLauncher.launch(new String[]{permission});
+            if (!permanentlyDenied) {
+                requestPermissionsLauncher.launch(new String[]{permission});
+            } else {
+                AppUtil.openAppSettings(requireContext());
+            }
             snackbar.dismiss();
         });
         snackbar.show();

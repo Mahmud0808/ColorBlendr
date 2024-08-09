@@ -3,11 +3,14 @@ package com.drdisagree.colorblendr.utils;
 import static com.drdisagree.colorblendr.common.Const.screenOrientation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.net.Uri;
+import android.provider.Settings;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
