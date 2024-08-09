@@ -40,6 +40,7 @@ public class ColorsViewModel extends AndroidViewModel {
     }
 
     public LiveData<Integer> getMonetSeedColorLiveData() {
+        monetSeedColorLiveData.setValue(colorRepository.getMonetSeedColor());
         return monetSeedColorLiveData;
     }
 
