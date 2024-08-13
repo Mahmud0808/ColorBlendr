@@ -72,6 +72,17 @@ public class FabricatedOverlayResource implements Parcelable {
         entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_COLOR_ARGB8, value, configuration));
     }
 
+    public int getColor(String name) {
+        String formattedName = formatName(name, "color");
+        FabricatedOverlayEntry entry = entries.get(formattedName);
+
+        if (entry == null) {
+            throw new IllegalArgumentException("No entry found for " + formattedName);
+        } else {
+            return entry.getResourceValue();
+        }
+    }
+
     public Map<String, FabricatedOverlayEntry> getEntries() {
         return entries;
     }

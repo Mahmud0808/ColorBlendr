@@ -249,9 +249,18 @@ public class OverlayManager {
             }
         }
 
+        fabricatedOverlays.get(0).setColor(
+                "system_surface_dim_dark",
+                fabricatedOverlays.get(0).getColor(colorNames[3][11]) // system_neutral1_900
+        ); // A14 notification scrim color
+        fabricatedOverlays.get(0).setColor(
+                "system_surface_container_high_dark",
+                fabricatedOverlays.get(0).getColor(colorNames[4][10]) // system_neutral2_800
+        ); // A14 notification background color
+
         if (pitchBlackTheme) {
-            fabricatedOverlays.get(0).setColor("surface_header_dark_sysui", Color.BLACK);
-            fabricatedOverlays.get(0).setColor("system_surface_dim_dark", Color.BLACK);
+            fabricatedOverlays.get(0).setColor("surface_header_dark_sysui", Color.BLACK); // QS top part color
+            fabricatedOverlays.get(0).setColor("system_surface_dim_dark", Color.BLACK); // A14 notification scrim color
             fabricatedOverlays.get(0).setColor(colorNames[3][11], Color.BLACK);
             fabricatedOverlays.get(0).setColor(colorNames[4][11], Color.BLACK);
         }
