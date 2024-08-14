@@ -255,7 +255,7 @@ public class OverlayManager {
         ); // A14 notification scrim color
         fabricatedOverlays.get(0).setColor(
                 "system_surface_container_high_dark",
-                fabricatedOverlays.get(0).getColor(colorNames[4][10]) // system_neutral2_800
+                fabricatedOverlays.get(0).getColor(colorNames[3][10]) // system_neutral1_800
         ); // A14 notification background color
 
         if (pitchBlackTheme) {
