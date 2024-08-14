@@ -1,0 +1,11 @@
+Changelog:
+
+• Updated AGP & dependencies.
+• Fixed surface and notification colors for Android 14 QPR2+.
+• Improved pitch black theme for Android 14 QPR2+.
+• Added sensor-based rotation detection fallback.
+• Resolved crashes with missing image picker.
+• Managed permanent permission denial cases.
+• Bug fixes, optimizations, and translation updates.
+
+Translation credit goes to all the contributors on our Crowdin platform.
