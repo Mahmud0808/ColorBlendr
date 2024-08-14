@@ -56,4 +56,11 @@ public class AppUtil {
                 Manifest.permission.MANAGE_EXTERNAL_STORAGE
         }, 0);
     }
+
+    public static void openAppSettings(Context context) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+        intent.setData(uri);
+        context.startActivity(intent);
+    }
 }

@@ -70,7 +70,24 @@
                     </com.drdisagree.colorblendr.ui.views.RoundedMaterialButtonToggleGroup>
 
                     <com.google.android.flexbox.FlexboxLayout
-                        android:id="@+id/colors_container"
+                        android:id="@+id/wallpaper_colors_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginTop="18dp"
+                        android:layout_marginBottom="24dp"
+                        app:alignContent="center"
+                        app:alignItems="center"
+                        app:flexDirection="row"
+                        app:flexWrap="wrap"
+                        app:justifyContent="center"
+                        app:layout_flexBasisPercent="25%"
+                        app:layout_flexGrow="1"
+                        app:layout_flexShrink="1" />
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/basic_colors_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
