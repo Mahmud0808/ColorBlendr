@@ -9,9 +9,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.util.Size
-import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
@@ -32,11 +32,12 @@ object WallpaperColorUtil {
         if (AppUtil.permissionsGranted(context)) {
             val wallpaperColors = getWallpaperColors(context)
             RPrefs.putString(Const.WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors))
-            RPrefs.putInt(Const.MONET_SEED_COLOR, wallpaperColors[0])
+            if (!RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+                RPrefs.putInt(Const.MONET_SEED_COLOR, wallpaperColors[0])
+            }
         }
     }
 
-    @ColorInt
     suspend fun getWallpaperColor(context: Context): Int {
         return getWallpaperColors(context)[0]
     }
