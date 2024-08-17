@@ -22,6 +22,10 @@ object OverlayManager {
     private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
     fun enableOverlay(packageName: String) {
+        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+            return
+        }
+
         if (mRootConnection == null) {
             mRootConnection = rootConnection
 
@@ -42,6 +46,10 @@ object OverlayManager {
     }
 
     fun disableOverlay(packageName: String) {
+        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+            return
+        }
+
         if (mRootConnection == null) {
             mRootConnection = rootConnection
 
@@ -62,6 +70,10 @@ object OverlayManager {
     }
 
     fun isOverlayInstalled(packageName: String): Boolean {
+        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+            return false
+        }
+
         if (mRootConnection == null) {
             mRootConnection = rootConnection
 
@@ -83,6 +95,10 @@ object OverlayManager {
     }
 
     fun isOverlayEnabled(packageName: String): Boolean {
+        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+            return false
+        }
+
         if (mRootConnection == null) {
             mRootConnection = rootConnection
 
@@ -104,6 +120,10 @@ object OverlayManager {
     }
 
     fun uninstallOverlayUpdates(packageName: String) {
+        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+            return
+        }
+
         if (mRootConnection == null) {
             mRootConnection = rootConnection
 
@@ -170,10 +190,8 @@ object OverlayManager {
     }
 
     suspend fun applyFabricatedColors(context: Context) {
-        if (!RPrefs.getBoolean(
-                Const.THEMING_ENABLED,
-                true
-            ) && !RPrefs.getBoolean(Const.SHIZUKU_THEMING_ENABLED, true)
+        if (!RPrefs.getBoolean(Const.THEMING_ENABLED, true) &&
+            !RPrefs.getBoolean(Const.SHIZUKU_THEMING_ENABLED, true)
         ) {
             return
         }

@@ -12,6 +12,11 @@ import org.json.JSONObject
 import kotlin.system.exitProcess
 
 class ShizukuConnection : IShizukuConnection.Stub {
+
+    companion object {
+        private val TAG: String = ShizukuConnection::class.java.simpleName
+    }
+
     constructor() {
         Log.i(TAG, "Constructed with no arguments")
     }
@@ -30,13 +35,18 @@ class ShizukuConnection : IShizukuConnection.Stub {
     }
 
     override fun applyFabricatedColors(jsonString: String) {
-        val mCommand =
+        Log.i(
+            TAG,
+            "applyFabricatedColors: settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
+        )
+        Shell.cmd(
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
-        Shell.cmd(mCommand).exec()
+        ).exec()
     }
 
     override fun removeFabricatedColors() {
         try {
+            Log.i(TAG, "removeFabricatedColors: $originalSettings")
             applyFabricatedColors(originalSettings.toString())
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)
@@ -44,8 +54,15 @@ class ShizukuConnection : IShizukuConnection.Stub {
     }
 
     override fun getCurrentSettings(): String {
-        val mCommand = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES"
-        return Shell.cmd(mCommand).exec().out[0]
+        val currentSettings = Shell.cmd(
+            "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES"
+        ).exec().out[0]
+
+        return if (currentSettings == "null") {
+            JSONObject().toString()
+        } else {
+            currentSettings
+        }
     }
 
     @get:Throws(JSONException::class)
@@ -68,14 +85,7 @@ class ShizukuConnection : IShizukuConnection.Stub {
 
                 putOpt(ThemeOverlayPackage.COLOR_BOTH, "0")
                 putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper")
-                putOpt(
-                    ThemeOverlayPackage.APPLIED_TIMESTAMP,
-                    System.currentTimeMillis()
-                )
+                putOpt(ThemeOverlayPackage.APPLIED_TIMESTAMP, System.currentTimeMillis())
             }
         }
-
-    companion object {
-        private val TAG: String = ShizukuConnection::class.java.simpleName
-    }
 }

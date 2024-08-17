@@ -243,10 +243,7 @@ class ColorsFragment : Fragment() {
             colorPreview.setSelected(colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
 
             colorPreview.setOnClickListener {
-                putInt(
-                    MONET_SEED_COLOR,
-                    (colorPreview.tag as Int)
-                )
+                putInt(MONET_SEED_COLOR, colorPreview.tag as Int)
                 putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
                 binding.seedColorPicker.previewColor = colorPreview.tag as Int
 

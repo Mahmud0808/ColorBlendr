@@ -103,7 +103,7 @@ class RootConnectionProvider private constructor(private val context: Context) :
 
     companion object {
         private val TAG: String = RootConnectionProvider::class.java.simpleName
-        var serviceProvider: IRootConnection? = null
+        private var serviceProvider: IRootConnection? = null
         private var isServiceConnected = false
         private val mServiceConnectionTimer = CountDownLatch(1)
 
@@ -113,6 +113,9 @@ class RootConnectionProvider private constructor(private val context: Context) :
 
         val isNotConnected: Boolean
             get() = !isServiceConnected
+
+        val getServiceProvider: IRootConnection?
+            get() = serviceProvider
     }
 
     class Builder(context: Context) {

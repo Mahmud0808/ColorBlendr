@@ -2,14 +2,15 @@ package com.drdisagree.colorblendr.provider
 
 import android.content.ComponentName
 import android.content.ServiceConnection
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.ShizukuUtil.getUserServiceArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object ShizukuConnectionProvider {
 
@@ -18,8 +19,8 @@ object ShizukuConnectionProvider {
     private var isServiceConnected = false
 
     val serviceConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            if (!binder.pingBinder()) {
+        override fun onServiceConnected(name: ComponentName, binder: IBinder?) {
+            if (binder == null || !binder.pingBinder()) {
                 Log.w(TAG, "Service binder is null or not alive")
                 return
             }
@@ -40,12 +41,15 @@ object ShizukuConnectionProvider {
     val isNotConnected: Boolean
         get() = !isServiceConnected
 
+    val getServiceProvider: IShizukuConnection?
+        get() = serviceProvider
+
     private fun bindServiceConnection() {
         if (isServiceConnected) {
             return
         }
 
-        Handler(Looper.getMainLooper()).post {
+        CoroutineScope(Dispatchers.Main).launch {
             bindUserService(
                 getUserServiceArgs(ShizukuConnection::class.java),
                 serviceConnection

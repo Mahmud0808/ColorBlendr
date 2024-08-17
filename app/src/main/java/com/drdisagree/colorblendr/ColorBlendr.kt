@@ -49,10 +49,10 @@ class ColorBlendr : Application() {
 
         @JvmStatic
         val rootConnection: IRootConnection?
-            get() = RootConnectionProvider.serviceProvider
+            get() = RootConnectionProvider.getServiceProvider
 
         @JvmStatic
         val shizukuConnection: IShizukuConnection?
-            get() = ShizukuConnectionProvider.serviceProvider
+            get() = ShizukuConnectionProvider.getServiceProvider
     }
 }

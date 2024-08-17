@@ -11,6 +11,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColorNoHash
 import org.json.JSONObject
 
 object ThemeOverlayPackage {
+
     private val TAG: String = ThemeOverlayPackage::class.java.simpleName
     const val THEME_STYLE: String = "android.theme.customization.theme_style"
     const val COLOR_SOURCE: String = "android.theme.customization.color_source"
@@ -21,26 +22,21 @@ object ThemeOverlayPackage {
 
     val themeCustomizationOverlayPackages: JSONObject
         get() {
-            val `object` = JSONObject()
-
-            try {
-                `object`.putOpt(
-                    THEME_STYLE,
-                    getString(MONET_STYLE_ORIGINAL_NAME, "TONAL_SPOT")
-                )
-                `object`.putOpt(COLOR_SOURCE, "preset")
-                `object`.putOpt(
-                    SYSTEM_PALETTE,
-                    intToHexColorNoHash(
-                        getInt(
-                            MONET_SEED_COLOR,
-                            Color.BLUE
+            return try {
+                JSONObject().apply {
+                    putOpt(
+                        COLOR_SOURCE,
+                        "preset"
+                    )
+                    putOpt(
+                        THEME_STYLE,
+                        getString(
+                            MONET_STYLE_ORIGINAL_NAME,
+                            "TONAL_SPOT"
                         )
                     )
-                )
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                    `object`.putOpt(
-                        ACCENT_COLOR,
+                    putOpt(
+                        SYSTEM_PALETTE,
                         intToHexColorNoHash(
                             getInt(
                                 MONET_SEED_COLOR,
@@ -48,19 +44,25 @@ object ThemeOverlayPackage {
                             )
                         )
                     )
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                        putOpt(
+                            ACCENT_COLOR,
+                            intToHexColorNoHash(
+                                getInt(
+                                    MONET_SEED_COLOR,
+                                    Color.BLUE
+                                )
+                            )
+                        )
+                    }
+                    putOpt(
+                        APPLIED_TIMESTAMP,
+                        System.currentTimeMillis()
+                    )
                 }
-                `object`.putOpt(
-                    APPLIED_TIMESTAMP,
-                    System.currentTimeMillis()
-                )
             } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "getThemeCustomizationOverlayPackages:",
-                    e
-                )
+                Log.e(TAG, "themeCustomizationOverlayPackages:", e)
+                JSONObject()
             }
-
-            return `object`
         }
 }
