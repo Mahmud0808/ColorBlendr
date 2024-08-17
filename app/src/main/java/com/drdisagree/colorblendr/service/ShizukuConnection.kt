@@ -35,10 +35,6 @@ class ShizukuConnection : IShizukuConnection.Stub {
     }
 
     override fun applyFabricatedColors(jsonString: String) {
-        Log.i(
-            TAG,
-            "applyFabricatedColors: settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
-        )
         Shell.cmd(
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
         ).exec()
@@ -46,7 +42,6 @@ class ShizukuConnection : IShizukuConnection.Stub {
 
     override fun removeFabricatedColors() {
         try {
-            Log.i(TAG, "removeFabricatedColors: $originalSettings")
             applyFabricatedColors(originalSettings.toString())
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)
