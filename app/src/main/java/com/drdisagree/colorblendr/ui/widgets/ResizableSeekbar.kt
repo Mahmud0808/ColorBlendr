@@ -1,28 +1,26 @@
-package com.drdisagree.colorblendr.ui.widgets;
+package com.drdisagree.colorblendr.ui.widgets
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
+import android.content.Context
+import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatSeekBar
 
-public class ResizableSeekbar extends androidx.appcompat.widget.AppCompatSeekBar {
+class ResizableSeekbar : AppCompatSeekBar {
 
-    public ResizableSeekbar(Context context) {
-        super(context);
-    }
+    constructor(context: Context) : super(context)
 
-    public ResizableSeekbar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    public ResizableSeekbar(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    )
 
-    @Override
-    protected synchronized void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    @Synchronized
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
 
-        Drawable trackDrawable = getProgressDrawable().getCurrent();
-        trackDrawable.setBounds(0, 0, getMeasuredWidth(), getMeasuredHeight());
+        val trackDrawable = progressDrawable.current
+        trackDrawable.setBounds(0, 0, measuredWidth, measuredHeight)
     }
 }

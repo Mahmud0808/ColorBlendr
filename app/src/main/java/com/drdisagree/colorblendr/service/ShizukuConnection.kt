@@ -1,86 +1,84 @@
-package com.drdisagree.colorblendr.service;
+package com.drdisagree.colorblendr.service
 
-import static com.drdisagree.colorblendr.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.annotation.Keep
+import com.drdisagree.colorblendr.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
+import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
+import com.topjohnwu.superuser.Shell
+import org.json.JSONException
+import org.json.JSONObject
+import kotlin.system.exitProcess
 
-import android.content.Context;
-import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
-
-import com.drdisagree.colorblendr.extension.ThemeOverlayPackage;
-import com.topjohnwu.superuser.Shell;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class ShizukuConnection extends IShizukuConnection.Stub {
-
-    private static final String TAG = ShizukuConnection.class.getSimpleName();
-
-    public ShizukuConnection() {
-        Log.i(TAG, "Constructed with no arguments");
+class ShizukuConnection : IShizukuConnection.Stub {
+    constructor() {
+        Log.i(TAG, "Constructed with no arguments")
     }
 
     @Keep
-    public ShizukuConnection(Context context) {
-        Log.i(TAG, "Constructed with context: " + context.toString());
+    constructor(context: Context) {
+        Log.i(TAG, "Constructed with context: $context")
     }
 
-    @Override
-    public void destroy() {
-        System.exit(0);
+    override fun destroy() {
+        exitProcess(0)
     }
 
-    @Override
-    public void exit() {
-        destroy();
+    override fun exit() {
+        destroy()
     }
 
-    @Override
-    public void applyFabricatedColors(String jsonString) {
-        final String mCommand = "settings put secure " + THEME_CUSTOMIZATION_OVERLAY_PACKAGES + " '" + jsonString + "'";
-        Shell.cmd(mCommand).exec();
+    override fun applyFabricatedColors(jsonString: String) {
+        val mCommand =
+            "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
+        Shell.cmd(mCommand).exec()
     }
 
-    @Override
-    public void removeFabricatedColors() {
+    override fun removeFabricatedColors() {
         try {
-            applyFabricatedColors(getOriginalSettings().toString());
-        } catch (Exception e) {
-            Log.e(TAG, "removeFabricatedColors: ", e);
+            applyFabricatedColors(originalSettings.toString())
+        } catch (e: Exception) {
+            Log.e(TAG, "removeFabricatedColors: ", e)
         }
     }
 
-    @Override
-    public String getCurrentSettings() {
-        final String mCommand = "settings get secure " + THEME_CUSTOMIZATION_OVERLAY_PACKAGES;
-        return Shell.cmd(mCommand).exec().getOut().get(0);
+    override fun getCurrentSettings(): String {
+        val mCommand = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES"
+        return Shell.cmd(mCommand).exec().out[0]
     }
 
-    private @NonNull JSONObject getOriginalSettings() throws JSONException {
-        String currentSettings = getCurrentSettings();
-        JSONObject jsonObject = new JSONObject(currentSettings);
+    @get:Throws(JSONException::class)
+    private val originalSettings: JSONObject
+        get() {
+            val currentSettings = currentSettings
+            val jsonObject = JSONObject(currentSettings)
 
-        String[] keysToRemove = new String[]{
+            val keysToRemove = arrayOf(
                 ThemeOverlayPackage.THEME_STYLE,
                 ThemeOverlayPackage.COLOR_SOURCE,
                 ThemeOverlayPackage.SYSTEM_PALETTE
-        };
+            )
 
-        for (String key : keysToRemove) {
-            jsonObject.remove(key);
+            for (key in keysToRemove) {
+                jsonObject.remove(key)
+            }
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                jsonObject.remove(ThemeOverlayPackage.ACCENT_COLOR)
+            }
+
+            jsonObject.putOpt(ThemeOverlayPackage.COLOR_BOTH, "0")
+            jsonObject.putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper")
+            jsonObject.putOpt(
+                ThemeOverlayPackage.APPLIED_TIMESTAMP,
+                System.currentTimeMillis()
+            )
+
+            return jsonObject
         }
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-            jsonObject.remove(ThemeOverlayPackage.ACCENT_COLOR);
-        }
-
-        jsonObject.putOpt(ThemeOverlayPackage.COLOR_BOTH, "0");
-        jsonObject.putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper");
-        jsonObject.putOpt(ThemeOverlayPackage.APPLIED_TIMESTAMP, System.currentTimeMillis());
-
-        return jsonObject;
+    companion object {
+        private val TAG: String = ShizukuConnection::class.java.simpleName
     }
 }

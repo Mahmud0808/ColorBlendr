@@ -1,41 +1,32 @@
-package com.drdisagree.colorblendr.ui.viewmodels;
+package com.drdisagree.colorblendr.ui.viewmodels
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
-import java.util.HashMap;
-import java.util.Map;
+class SharedViewModel : ViewModel() {
 
-public class SharedViewModel extends ViewModel {
+    private val booleanStates: MutableLiveData<MutableMap<String, Boolean>> = MutableLiveData()
 
-    private final MutableLiveData<Map<String, Boolean>> booleanStates = new MutableLiveData<>();
-
-    public LiveData<Map<String, Boolean>> getBooleanStates() {
-        return booleanStates;
+    fun getBooleanStates(): LiveData<MutableMap<String, Boolean>> {
+        return booleanStates
     }
 
-    public void setBooleanState(String viewId, boolean state) {
-        Map<String, Boolean> currentStates = booleanStates.getValue();
-        if (currentStates == null) {
-            currentStates = new HashMap<>();
-        }
-        currentStates.put(viewId, state);
-        booleanStates.setValue(currentStates);
+    fun setBooleanState(viewId: String, state: Boolean) {
+        val currentStates: MutableMap<String, Boolean> = booleanStates.getValue() ?: HashMap()
+        currentStates[viewId] = state
+        booleanStates.value = currentStates
     }
 
-    private final MutableLiveData<Map<String, Integer>> visibilityStates = new MutableLiveData<>();
+    private val visibilityStates: MutableLiveData<MutableMap<String, Int>> = MutableLiveData()
 
-    public LiveData<Map<String, Integer>> getVisibilityStates() {
-        return visibilityStates;
+    fun getVisibilityStates(): LiveData<MutableMap<String, Int>> {
+        return visibilityStates
     }
 
-    public void setVisibilityState(String viewId, int visibility) {
-        Map<String, Integer> currentStates = visibilityStates.getValue();
-        if (currentStates == null) {
-            currentStates = new HashMap<>();
-        }
-        currentStates.put(viewId, visibility);
-        visibilityStates.setValue(currentStates);
+    fun setVisibilityState(viewId: String, visibility: Int) {
+        val currentStates: MutableMap<String, Int> = visibilityStates.getValue() ?: HashMap()
+        currentStates[viewId] = visibility
+        visibilityStates.value = currentStates
     }
 }

@@ -1,25 +1,10 @@
-package com.drdisagree.colorblendr.ui.models;
+package com.drdisagree.colorblendr.ui.models
 
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable
 
-public class AppInfoModel {
-
-    public String appName;
-    public String packageName;
-    public Drawable appIcon;
-    private boolean isSelected = false;
-
-    public AppInfoModel(String appName, String packageName, Drawable appIcon) {
-        this.appName = appName;
-        this.packageName = packageName;
-        this.appIcon = appIcon;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-}
+data class AppInfoModel(
+    var appName: String,
+    var packageName: String,
+    var appIcon: Drawable,
+    var isSelected: Boolean = false
+)

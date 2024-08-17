@@ -1,130 +1,124 @@
-package com.drdisagree.colorblendr.ui.activities;
+package com.drdisagree.colorblendr.ui.activities
 
-import static com.drdisagree.colorblendr.common.Const.FIRST_RUN;
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.FIRST_RUN
+import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.databinding.ActivityMainBinding
+import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
+import com.drdisagree.colorblendr.ui.fragments.HomeFragment
+import com.drdisagree.colorblendr.ui.fragments.OnboardingFragment
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.shape.MaterialShapeDrawable
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.view.Window;
+class MainActivity : AppCompatActivity() {
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+    private lateinit var binding: ActivityMainBinding
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.databinding.ActivityMainBinding;
-import com.drdisagree.colorblendr.service.RestartBroadcastReceiver;
-import com.drdisagree.colorblendr.ui.fragments.HomeFragment;
-import com.drdisagree.colorblendr.ui.fragments.OnboardingFragment;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.shape.MaterialShapeDrawable;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.getRoot())
 
-import java.util.Objects;
+        setupEdgeToEdge()
 
-public class MainActivity extends AppCompatActivity {
-
-    private ActivityMainBinding binding;
-    private static FragmentManager fragmentManager;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setupEdgeToEdge();
-
-        fragmentManager = getSupportFragmentManager();
+        myFragmentManager = supportFragmentManager
 
         if (savedInstanceState == null) {
-            if (RPrefs.getBoolean(FIRST_RUN, true) ||
-                    Const.getWorkingMethod() == Const.WORK_METHOD.NULL ||
-                    !getIntent().getBooleanExtra("success", false)
+            if (getBoolean(FIRST_RUN, true) || workingMethod == Const.WorkMethod.NULL ||
+                !intent.getBooleanExtra("success", false)
             ) {
-                replaceFragment(new OnboardingFragment(), false);
+                replaceFragment(OnboardingFragment(), false)
             } else {
-                replaceFragment(new HomeFragment(), false);
+                replaceFragment(HomeFragment(), false)
             }
         }
     }
 
-    private void setupEdgeToEdge() {
+    private fun setupEdgeToEdge() {
         try {
-            ((AppBarLayout) findViewById(R.id.appBarLayout)).setStatusBarForeground(MaterialShapeDrawable.createWithElevationOverlay(getApplicationContext()));
-        } catch (Exception ignored) {
+            (findViewById<View>(R.id.appBarLayout) as AppBarLayout).statusBarForeground =
+                MaterialShapeDrawable.createWithElevationOverlay(applicationContext)
+        } catch (ignored: Exception) {
         }
 
-        Window window = getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ViewGroup viewGroup = getWindow().getDecorView().findViewById(android.R.id.content);
-            ViewCompat.setOnApplyWindowInsetsListener(viewGroup, (v, windowInsets) -> {
-                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+        if (getResources().configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            val viewGroup: ViewGroup = window.decorView.findViewById(android.R.id.content)
+            ViewCompat.setOnApplyWindowInsetsListener(viewGroup) { v: View, windowInsets: WindowInsetsCompat ->
+                val insets: Insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                val params: MarginLayoutParams = v.layoutParams as MarginLayoutParams
                 v.setPadding(
-                        params.leftMargin + insets.left,
-                        0,
-                        params.rightMargin + insets.right,
-                        0
-                );
-                params.topMargin = 0;
-                params.bottomMargin = 0;
-                v.setLayoutParams(params);
-
-                return windowInsets;
-            });
+                    params.leftMargin + insets.left,
+                    0,
+                    params.rightMargin + insets.right,
+                    0
+                )
+                params.topMargin = 0
+                params.bottomMargin = 0
+                v.setLayoutParams(params)
+                windowInsets
+            }
         }
     }
 
-    public static void replaceFragment(Fragment fragment, boolean animate) {
-        String tag = fragment.getClass().getSimpleName();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressedDispatcher.onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
-        if (animate) {
-            fragmentTransaction.setCustomAnimations(
+    override fun onResume() {
+        super.onResume()
+        scheduleJob(applicationContext)
+    }
+
+    companion object {
+        private lateinit var myFragmentManager: FragmentManager
+
+        fun replaceFragment(fragment: Fragment, animate: Boolean) {
+            val tag: String = fragment.javaClass.getSimpleName()
+            val fragmentTransaction: FragmentTransaction = myFragmentManager.beginTransaction()
+
+            if (animate) {
+                fragmentTransaction.setCustomAnimations(
                     R.anim.slide_in_right,
                     R.anim.slide_out_left,
                     R.anim.slide_in_left,
                     R.anim.slide_out_right
-            );
-        }
-        fragmentTransaction.replace(
+                )
+            }
+            fragmentTransaction.replace(
                 R.id.fragmentContainer,
                 fragment
-        );
+            )
 
-        if (Objects.equals(tag, HomeFragment.class.getSimpleName())) {
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else if (!Objects.equals(tag, OnboardingFragment.class.getSimpleName())) {
-            fragmentTransaction.addToBackStack(tag);
+            if (tag == HomeFragment::class.java.simpleName) {
+                myFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            } else if (tag != OnboardingFragment::class.java.simpleName) {
+                fragmentTransaction.addToBackStack(tag)
+            }
+
+            fragmentTransaction.commit()
         }
-
-        fragmentTransaction.commit();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            getOnBackPressedDispatcher().onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        RestartBroadcastReceiver.scheduleJob(getApplicationContext());
     }
 }

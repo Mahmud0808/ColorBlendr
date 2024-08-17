@@ -1,34 +1,36 @@
-package com.drdisagree.colorblendr.ui.fragments;
+package com.drdisagree.colorblendr.ui.fragments
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.databinding.FragmentOnboardingItem3Binding
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+class OnboardingItem3Fragment : Fragment() {
 
-import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.databinding.FragmentOnboardingItem3Binding;
+    private lateinit var binding: FragmentOnboardingItem3Binding
 
-public class OnboardingItem3Fragment extends Fragment {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentOnboardingItem3Binding.inflate(inflater, container, false)
 
-    private FragmentOnboardingItem3Binding binding;
+        binding.root.setOnClickListener {
+            Const.WORKING_METHOD =
+                Const.WorkMethod.ROOT
+            binding.shizuku.isSelected = false
+        }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentOnboardingItem3Binding.inflate(inflater, container, false);
+        binding.shizuku.setOnClickListener {
+            Const.WORKING_METHOD =
+                Const.WorkMethod.SHIZUKU
+            binding.root.isSelected = false
+        }
 
-        binding.root.setOnClickListener(v -> {
-            Const.WORKING_METHOD = Const.WORK_METHOD.ROOT;
-            binding.shizuku.setSelected(false);
-        });
-
-        binding.shizuku.setOnClickListener(v -> {
-            Const.WORKING_METHOD = Const.WORK_METHOD.SHIZUKU;
-            binding.root.setSelected(false);
-        });
-
-        return binding.getRoot();
+        return binding.getRoot()
     }
 }

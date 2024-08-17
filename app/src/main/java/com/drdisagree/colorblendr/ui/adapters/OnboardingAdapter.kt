@@ -1,34 +1,24 @@
-package com.drdisagree.colorblendr.ui.adapters;
+package com.drdisagree.colorblendr.ui.adapters
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
 
-import java.util.ArrayList;
+class OnboardingAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+    FragmentStateAdapter(fragmentManager, lifecycle) {
 
-public class OnboardingAdapter extends FragmentStateAdapter {
+    private val fragmentList = ArrayList<Fragment>()
 
-    private final ArrayList<Fragment> fragmentList = new ArrayList<>();
-
-    public OnboardingAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
-        super(fragmentManager, lifecycle);
+    override fun createFragment(position: Int): Fragment {
+        return fragmentList[position]
     }
 
-
-    @NonNull
-    @Override
-    public Fragment createFragment(int position) {
-        return fragmentList.get(position);
+    fun addFragment(fragment: Fragment) {
+        fragmentList.add(fragment)
     }
 
-    public void addFragment(Fragment fragment) {
-        fragmentList.add(fragment);
-    }
-
-    @Override
-    public int getItemCount() {
-        return fragmentList.size();
+    override fun getItemCount(): Int {
+        return fragmentList.size
     }
 }

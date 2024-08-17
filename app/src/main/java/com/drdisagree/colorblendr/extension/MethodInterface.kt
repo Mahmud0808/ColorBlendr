@@ -1,6 +1,5 @@
-package com.drdisagree.colorblendr.extension;
+package com.drdisagree.colorblendr.extension
 
-public abstract class MethodInterface {
-
-    public abstract void run();
+abstract class MethodInterface {
+    abstract fun run()
 }

@@ -1,117 +1,132 @@
-package com.drdisagree.colorblendr.ui.views;
+package com.drdisagree.colorblendr.ui.views
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.util.AttributeSet;
-import android.view.View;
+import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
+import android.util.AttributeSet
+import android.view.View
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+class ColorPreview : View {
 
-public class ColorPreview extends View {
+    private var squarePaint: Paint? = null
+    private var secondQuarterCirclePaint: Paint? = null
+    private var firstQuarterCirclePaint: Paint? = null
+    private var halfCirclePaint: Paint? = null
+    private var squareRect: RectF? = null
+    private var circleRect: RectF? = null
+    private var padding: Float = 0f
 
-    private Paint squarePaint, secondQuarterCirclePaint, firstQuarterCirclePaint, halfCirclePaint;
-    private RectF squareRect, circleRect;
-    private float padding;
-
-    public ColorPreview(Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public ColorPreview(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    public ColorPreview(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context)
     }
 
-    private void init(Context context) {
-        boolean isDarkMode = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
+    private fun init(context: Context) {
+        val isDarkMode: Boolean =
+            (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES
 
-        padding = 10 * getResources().getDisplayMetrics().density;
+        padding = 10 * resources.displayMetrics.density
 
-        squareRect = new RectF();
-        circleRect = new RectF();
+        squareRect = RectF()
+        circleRect = RectF()
 
-        squarePaint = new Paint();
-        squarePaint.setColor(ContextCompat.getColor(context,
-                !isDarkMode ?
-                        com.google.android.material.R.color.material_dynamic_neutral99 :
-                        com.google.android.material.R.color.material_dynamic_neutral10
-        ));
-        squarePaint.setStyle(Paint.Style.FILL);
+        squarePaint = Paint()
+        squarePaint!!.setColor(
+            ContextCompat.getColor(
+                context,
+                if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+            )
+        )
+        squarePaint!!.style = Paint.Style.FILL
 
-        halfCirclePaint = new Paint();
-        halfCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_primary90));
-        halfCirclePaint.setStyle(Paint.Style.FILL);
+        halfCirclePaint = Paint()
+        halfCirclePaint!!.setColor(
+            ContextCompat.getColor(
+                context,
+                com.google.android.material.R.color.material_dynamic_primary90
+            )
+        )
+        halfCirclePaint!!.style = Paint.Style.FILL
 
-        firstQuarterCirclePaint = new Paint();
-        firstQuarterCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_secondary90));
-        firstQuarterCirclePaint.setStyle(Paint.Style.FILL);
+        firstQuarterCirclePaint = Paint()
+        firstQuarterCirclePaint!!.setColor(
+            ContextCompat.getColor(
+                context,
+                com.google.android.material.R.color.material_dynamic_secondary90
+            )
+        )
+        firstQuarterCirclePaint!!.style = Paint.Style.FILL
 
-        secondQuarterCirclePaint = new Paint();
-        secondQuarterCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_tertiary90));
-        secondQuarterCirclePaint.setStyle(Paint.Style.FILL);
+        secondQuarterCirclePaint = Paint()
+        secondQuarterCirclePaint!!.setColor(
+            ContextCompat.getColor(
+                context,
+                com.google.android.material.R.color.material_dynamic_tertiary90
+            )
+        )
+        secondQuarterCirclePaint!!.style = Paint.Style.FILL
     }
 
-    @Override
-    protected void onDraw(@NonNull Canvas canvas) {
-        super.onDraw(canvas);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
-        int width = getWidth();
-        int height = getHeight();
+        val cornerRadius: Float = 12 * resources.displayMetrics.density
+        squareRect!!.set(0f, 0f, width.toFloat(), height.toFloat())
+        canvas.drawRoundRect(squareRect!!, cornerRadius, cornerRadius, squarePaint!!)
 
-        float cornerRadius = 12 * getResources().getDisplayMetrics().density;
-        squareRect.set(0, 0, width, height);
-        canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint);
+        val margin: Float = 0 * resources.displayMetrics.density
 
-        float margin = 0 * getResources().getDisplayMetrics().density;
+        circleRect!!.set(padding, padding, width - padding, height - padding - margin)
+        canvas.drawArc(circleRect!!, 180f, 180f, true, halfCirclePaint!!)
 
-        circleRect.set(padding, padding, width - padding, height - padding - margin);
-        canvas.drawArc(circleRect, 180, 180, true, halfCirclePaint);
+        circleRect!!.set(padding, padding + margin, width - padding - margin, height - padding)
+        canvas.drawArc(circleRect!!, 90f, 90f, true, firstQuarterCirclePaint!!)
 
-        circleRect.set(padding, padding + margin, width - padding - margin, height - padding);
-        canvas.drawArc(circleRect, 90, 90, true, firstQuarterCirclePaint);
-
-        circleRect.set(padding + margin, padding + margin, width - padding, height - padding);
-        canvas.drawArc(circleRect, 0, 90, true, secondQuarterCirclePaint);
+        circleRect!!.set(padding + margin, padding + margin, width - padding, height - padding)
+        canvas.drawArc(circleRect!!, 0f, 90f, true, secondQuarterCirclePaint!!)
     }
 
-    public void setSquareColor(@ColorInt int color) {
-        squarePaint.setColor(color);
+    fun setSquareColor(@ColorInt color: Int) {
+        squarePaint!!.setColor(color)
     }
 
-    public void setFirstQuarterCircleColor(@ColorInt int color) {
-        firstQuarterCirclePaint.setColor(color);
+    fun setFirstQuarterCircleColor(@ColorInt color: Int) {
+        firstQuarterCirclePaint!!.setColor(color)
     }
 
-    public void setSecondQuarterCircleColor(@ColorInt int color) {
-        secondQuarterCirclePaint.setColor(color);
+    fun setSecondQuarterCircleColor(@ColorInt color: Int) {
+        secondQuarterCirclePaint!!.setColor(color)
     }
 
-    public void setHalfCircleColor(@ColorInt int color) {
-        halfCirclePaint.setColor(color);
+    fun setHalfCircleColor(@ColorInt color: Int) {
+        halfCirclePaint!!.setColor(color)
     }
 
-    public void invalidateColors() {
-        invalidate();
+    fun invalidateColors() {
+        invalidate()
     }
 
-    public void setPadding(float padding) {
-        this.padding = padding * getResources().getDisplayMetrics().density;
+    fun setPadding(padding: Float) {
+        this.padding = padding * resources.displayMetrics.density
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        this.setAlpha(enabled ? 1.0f : 0.6f);
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        this.setAlpha(if (enabled) 1.0f else 0.6f)
     }
 }

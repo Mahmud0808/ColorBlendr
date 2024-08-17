@@ -1,30 +1,34 @@
-package com.drdisagree.colorblendr.service;
+package com.drdisagree.colorblendr.service
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
+import android.content.Context
+import android.content.Intent
+import android.util.Log
 
-public class ServiceLauncher {
-
-    private static final String TAG = ServiceLauncher.class.getSimpleName();
-    private static Intent serviceIntent = null;
-
-    private void setServiceIntent(Context context) {
+class ServiceLauncher {
+    private fun setServiceIntent(context: Context) {
         if (serviceIntent == null) {
-            serviceIntent = new Intent(context, AutoStartService.class);
+            serviceIntent = Intent(
+                context,
+                AutoStartService::class.java
+            )
         }
     }
 
-    public void launchService(Context context) {
+    fun launchService(context: Context?) {
         if (context == null) {
-            return;
+            return
         }
 
-        setServiceIntent(context);
+        setServiceIntent(context)
 
-        if (AutoStartService.isServiceNotRunning()) {
-            Log.d(TAG, "launchService: Service is starting...");
-            context.startForegroundService(serviceIntent);
+        if (AutoStartService.isServiceNotRunning) {
+            Log.d(TAG, "launchService: Service is starting...")
+            context.startForegroundService(serviceIntent)
         }
+    }
+
+    companion object {
+        private val TAG: String = ServiceLauncher::class.java.simpleName
+        private var serviceIntent: Intent? = null
     }
 }

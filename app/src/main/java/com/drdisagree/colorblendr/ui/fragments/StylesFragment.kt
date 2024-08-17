@@ -1,183 +1,207 @@
-package com.drdisagree.colorblendr.ui.fragments;
+package com.drdisagree.colorblendr.ui.fragments
 
-import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME;
+import android.os.Build
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
+import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.putLong
+import com.drdisagree.colorblendr.config.RPrefs.putString
+import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
+import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 
-import android.os.Build;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+class StylesFragment : Fragment() {
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
+    private lateinit var binding: FragmentStylesBinding
+    private val notShizukuMode = workingMethod != Const.WorkMethod.SHIZUKU
+    private val isAtleastA13 = notShizukuMode ||
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    private val isAtleastA14 = notShizukuMode ||
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.databinding.FragmentStylesBinding;
-import com.drdisagree.colorblendr.utils.MiscUtil;
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentStylesBinding.inflate(inflater, container, false)
 
-public class StylesFragment extends Fragment {
+        setToolbarTitle(requireContext(), R.string.styles, true, binding.header.toolbar)
 
-    private FragmentStylesBinding binding;
-    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
-    private final boolean isAtleastA13 = notShizukuMode || Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
-    private final boolean isAtleastA14 = notShizukuMode || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        val selectedStyle = RPrefs.getString(MONET_STYLE, null)
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentStylesBinding.inflate(inflater, container, false);
+        binding.monetNeutral.isSelected = getString(R.string.monet_neutral) == selectedStyle
+        binding.monetNeutral.setOnClickListener {
+            binding.monetNeutral.isSelected = true
+            unSelectOthers(binding.monetNeutral)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_neutral))
+            binding.monetNeutral.applyColorScheme()
+        }
+        binding.monetNeutral.isEnabled = isAtleastA13
 
-        MiscUtil.setToolbarTitle(requireContext(), R.string.styles, true, binding.header.toolbar);
+        binding.monetMonochrome.isSelected = getString(R.string.monet_monochrome) == selectedStyle
+        binding.monetMonochrome.setOnClickListener {
+            binding.monetMonochrome.isSelected = true
+            unSelectOthers(binding.monetMonochrome)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_monochrome))
+            binding.monetMonochrome.applyColorScheme()
+        }
+        binding.monetMonochrome.isEnabled = isAtleastA14
 
-        String selectedStyle = RPrefs.getString(MONET_STYLE, null);
+        binding.monetTonalspot.isSelected =
+            getString(R.string.monet_tonalspot) == selectedStyle || selectedStyle == null
+        binding.monetTonalspot.setOnClickListener {
+            binding.monetTonalspot.isSelected = true
+            unSelectOthers(binding.monetTonalspot)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_tonalspot))
+            binding.monetTonalspot.applyColorScheme()
+        }
 
-        binding.monetNeutral.setSelected(getString(R.string.monet_neutral).equals(selectedStyle));
-        binding.monetNeutral.setOnClickListener(v -> {
-            binding.monetNeutral.setSelected(true);
-            unSelectOthers(binding.monetNeutral);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_neutral));
-            binding.monetNeutral.applyColorScheme();
-        });
-        binding.monetNeutral.setEnabled(isAtleastA13);
+        binding.monetVibrant.isSelected = getString(R.string.monet_vibrant) == selectedStyle
+        binding.monetVibrant.setOnClickListener {
+            binding.monetVibrant.isSelected = true
+            unSelectOthers(binding.monetVibrant)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_vibrant))
+            binding.monetVibrant.applyColorScheme()
+        }
+        binding.monetVibrant.isEnabled = isAtleastA13
 
-        binding.monetMonochrome.setSelected(getString(R.string.monet_monochrome).equals(selectedStyle));
-        binding.monetMonochrome.setOnClickListener(v -> {
-            binding.monetMonochrome.setSelected(true);
-            unSelectOthers(binding.monetMonochrome);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_monochrome));
-            binding.monetMonochrome.applyColorScheme();
-        });
-        binding.monetMonochrome.setEnabled(isAtleastA14);
+        binding.monetRainbow.isSelected = getString(R.string.monet_rainbow) == selectedStyle
+        binding.monetRainbow.setOnClickListener {
+            binding.monetRainbow.isSelected = true
+            unSelectOthers(binding.monetRainbow)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_rainbow))
+            binding.monetRainbow.applyColorScheme()
+        }
+        binding.monetRainbow.isEnabled = isAtleastA13
 
-        binding.monetTonalspot.setSelected(getString(R.string.monet_tonalspot).equals(selectedStyle) || selectedStyle == null);
-        binding.monetTonalspot.setOnClickListener(v -> {
-            binding.monetTonalspot.setSelected(true);
-            unSelectOthers(binding.monetTonalspot);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_tonalspot));
-            binding.monetTonalspot.applyColorScheme();
-        });
+        binding.monetExpressive.isSelected = getString(R.string.monet_expressive) == selectedStyle
+        binding.monetExpressive.setOnClickListener {
+            binding.monetExpressive.isSelected = true
+            unSelectOthers(binding.monetExpressive)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_expressive))
+            binding.monetExpressive.applyColorScheme()
+        }
+        binding.monetExpressive.isEnabled = isAtleastA13
 
-        binding.monetVibrant.setSelected(getString(R.string.monet_vibrant).equals(selectedStyle));
-        binding.monetVibrant.setOnClickListener(v -> {
-            binding.monetVibrant.setSelected(true);
-            unSelectOthers(binding.monetVibrant);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_vibrant));
-            binding.monetVibrant.applyColorScheme();
-        });
-        binding.monetVibrant.setEnabled(isAtleastA13);
+        binding.monetFidelity.isSelected = getString(R.string.monet_fidelity) == selectedStyle
+        binding.monetFidelity.setOnClickListener {
+            binding.monetFidelity.isSelected = true
+            unSelectOthers(binding.monetFidelity)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fidelity))
+            binding.monetFidelity.applyColorScheme()
+        }
+        binding.monetFidelity.isEnabled = notShizukuMode
 
-        binding.monetRainbow.setSelected(getString(R.string.monet_rainbow).equals(selectedStyle));
-        binding.monetRainbow.setOnClickListener(v -> {
-            binding.monetRainbow.setSelected(true);
-            unSelectOthers(binding.monetRainbow);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_rainbow));
-            binding.monetRainbow.applyColorScheme();
-        });
-        binding.monetRainbow.setEnabled(isAtleastA13);
+        binding.monetContent.isSelected = getString(R.string.monet_content) == selectedStyle
+        binding.monetContent.setOnClickListener {
+            binding.monetContent.isSelected = true
+            unSelectOthers(binding.monetContent)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_content))
+            binding.monetContent.applyColorScheme()
+        }
+        binding.monetContent.isEnabled = notShizukuMode
 
-        binding.monetExpressive.setSelected(getString(R.string.monet_expressive).equals(selectedStyle));
-        binding.monetExpressive.setOnClickListener(v -> {
-            binding.monetExpressive.setSelected(true);
-            unSelectOthers(binding.monetExpressive);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_expressive));
-            binding.monetExpressive.applyColorScheme();
-        });
-        binding.monetExpressive.setEnabled(isAtleastA13);
+        binding.monetFruitsalad.isSelected = getString(R.string.monet_fruitsalad) == selectedStyle
+        binding.monetFruitsalad.setOnClickListener {
+            binding.monetFruitsalad.isSelected = true
+            unSelectOthers(binding.monetFruitsalad)
+            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fruitsalad))
+            binding.monetFruitsalad.applyColorScheme()
+        }
+        binding.monetFruitsalad.isEnabled = isAtleastA13
 
-        binding.monetFidelity.setSelected(getString(R.string.monet_fidelity).equals(selectedStyle));
-        binding.monetFidelity.setOnClickListener(v -> {
-            binding.monetFidelity.setSelected(true);
-            unSelectOthers(binding.monetFidelity);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fidelity));
-            binding.monetFidelity.applyColorScheme();
-        });
-        binding.monetFidelity.setEnabled(notShizukuMode);
-
-        binding.monetContent.setSelected(getString(R.string.monet_content).equals(selectedStyle));
-        binding.monetContent.setOnClickListener(v -> {
-            binding.monetContent.setSelected(true);
-            unSelectOthers(binding.monetContent);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_content));
-            binding.monetContent.applyColorScheme();
-        });
-        binding.monetContent.setEnabled(notShizukuMode);
-
-        binding.monetFruitsalad.setSelected(getString(R.string.monet_fruitsalad).equals(selectedStyle));
-        binding.monetFruitsalad.setOnClickListener(v -> {
-            binding.monetFruitsalad.setSelected(true);
-            unSelectOthers(binding.monetFruitsalad);
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            RPrefs.putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fruitsalad));
-            binding.monetFruitsalad.applyColorScheme();
-        });
-        binding.monetFruitsalad.setEnabled(isAtleastA13);
-
-        return binding.getRoot();
+        return binding.root
     }
 
-    private void unSelectOthers(ViewGroup viewGroup) {
-        ViewGroup[] viewGroups = new ViewGroup[]{
-                binding.monetNeutral,
-                binding.monetMonochrome,
-                binding.monetTonalspot,
-                binding.monetVibrant,
-                binding.monetRainbow,
-                binding.monetExpressive,
-                binding.monetFidelity,
-                binding.monetContent,
-                binding.monetFruitsalad
-        };
+    private fun unSelectOthers(viewGroup: ViewGroup) {
+        val viewGroups = arrayOf<ViewGroup>(
+            binding.monetNeutral,
+            binding.monetMonochrome,
+            binding.monetTonalspot,
+            binding.monetVibrant,
+            binding.monetRainbow,
+            binding.monetExpressive,
+            binding.monetFidelity,
+            binding.monetContent,
+            binding.monetFruitsalad
+        )
 
-        for (ViewGroup view : viewGroups) {
-            if (view != viewGroup) {
-                view.setSelected(false);
+        for (view in viewGroups) {
+            if (view !== viewGroup) {
+                view.isSelected = false
             }
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            getParentFragmentManager().popBackStackImmediate();
-            return true;
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            parentFragmentManager.popBackStackImmediate()
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    private String getOriginalName(@StringRes int id) {
-        String name = getString(id);
+    private fun getOriginalName(@StringRes id: Int): String {
+        val name = getString(id)
 
-        if (name.equals(getString(R.string.monet_neutral))) {
-            return "SPRITZ";
-        } else if (name.equals(getString(R.string.monet_vibrant))) {
-            return "VIBRANT";
-        } else if (name.equals(getString(R.string.monet_expressive))) {
-            return "EXPRESSIVE";
-        } else if (name.equals(getString(R.string.monet_rainbow))) {
-            return "RAINBOW";
-        } else if (name.equals(getString(R.string.monet_fruitsalad))) {
-            return "FRUIT_SALAD";
-        } else if (name.equals(getString(R.string.monet_content))) {
-            return "CONTENT";
-        } else if (name.equals(getString(R.string.monet_monochrome))) {
-            return "MONOCHROMATIC";
-        } else if (name.equals(getString(R.string.monet_fidelity))) {
-            return "FIDELITY";
-        } else {
-            return "TONAL_SPOT";
+        return when (name) {
+            getString(R.string.monet_neutral) -> {
+                "SPRITZ"
+            }
+
+            getString(R.string.monet_vibrant) -> {
+                "VIBRANT"
+            }
+
+            getString(R.string.monet_expressive) -> {
+                "EXPRESSIVE"
+            }
+
+            getString(R.string.monet_rainbow) -> {
+                "RAINBOW"
+            }
+
+            getString(R.string.monet_fruitsalad) -> {
+                "FRUIT_SALAD"
+            }
+
+            getString(R.string.monet_content) -> {
+                "CONTENT"
+            }
+
+            getString(R.string.monet_monochrome) -> {
+                "MONOCHROMATIC"
+            }
+
+            getString(R.string.monet_fidelity) -> {
+                "FIDELITY"
+            }
+
+            else -> {
+                "TONAL_SPOT"
+            }
         }
     }
 }

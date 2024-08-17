@@ -1,37 +1,37 @@
-package com.drdisagree.colorblendr.service;
+package com.drdisagree.colorblendr.service
 
-import static android.content.Context.JOB_SCHEDULER_SERVICE;
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.util.Log
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-
-public class RestartBroadcastReceiver extends BroadcastReceiver {
-
-    private static final String TAG = RestartBroadcastReceiver.class.getSimpleName();
-    private static JobScheduler jobScheduler;
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "Service Stopped, but this is a never ending service.");
-        scheduleJob(context);
+class RestartBroadcastReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        Log.i(TAG, "Service Stopped, but this is a never ending service.")
+        scheduleJob(context)
     }
 
-    public static void scheduleJob(Context context) {
-        if (jobScheduler == null) {
-            jobScheduler = (JobScheduler) context.getSystemService(JOB_SCHEDULER_SERVICE);
-        }
+    companion object {
+        private val TAG: String = RestartBroadcastReceiver::class.java.simpleName
+        private var jobScheduler: JobScheduler? = null
 
-        ComponentName componentName = new ComponentName(context, ScheduledJobService.class);
+        @JvmStatic
+        fun scheduleJob(context: Context) {
+            if (jobScheduler == null) {
+                jobScheduler =
+                    context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            }
 
-        JobInfo jobInfo = new JobInfo.Builder(1, componentName)
+            val componentName = ComponentName(context, ScheduledJobService::class.java)
+
+            val jobInfo = JobInfo.Builder(1, componentName)
                 .setOverrideDeadline(0)
-                .setPersisted(true).build();
+                .setPersisted(true).build()
 
-        jobScheduler.schedule(jobInfo);
+            jobScheduler!!.schedule(jobInfo)
+        }
     }
 }

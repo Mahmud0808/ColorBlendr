@@ -1,255 +1,284 @@
-package com.drdisagree.colorblendr.ui.fragments;
+package com.drdisagree.colorblendr.ui.fragments
 
-import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.Color
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.putBoolean
+import com.drdisagree.colorblendr.config.RPrefs.putInt
+import com.drdisagree.colorblendr.config.RPrefs.putLong
+import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
+import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
+import com.drdisagree.colorblendr.ui.views.WallColorPreview
+import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
+import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getWallpaperColor
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.button.MaterialButtonToggleGroup.OnButtonCheckedListener
+import com.google.gson.reflect.TypeToken
+import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.interfaces.OnColorPickedListener
+import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
+import java.util.Arrays
+import java.util.stream.Collectors
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+@Suppress("deprecation")
+class ColorsFragment : Fragment() {
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+    private lateinit var binding: FragmentColorsBinding
+    private lateinit var monetSeedColor: IntArray
+    private lateinit var sharedViewModel: SharedViewModel
+    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.databinding.FragmentColorsBinding;
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel;
-import com.drdisagree.colorblendr.ui.views.WallColorPreview;
-import com.drdisagree.colorblendr.utils.ColorUtil;
-import com.drdisagree.colorblendr.utils.MiscUtil;
-import com.drdisagree.colorblendr.utils.OverlayManager;
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
-import com.google.gson.reflect.TypeToken;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog;
-import me.jfenn.colorpickerdialog.views.picker.ImagePickerView;
-
-@SuppressWarnings("deprecation")
-public class ColorsFragment extends Fragment {
-
-    private static final String TAG = ColorsFragment.class.getSimpleName();
-    private FragmentColorsBinding binding;
-    private int[] monetSeedColor;
-    private SharedViewModel sharedViewModel;
-    private final boolean notShizukuMode = Const.getWorkingMethod() != Const.WORK_METHOD.SHIZUKU;
-    private final BroadcastReceiver wallpaperChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, android.content.Intent intent) {
-            if (binding.colorsToggleGroup.getCheckedButtonId() == R.id.wallpaper_colors_button) {
-                addWallpaperColorItems();
+    private val wallpaperChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (binding.colorsToggleGroup.checkedButtonId == R.id.wallpaper_colors_button) {
+                addWallpaperColorItems()
             }
         }
-    };
+    }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
         if (!notShizukuMode) {
-            SettingsFragment.clearCustomColors();
+            SettingsFragment.clearCustomColors()
         }
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentColorsBinding.inflate(inflater, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentColorsBinding.inflate(inflater, container, false)
 
-        MiscUtil.setToolbarTitle(requireContext(), R.string.app_name, false, binding.header.toolbar);
+        setToolbarTitle(requireContext(), R.string.app_name, false, binding.header.toolbar)
 
-        monetSeedColor = new int[]{RPrefs.getInt(
+        monetSeedColor = intArrayOf(
+            getInt(
                 MONET_SEED_COLOR,
-                WallpaperColorUtil.getWallpaperColor(requireContext())
-        )};
+                getWallpaperColor(requireContext())
+            )
+        )
 
-        return binding.getRoot();
+        return binding.getRoot()
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel.getVisibilityStates().observe(getViewLifecycleOwner(), this::updateViewVisibility);
+        sharedViewModel.getVisibilityStates()
+            .observe(getViewLifecycleOwner()) { visibilityStates: Map<String, Int> ->
+                this.updateViewVisibility(
+                    visibilityStates
+                )
+            }
 
         // Color codes
         binding.colorsToggleGroup.check(
-                RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false) ?
-                        R.id.basic_colors_button :
-                        R.id.wallpaper_colors_button
-        );
-        binding.colorsToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (getBoolean(
+                    MONET_SEED_COLOR_ENABLED,
+                    false
+                )
+            ) R.id.basic_colors_button else R.id.wallpaper_colors_button
+        )
+        binding.colorsToggleGroup.addOnButtonCheckedListener { _: MaterialButtonToggleGroup?, checkedId: Int, isChecked: Boolean ->
             if (isChecked) {
                 if (checkedId == R.id.wallpaper_colors_button) {
-                    addWallpaperColorItems();
+                    addWallpaperColorItems()
                 } else {
-                    addBasicColorItems();
+                    addBasicColorItems()
                 }
             }
-        });
-        if (RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-            addBasicColorItems();
+        }
+        if (getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+            addBasicColorItems()
         } else {
-            addWallpaperColorItems();
+            addWallpaperColorItems()
         }
 
         // Primary color
-        binding.seedColorPicker.setPreviewColor(RPrefs.getInt(
-                MONET_SEED_COLOR,
-                monetSeedColor[0]
-        ));
-        binding.seedColorPicker.setOnClickListener(v -> new ColorPickerDialog()
-                .withCornerRadius(10)
+        binding.seedColorPicker.previewColor = getInt(
+            MONET_SEED_COLOR,
+            monetSeedColor[0]
+        )
+
+        binding.seedColorPicker.setOnClickListener {
+            ColorPickerDialog()
+                .withCornerRadius(10f)
                 .withColor(monetSeedColor[0])
                 .withAlphaEnabled(false)
-                .withPicker(ImagePickerView.class)
-                .withListener((pickerView, color) -> {
+                .withPicker(ImagePickerView::class.java)
+                .withListener { _: ColorPickerDialog?, color: Int ->
                     if (monetSeedColor[0] != color) {
-                        monetSeedColor[0] = color;
-                        binding.seedColorPicker.setPreviewColor(color);
-                        RPrefs.putInt(MONET_SEED_COLOR, monetSeedColor[0]);
-                        RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        monetSeedColor[0] = color
+                        binding.seedColorPicker.previewColor = color
+                        putInt(MONET_SEED_COLOR, monetSeedColor[0])
+                        putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+                        Handler(Looper.getMainLooper()).postDelayed({
                             try {
-                                OverlayManager.applyFabricatedColors(requireContext());
-                            } catch (Exception ignored) {
+                                applyFabricatedColors(requireContext())
+                            } catch (ignored: Exception) {
                             }
-                        }, 300);
+                        }, 300)
                     }
-                })
+                }
                 .show(getChildFragmentManager(), "seedColorPicker")
-        );
-        binding.seedColorPicker.setVisibility(
-                RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false) ?
-                        View.VISIBLE :
-                        View.GONE
-        );
+        }
+        binding.seedColorPicker.visibility = if (getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
 
         // Color palette
-        binding.colorPalette.setOnClickListener(v -> HomeFragment.replaceFragment(new ColorPaletteFragment()));
+        binding.colorPalette.setOnClickListener {
+            HomeFragment.replaceFragment(
+                ColorPaletteFragment()
+            )
+        }
 
         // Force per app theme
-        binding.perAppTheme.setOnClickListener(v -> HomeFragment.replaceFragment(new PerAppThemeFragment()));
-        binding.perAppTheme.setEnabled(notShizukuMode);
+        binding.perAppTheme.setOnClickListener {
+            HomeFragment.replaceFragment(
+                PerAppThemeFragment()
+            )
+        }
+        binding.perAppTheme.setEnabled(notShizukuMode)
     }
 
-    private void updateViewVisibility(Map<String, Integer> visibilityStates) {
-        Integer seedColorVisibility = visibilityStates.get(MONET_SEED_COLOR_ENABLED);
-        if (seedColorVisibility != null && binding.seedColorPicker.getVisibility() != seedColorVisibility) {
-            binding.seedColorPicker.setVisibility(seedColorVisibility);
+    private fun updateViewVisibility(visibilityStates: Map<String, Int>) {
+        val seedColorVisibility: Int? = visibilityStates[MONET_SEED_COLOR_ENABLED]
 
-            String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
-            ArrayList<Integer> wallpaperColorList = Const.GSON.fromJson(
-                    wallpaperColors,
-                    new TypeToken<ArrayList<Integer>>() {
-                    }.getType()
-            );
+        if (seedColorVisibility != null && binding.seedColorPicker.visibility != seedColorVisibility) {
+            binding.seedColorPicker.visibility = seedColorVisibility
+
+            val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
+            val wallpaperColorList: ArrayList<Int> = Const.GSON.fromJson(
+                wallpaperColors,
+                object : TypeToken<ArrayList<Int?>?>() {
+                }.type
+            )
 
             if (seedColorVisibility == View.GONE) {
-                monetSeedColor = new int[]{wallpaperColorList.get(0)};
-                binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
+                monetSeedColor = intArrayOf(wallpaperColorList[0])
+                binding.seedColorPicker.previewColor = monetSeedColor[0]
             } else {
-                monetSeedColor = new int[]{RPrefs.getInt(
+                monetSeedColor = intArrayOf(
+                    getInt(
                         MONET_SEED_COLOR,
-                        wallpaperColorList.get(0)
-                )};
-                binding.seedColorPicker.setPreviewColor(monetSeedColor[0]);
+                        wallpaperColorList[0]
+                    )
+                )
+                binding.seedColorPicker.previewColor = monetSeedColor[0]
             }
         }
     }
 
-    private void addWallpaperColorItems() {
-        String wallpaperColors = RPrefs.getString(WALLPAPER_COLOR_LIST, null);
-        ArrayList<Integer> wallpaperColorList;
+    private fun addWallpaperColorItems() {
+        val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
 
-        if (wallpaperColors != null) {
-            wallpaperColorList = Const.GSON.fromJson(
-                    wallpaperColors,
-                    new TypeToken<ArrayList<Integer>>() {
-                    }.getType()
-            );
+        val wallpaperColorList: ArrayList<Int> = if (wallpaperColors != null) {
+            Const.GSON.fromJson(
+                wallpaperColors,
+                object : TypeToken<ArrayList<Int?>?>() {
+                }.type
+            )
         } else {
-            wallpaperColorList = ColorUtil.getMonetAccentColors();
+            monetAccentColors
         }
 
-        addColorsToContainer(wallpaperColorList, true);
+        addColorsToContainer(wallpaperColorList, true)
     }
 
-    @SuppressWarnings("all")
-    private void addBasicColorItems() {
-        String[] basicColors = getResources().getStringArray(R.array.basic_color_codes);
-        List<Integer> basicColorList = Arrays.stream(basicColors)
-                .map(Color::parseColor)
-                .collect(Collectors.toList());
+    private fun addBasicColorItems() {
+        val basicColors: Array<String> = resources.getStringArray(R.array.basic_color_codes)
+        val basicColorList: List<Int> = Arrays.stream(basicColors)
+            .map { colorString: String? -> Color.parseColor(colorString) }
+            .collect(Collectors.toList())
 
-        addColorsToContainer(new ArrayList<>(basicColorList), false);
+        addColorsToContainer(ArrayList(basicColorList), false)
     }
 
-    private void addColorsToContainer(ArrayList<Integer> colorList, boolean isWallpaperColors) {
-        binding.colorsContainer.removeAllViews();
+    private fun addColorsToContainer(colorList: ArrayList<Int>, isWallpaperColors: Boolean) {
+        binding.colorsContainer.removeAllViews()
 
-        for (int i = 0; i < colorList.size(); i++) {
-            int size = (int) (48 * getResources().getDisplayMetrics().density);
-            int margin = (int) (12 * getResources().getDisplayMetrics().density);
+        for (i in colorList.indices) {
+            val size: Int = (48 * resources.displayMetrics.density).toInt()
+            val margin: Int = (12 * resources.displayMetrics.density).toInt()
 
-            WallColorPreview colorPreview = new WallColorPreview(requireContext());
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
-            layoutParams.setMargins(margin, margin, margin, margin);
-            colorPreview.setLayoutParams(layoutParams);
-            colorPreview.setMainColor(colorList.get(i));
-            colorPreview.setTag(colorList.get(i));
-            colorPreview.setSelected(colorList.get(i) == RPrefs.getInt(MONET_SEED_COLOR, Integer.MIN_VALUE));
+            val colorPreview = WallColorPreview(requireContext())
+            val layoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(size, size)
+            layoutParams.setMargins(margin, margin, margin, margin)
+            colorPreview.setLayoutParams(layoutParams)
+            colorPreview.setMainColor(colorList[i])
+            colorPreview.tag = colorList[i]
+            colorPreview.setSelected(colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
 
-            colorPreview.setOnClickListener(v -> {
-                RPrefs.putInt(MONET_SEED_COLOR, (Integer) colorPreview.getTag());
-                RPrefs.putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors);
-                binding.seedColorPicker.setPreviewColor((Integer) colorPreview.getTag());
-                RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-                OverlayManager.applyFabricatedColors(requireContext());
-            });
+            colorPreview.setOnClickListener {
+                putInt(
+                    MONET_SEED_COLOR,
+                    (colorPreview.tag as Int)
+                )
+                putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
+                binding.seedColorPicker.previewColor = colorPreview.tag as Int
+                putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+                applyFabricatedColors(requireContext())
+            }
 
-            binding.colorsContainer.addView(colorPreview);
+            binding.colorsContainer.addView(colorPreview)
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    override fun onResume() {
+        super.onResume()
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED)
 
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(wallpaperChangedReceiver, intentFilter);
+        LocalBroadcastManager
+            .getInstance(requireContext())
+            .registerReceiver(wallpaperChangedReceiver, intentFilter)
     }
 
-    @Override
-    public void onDestroy() {
+    override fun onDestroy() {
         try {
-            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(wallpaperChangedReceiver);
-        } catch (Exception ignored) {
+            LocalBroadcastManager
+                .getInstance(requireContext())
+                .unregisterReceiver(wallpaperChangedReceiver)
+        } catch (ignored: Exception) {
             // Receiver was not registered
         }
-        super.onDestroy();
+        super.onDestroy()
+    }
+
+    companion object {
+        private val TAG: String = ColorsFragment::class.java.getSimpleName()
     }
 }

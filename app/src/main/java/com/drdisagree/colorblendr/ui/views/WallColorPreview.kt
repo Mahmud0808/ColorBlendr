@@ -1,299 +1,342 @@
-package com.drdisagree.colorblendr.ui.views;
+package com.drdisagree.colorblendr.ui.views
 
-import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
-import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
-import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
-import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
-import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
+import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
+import android.os.Parcel
+import android.os.Parcelable
+import android.util.AttributeSet
+import android.view.View
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.getString
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
+import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
+import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.SystemUtil
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.view.View;
+class WallColorPreview : View {
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+    private var context: Context? = null
+    private var isDarkMode = false
+    private var tickPaint: Paint? = null
+    private var squarePaint: Paint? = null
+    private var centerCirclePaint: Paint? = null
+    private var centerClearCirclePaint: Paint? = null
+    private var secondQuarterCirclePaint: Paint? = null
+    private var firstQuarterCirclePaint: Paint? = null
+    private var halfCirclePaint: Paint? = null
+    private var squareRect: RectF? = null
+    private var circleRect: RectF? = null
+    private var tickPath: Path? = null
+    private var clearCircleRadius = 0f
+    private var circleRadius = 0f
+    private var isSelected = false
+    private var colorPalette: ArrayList<ArrayList<Int>>? = null
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil;
-import com.drdisagree.colorblendr.utils.ColorUtil;
-import com.drdisagree.colorblendr.utils.SystemUtil;
+    @ColorInt
+    private var halfCircleColor = 0
 
-import java.util.ArrayList;
+    @ColorInt
+    private var firstQuarterCircleColor = 0
 
-public class WallColorPreview extends View {
+    @ColorInt
+    private var secondQuarterCircleColor = 0
 
-    private Context context;
-    private boolean isDarkMode;
-    private Paint tickPaint, squarePaint, centerCirclePaint, centerClearCirclePaint, secondQuarterCirclePaint, firstQuarterCirclePaint, halfCirclePaint;
-    private RectF squareRect, circleRect;
-    private Path tickPath;
-    private float clearCircleRadius, circleRadius;
-    private boolean isSelected = false;
-    private ArrayList<ArrayList<Integer>> colorPalette;
-    private @ColorInt int halfCircleColor, firstQuarterCircleColor, secondQuarterCircleColor, squareColor, centerCircleColor;
+    @ColorInt
+    private var squareColor = 0
 
-    public WallColorPreview(Context context) {
-        super(context);
-        init(context);
+    @ColorInt
+    private var centerCircleColor = 0
+
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public WallColorPreview(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    public WallColorPreview(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context)
     }
 
-    private void init(Context context) {
-        this.context = context;
-        isDarkMode = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
+    private fun init(context: Context) {
+        this.context = context
+        isDarkMode =
+            (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES
 
-        circleRadius = 10 * getResources().getDisplayMetrics().density;
-        clearCircleRadius = circleRadius + 0 * getResources().getDisplayMetrics().density;
+        circleRadius = 10 * resources.displayMetrics.density
+        clearCircleRadius = circleRadius + 0 * resources.displayMetrics.density
 
-        squareRect = new RectF();
-        circleRect = new RectF();
-        tickPath = new Path();
+        squareRect = RectF()
+        circleRect = RectF()
+        tickPath = Path()
 
-        squarePaint = new Paint();
-        squarePaint.setColor(ContextCompat.getColor(context,
-                !isDarkMode ?
-                        com.google.android.material.R.color.material_dynamic_neutral99 :
-                        com.google.android.material.R.color.material_dynamic_neutral10
-        ));
-        squarePaint.setStyle(Paint.Style.FILL);
+        squarePaint = Paint()
+        squarePaint!!.color = ContextCompat.getColor(
+            context,
+            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+        )
+        squarePaint!!.style = Paint.Style.FILL
 
-        halfCirclePaint = new Paint();
-        halfCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_primary90));
-        halfCirclePaint.setStyle(Paint.Style.FILL);
-        halfCirclePaint.setStrokeCap(Paint.Cap.BUTT);
+        halfCirclePaint = Paint()
+        halfCirclePaint!!.color = ContextCompat.getColor(
+            context,
+            com.google.android.material.R.color.material_dynamic_primary90
+        )
+        halfCirclePaint!!.style = Paint.Style.FILL
+        halfCirclePaint!!.strokeCap = Paint.Cap.BUTT
 
-        firstQuarterCirclePaint = new Paint();
-        firstQuarterCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_secondary90));
-        firstQuarterCirclePaint.setStyle(Paint.Style.FILL);
-        firstQuarterCirclePaint.setStrokeCap(Paint.Cap.BUTT);
+        firstQuarterCirclePaint = Paint()
+        firstQuarterCirclePaint!!.color = ContextCompat.getColor(
+            context,
+            com.google.android.material.R.color.material_dynamic_secondary90
+        )
+        firstQuarterCirclePaint!!.style = Paint.Style.FILL
+        firstQuarterCirclePaint!!.strokeCap = Paint.Cap.BUTT
 
-        secondQuarterCirclePaint = new Paint();
-        secondQuarterCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_tertiary90));
-        secondQuarterCirclePaint.setStyle(Paint.Style.FILL);
-        secondQuarterCirclePaint.setStrokeCap(Paint.Cap.BUTT);
+        secondQuarterCirclePaint = Paint()
+        secondQuarterCirclePaint!!.color = ContextCompat.getColor(
+            context,
+            com.google.android.material.R.color.material_dynamic_tertiary90
+        )
+        secondQuarterCirclePaint!!.style = Paint.Style.FILL
+        secondQuarterCirclePaint!!.strokeCap = Paint.Cap.BUTT
 
-        centerCirclePaint = new Paint();
-        centerCirclePaint.setColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_primary70));
-        centerCirclePaint.setStyle(Paint.Style.FILL);
+        centerCirclePaint = Paint()
+        centerCirclePaint!!.color = ContextCompat.getColor(
+            context,
+            com.google.android.material.R.color.material_dynamic_primary70
+        )
+        centerCirclePaint!!.style = Paint.Style.FILL
 
-        centerClearCirclePaint = new Paint();
-        centerClearCirclePaint.setColor(ContextCompat.getColor(context,
-                !isDarkMode ?
-                        com.google.android.material.R.color.material_dynamic_neutral99 :
-                        com.google.android.material.R.color.material_dynamic_neutral10
-        ));
-        centerClearCirclePaint.setStyle(Paint.Style.FILL);
+        centerClearCirclePaint = Paint()
+        centerClearCirclePaint!!.color = ContextCompat.getColor(
+            context,
+            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+        )
+        centerClearCirclePaint!!.style = Paint.Style.FILL
 
-        tickPaint = new Paint();
-        tickPaint.setColor(ContextCompat.getColor(context,
-                !isDarkMode ?
-                        com.google.android.material.R.color.material_dynamic_neutral99 :
-                        com.google.android.material.R.color.material_dynamic_neutral10
-        ));
-        tickPaint.setStyle(Paint.Style.STROKE);
-        tickPaint.setStrokeWidth(4);
-        tickPaint.setStrokeCap(Paint.Cap.ROUND);
+        tickPaint = Paint()
+        tickPaint!!.color = ContextCompat.getColor(
+            context,
+            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+        )
+        tickPaint!!.style = Paint.Style.STROKE
+        tickPaint!!.strokeWidth = 4f
+        tickPaint!!.strokeCap = Paint.Cap.ROUND
     }
 
-    @Override
-    protected void onDraw(@NonNull Canvas canvas) {
-        super.onDraw(canvas);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
-        int width = getWidth();
-        int height = getHeight();
+        val width = width
+        val height = height
 
-        float cornerRadius = 12 * getResources().getDisplayMetrics().density;
-        squareRect.set(0, 0, width, height);
-        canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint);
+        val cornerRadius = 12 * resources.displayMetrics.density
+        squareRect!![0f, 0f, width.toFloat()] = height.toFloat()
+        canvas.drawRoundRect(squareRect!!, cornerRadius, cornerRadius, squarePaint!!)
 
-        float padding = 6 * getResources().getDisplayMetrics().density;
-        float margin = 0 * getResources().getDisplayMetrics().density;
+        val padding = 6 * resources.displayMetrics.density
+        val margin = 0 * resources.displayMetrics.density
 
-        circleRect.set(padding, padding, width - padding, height - padding - margin);
-        canvas.drawArc(circleRect, 180, 180, true, halfCirclePaint);
+        circleRect!![padding, padding, width - padding] = height - padding - margin
+        canvas.drawArc(circleRect!!, 180f, 180f, true, halfCirclePaint!!)
 
-        circleRect.set(padding, padding + margin, width - padding - margin, height - padding);
-        canvas.drawArc(circleRect, 90, 90, true, firstQuarterCirclePaint);
+        circleRect!![padding, padding + margin, width - padding - margin] = height - padding
+        canvas.drawArc(circleRect!!, 90f, 90f, true, firstQuarterCirclePaint!!)
 
-        circleRect.set(padding + margin, padding + margin, width - padding, height - padding);
-        canvas.drawArc(circleRect, 0, 90, true, secondQuarterCirclePaint);
+        circleRect!![padding + margin, padding + margin, width - padding] = height - padding
+        canvas.drawArc(circleRect!!, 0f, 90f, true, secondQuarterCirclePaint!!)
 
-        circleRect.set(width / 2f - clearCircleRadius, height / 2f - clearCircleRadius, width / 2f + clearCircleRadius, height / 2f + clearCircleRadius);
-        canvas.drawArc(circleRect, 0, 360, true, centerClearCirclePaint);
+        circleRect!![width / 2f - clearCircleRadius, height / 2f - clearCircleRadius, width / 2f + clearCircleRadius] =
+            height / 2f + clearCircleRadius
+        canvas.drawArc(circleRect!!, 0f, 360f, true, centerClearCirclePaint!!)
 
-        circleRect.set(width / 2f - circleRadius, height / 2f - circleRadius, width / 2f + circleRadius, height / 2f + circleRadius);
-        canvas.drawCircle(width / 2f, height / 2f, circleRadius, centerCirclePaint);
+        circleRect!![width / 2f - circleRadius, height / 2f - circleRadius, width / 2f + circleRadius] =
+            height / 2f + circleRadius
+        canvas.drawCircle(width / 2f, height / 2f, circleRadius, centerCirclePaint!!)
 
         if (isSelected) {
-            tickPath.moveTo(width / 2f - circleRadius / 2, height / 2f);
-            tickPath.lineTo(width / 2f - circleRadius / 6, height / 2f + circleRadius / 3);
-            tickPath.lineTo(width / 2f + circleRadius / 2, height / 2f - circleRadius / 3);
-            canvas.drawPath(tickPath, tickPaint);
+            tickPath!!.moveTo(width / 2f - circleRadius / 2, height / 2f)
+            tickPath!!.lineTo(width / 2f - circleRadius / 6, height / 2f + circleRadius / 3)
+            tickPath!!.lineTo(width / 2f + circleRadius / 2, height / 2f - circleRadius / 3)
+            canvas.drawPath(tickPath!!, tickPaint!!)
         }
     }
 
-    private void setSquareColor(@ColorInt int color) {
-        squareColor = color;
-        squarePaint.setColor(color);
-        centerClearCirclePaint.setColor(color);
+    private fun setSquareColor(@ColorInt color: Int) {
+        squareColor = color
+        squarePaint!!.color = color
+        centerClearCirclePaint!!.color = color
     }
 
-    private void setFirstQuarterCircleColor(@ColorInt int color) {
-        firstQuarterCircleColor = color;
-        firstQuarterCirclePaint.setColor(color);
+    private fun setFirstQuarterCircleColor(@ColorInt color: Int) {
+        firstQuarterCircleColor = color
+        firstQuarterCirclePaint!!.color = color
     }
 
-    private void setSecondQuarterCircleColor(@ColorInt int color) {
-        secondQuarterCircleColor = color;
-        secondQuarterCirclePaint.setColor(color);
+    private fun setSecondQuarterCircleColor(@ColorInt color: Int) {
+        secondQuarterCircleColor = color
+        secondQuarterCirclePaint!!.color = color
     }
 
-    private void setHalfCircleColor(@ColorInt int color) {
-        halfCircleColor = color;
-        halfCirclePaint.setColor(color);
+    private fun setHalfCircleColor(@ColorInt color: Int) {
+        halfCircleColor = color
+        halfCirclePaint!!.color = color
     }
 
-    private void setCenterCircleColor(@ColorInt int color) {
-        centerCircleColor = color;
-        centerCirclePaint.setColor(color);
-        @ColorInt int textColor = ColorUtil.calculateTextColor(color);
-        tickPaint.setColor(
-                colorPalette != null ?
-                        colorPalette.get(4).get(textColor == Color.WHITE ? 2 : 11) :
-                        textColor
-        );
+    private fun setCenterCircleColor(@ColorInt color: Int) {
+        centerCircleColor = color
+        centerCirclePaint!!.color = color
+        @ColorInt val textColor = calculateTextColor(color)
+        tickPaint!!.color = if (colorPalette != null) {
+            colorPalette!![4][if (textColor == Color.WHITE) 2 else 11]
+        } else {
+            textColor
+        }
     }
 
-    private void invalidateColors() {
-        invalidate();
+    private fun invalidateColors() {
+        invalidate()
     }
 
-    public void setMainColor(@ColorInt int color) {
-        new Thread(() -> {
+    fun setMainColor(@ColorInt color: Int) {
+        Thread {
             try {
-                colorPalette = ColorUtil.generateModifiedColors(
-                        ColorSchemeUtil.stringToEnumMonetStyle(
-                                context,
-                                RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))
-                        ),
-                        color,
-                        RPrefs.getInt(MONET_ACCENT_SATURATION, 100),
-                        RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100),
-                        RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                        RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
-                        RPrefs.getBoolean(MONET_ACCURATE_SHADES, true),
-                        false,
-                        SystemUtil.isDarkMode(),
-                        false
-                );
+                colorPalette = generateModifiedColors(
+                    stringToEnumMonetStyle(
+                        context!!,
+                        getString(
+                            MONET_STYLE,
+                            context!!.getString(R.string.monet_tonalspot)
+                        )!!
+                    ),
+                    color,
+                    getInt(MONET_ACCENT_SATURATION, 100),
+                    getInt(MONET_BACKGROUND_SATURATION, 100),
+                    getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                    getBoolean(MONET_PITCH_BLACK_THEME, false),
+                    getBoolean(MONET_ACCURATE_SHADES, true),
+                    false,
+                    SystemUtil.isDarkMode,
+                    false
+                )
 
-                setHalfCircleColor(colorPalette.get(0).get(4));
-                setFirstQuarterCircleColor(colorPalette.get(2).get(5));
-                setSecondQuarterCircleColor(colorPalette.get(1).get(6));
-                setSquareColor(colorPalette.get(4).get(!isDarkMode ? 3 : 9));
-                setCenterCircleColor(color);
-                invalidateColors();
-            } catch (Exception ignored) {
+                setHalfCircleColor(colorPalette!![0][4])
+                setFirstQuarterCircleColor(colorPalette!![2][5])
+                setSecondQuarterCircleColor(colorPalette!![1][6])
+                setSquareColor(colorPalette!![4][if (!isDarkMode) 3 else 9])
+                setCenterCircleColor(color)
+                invalidateColors()
+            } catch (ignored: Exception) {
             }
-        }).start();
+        }.start()
     }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-        invalidateColors();
+    override fun setSelected(selected: Boolean) {
+        isSelected = selected
+        invalidateColors()
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
 
-        SavedState ss = new SavedState(superState);
-        ss.halfCircleColor = halfCircleColor;
-        ss.firstQuarterCircleColor = firstQuarterCircleColor;
-        ss.secondQuarterCircleColor = secondQuarterCircleColor;
-        ss.squareColor = squareColor;
-        ss.centerCircleColor = centerCircleColor;
+        val ss = SavedState(superState)
+        ss.halfCircleColor = halfCircleColor
+        ss.firstQuarterCircleColor = firstQuarterCircleColor
+        ss.secondQuarterCircleColor = secondQuarterCircleColor
+        ss.squareColor = squareColor
+        ss.centerCircleColor = centerCircleColor
 
-        return ss;
+        return ss
     }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState ss)) {
-            super.onRestoreInstanceState(state);
-            return;
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
         }
 
-        super.onRestoreInstanceState(ss.getSuperState());
+        super.onRestoreInstanceState(state.superState)
 
-        setHalfCircleColor(ss.halfCircleColor);
-        setFirstQuarterCircleColor(ss.firstQuarterCircleColor);
-        setSecondQuarterCircleColor(ss.secondQuarterCircleColor);
-        setSquareColor(ss.squareColor);
-        setCenterCircleColor(ss.centerCircleColor);
+        setHalfCircleColor(state.halfCircleColor)
+        setFirstQuarterCircleColor(state.firstQuarterCircleColor)
+        setSecondQuarterCircleColor(state.secondQuarterCircleColor)
+        setSquareColor(state.squareColor)
+        setCenterCircleColor(state.centerCircleColor)
     }
 
-    private static class SavedState extends BaseSavedState {
+    private class SavedState : BaseSavedState {
         @ColorInt
-        int halfCircleColor, firstQuarterCircleColor, secondQuarterCircleColor, squareColor, centerCircleColor;
+        var halfCircleColor: Int = 0
 
-        SavedState(Parcelable superState) {
-            super(superState);
+        @ColorInt
+        var firstQuarterCircleColor: Int = 0
+
+        @ColorInt
+        var secondQuarterCircleColor: Int = 0
+
+        @ColorInt
+        var squareColor: Int = 0
+
+        @ColorInt
+        var centerCircleColor: Int = 0
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        private constructor(`in`: Parcel) : super(`in`) {
+            halfCircleColor = `in`.readInt()
+            firstQuarterCircleColor = `in`.readInt()
+            secondQuarterCircleColor = `in`.readInt()
+            squareColor = `in`.readInt()
+            centerCircleColor = `in`.readInt()
         }
 
-        private SavedState(Parcel in) {
-            super(in);
-            halfCircleColor = in.readInt();
-            firstQuarterCircleColor = in.readInt();
-            secondQuarterCircleColor = in.readInt();
-            squareColor = in.readInt();
-            centerCircleColor = in.readInt();
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            super.writeToParcel(dest, flags)
+            dest.writeInt(halfCircleColor)
+            dest.writeInt(firstQuarterCircleColor)
+            dest.writeInt(secondQuarterCircleColor)
+            dest.writeInt(squareColor)
+            dest.writeInt(centerCircleColor)
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(halfCircleColor);
-            dest.writeInt(firstQuarterCircleColor);
-            dest.writeInt(secondQuarterCircleColor);
-            dest.writeInt(squareColor);
-            dest.writeInt(centerCircleColor);
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
             }
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
             }
-        };
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        this.setAlpha(enabled ? 1.0f : 0.6f);
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        this.alpha = if (enabled) 1.0f else 0.6f
     }
 }

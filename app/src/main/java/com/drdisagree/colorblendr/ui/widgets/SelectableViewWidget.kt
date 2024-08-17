@@ -1,245 +1,258 @@
-package com.drdisagree.colorblendr.ui.widgets;
+package com.drdisagree.colorblendr.ui.widgets
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.content.Context
+import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.content.res.TypedArray
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.os.Parcel
+import android.os.Parcelable
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
+class SelectableViewWidget : RelativeLayout {
 
-import com.drdisagree.colorblendr.ColorBlendr;
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.utils.SystemUtil;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.color.MaterialColors;
+    private var context: Context? = null
+    private var container: MaterialCardView? = null
+    private var titleTextView: TextView? = null
+    private var descriptionTextView: TextView? = null
+    private var iconImageView: ImageView? = null
+    private var onClickListener: OnClickListener? = null
 
-public class SelectableViewWidget extends RelativeLayout {
-
-    private Context context;
-    private MaterialCardView container;
-    private TextView titleTextView;
-    private TextView descriptionTextView;
-    private ImageView iconImageView;
-    private OnClickListener onClickListener;
-
-    public SelectableViewWidget(Context context) {
-        super(context);
-        init(context, null);
+    constructor(context: Context) : super(context) {
+        init(context, null)
     }
 
-    public SelectableViewWidget(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
     }
 
-    public SelectableViewWidget(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context, attrs)
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        this.context = context;
-        inflate(context, R.layout.view_widget_selectable, this);
+    private fun init(context: Context, attrs: AttributeSet?) {
+        this.context = context
+        inflate(context, R.layout.view_widget_selectable, this)
 
-        initializeId();
+        initializeId()
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SelectableViewWidget);
-        setTitle(typedArray.getString(R.styleable.SelectableViewWidget_titleText));
-        setDescription(typedArray.getString(R.styleable.SelectableViewWidget_descriptionText));
-        setSelected(typedArray.getBoolean(R.styleable.SelectableViewWidget_isSelected, false));
-        typedArray.recycle();
+        val typedArray: TypedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.SelectableViewWidget)
+        setTitle(typedArray.getString(R.styleable.SelectableViewWidget_titleText))
+        setDescription(typedArray.getString(R.styleable.SelectableViewWidget_descriptionText))
+        isSelected = typedArray.getBoolean(R.styleable.SelectableViewWidget_isSelected, false)
+        typedArray.recycle()
 
-        container.setOnClickListener(v -> {
-            if (onClickListener != null && !isSelected()) {
-                setSelected(true);
-                onClickListener.onClick(v);
+        container!!.setOnClickListener { v: View? ->
+            if (onClickListener != null && !isSelected) {
+                isSelected = true
+                onClickListener!!.onClick(v)
             }
-        });
-
-        updateViewOnOrientation();
-    }
-
-    public void setTitle(int titleResId) {
-        titleTextView.setText(titleResId);
-    }
-
-    public void setTitle(String title) {
-        titleTextView.setText(title);
-    }
-
-    public void setDescription(int descriptionResId) {
-        descriptionTextView.setText(descriptionResId);
-    }
-
-    public void setDescription(String description) {
-        descriptionTextView.setText(description);
-    }
-
-    public boolean isSelected() {
-        return iconImageView.getAlpha() == 1.0f;
-    }
-
-    public void setSelected(boolean isSelected) {
-        iconImageView.setAlpha(isSelected ? 1.0f : 0.2f);
-        iconImageView.setColorFilter(getIconColor(), PorterDuff.Mode.SRC_IN);
-        iconImageView.setImageResource(isSelected ? R.drawable.ic_checked_filled : R.drawable.ic_checked_outline);
-        container.setCardBackgroundColor(getCardBackgroundColor());
-        container.setStrokeWidth(isSelected ? 0 : 2);
-        titleTextView.setTextColor(getTextColor(isSelected));
-        descriptionTextView.setTextColor(getTextColor(isSelected));
-    }
-
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
-        onClickListener = l;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-
-        if (enabled) {
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = getContext().obtainStyledAttributes(
-                    typedValue.data,
-                    new int[]{com.google.android.material.R.attr.colorPrimary}
-            );
-            int color = a.getColor(0, 0);
-            a.recycle();
-
-            iconImageView.setImageTintList(ColorStateList.valueOf(color));
-
-            titleTextView.setAlpha(1.0f);
-            descriptionTextView.setAlpha(0.8f);
-        } else {
-            if (SystemUtil.isDarkMode()) {
-                iconImageView.setImageTintList(ColorStateList.valueOf(Color.DKGRAY));
-            } else {
-                iconImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
-            }
-
-            titleTextView.setAlpha(0.6f);
-            descriptionTextView.setAlpha(0.4f);
         }
 
-        container.setEnabled(enabled);
-        iconImageView.setEnabled(enabled);
-        titleTextView.setEnabled(enabled);
-        descriptionTextView.setEnabled(enabled);
+        updateViewOnOrientation()
+    }
+
+    fun setTitle(titleResId: Int) {
+        titleTextView!!.setText(titleResId)
+    }
+
+    fun setTitle(title: String?) {
+        titleTextView!!.text = title
+    }
+
+    fun setDescription(descriptionResId: Int) {
+        descriptionTextView!!.setText(descriptionResId)
+    }
+
+    fun setDescription(description: String?) {
+        descriptionTextView!!.text = description
+    }
+
+    override fun isSelected(): Boolean {
+        return iconImageView!!.alpha == 1.0f
+    }
+
+    override fun setSelected(isSelected: Boolean) {
+        iconImageView!!.alpha = if (isSelected) 1.0f else 0.2f
+        iconImageView!!.setColorFilter(iconColor, PorterDuff.Mode.SRC_IN)
+        iconImageView!!.setImageResource(if (isSelected) R.drawable.ic_checked_filled else R.drawable.ic_checked_outline)
+        container!!.setCardBackgroundColor(cardBackgroundColor)
+        container!!.strokeWidth = if (isSelected) 0 else 2
+        titleTextView!!.setTextColor(getTextColor(isSelected))
+        descriptionTextView!!.setTextColor(getTextColor(isSelected))
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        onClickListener = l
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+
+        if (enabled) {
+            val typedValue: TypedValue = TypedValue()
+            val a: TypedArray = getContext().obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(com.google.android.material.R.attr.colorPrimary)
+            )
+            val color: Int = a.getColor(0, 0)
+            a.recycle()
+
+            iconImageView!!.imageTintList = ColorStateList.valueOf(color)
+
+            titleTextView!!.alpha = 1.0f
+            descriptionTextView!!.alpha = 0.8f
+        } else {
+            if (isDarkMode) {
+                iconImageView!!.imageTintList =
+                    ColorStateList.valueOf(Color.DKGRAY)
+            } else {
+                iconImageView!!.imageTintList =
+                    ColorStateList.valueOf(Color.LTGRAY)
+            }
+
+            titleTextView!!.alpha = 0.6f
+            descriptionTextView!!.alpha = 0.4f
+        }
+
+        container!!.isEnabled = enabled
+        iconImageView!!.isEnabled = enabled
+        titleTextView!!.isEnabled = enabled
+        descriptionTextView!!.isEnabled = enabled
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view
-    private void initializeId() {
-        container = findViewById(R.id.container);
-        iconImageView = findViewById(R.id.icon);
-        titleTextView = findViewById(R.id.title);
-        descriptionTextView = findViewById(R.id.description);
+    private fun initializeId() {
+        container = findViewById(R.id.container)
+        iconImageView = findViewById(R.id.icon)
+        titleTextView = findViewById(R.id.title)
+        descriptionTextView = findViewById(R.id.description)
 
-        container.setId(View.generateViewId());
-        iconImageView.setId(View.generateViewId());
-        titleTextView.setId(View.generateViewId());
-        descriptionTextView.setId(View.generateViewId());
+        container!!.setId(generateViewId())
+        iconImageView!!.setId(generateViewId())
+        titleTextView!!.setId(generateViewId())
+        descriptionTextView!!.setId(generateViewId())
     }
 
-    private @ColorInt int getCardBackgroundColor() {
-        return isSelected() ?
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer) :
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainer);
+    @get:ColorInt
+    private val cardBackgroundColor: Int
+        get() = if (isSelected) MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorPrimaryContainer
+        ) else MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorSurfaceContainer
+        )
+
+    @get:ColorInt
+    private val iconColor: Int
+        get() {
+            return if (isSelected) MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorPrimary
+            ) else MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorOnSurface
+            )
+        }
+
+    @ColorInt
+    private fun getTextColor(isSelected: Boolean): Int {
+        return if (isSelected) MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorOnPrimaryContainer
+        ) else MaterialColors.getColor(
+            this, com.google.android.material.R.attr.colorOnSurface
+        )
     }
 
-    private @ColorInt int getIconColor() {
-        return isSelected() ?
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary) :
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
-    }
-
-    private @ColorInt int getTextColor(boolean isSelected) {
-        return isSelected ?
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimaryContainer) :
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
-    }
-
-    private void updateViewOnOrientation() {
-        Configuration config = ColorBlendr.getAppContext().getResources().getConfiguration();
-        boolean isLandscape = config.orientation == Configuration.ORIENTATION_LANDSCAPE;
+    private fun updateViewOnOrientation() {
+        val config: Configuration = appContext.resources.configuration
+        val isLandscape: Boolean = config.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         if (isLandscape) {
-            int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-            int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+            val screenWidth: Int = context!!.resources.displayMetrics.widthPixels
+            val screenHeight: Int = context!!.resources.displayMetrics.heightPixels
 
-            boolean isSmallHeightDevice = screenWidth >= screenHeight * 1.8;
+            val isSmallHeightDevice: Boolean = screenWidth >= screenHeight * 1.8
 
             if (isSmallHeightDevice) {
-                container.setMinimumHeight(0);
-                descriptionTextView.setVisibility(TextView.GONE);
+                container!!.minimumHeight = 0
+                descriptionTextView!!.visibility = GONE
             }
         } else {
-            int minHeightInDp = 100;
-            int minHeightInPixels = (int) (minHeightInDp * context.getResources().getDisplayMetrics().density);
-            container.setMinimumHeight(minHeightInPixels);
-            descriptionTextView.setVisibility(TextView.VISIBLE);
+            val minHeightInDp: Int = 100
+            val minHeightInPixels: Int =
+                (minHeightInDp * context!!.resources.displayMetrics.density).toInt()
+            container!!.minimumHeight = minHeightInPixels
+            descriptionTextView!!.visibility = VISIBLE
         }
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
+    override fun onSaveInstanceState(): Parcelable {
+        val superState: Parcelable? = super.onSaveInstanceState()
 
-        SavedState ss = new SavedState(superState);
-        ss.isSelected = isSelected();
+        val ss = SavedState(superState)
+        ss.isSelected = isSelected
 
-        return ss;
+        return ss
     }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState ss)) {
-            super.onRestoreInstanceState(state);
-            return;
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
         }
 
-        super.onRestoreInstanceState(ss.getSuperState());
+        super.onRestoreInstanceState(state.superState)
 
-        setSelected(ss.isSelected);
-        updateViewOnOrientation();
+        isSelected = state.isSelected
+        updateViewOnOrientation()
     }
 
-    private static class SavedState extends BaseSavedState {
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
+    private class SavedState : BaseSavedState {
+        var isSelected: Boolean = false
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        private constructor(`in`: Parcel) : super(`in`) {
+            isSelected = `in`.readBoolean()
+        }
+
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            super.writeToParcel(dest, flags)
+            dest.writeBoolean(isSelected)
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
             }
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
             }
-        };
-        boolean isSelected;
-
-        SavedState(Parcelable superState) {
-            super(superState);
         }
 
-        private SavedState(Parcel in) {
-            super(in);
-            isSelected = in.readBoolean();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeBoolean(isSelected);
+        override fun describeContents(): Int {
+            return 0
         }
     }
 }

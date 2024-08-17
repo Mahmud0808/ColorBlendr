@@ -1,36 +1,35 @@
-package com.drdisagree.colorblendr.service;
+package com.drdisagree.colorblendr.service
 
-import android.app.job.JobParameters;
-import android.app.job.JobService;
-import android.content.Intent;
-import android.util.Log;
+import android.app.job.JobParameters
+import android.app.job.JobService
+import android.content.Intent
+import android.util.Log
+import androidx.work.Configuration
 
-import androidx.work.Configuration;
+class ScheduledJobService internal constructor() : JobService() {
 
-public class ScheduledJobService extends JobService {
-
-    private static final String TAG = ScheduledJobService.class.getSimpleName();
-
-    ScheduledJobService() {
-        @SuppressWarnings("all") Configuration.Builder builder = new Configuration.Builder();
-        builder.setJobSchedulerJobIdRange(0, 1000);
+    init {
+        val builder: Configuration.Builder = Configuration.Builder()
+        builder.setJobSchedulerJobIdRange(0, 1000)
     }
 
-    @Override
-    public boolean onStartJob(JobParameters jobParameters) {
-        ServiceLauncher serviceLauncher = new ServiceLauncher();
-        serviceLauncher.launchService(this);
+    override fun onStartJob(jobParameters: JobParameters): Boolean {
+        val serviceLauncher = ServiceLauncher()
+        serviceLauncher.launchService(this)
 
-        return false;
+        return false
     }
 
-    @Override
-    public boolean onStopJob(JobParameters jobParameters) {
-        Log.i(TAG, "Stopping job...");
+    override fun onStopJob(jobParameters: JobParameters): Boolean {
+        Log.i(TAG, "Stopping job...")
 
-        Intent broadcastIntent = new Intent(getApplicationContext().getPackageName());
-        sendBroadcast(broadcastIntent);
+        val broadcastIntent = Intent(applicationContext.packageName)
+        sendBroadcast(broadcastIntent)
 
-        return false;
+        return false
+    }
+
+    companion object {
+        private val TAG: String = ScheduledJobService::class.java.simpleName
     }
 }

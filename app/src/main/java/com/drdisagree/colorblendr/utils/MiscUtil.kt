@@ -1,57 +1,59 @@
-package com.drdisagree.colorblendr.utils;
+package com.drdisagree.colorblendr.utils
 
-import android.content.Context;
+import android.content.Context
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.MaterialToolbar
+import org.json.JSONException
+import org.json.JSONObject
 
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+object MiscUtil {
 
-import com.google.android.material.appbar.MaterialToolbar;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-public class MiscUtil {
-
-    public static int[][] convertListToIntArray(ArrayList<ArrayList<Integer>> arrayList) {
-        return arrayList.stream()
-                .map(row -> row.stream().mapToInt(Integer::intValue).toArray())
-                .toArray(int[][]::new);
+    fun convertListToIntArray(arrayList: ArrayList<ArrayList<Int>>): Array<IntArray> {
+        return arrayList.map { row -> row.toIntArray() }.toTypedArray()
     }
 
-    public static void setToolbarTitle(Context context, @StringRes int title, boolean showBackButton, MaterialToolbar toolbar) {
-        ((AppCompatActivity) context).setSupportActionBar(toolbar);
-        ActionBar actionBar = ((AppCompatActivity) context).getSupportActionBar();
+    fun setToolbarTitle(
+        context: Context,
+        @StringRes title: Int,
+        showBackButton: Boolean,
+        toolbar: MaterialToolbar?
+    ) {
+        (context as AppCompatActivity).setSupportActionBar(toolbar)
+        val actionBar = context.supportActionBar
         if (actionBar != null) {
-            ((AppCompatActivity) context).getSupportActionBar().setTitle(title);
-            ((AppCompatActivity) context).getSupportActionBar().setDisplayHomeAsUpEnabled(showBackButton);
-            ((AppCompatActivity) context).getSupportActionBar().setDisplayShowHomeEnabled(showBackButton);
+            context.supportActionBar!!.setTitle(title)
+            context.supportActionBar!!.setDisplayHomeAsUpEnabled(showBackButton)
+            context.supportActionBar!!.setDisplayShowHomeEnabled(showBackButton)
         }
     }
 
-    public static String mergeJsonStrings(String target, String source) throws JSONException {
-        if (target == null || target.isEmpty()) {
-            target = new JSONObject().toString();
+    @Throws(JSONException::class)
+    fun mergeJsonStrings(target: String?, source: String?): String {
+        var targetTemp = target
+        var sourceTemp = source
+
+        if (target.isNullOrEmpty()) {
+            targetTemp = JSONObject().toString()
         }
 
-        if (source == null || source.isEmpty()) {
-            source = new JSONObject().toString();
+        if (source.isNullOrEmpty()) {
+            sourceTemp = JSONObject().toString()
         }
 
-        JSONObject targetJson = new JSONObject(target);
-        JSONObject sourceJson = new JSONObject(source);
-        return mergeJsonObjects(targetJson, sourceJson).toString();
+        val targetJson = JSONObject(targetTemp!!)
+        val sourceJson = JSONObject(sourceTemp!!)
+
+        return mergeJsonObjects(targetJson, sourceJson).toString()
     }
 
-    public static JSONObject mergeJsonObjects(JSONObject target, JSONObject source) throws JSONException {
-        Iterator<String> keys = source.keys();
+    @Throws(JSONException::class)
+    fun mergeJsonObjects(target: JSONObject, source: JSONObject): JSONObject {
+        val keys = source.keys()
         while (keys.hasNext()) {
-            String key = keys.next();
-            target.put(key, source.get(key));
+            val key = keys.next()
+            target.put(key, source[key])
         }
-        return target;
+        return target
     }
 }

@@ -1,133 +1,150 @@
-package com.drdisagree.colorblendr.utils.fabricated;
+package com.drdisagree.colorblendr.utils.fabricated
 
-import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE;
+import android.os.Parcel
+import android.os.Parcelable
+import android.util.TypedValue
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayEntry
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.TypedValue;
+open class FabricatedOverlayResource : Parcelable {
+    val overlayName: String
+    val targetPackage: String
+    val sourcePackage: String
+    private var entries: MutableMap<String, FabricatedOverlayEntry> = HashMap()
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class FabricatedOverlayResource implements Parcelable {
-
-    public final String overlayName;
-    public final String targetPackage;
-    public final String sourcePackage;
-
-    public Map<String, FabricatedOverlayEntry> entries = new HashMap<>();
-
-    public FabricatedOverlayResource(String overlayName, String targetPackage) {
-        this(overlayName, targetPackage, FABRICATED_OVERLAY_SOURCE_PACKAGE);
+    constructor(
+        overlayName: String,
+        targetPackage: String,
+        sourcePackage: String = Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
+    ) {
+        this.overlayName = overlayName
+        this.targetPackage = targetPackage
+        this.sourcePackage = sourcePackage
     }
 
-    public FabricatedOverlayResource(String overlayName, String targetPackage, String sourcePackage) {
-        this.overlayName = overlayName;
-        this.targetPackage = targetPackage;
-        this.sourcePackage = sourcePackage;
+    fun setInteger(name: String, value: Int) {
+        this.setInteger(name, value, null)
     }
 
-    public void setInteger(String name, int value) {
-        this.setInteger(name, value, null);
+    @Suppress("SameParameterValue")
+    private fun setInteger(name: String, value: Int, configuration: String?) {
+        val formattedName = formatName(name, "integer")
+        entries[formattedName] = FabricatedOverlayEntry(
+            formattedName,
+            TypedValue.TYPE_INT_DEC,
+            value,
+            configuration
+        )
     }
 
-    public void setInteger(String name, int value, String configuration) {
-        String formattedName = formatName(name, "integer");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_DEC, value, configuration));
+    fun setBoolean(name: String, value: Boolean) {
+        this.setBoolean(name, value, null)
     }
 
-    public void setBoolean(String name, boolean value) {
-        this.setBoolean(name, value, null);
+    @Suppress("SameParameterValue")
+    private fun setBoolean(name: String, value: Boolean, configuration: String?) {
+        val formattedName = formatName(name, "bool")
+        entries[formattedName] = FabricatedOverlayEntry(
+            formattedName,
+            TypedValue.TYPE_INT_BOOLEAN,
+            if (value) 1 else 0,
+            configuration
+        )
     }
 
-    public void setBoolean(String name, boolean value, String configuration) {
-        String formattedName = formatName(name, "bool");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_BOOLEAN, value ? 1 : 0, configuration));
+    fun setDimension(name: String, value: Int) {
+        this.setDimension(name, value, null)
     }
 
-    public void setDimension(String name, int value) {
-        this.setDimension(name, value, null);
+    @Suppress("SameParameterValue")
+    private fun setDimension(name: String, value: Int, configuration: String?) {
+        val formattedName = formatName(name, "dimen")
+        entries[formattedName] = FabricatedOverlayEntry(
+            formattedName,
+            TypedValue.TYPE_DIMENSION,
+            value,
+            configuration
+        )
     }
 
-    public void setDimension(String name, int value, String configuration) {
-        String formattedName = formatName(name, "dimen");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_DIMENSION, value, configuration));
+    fun setAttribute(name: String, value: Int) {
+        this.setAttribute(name, value, null)
     }
 
-    public void setAttribute(String name, int value) {
-        this.setAttribute(name, value, null);
+    @Suppress("SameParameterValue")
+    private fun setAttribute(name: String, value: Int, configuration: String?) {
+        val formattedName = formatName(name, "attr")
+        entries[formattedName] = FabricatedOverlayEntry(
+            formattedName,
+            TypedValue.TYPE_ATTRIBUTE,
+            value,
+            configuration
+        )
     }
 
-    public void setAttribute(String name, int value, String configuration) {
-        String formattedName = formatName(name, "attr");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_ATTRIBUTE, value, configuration));
+    fun setColor(name: String, value: Int) {
+        this.setColor(name, value, null)
     }
 
-    public void setColor(String name, int value) {
-        this.setColor(name, value, null);
+    fun setColor(name: String, value: Int, configuration: String?) {
+        val formattedName = formatName(name, "color")
+        entries[formattedName] = FabricatedOverlayEntry(
+            formattedName,
+            TypedValue.TYPE_INT_COLOR_ARGB8,
+            value,
+            configuration
+        )
     }
 
-    public void setColor(String name, int value, String configuration) {
-        String formattedName = formatName(name, "color");
-        entries.put(formattedName, new FabricatedOverlayEntry(formattedName, TypedValue.TYPE_INT_COLOR_ARGB8, value, configuration));
+    fun getColor(name: String): Int {
+        val formattedName = formatName(name, "color")
+        val entry = entries[formattedName]
+
+        return entry?.resourceValue ?: throw RuntimeException("No entry found for $formattedName")
     }
 
-    public int getColor(String name) {
-        String formattedName = formatName(name, "color");
-        FabricatedOverlayEntry entry = entries.get(formattedName);
+    fun getEntries(): Map<String, FabricatedOverlayEntry> {
+        return entries
+    }
 
-        if (entry == null) {
-            throw new IllegalArgumentException("No entry found for " + formattedName);
+    fun setEntries(entries: MutableMap<String, FabricatedOverlayEntry>) {
+        this.entries = entries
+    }
+
+    private fun formatName(name: String, type: String): String {
+        return if (name.contains(":") && name.contains("/")) {
+            name
         } else {
-            return entry.getResourceValue();
+            "$targetPackage:$type/$name"
         }
     }
 
-    public Map<String, FabricatedOverlayEntry> getEntries() {
-        return entries;
+    @Suppress("DEPRECATION")
+    protected constructor(`in`: Parcel) {
+        overlayName = `in`.readString().toString()
+        targetPackage = `in`.readString().toString()
+        sourcePackage = `in`.readString().toString()
+        `in`.readMap(entries, FabricatedOverlayEntry::class.java.classLoader)
     }
 
-    public void setEntries(Map<String, FabricatedOverlayEntry> entries) {
-        this.entries = entries;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    private String formatName(String name, String type) {
-        if (name.contains(":") && name.contains("/")) {
-            return name;
-        } else {
-            return targetPackage + ":" + type + "/" + name;
-        }
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(overlayName)
+        dest.writeString(targetPackage)
+        dest.writeString(sourcePackage)
+        dest.writeMap(entries)
     }
 
-    protected FabricatedOverlayResource(Parcel in) {
-        overlayName = in.readString();
-        targetPackage = in.readString();
-        sourcePackage = in.readString();
-        in.readMap(entries, FabricatedOverlayEntry.class.getClassLoader());
-    }
-
-    public static final Creator<FabricatedOverlayResource> CREATOR = new Creator<>() {
-        @Override
-        public FabricatedOverlayResource createFromParcel(Parcel in) {
-            return new FabricatedOverlayResource(in);
+    companion object CREATOR : Parcelable.Creator<FabricatedOverlayResource> {
+        override fun createFromParcel(parcel: Parcel): FabricatedOverlayResource {
+            return FabricatedOverlayResource(parcel)
         }
 
-        @Override
-        public FabricatedOverlayResource[] newArray(int size) {
-            return new FabricatedOverlayResource[size];
+        override fun newArray(size: Int): Array<FabricatedOverlayResource?> {
+            return arrayOfNulls(size)
         }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(overlayName);
-        dest.writeString(targetPackage);
-        dest.writeString(sourcePackage);
-        dest.writeMap(entries);
     }
 }

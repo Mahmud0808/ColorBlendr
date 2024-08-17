@@ -1,49 +1,42 @@
-package com.drdisagree.colorblendr.ui.views;
+package com.drdisagree.colorblendr.ui.views
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.shape.ShapeAppearanceModel
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class RoundedMaterialButtonToggleGroup : MaterialButtonToggleGroup {
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.shape.ShapeAppearanceModel;
+    constructor(context: Context) : super(context)
 
-public class RoundedMaterialButtonToggleGroup extends MaterialButtonToggleGroup {
-    public RoundedMaterialButtonToggleGroup(@NonNull Context context) {
-        super(context);
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    public RoundedMaterialButtonToggleGroup(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
-    public RoundedMaterialButtonToggleGroup(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        for (int i = 0; i < getChildCount(); i++) {
-            View childView = getChildAt(i);
-            if (childView instanceof MaterialButton button) {
-                if (button.getVisibility() == View.GONE) {
-                    continue;
+        for (i in 0 until childCount) {
+            val childView: View = getChildAt(i)
+            if (childView is MaterialButton) {
+                if (childView.getVisibility() == GONE) {
+                    continue
                 }
 
-                ShapeAppearanceModel.Builder builder = button.getShapeAppearanceModel().toBuilder();
-                float radius = 120 * getResources().getDisplayMetrics().density;
-                button.setShapeAppearanceModel(
-                        builder
-                                .setTopLeftCornerSize(radius)
-                                .setBottomLeftCornerSize(radius)
-                                .setTopRightCornerSize(radius)
-                                .setBottomRightCornerSize(radius).build()
-                );
+                val builder: ShapeAppearanceModel.Builder =
+                    childView.shapeAppearanceModel.toBuilder()
+                val radius: Float = 120 * resources.displayMetrics.density
+                childView.shapeAppearanceModel = builder
+                    .setTopLeftCornerSize(radius)
+                    .setBottomLeftCornerSize(radius)
+                    .setTopRightCornerSize(radius)
+                    .setBottomRightCornerSize(radius).build()
             }
         }
     }

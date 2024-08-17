@@ -1,255 +1,263 @@
-package com.drdisagree.colorblendr.ui.widgets;
+package com.drdisagree.colorblendr.ui.widgets
 
-import static com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION;
-import static com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES;
-import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS;
-import static com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION;
-import static com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE;
+import android.content.Context
+import android.content.res.TypedArray
+import android.os.Handler
+import android.os.Looper
+import android.os.Parcel
+import android.os.Parcelable
+import android.util.AttributeSet
+import android.view.View
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.putString
+import com.drdisagree.colorblendr.ui.views.ColorPreview
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
+import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+class StylePreviewWidget : RelativeLayout {
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
+    private var context: Context? = null
+    private var container: MaterialCardView? = null
+    private var titleTextView: TextView? = null
+    private var descriptionTextView: TextView? = null
+    private var colorContainer: ColorPreview? = null
+    private var isSelected: Boolean = false
+    private var onClickListener: OnClickListener? = null
+    private var styleName: String? = null
+    private var monetStyle: MONET? = null
+    private var colorPalette: ArrayList<ArrayList<Int>>? = null
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.ui.views.ColorPreview;
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil;
-import com.drdisagree.colorblendr.utils.ColorUtil;
-import com.drdisagree.colorblendr.utils.OverlayManager;
-import com.drdisagree.colorblendr.utils.SystemUtil;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.color.MaterialColors;
-
-import java.util.ArrayList;
-
-public class StylePreviewWidget extends RelativeLayout {
-
-    private Context context;
-    private MaterialCardView container;
-    private TextView titleTextView;
-    private TextView descriptionTextView;
-    private ColorPreview colorContainer;
-    private boolean isSelected = false;
-    private OnClickListener onClickListener;
-    private String styleName;
-    private ColorSchemeUtil.MONET monetStyle;
-    private ArrayList<ArrayList<Integer>> colorPalette;
-
-    public StylePreviewWidget(Context context) {
-        super(context);
-        init(context, null);
+    constructor(context: Context) : super(context) {
+        init(context, null)
     }
 
-    public StylePreviewWidget(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
     }
 
-    public StylePreviewWidget(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context, attrs)
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        this.context = context;
-        inflate(context, R.layout.view_widget_style_preview, this);
+    private fun init(context: Context, attrs: AttributeSet?) {
+        this.context = context
+        inflate(context, R.layout.view_widget_style_preview, this)
 
-        initializeId();
+        initializeId()
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.StylePreviewWidget);
-        styleName = typedArray.getString(R.styleable.StylePreviewWidget_titleText);
-        setTitle(styleName);
-        setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText));
-        typedArray.recycle();
+        val typedArray: TypedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.StylePreviewWidget)
+        styleName = typedArray.getString(R.styleable.StylePreviewWidget_titleText)
+        setTitle(styleName)
+        setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText))
+        typedArray.recycle()
 
-        setColorPreview();
+        setColorPreview()
 
-        container.setOnClickListener(v -> {
+        container!!.setOnClickListener { v: View? ->
             if (onClickListener != null && !isSelected()) {
-                setSelected(true);
-                onClickListener.onClick(v);
+                setSelected(true)
+                onClickListener!!.onClick(v)
             }
-        });
+        }
     }
 
-    public void setTitle(int titleResId) {
-        titleTextView.setText(titleResId);
+    fun setTitle(titleResId: Int) {
+        titleTextView!!.setText(titleResId)
     }
 
-    public void setTitle(String title) {
-        titleTextView.setText(title);
+    fun setTitle(title: String?) {
+        titleTextView!!.text = title
     }
 
-    public void setDescription(int summaryResId) {
-        descriptionTextView.setText(summaryResId);
+    fun setDescription(summaryResId: Int) {
+        descriptionTextView!!.setText(summaryResId)
     }
 
-    public void setDescription(String summary) {
-        descriptionTextView.setText(summary);
+    fun setDescription(summary: String?) {
+        descriptionTextView!!.text = summary
     }
 
-    public boolean isSelected() {
-        return isSelected;
+    override fun isSelected(): Boolean {
+        return isSelected
     }
 
-    public void setSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-        container.setCardBackgroundColor(getCardBackgroundColor());
-        container.setStrokeWidth(isSelected ? 2 : 0);
-        titleTextView.setTextColor(getTextColor(isSelected));
-        descriptionTextView.setTextColor(getTextColor(isSelected));
+    override fun setSelected(isSelected: Boolean) {
+        this.isSelected = isSelected
+        container!!.setCardBackgroundColor(cardBackgroundColor)
+        container!!.setStrokeWidth(if (isSelected) 2 else 0)
+        titleTextView!!.setTextColor(getTextColor(isSelected))
+        descriptionTextView!!.setTextColor(getTextColor(isSelected))
     }
 
-    public void applyColorScheme() {
-        RPrefs.putString(MONET_STYLE, styleName);
-        OverlayManager.applyFabricatedColors(context);
+    fun applyColorScheme() {
+        styleName?.let {
+            putString(MONET_STYLE, it)
+            applyFabricatedColors(context!!)
+        }
     }
 
-    private void setColorPreview() {
-        new Thread(() -> {
+    private fun setColorPreview() {
+        Thread {
             try {
                 if (styleName == null) {
-                    styleName = context.getString(R.string.monet_tonalspot);
+                    styleName = context!!.getString(R.string.monet_tonalspot)
                 }
 
-                monetStyle = ColorSchemeUtil.stringToEnumMonetStyle(
-                        context,
-                        styleName
-                );
+                monetStyle = stringToEnumMonetStyle(
+                    context!!,
+                    styleName!!
+                )
 
-                colorPalette = ColorUtil.generateModifiedColors(
-                        context,
-                        monetStyle,
-                        RPrefs.getInt(MONET_ACCENT_SATURATION, 100),
-                        RPrefs.getInt(MONET_BACKGROUND_SATURATION, 100),
-                        RPrefs.getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                        RPrefs.getBoolean(MONET_PITCH_BLACK_THEME, false),
-                        RPrefs.getBoolean(MONET_ACCURATE_SHADES, true)
-                );
+                colorPalette = generateModifiedColors(
+                    context!!,
+                    monetStyle!!,
+                    getInt(MONET_ACCENT_SATURATION, 100),
+                    getInt(MONET_BACKGROUND_SATURATION, 100),
+                    getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                    getBoolean(MONET_PITCH_BLACK_THEME, false),
+                    getBoolean(MONET_ACCURATE_SHADES, true)
+                )
 
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    boolean isDarkMode = SystemUtil.isDarkMode();
-
-                    colorContainer.setHalfCircleColor(colorPalette.get(0).get(4));
-                    colorContainer.setFirstQuarterCircleColor(colorPalette.get(2).get(5));
-                    colorContainer.setSecondQuarterCircleColor(colorPalette.get(1).get(6));
-                    colorContainer.setSquareColor(colorPalette.get(4).get(!isDarkMode ? 2 : 9));
-                    colorContainer.invalidateColors();
-                });
-            } catch (Exception ignored) {
+                Handler(Looper.getMainLooper()).post {
+                    val isDarkMode: Boolean = isDarkMode
+                    colorContainer!!.setHalfCircleColor(colorPalette!![0][4])
+                    colorContainer!!.setFirstQuarterCircleColor(colorPalette!![2][5])
+                    colorContainer!!.setSecondQuarterCircleColor(colorPalette!![1][6])
+                    colorContainer!!.setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
+                    colorContainer!!.invalidateColors()
+                }
+            } catch (ignored: Exception) {
             }
-        }).start();
+        }.start()
     }
 
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
-        onClickListener = l;
+    override fun setOnClickListener(l: OnClickListener?) {
+        onClickListener = l
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view
-    private void initializeId() {
-        container = findViewById(R.id.container);
-        titleTextView = findViewById(R.id.title);
-        descriptionTextView = findViewById(R.id.summary);
-        colorContainer = findViewById(R.id.color_container);
+    private fun initializeId() {
+        container = findViewById(R.id.container)
+        titleTextView = findViewById(R.id.title)
+        descriptionTextView = findViewById(R.id.summary)
+        colorContainer = findViewById(R.id.color_container)
 
-        container.setId(View.generateViewId());
-        titleTextView.setId(View.generateViewId());
-        descriptionTextView.setId(View.generateViewId());
-        colorContainer.setId(View.generateViewId());
+        container!!.setId(generateViewId())
+        titleTextView!!.setId(generateViewId())
+        descriptionTextView!!.setId(generateViewId())
+        colorContainer!!.setId(generateViewId())
 
-        LayoutParams layoutParams = (LayoutParams) findViewById(R.id.text_container).getLayoutParams();
-        layoutParams.addRule(RelativeLayout.END_OF, colorContainer.getId());
-        findViewById(R.id.text_container).setLayoutParams(layoutParams);
+        val textContainer = findViewById<View>(R.id.text_container)
+        val layoutParams: LayoutParams = textContainer.layoutParams as LayoutParams
+        layoutParams.addRule(END_OF, colorContainer!!.id)
+        textContainer.setLayoutParams(layoutParams)
     }
 
-    private @ColorInt int getCardBackgroundColor() {
-        return isSelected() ?
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimaryContainer) :
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainer);
-    }
-
-    private @ColorInt int getTextColor(boolean isSelected) {
-        return isSelected ?
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimaryContainer) :
-                MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface);
-    }
-
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-
-        SavedState ss = new SavedState(superState);
-        ss.isSelected = isSelected();
-
-        return ss;
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState ss)) {
-            super.onRestoreInstanceState(state);
-            return;
+    @get:ColorInt
+    private val cardBackgroundColor: Int
+        get() {
+            return if (isSelected()) MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorPrimaryContainer
+            ) else MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorSurfaceContainer
+            )
         }
 
-        super.onRestoreInstanceState(ss.getSuperState());
-
-        setSelected(ss.isSelected);
-        setColorPreview();
+    @ColorInt
+    private fun getTextColor(isSelected: Boolean): Int {
+        return if (isSelected) MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorOnPrimaryContainer
+        ) else MaterialColors.getColor(
+            this, com.google.android.material.R.attr.colorOnSurface
+        )
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
+    override fun onSaveInstanceState(): Parcelable {
+        val superState: Parcelable? = super.onSaveInstanceState()
+
+        val ss = SavedState(superState)
+        ss.isSelected = isSelected()
+
+        return ss
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
+        }
+
+        super.onRestoreInstanceState(state.superState)
+
+        setSelected(state.isSelected)
+        setColorPreview()
+    }
+
+    override fun setEnabled(enabled: Boolean) {
         if (enabled) {
-            titleTextView.setAlpha(1.0f);
-            descriptionTextView.setAlpha(0.8f);
+            titleTextView!!.setAlpha(1.0f)
+            descriptionTextView!!.setAlpha(0.8f)
         } else {
-            titleTextView.setAlpha(0.6f);
-            descriptionTextView.setAlpha(0.4f);
+            titleTextView!!.setAlpha(0.6f)
+            descriptionTextView!!.setAlpha(0.4f)
         }
 
-        container.setEnabled(enabled);
-        titleTextView.setEnabled(enabled);
-        descriptionTextView.setEnabled(enabled);
-        colorContainer.setEnabled(enabled);
+        container!!.setEnabled(enabled)
+        titleTextView!!.setEnabled(enabled)
+        descriptionTextView!!.setEnabled(enabled)
+        colorContainer!!.setEnabled(enabled)
     }
 
-    private static class SavedState extends BaseSavedState {
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
+    private class SavedState : BaseSavedState {
+        var isSelected: Boolean = false
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-        boolean isSelected;
+        constructor(superState: Parcelable?) : super(superState)
 
-        SavedState(Parcelable superState) {
-            super(superState);
+        private constructor(`in`: Parcel) : super(`in`) {
+            isSelected = `in`.readBoolean()
         }
 
-        private SavedState(Parcel in) {
-            super(in);
-            isSelected = in.readBoolean();
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            super.writeToParcel(dest, flags)
+            dest.writeBoolean(isSelected)
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeBoolean(isSelected);
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        override fun describeContents(): Int {
+            return 0
         }
     }
 }

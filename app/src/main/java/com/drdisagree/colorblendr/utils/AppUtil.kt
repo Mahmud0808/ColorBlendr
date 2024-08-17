@@ -1,66 +1,68 @@
-package com.drdisagree.colorblendr.utils;
+package com.drdisagree.colorblendr.utils
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.Settings;
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.drdisagree.colorblendr.BuildConfig
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+object AppUtil {
+    val REQUIRED_PERMISSIONS: Array<String> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(
+            Manifest.permission.POST_NOTIFICATIONS,
+            Manifest.permission.READ_MEDIA_IMAGES
+        ) else arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
 
-import com.drdisagree.colorblendr.BuildConfig;
-
-public class AppUtil {
-
-    public static final String[] REQUIRED_PERMISSIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ?
-            new String[]{
-                    Manifest.permission.POST_NOTIFICATIONS,
-                    Manifest.permission.READ_MEDIA_IMAGES
-            } :
-            new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            };
-
-    public static boolean permissionsGranted(Context context) {
+    fun permissionsGranted(context: Context): Boolean {
         if (!hasStoragePermission()) {
-            return false;
+            return false
         }
 
-        for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
+        for (permission in REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return false
             }
         }
 
-        return true;
+        return true
     }
 
-    public static boolean hasStoragePermission() {
-        return Environment.isExternalStorageManager() || Environment.isExternalStorageLegacy();
+    fun hasStoragePermission(): Boolean {
+        return Environment.isExternalStorageManager() || Environment.isExternalStorageLegacy()
     }
 
-    public static void requestStoragePermission(Context context) {
-        Intent intent = new Intent();
-        intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        intent.setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID, null));
-        ((Activity) context).startActivityForResult(intent, 0);
+    fun requestStoragePermission(context: Context) {
+        val intent = Intent()
+        intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+        intent.setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
+        (context as Activity).startActivityForResult(intent, 0)
 
-        ActivityCompat.requestPermissions((Activity) context, new String[]{
+        ActivityCompat.requestPermissions(
+            context, arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.MANAGE_EXTERNAL_STORAGE
-        }, 0);
+            ), 0
+        )
     }
 
-    public static void openAppSettings(Context context) {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-        intent.setData(uri);
-        context.startActivity(intent);
+    fun openAppSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", context.packageName, null)
+        intent.setData(uri)
+        context.startActivity(intent)
     }
 }

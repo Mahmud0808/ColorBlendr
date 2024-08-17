@@ -1,147 +1,131 @@
-package com.drdisagree.colorblendr.utils;
+package com.drdisagree.colorblendr.utils
 
-import android.graphics.Color;
+import android.graphics.Color
+import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.min
 
-import com.drdisagree.colorblendr.config.RPrefs;
+object ColorModifiers {
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+    private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
-public class ColorModifiers {
+    fun generateShades(hue: Float, chroma: Float): ArrayList<Int> {
+        val shadeList = ArrayList(List(12) { 0 })
 
-    private static final String[][] colorNames = ColorUtil.getColorNames();
+        shadeList[0] = ColorUtil.CAMToColor(
+            hue,
+            min(40.0, chroma.toDouble()).toFloat(), 99.0f
+        )
+        shadeList[1] = ColorUtil.CAMToColor(
+            hue,
+            min(40.0, chroma.toDouble()).toFloat(), 95.0f
+        )
 
-    public static ArrayList<Integer> generateShades(float hue, float chroma) {
-        ArrayList<Integer> shadeList = new ArrayList<>(Arrays.asList(new Integer[12]));
-
-        shadeList.set(0, ColorUtil.CAMToColor(hue, Math.min(40.0f, chroma), 99.0f));
-        shadeList.set(1, ColorUtil.CAMToColor(hue, Math.min(40.0f, chroma), 95.0f));
-
-        for (int i = 2; i < 12; i++) {
-            float lstar;
-            if (i == 6) {
-                lstar = 49.6f;
+        for (i in 2..11) {
+            val lstar = if (i == 6) {
+                49.6f
             } else {
-                lstar = 100 - ((i - 1) * 10);
+                (100 - ((i - 1) * 10)).toFloat()
             }
-            shadeList.set(i, ColorUtil.CAMToColor(hue, chroma, lstar));
+            shadeList[i] = ColorUtil.CAMToColor(hue, chroma, lstar)
         }
 
-        return shadeList;
+        return shadeList
     }
 
-    public static ArrayList<Integer> modifyColors(
-            ArrayList<Integer> palette,
-            AtomicInteger counter,
-            ColorSchemeUtil.MONET style,
-            int monetAccentSaturation,
-            int monetBackgroundSaturation,
-            int monetBackgroundLightness,
-            boolean pitchBlackTheme,
-            boolean accurateShades,
-            boolean modifyPitchBlack
-    ) {
-        return modifyColors(
-                palette,
-                counter,
-                style,
-                monetAccentSaturation,
-                monetBackgroundSaturation,
-                monetBackgroundLightness,
-                pitchBlackTheme,
-                accurateShades,
-                modifyPitchBlack,
-                true
-        );
-    }
+    fun modifyColors(
+        palette: ArrayList<Int>,
+        counter: AtomicInteger,
+        style: MONET,
+        monetAccentSaturation: Int,
+        monetBackgroundSaturation: Int,
+        monetBackgroundLightness: Int,
+        pitchBlackTheme: Boolean,
+        accurateShades: Boolean,
+        modifyPitchBlack: Boolean,
+        overrideColors: Boolean = true
+    ): ArrayList<Int> {
+        counter.getAndIncrement()
 
-    public static ArrayList<Integer> modifyColors(
-            ArrayList<Integer> palette,
-            AtomicInteger counter,
-            ColorSchemeUtil.MONET style,
-            int monetAccentSaturation,
-            int monetBackgroundSaturation,
-            int monetBackgroundLightness,
-            boolean pitchBlackTheme,
-            boolean accurateShades,
-            boolean modifyPitchBlack,
-            boolean overrideColors
-    ) {
-        counter.getAndIncrement();
+        val accentPalette = counter.get() <= 3
 
-        boolean accentPalette = counter.get() <= 3;
-
-        boolean accentSaturation = monetAccentSaturation != 100;
-        boolean backgroundSaturation = monetBackgroundSaturation != 100;
-        boolean backgroundLightness = monetBackgroundLightness != 100;
+        val accentSaturation = monetAccentSaturation != 100
+        val backgroundSaturation = monetBackgroundSaturation != 100
+        val backgroundLightness = monetBackgroundLightness != 100
 
         if (accentPalette) {
-            if (accentSaturation && !style.equals(ColorSchemeUtil.MONET.MONOCHROMATIC)) {
+            if (accentSaturation && style != MONET.MONOCHROMATIC) {
                 // Set accent saturation
-                palette.replaceAll(o -> ColorUtil.modifySaturation(o, monetAccentSaturation));
+                palette.replaceAll { o: Int ->
+                    ColorUtil.modifySaturation(
+                        o,
+                        monetAccentSaturation
+                    )
+                }
             }
         } else {
-            if (backgroundSaturation && !style.equals(ColorSchemeUtil.MONET.MONOCHROMATIC)) {
+            if (backgroundSaturation && style != MONET.MONOCHROMATIC) {
                 // Set background saturation
-                palette.replaceAll(o -> ColorUtil.modifySaturation(o, monetBackgroundSaturation));
+                palette.replaceAll { o: Int ->
+                    ColorUtil.modifySaturation(
+                        o,
+                        monetBackgroundSaturation
+                    )
+                }
             }
 
-            if (backgroundLightness && !style.equals(ColorSchemeUtil.MONET.MONOCHROMATIC)) {
+            if (backgroundLightness && style != MONET.MONOCHROMATIC) {
                 // Set background lightness
-                for (int j = 0; j < palette.size(); j++) {
-                    palette.set(j, ColorUtil.modifyLightness(palette.get(j), monetBackgroundLightness, j + 1));
+                for (j in palette.indices) {
+                    palette[j] =
+                        ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
                 }
             }
 
             if (pitchBlackTheme && modifyPitchBlack) {
                 // Set pitch black theme
-                palette.set(10, Color.BLACK);
+                palette[10] = Color.BLACK
             }
         }
 
-        if (style.equals(ColorSchemeUtil.MONET.MONOCHROMATIC)) {
+        if (style == MONET.MONOCHROMATIC) {
             // Set monochrome lightness
-            for (int j = 0; j < palette.size(); j++) {
-                palette.set(j, ColorUtil.modifyLightness(palette.get(j), monetBackgroundLightness, j + 1));
+            for (j in palette.indices) {
+                palette[j] = ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
             }
         }
 
         if (overrideColors) {
-            for (int j = 0; j < palette.size() - 1; j++) {
-                int i = counter.get() - 1;
+            for (j in 0 until palette.size - 1) {
+                val i = counter.get() - 1
 
-                int overriddenColor = RPrefs.getInt(colorNames[i][j + 1], Integer.MIN_VALUE);
+                val overriddenColor = RPrefs.getInt(colorNames[i][j + 1], Int.MIN_VALUE)
 
-                if (overriddenColor != Integer.MIN_VALUE) {
-                    palette.set(j, overriddenColor);
+                if (overriddenColor != Int.MIN_VALUE) {
+                    palette[j] = overriddenColor
                 } else if (!accurateShades && i == 0 && j == 2) {
-                    palette.set(j, palette.get(j + 2));
+                    palette[j] = palette[j + 2]
                 }
             }
         }
 
         if (counter.get() >= 5) {
-            counter.set(0);
+            counter.set(0)
         }
 
-        return palette;
+        return palette
     }
 
-    public static <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
-        Map<K, V> result = new HashMap<>();
+    fun <K, V> zipToMap(keys: List<K>, values: List<V>): Map<K, V> {
+        val result: MutableMap<K, V> = HashMap()
 
-        if (keys.size() != values.size()) {
-            throw new IllegalArgumentException("Lists must have the same size. Provided keys size: " + keys.size() + " Provided values size: " + values.size() + ".");
+        require(keys.size == values.size) { "Lists must have the same size. Provided keys size: " + keys.size + " Provided values size: " + values.size + "." }
+
+        for (i in keys.indices) {
+            result[keys[i]] = values[i]
         }
 
-        for (int i = 0; i < keys.size(); i++) {
-            result.put(keys.get(i), values.get(i));
-        }
-
-        return result;
+        return result
     }
 }

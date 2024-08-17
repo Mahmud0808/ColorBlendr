@@ -1,171 +1,187 @@
-package com.drdisagree.colorblendr.service;
+package com.drdisagree.colorblendr.service
 
-import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
-import static com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.THEMING_ENABLED;
-import static com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
+import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
+import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
+import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getLong
+import com.drdisagree.colorblendr.config.RPrefs.putInt
+import com.drdisagree.colorblendr.config.RPrefs.putLong
+import com.drdisagree.colorblendr.config.RPrefs.putString
+import com.drdisagree.colorblendr.extension.MethodInterface
+import com.drdisagree.colorblendr.provider.RootConnectionProvider
+import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
+import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
+import com.drdisagree.colorblendr.utils.OverlayManager.unregisterFabricatedOverlay
+import com.drdisagree.colorblendr.utils.SystemUtil.getScreenRotation
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getWallpaperColors
+import kotlin.math.abs
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.drdisagree.colorblendr.common.Const;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.extension.MethodInterface;
-import com.drdisagree.colorblendr.provider.RootConnectionProvider;
-import com.drdisagree.colorblendr.utils.AppUtil;
-import com.drdisagree.colorblendr.utils.OverlayManager;
-import com.drdisagree.colorblendr.utils.SystemUtil;
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class BroadcastListener extends BroadcastReceiver {
-
-    private static final String TAG = BroadcastListener.class.getSimpleName();
-    public static int lastOrientation = -1;
-    private static long cooldownTime = 5000;
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Received intent: " + intent.getAction());
+class BroadcastListener : BroadcastReceiver() {
+    @Suppress("deprecation")
+    override fun onReceive(context: Context, intent: Intent) {
+        Log.d(TAG, "Received intent: " + intent.action)
 
         if (lastOrientation == -1) {
-            lastOrientation = SystemUtil.getScreenRotation(context);
+            lastOrientation = getScreenRotation(context)
         }
 
-        int currentOrientation = SystemUtil.getScreenRotation(context);
+        val currentOrientation = getScreenRotation(context)
 
-        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
-                Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())
+        if (Intent.ACTION_BOOT_COMPLETED == intent.action ||
+            Intent.ACTION_LOCKED_BOOT_COMPLETED == intent.action
         ) {
             // Start background service on boot
-            if (AppUtil.permissionsGranted(context) && AutoStartService.isServiceNotRunning()) {
-                context.startForegroundService(new Intent(context, AutoStartService.class));
+            if (permissionsGranted(context) && AutoStartService.isServiceNotRunning) {
+                context.startForegroundService(Intent(context, AutoStartService::class.java))
             }
 
-            validateRootAndUpdateColors(context, new MethodInterface() {
-                @Override
-                public void run() {
-                    cooldownTime = 10000;
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> cooldownTime = 5000, 10000);
-                    updateAllColors(context);
+            validateRootAndUpdateColors(context, object : MethodInterface() {
+                override fun run() {
+                    cooldownTime = 10000
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        cooldownTime = 5000
+                    }, 10000)
+                    updateAllColors(context)
                 }
-            });
+            })
         }
 
         // Update wallpaper colors on wallpaper change
-        if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) &&
-                AppUtil.permissionsGranted(context)
+        if (Intent.ACTION_WALLPAPER_CHANGED == intent.action &&
+            permissionsGranted(context)
         ) {
-            ArrayList<Integer> wallpaperColors = WallpaperColorUtil.getWallpaperColors(context);
-            RPrefs.putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors));
+            val wallpaperColors = getWallpaperColors(context)
+            putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors))
 
-            if (!RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-                RPrefs.putInt(MONET_SEED_COLOR, wallpaperColors.get(0));
+            if (!getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+                putInt(MONET_SEED_COLOR, wallpaperColors[0])
             }
         }
 
         // Update fabricated colors on wallpaper change
-        if (Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction()) ||
-                (Intent.ACTION_CONFIGURATION_CHANGED.equals(intent.getAction()) &&
-                        lastOrientation == currentOrientation)
+        if (Intent.ACTION_WALLPAPER_CHANGED == intent.action ||
+            (Intent.ACTION_CONFIGURATION_CHANGED == intent.action &&
+                    lastOrientation == currentOrientation)
         ) {
-            validateRootAndUpdateColors(context, new MethodInterface() {
-                @Override
-                public void run() {
-                    updateAllColors(context);
+            validateRootAndUpdateColors(context, object : MethodInterface() {
+                override fun run() {
+                    updateAllColors(context)
                 }
-            });
+            })
         } else if (lastOrientation != currentOrientation) {
-            lastOrientation = currentOrientation;
+            lastOrientation = currentOrientation
         }
 
-        if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
+        if (Intent.ACTION_PACKAGE_REMOVED == intent.action) {
             // Remove fabricated colors for uninstalled apps
-            Uri data = intent.getData();
+            val data = intent.data
 
             if (data != null) {
-                String packageName = data.getSchemeSpecificPart();
-                HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
+                val packageName = data.schemeSpecificPart
+                val selectedApps: HashMap<String, Boolean> = selectedFabricatedApps
 
-                if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
-                    selectedApps.remove(packageName);
-                    Const.saveSelectedFabricatedApps(selectedApps);
+                if (selectedApps.containsKey(packageName) && java.lang.Boolean.TRUE == selectedApps[packageName]) {
+                    selectedApps.remove(packageName)
+                    saveSelectedFabricatedApps(selectedApps)
 
-                    validateRootAndUpdateColors(context, new MethodInterface() {
-                        @Override
-                        public void run() {
-                            OverlayManager.unregisterFabricatedOverlay(String.format(FABRICATED_OVERLAY_NAME_APPS, packageName));
+                    validateRootAndUpdateColors(context, object : MethodInterface() {
+                        override fun run() {
+                            unregisterFabricatedOverlay(
+                                kotlin.String.format(
+                                    FABRICATED_OVERLAY_NAME_APPS,
+                                    packageName
+                                )
+                            )
                         }
-                    });
+                    })
                 }
             }
-        } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
+        } else if (Intent.ACTION_MY_PACKAGE_REPLACED == intent.action) {
             // Update fabricated colors for updated app
-            validateRootAndUpdateColors(context, new MethodInterface() {
-                @Override
-                public void run() {
-                    updateAllColors(context);
+            validateRootAndUpdateColors(context, object : MethodInterface() {
+                override fun run() {
+                    updateAllColors(context)
                 }
-            });
-        } else if (Intent.ACTION_PACKAGE_REPLACED.equals(intent.getAction())) {
+            })
+        } else if (Intent.ACTION_PACKAGE_REPLACED == intent.action) {
             // Update fabricated colors for updated app
-            Uri data = intent.getData();
+            val data = intent.data
 
             if (data != null) {
-                String packageName = data.getSchemeSpecificPart();
-                HashMap<String, Boolean> selectedApps = Const.getSelectedFabricatedApps();
+                val packageName = data.schemeSpecificPart
+                val selectedApps = selectedFabricatedApps
 
-                if (selectedApps.containsKey(packageName) && Boolean.TRUE.equals(selectedApps.get(packageName))) {
-                    validateRootAndUpdateColors(context, new MethodInterface() {
-                        @Override
-                        public void run() {
-                            OverlayManager.applyFabricatedColorsPerApp(context, packageName, null);
+                if (selectedApps.containsKey(packageName) && java.lang.Boolean.TRUE == selectedApps[packageName]) {
+                    validateRootAndUpdateColors(context, object : MethodInterface() {
+                        override fun run() {
+                            applyFabricatedColorsPerApp(context, packageName, null)
                         }
-                    });
+                    })
                 }
             }
         }
 
-        if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction()) ||
-                Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) ||
-                Intent.ACTION_WALLPAPER_CHANGED.equals(intent.getAction())) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-        }
-    }
-
-    private static void validateRootAndUpdateColors(Context context, MethodInterface method) {
-        if (Const.getWorkingMethod() == Const.WORK_METHOD.ROOT &&
-                RootConnectionProvider.isNotConnected()
+        if (Intent.ACTION_PACKAGE_ADDED == intent.action ||
+            Intent.ACTION_PACKAGE_REMOVED == intent.action ||
+            Intent.ACTION_WALLPAPER_CHANGED == intent.action
         ) {
-            RootConnectionProvider.builder(context)
-                    .runOnSuccess(method)
-                    .run();
-        } else {
-            method.run();
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
         }
     }
 
-    private static void updateAllColors(Context context) {
-        if (!RPrefs.getBoolean(THEMING_ENABLED, true) && !RPrefs.getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
-            return;
+    companion object {
+        private val TAG: String = BroadcastListener::class.java.simpleName
+        var lastOrientation: Int = -1
+        private var cooldownTime: Long = 5000
+
+        private fun validateRootAndUpdateColors(context: Context, method: MethodInterface) {
+            if (workingMethod == Const.WorkMethod.ROOT &&
+                RootConnectionProvider.isNotConnected
+            ) {
+                RootConnectionProvider.builder(context)
+                    .runOnSuccess(method)
+                    .run()
+            } else {
+                method.run()
+            }
         }
 
-        if (Math.abs(RPrefs.getLong(MONET_LAST_UPDATED, 0) - System.currentTimeMillis()) >= cooldownTime) {
-            RPrefs.putLong(MONET_LAST_UPDATED, System.currentTimeMillis());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> OverlayManager.applyFabricatedColors(context), 500);
+        private fun updateAllColors(context: Context) {
+            if (!getBoolean(THEMING_ENABLED, true) && !getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
+                return
+            }
+
+            if (abs(
+                    (getLong(
+                        MONET_LAST_UPDATED,
+                        0
+                    ) - System.currentTimeMillis()).toDouble()
+                ) >= cooldownTime
+            ) {
+                putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+                Handler(Looper.getMainLooper()).postDelayed({
+                    applyFabricatedColors(
+                        context
+                    )
+                }, 500)
+            }
         }
     }
 }

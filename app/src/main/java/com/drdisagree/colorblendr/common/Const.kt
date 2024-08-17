@@ -1,109 +1,119 @@
-package com.drdisagree.colorblendr.common;
+package com.drdisagree.colorblendr.common
 
-import com.drdisagree.colorblendr.BuildConfig;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.drdisagree.colorblendr.BuildConfig
+import com.drdisagree.colorblendr.config.RPrefs
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.util.concurrent.atomic.AtomicInteger
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class Const {
-
+object Const {
     // Preferences file
-    public static final String SharedPrefs = BuildConfig.APPLICATION_ID + "_preferences";
+    const val SHARED_PREFS: String = BuildConfig.APPLICATION_ID + "_preferences"
 
     // System packages
-    public static final String FRAMEWORK_PACKAGE = "android";
-    public static final String SYSTEMUI_PACKAGE = "com.android.systemui";
-    public static final String SHELL_PACKAGE = "com.android.shell";
+    const val FRAMEWORK_PACKAGE: String = "android"
+    const val SYSTEMUI_PACKAGE: String = "com.android.systemui"
+    const val SHELL_PACKAGE: String = "com.android.shell"
 
     // General preferences
-    public static final String FIRST_RUN = "firstRun";
-    public static final String THEMING_ENABLED = "themingEnabled";
-    public static final String MONET_STYLE = "customMonetStyle";
-    public static final String MONET_ACCENT_SATURATION = "monetAccentSaturationValue";
-    public static final String MONET_BACKGROUND_SATURATION = "monetBackgroundSaturationValue";
-    public static final String MONET_BACKGROUND_LIGHTNESS = "monetBackgroundLightnessValue";
-    public static final String MONET_ACCURATE_SHADES = "monetAccurateShades";
-    public static final String MONET_PITCH_BLACK_THEME = "monetPitchBlackTheme";
-    public static final String MONET_SEED_COLOR = "monetSeedColor";
-    public static final String MONET_SEED_COLOR_ENABLED = "monetSeedColorEnabled";
-    public static final String MANUAL_OVERRIDE_COLORS = "manualOverrideColors";
-    public static final String MONET_LAST_UPDATED = "monetLastUpdated";
-    public static final String MONET_STYLE_ORIGINAL_NAME = "monetStyleOriginalName";
-    public static final String FABRICATED_OVERLAY_SOURCE_PACKAGE = FRAMEWORK_PACKAGE;
-    public static final String FABRICATED_OVERLAY_NAME_SYSTEM = BuildConfig.APPLICATION_ID + "_dynamic_theme";
-    public static final String FABRICATED_OVERLAY_NAME_SYSTEMUI = BuildConfig.APPLICATION_ID + "_dynamic_theme_system";
-    public static final String FABRICATED_OVERLAY_NAME_APPS = BuildConfig.APPLICATION_ID + ".%s_dynamic_theme";
-    public static final String WALLPAPER_COLOR_LIST = "wallpaperColorList";
-    public static final String FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState";
-    public static final String SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn";
-    public static final String TINT_TEXT_COLOR = "tintTextColor";
-    public static final int SHIZUKU_PERMISSION_REQUEST_ID = 100;
-    public static final String THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages";
-    public static final String SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled";
-    public static final String APP_LIST_FILTER_METHOD = "appListFilterMethod";
-    public static final AtomicInteger screenOrientation = new AtomicInteger(-1);
+    const val FIRST_RUN: String = "firstRun"
+    const val THEMING_ENABLED: String = "themingEnabled"
+    const val MONET_STYLE: String = "customMonetStyle"
+    const val MONET_ACCENT_SATURATION: String = "monetAccentSaturationValue"
+    const val MONET_BACKGROUND_SATURATION: String = "monetBackgroundSaturationValue"
+    const val MONET_BACKGROUND_LIGHTNESS: String = "monetBackgroundLightnessValue"
+    const val MONET_ACCURATE_SHADES: String = "monetAccurateShades"
+    const val MONET_PITCH_BLACK_THEME: String = "monetPitchBlackTheme"
+    const val MONET_SEED_COLOR: String = "monetSeedColor"
+    const val MONET_SEED_COLOR_ENABLED: String = "monetSeedColorEnabled"
+    const val MANUAL_OVERRIDE_COLORS: String = "manualOverrideColors"
+    const val MONET_LAST_UPDATED: String = "monetLastUpdated"
+    const val MONET_STYLE_ORIGINAL_NAME: String = "monetStyleOriginalName"
+    const val FABRICATED_OVERLAY_SOURCE_PACKAGE: String = FRAMEWORK_PACKAGE
+    const val FABRICATED_OVERLAY_NAME_SYSTEM: String = "${BuildConfig.APPLICATION_ID}_dynamic_theme"
+    const val FABRICATED_OVERLAY_NAME_SYSTEMUI: String =
+        "${BuildConfig.APPLICATION_ID}_dynamic_theme_system"
+    const val FABRICATED_OVERLAY_NAME_APPS: String =
+        "${BuildConfig.APPLICATION_ID}.%s_dynamic_theme"
+    const val WALLPAPER_COLOR_LIST: String = "wallpaperColorList"
+    private const val FABRICATED_OVERLAY_FOR_APPS_STATE: String = "fabricatedOverlayForAppsState"
+    const val SHOW_PER_APP_THEME_WARN: String = "showPerAppThemeWarn"
+    const val TINT_TEXT_COLOR: String = "tintTextColor"
+    const val SHIZUKU_PERMISSION_REQUEST_ID: Int = 100
+    const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES: String = "theme_customization_overlay_packages"
+    const val SHIZUKU_THEMING_ENABLED: String = "shizukuThemingEnabled"
+    const val APP_LIST_FILTER_METHOD: String = "appListFilterMethod"
+    val screenOrientation: AtomicInteger = AtomicInteger(-1)
 
     // Service preferences
-    public static final Gson GSON = new Gson();
-    public static final String PREF_WORKING_METHOD = "workingMethod";
+    val GSON: Gson = Gson()
+    private const val PREF_WORKING_METHOD: String = "workingMethod"
 
-    public static Set<String> EXCLUDED_PREFS_FROM_BACKUP = new HashSet<>(
-            Arrays.asList(
-                    FIRST_RUN,
-                    PREF_WORKING_METHOD,
-                    MONET_LAST_UPDATED,
-                    THEMING_ENABLED,
-                    SHIZUKU_THEMING_ENABLED,
-                    WALLPAPER_COLOR_LIST
-            )
-    );
+    var EXCLUDED_PREFS_FROM_BACKUP: Set<String> = HashSet(
+        listOf(
+            FIRST_RUN,
+            PREF_WORKING_METHOD,
+            MONET_LAST_UPDATED,
+            THEMING_ENABLED,
+            SHIZUKU_THEMING_ENABLED,
+            WALLPAPER_COLOR_LIST
+        )
+    )
 
-    public static void saveSelectedFabricatedApps(HashMap<String, Boolean> selectedApps) {
-        RPrefs.putString(FABRICATED_OVERLAY_FOR_APPS_STATE, Const.GSON.toJson(selectedApps));
+    fun saveSelectedFabricatedApps(selectedApps: HashMap<String, Boolean>) {
+        RPrefs.putString(FABRICATED_OVERLAY_FOR_APPS_STATE, GSON.toJson(selectedApps))
     }
 
-    public static HashMap<String, Boolean> getSelectedFabricatedApps() {
-        String selectedApps = RPrefs.getString(FABRICATED_OVERLAY_FOR_APPS_STATE, null);
-        if (selectedApps == null || selectedApps.isEmpty()) {
-            return new HashMap<>();
+    val selectedFabricatedApps: HashMap<String, Boolean>
+        get() {
+            val selectedApps = RPrefs.getString(
+                FABRICATED_OVERLAY_FOR_APPS_STATE,
+                null
+            )
+            if (selectedApps.isNullOrEmpty()) {
+                return HashMap()
+            }
+
+            return GSON.fromJson(
+                selectedApps,
+                object :
+                    TypeToken<HashMap<String?, Boolean?>?>() {
+                }.type
+            )
         }
 
-        return Const.GSON.fromJson(selectedApps, new TypeToken<HashMap<String, Boolean>>() {
-        }.getType());
+    var WORKING_METHOD: WorkMethod = WorkMethod.NULL
+
+    val workingMethod: WorkMethod
+        get() = WorkMethod.fromString(
+            RPrefs.getString(
+                PREF_WORKING_METHOD,
+                WorkMethod.NULL.toString()
+            )
+        )
+
+    fun saveWorkingMethod(workMethod: WorkMethod) {
+        RPrefs.putString(PREF_WORKING_METHOD, workMethod.toString())
     }
 
     // Working method of app
-    public enum WORK_METHOD {
+    enum class WorkMethod {
         NULL,
         ROOT,
         SHIZUKU;
 
-        public static WORK_METHOD fromString(String str) {
-            try {
-                return valueOf(str);
-            } catch (Exception e) {
-                return NULL;
+        companion object {
+            fun fromString(str: String?): WorkMethod {
+                return try {
+                    valueOf(str!!)
+                } catch (e: Exception) {
+                    NULL
+                }
             }
         }
     }
 
-    public static WORK_METHOD WORKING_METHOD = WORK_METHOD.NULL;
-
-    public static WORK_METHOD getWorkingMethod() {
-        return WORK_METHOD.fromString(RPrefs.getString(PREF_WORKING_METHOD, WORK_METHOD.NULL.toString()));
-    }
-
-    public static void saveWorkingMethod(WORK_METHOD workMethod) {
-        RPrefs.putString(PREF_WORKING_METHOD, workMethod.toString());
-    }
-
-    public enum AppType {
+    enum class AppType {
         SYSTEM,
         USER,
         LAUNCHABLE,

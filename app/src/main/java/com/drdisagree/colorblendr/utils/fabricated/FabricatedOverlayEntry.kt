@@ -1,91 +1,60 @@
-package com.drdisagree.colorblendr.utils.fabricated;
+package com.drdisagree.colorblendr.utils.fabricated
 
-import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
 
-public class FabricatedOverlayEntry implements Parcelable {
+open class FabricatedOverlayEntry : Parcelable {
+    var resourceName: String?
+    var resourceType: Int
+    var resourceValue: Int
+    private var configuration: String?
 
-    private String resourceName;
-    private int resourceType;
-    private int resourceValue;
-    private String configuration;
-
-    public FabricatedOverlayEntry(String resourceName, int resourceType, int resourceValue) {
-        this(resourceName, resourceType, resourceValue, null);
+    constructor(
+        resourceName: String?,
+        resourceType: Int,
+        resourceValue: Int,
+        configuration: String? = null
+    ) {
+        this.resourceName = resourceName
+        this.resourceType = resourceType
+        this.resourceValue = resourceValue
+        this.configuration = configuration
     }
 
-    public FabricatedOverlayEntry(String resourceName, int resourceType, int resourceValue, String configuration) {
-        this.resourceName = resourceName;
-        this.resourceType = resourceType;
-        this.resourceValue = resourceValue;
-        this.configuration = configuration;
+    fun getConfiguration(): String? {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) null else configuration
     }
 
-    public String getResourceName() {
-        return resourceName;
+    fun setConfiguration(configuration: String?) {
+        this.configuration = configuration
     }
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
+    protected constructor(`in`: Parcel) {
+        resourceName = `in`.readString()
+        resourceType = `in`.readInt()
+        resourceValue = `in`.readInt()
+        configuration = `in`.readString()
     }
 
-    public int getResourceType() {
-        return resourceType;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    public void setResourceType(int resourceType) {
-        this.resourceType = resourceType;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(resourceName)
+        dest.writeInt(resourceType)
+        dest.writeInt(resourceValue)
+        dest.writeString(configuration)
     }
 
-    public int getResourceValue() {
-        return resourceValue;
-    }
-
-    public void setResourceValue(int resourceValue) {
-        this.resourceValue = resourceValue;
-    }
-
-    public String getConfiguration() {
-        return
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ?
-                        null :
-                        configuration;
-    }
-
-    public void setConfiguration(String configuration) {
-        this.configuration = configuration;
-    }
-
-    protected FabricatedOverlayEntry(Parcel in) {
-        resourceName = in.readString();
-        resourceType = in.readInt();
-        resourceValue = in.readInt();
-        configuration = in.readString();
-    }
-
-    public static final Creator<FabricatedOverlayEntry> CREATOR = new Creator<>() {
-        @Override
-        public FabricatedOverlayEntry createFromParcel(Parcel in) {
-            return new FabricatedOverlayEntry(in);
+    companion object CREATOR : Parcelable.Creator<FabricatedOverlayEntry> {
+        override fun createFromParcel(parcel: Parcel): FabricatedOverlayEntry {
+            return FabricatedOverlayEntry(parcel)
         }
 
-        @Override
-        public FabricatedOverlayEntry[] newArray(int size) {
-            return new FabricatedOverlayEntry[size];
+        override fun newArray(size: Int): Array<FabricatedOverlayEntry?> {
+            return arrayOfNulls(size)
         }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(resourceName);
-        dest.writeInt(resourceType);
-        dest.writeInt(resourceValue);
-        dest.writeString(configuration);
     }
 }

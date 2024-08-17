@@ -1,301 +1,309 @@
-package com.drdisagree.colorblendr.ui.fragments;
+package com.drdisagree.colorblendr.ui.fragments
 
-import static com.drdisagree.colorblendr.common.Const.APP_LIST_FILTER_METHOD;
-import static com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS;
-import static com.drdisagree.colorblendr.common.Const.SHOW_PER_APP_THEME_WARN;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewOutlineProvider
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const.APP_LIST_FILTER_METHOD
+import com.drdisagree.colorblendr.common.Const.AppType
+import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.common.Const.SHOW_PER_APP_THEME_WARN
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.putBoolean
+import com.drdisagree.colorblendr.config.RPrefs.putInt
+import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding
+import com.drdisagree.colorblendr.ui.adapters.AppListAdapter
+import com.drdisagree.colorblendr.ui.models.AppInfoModel
+import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import eightbitlab.com.blurview.RenderEffectBlur
+import java.util.Locale
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
+class PerAppThemeFragment : Fragment() {
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
+    private lateinit var binding: FragmentPerAppThemeBinding
+    private var appList: List<AppInfoModel>? = null
+    private var adapter: AppListAdapter? = null
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.common.Const.AppType;
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding;
-import com.drdisagree.colorblendr.ui.adapters.AppListAdapter;
-import com.drdisagree.colorblendr.ui.models.AppInfoModel;
-import com.drdisagree.colorblendr.utils.MiscUtil;
-import com.drdisagree.colorblendr.utils.OverlayManager;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+    private val packageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val appType = AppType.entries[getInt(
+                APP_LIST_FILTER_METHOD,
+                AppType.ALL.ordinal
+            )]
 
-import java.util.ArrayList;
-import java.util.List;
-
-import eightbitlab.com.blurview.RenderEffectBlur;
-
-public class PerAppThemeFragment extends Fragment {
-
-    private FragmentPerAppThemeBinding binding;
-    private List<AppInfoModel> appList;
-    private AppListAdapter adapter;
-    private final BroadcastReceiver packageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            AppType appType = AppType.values()[
-                    RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal())
-                    ];
-
-            initAppList(appType);
+            initAppList(appType)
         }
-    };
-    private final TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+    private val textWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
         }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         }
 
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (!binding.searchBox.search.getText().toString().trim().isEmpty()) {
-                binding.searchBox.clear.setVisibility(View.VISIBLE);
-                filterList(binding.searchBox.search.getText().toString().trim());
+        override fun afterTextChanged(s: Editable) {
+            if (binding.searchBox.search.text.toString().trim().isNotEmpty()) {
+                binding.searchBox.clear.visibility = View.VISIBLE
+                filterList(binding.searchBox.search.text.toString().trim())
             } else {
-                binding.searchBox.clear.setVisibility(View.GONE);
-                filterList("");
+                binding.searchBox.clear.visibility = View.GONE
+                filterList("")
             }
         }
-    };
+    }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentPerAppThemeBinding.inflate(inflater, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPerAppThemeBinding.inflate(inflater, container, false)
 
-        MiscUtil.setToolbarTitle(requireContext(), R.string.per_app_theme, true, binding.header.toolbar);
+        setToolbarTitle(requireContext(), R.string.per_app_theme, true, binding.header.toolbar)
 
         // Warning
-        if (!RPrefs.getBoolean(SHOW_PER_APP_THEME_WARN, true)) {
-            binding.warn.container.setVisibility(View.GONE);
+        if (!getBoolean(SHOW_PER_APP_THEME_WARN, true)) {
+            binding.warn.container.visibility = View.GONE
         }
-        binding.warn.close.setOnClickListener(v -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            RPrefs.putBoolean(SHOW_PER_APP_THEME_WARN, false);
-            binding.warn.container.animate().translationX(binding.warn.container.getWidth() * 2f).alpha(0f).withEndAction(() -> binding.warn.container.setVisibility(View.GONE)).start();
-        }, 50));
+        binding.warn.close.setOnClickListener {
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    putBoolean(SHOW_PER_APP_THEME_WARN, false)
+                    binding.warn.container.animate()
+                        .translationX(binding.warn.container.width * 2f).alpha(0f).withEndAction {
+                            binding.warn.container.visibility = View.GONE
+                        }.start()
+                }, 50
+            )
+        }
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        return binding.getRoot();
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        binding.searchBox.filter.setOnClickListener(v -> showFilterDialog());
+        binding.searchBox.filter.setOnClickListener { showFilterDialog() }
 
-        AppType appType = AppType.values()[
-                RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal())
-                ];
+        val appType = AppType.entries[getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal)]
 
-        initAppList(appType);
-        blurSearchView();
+        initAppList(appType)
+        blurSearchView()
     }
 
-    private void initAppList(AppType appType) {
-        binding.recyclerView.setVisibility(View.GONE);
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.searchBox.search.removeTextChangedListener(textWatcher);
+    private fun initAppList(appType: AppType) {
+        binding.recyclerView.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.searchBox.search.removeTextChangedListener(textWatcher)
 
-        new Thread(() -> {
-            appList = getAllInstalledApps(requireContext(), appType);
-            adapter = new AppListAdapter(appList);
-
+        Thread {
+            appList = getAllInstalledApps(requireContext(), appType)
+            adapter = AppListAdapter(appList!!)
             try {
-                requireActivity().runOnUiThread(() -> {
-                    binding.recyclerView.setAdapter(adapter);
+                requireActivity().runOnUiThread {
+                    binding.recyclerView.adapter = adapter
+                    binding.searchBox.search.addTextChangedListener(textWatcher)
 
-                    binding.searchBox.search.addTextChangedListener(textWatcher);
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
 
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.recyclerView.setVisibility(View.VISIBLE);
-
-                    binding.searchBox.clear.setOnClickListener(v -> {
-                        binding.searchBox.search.setText("");
-                        binding.searchBox.clear.setVisibility(View.GONE);
-                    });
-
-                    if (!binding.searchBox.search.getText().toString().trim().isEmpty()) {
-                        filterList(binding.searchBox.search.getText().toString().trim());
+                    binding.searchBox.clear.setOnClickListener {
+                        binding.searchBox.search.setText("")
+                        binding.searchBox.clear.visibility = View.GONE
                     }
-                });
-            } catch (Exception ignored) {
+                    if (binding.searchBox.search.text.toString().trim().isNotEmpty()) {
+                        filterList(binding.searchBox.search.text.toString().trim { it <= ' ' })
+                    }
+                }
+            } catch (ignored: Exception) {
                 // Fragment was not attached to activity
             }
-        }).start();
+        }.start()
     }
 
-    private void filterList(String query) {
+    private fun filterList(query: String) {
         if (appList == null) {
-            return;
+            return
         }
 
-        List<AppInfoModel> startsWithNameList = new ArrayList<>();
-        List<AppInfoModel> containsNameList = new ArrayList<>();
-        List<AppInfoModel> startsWithPackageNameList = new ArrayList<>();
-        List<AppInfoModel> containsPackageNameList = new ArrayList<>();
+        val startsWithNameList: MutableList<AppInfoModel> = ArrayList()
+        val containsNameList: MutableList<AppInfoModel> = ArrayList()
+        val startsWithPackageNameList: MutableList<AppInfoModel> = ArrayList()
+        val containsPackageNameList: MutableList<AppInfoModel> = ArrayList()
 
-        for (AppInfoModel app : appList) {
-            if (app.appName.toLowerCase().startsWith(query.toLowerCase())) {
-                startsWithNameList.add(app);
-            } else if (app.appName.toLowerCase().contains(query.toLowerCase())) {
-                containsNameList.add(app);
-            } else if (app.packageName.toLowerCase().startsWith(query.toLowerCase())) {
-                startsWithPackageNameList.add(app);
-            } else if (app.packageName.toLowerCase().contains(query.toLowerCase())) {
-                containsPackageNameList.add(app);
+        for (app in appList!!) {
+            if (app.appName.lowercase(Locale.getDefault())
+                    .startsWith(query.lowercase(Locale.getDefault()))
+            ) {
+                startsWithNameList.add(app)
+            } else if (app.appName.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
+            ) {
+                containsNameList.add(app)
+            } else if (app.packageName.lowercase(Locale.getDefault()).startsWith(
+                    query.lowercase(
+                        Locale.getDefault()
+                    )
+                )
+            ) {
+                startsWithPackageNameList.add(app)
+            } else if (app.packageName.lowercase(Locale.getDefault()).contains(
+                    query.lowercase(
+                        Locale.getDefault()
+                    )
+                )
+            ) {
+                containsPackageNameList.add(app)
             }
         }
 
-        List<AppInfoModel> filteredList = new ArrayList<>();
-        filteredList.addAll(startsWithNameList);
-        filteredList.addAll(containsNameList);
-        filteredList.addAll(startsWithPackageNameList);
-        filteredList.addAll(containsPackageNameList);
+        val filteredList: MutableList<AppInfoModel> = ArrayList()
+        filteredList.addAll(startsWithNameList)
+        filteredList.addAll(containsNameList)
+        filteredList.addAll(startsWithPackageNameList)
+        filteredList.addAll(containsPackageNameList)
 
-        adapter = new AppListAdapter(filteredList);
-        binding.recyclerView.setAdapter(adapter);
+        adapter = AppListAdapter(filteredList)
+        binding.recyclerView.adapter = adapter
     }
 
-    private static List<AppInfoModel> getAllInstalledApps(Context context, AppType appType) {
-        List<AppInfoModel> appList = new ArrayList<>();
-        PackageManager packageManager = context.getPackageManager();
+    private fun blurSearchView() {
+        val background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_searchbox)
+        binding.searchBox.blurView.setupWith(binding.root, RenderEffectBlur())
+            .setFrameClearDrawable(background)
+            .setBlurRadius(20f)
+        binding.searchBox.blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
+        binding.searchBox.blurView.clipToOutline = true
+    }
 
-        List<ApplicationInfo> applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+    private fun showFilterDialog() {
+        val items = arrayOf(
+            getString(R.string.filter_system_apps),
+            getString(R.string.filter_user_apps),
+            getString(R.string.filter_launchable_apps),
+            getString(R.string.filter_all)
+        )
 
-        for (ApplicationInfo appInfo : applications) {
-            String packageName = appInfo.packageName;
+        val selectedFilterIndex = getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal)
 
-            if (appType == AppType.LAUNCHABLE) {
-                Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
-                if (launchIntent == null) {
-                    continue;
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.filter_app_category))
+            .setSingleChoiceItems(
+                items,
+                selectedFilterIndex
+            ) { dialog: DialogInterface, which: Int ->
+                putInt(APP_LIST_FILTER_METHOD, which)
+                val appType = AppType.entries[which]
+
+                initAppList(appType)
+                dialog.dismiss()
+            }
+            .setCancelable(true)
+            .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val intentFilterWithoutScheme = IntentFilter()
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_ADDED)
+        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REMOVED)
+
+        val intentFilterWithScheme = IntentFilter()
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_ADDED)
+        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REMOVED)
+        intentFilterWithScheme.addDataScheme("package")
+
+        LocalBroadcastManager
+            .getInstance(requireContext())
+            .registerReceiver(packageReceiver, intentFilterWithoutScheme)
+        LocalBroadcastManager
+            .getInstance(requireContext())
+            .registerReceiver(packageReceiver, intentFilterWithScheme)
+    }
+
+    override fun onDestroy() {
+        try {
+            LocalBroadcastManager
+                .getInstance(requireContext())
+                .unregisterReceiver(packageReceiver)
+        } catch (ignored: Exception) {
+            // Receiver was not registered
+        }
+        super.onDestroy()
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            parentFragmentManager.popBackStackImmediate()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private fun getAllInstalledApps(context: Context, appType: AppType): List<AppInfoModel> {
+            val appList: MutableList<AppInfoModel> = ArrayList()
+            val packageManager = context.packageManager
+
+            val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+
+            for (appInfo in applications) {
+                val packageName = appInfo.packageName
+
+                if (appType == AppType.LAUNCHABLE) {
+                    packageManager.getLaunchIntentForPackage(packageName) ?: continue
+                }
+
+                val appName = appInfo.loadLabel(packageManager).toString()
+                val appIcon = appInfo.loadIcon(packageManager)
+                val isSelected = isOverlayEnabled(
+                    String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
+                )
+
+                val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+                val includeApp = when (appType) {
+                    AppType.SYSTEM -> isSystemApp
+                    AppType.USER -> !isSystemApp
+                    AppType.LAUNCHABLE, AppType.ALL -> true
+                }
+
+                if (includeApp) {
+                    val app = AppInfoModel(appName, packageName, appIcon)
+                    app.isSelected = isSelected
+                    appList.add(app)
                 }
             }
 
-            String appName = appInfo.loadLabel(packageManager).toString();
-            Drawable appIcon = appInfo.loadIcon(packageManager);
-            boolean isSelected = OverlayManager.isOverlayEnabled(
-                    String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
-            );
+            appList.sortWith(compareBy<AppInfoModel> { !it.isSelected }.thenBy { it.appName.lowercase() })
 
-            boolean isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-
-            boolean includeApp = switch (appType) {
-                case SYSTEM -> isSystemApp;
-                case USER -> !isSystemApp;
-                case LAUNCHABLE, ALL -> true;
-            };
-
-            if (includeApp) {
-                AppInfoModel app = new AppInfoModel(appName, packageName, appIcon);
-                app.setSelected(isSelected);
-                appList.add(app);
-            }
+            return appList
         }
-
-        appList.sort((app1, app2) -> {
-            if (app1.isSelected() && !app2.isSelected()) {
-                return -1;
-            } else if (!app1.isSelected() && app2.isSelected()) {
-                return 1;
-            } else {
-                return app1.appName.compareToIgnoreCase(app2.appName);
-            }
-        });
-
-        return appList;
-    }
-
-    private void blurSearchView() {
-        Drawable background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_searchbox);
-        binding.searchBox.blurView.setupWith(binding.getRoot(), new RenderEffectBlur())
-                .setFrameClearDrawable(background)
-                .setBlurRadius(20f);
-        binding.searchBox.blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
-        binding.searchBox.blurView.setClipToOutline(true);
-    }
-
-    private void showFilterDialog() {
-        String[] items = {
-                getString(R.string.filter_system_apps),
-                getString(R.string.filter_user_apps),
-                getString(R.string.filter_launchable_apps),
-                getString(R.string.filter_all)
-        };
-
-        int selectedFilterIndex = RPrefs.getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal());
-
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.filter_app_category))
-                .setSingleChoiceItems(items, selectedFilterIndex, (dialog, which) -> {
-                    RPrefs.putInt(APP_LIST_FILTER_METHOD, which);
-
-                    AppType appType = AppType.values()[which];
-
-                    initAppList(appType);
-
-                    dialog.dismiss();
-                })
-                .setCancelable(true)
-                .show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        IntentFilter intentFilterWithoutScheme = new IntentFilter();
-        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REMOVED);
-
-        IntentFilter intentFilterWithScheme = new IntentFilter();
-        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilterWithScheme.addDataScheme("package");
-
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(packageReceiver, intentFilterWithoutScheme);
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(packageReceiver, intentFilterWithScheme);
-    }
-
-    @Override
-    public void onDestroy() {
-        try {
-            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(packageReceiver);
-        } catch (Exception ignored) {
-            // Receiver was not registered
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            getParentFragmentManager().popBackStackImmediate();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

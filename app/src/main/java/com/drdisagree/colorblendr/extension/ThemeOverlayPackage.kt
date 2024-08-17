@@ -1,51 +1,66 @@
-package com.drdisagree.colorblendr.extension;
+package com.drdisagree.colorblendr.extension
 
-import static com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR;
-import static com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME;
+import android.graphics.Color
+import android.os.Build
+import android.util.Log
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
+import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.getString
+import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColorNoHash
+import org.json.JSONObject
 
-import android.graphics.Color;
-import android.os.Build;
-import android.util.Log;
+object ThemeOverlayPackage {
+    private val TAG: String = ThemeOverlayPackage::class.java.simpleName
+    const val THEME_STYLE: String = "android.theme.customization.theme_style"
+    const val COLOR_SOURCE: String = "android.theme.customization.color_source"
+    const val SYSTEM_PALETTE: String = "android.theme.customization.system_palette"
+    const val ACCENT_COLOR: String = "android.theme.customization.accent_color"
+    const val COLOR_BOTH: String = "android.theme.customization.color_both"
+    const val APPLIED_TIMESTAMP: String = "_applied_timestamp"
 
-import com.drdisagree.colorblendr.config.RPrefs;
-import com.drdisagree.colorblendr.utils.ColorUtil;
+    val themeCustomizationOverlayPackages: JSONObject
+        get() {
+            val `object` = JSONObject()
 
-import org.json.JSONObject;
-
-public class ThemeOverlayPackage {
-
-    private static final String TAG = ThemeOverlayPackage.class.getSimpleName();
-    public static final String THEME_STYLE = "android.theme.customization.theme_style";
-    public static final String COLOR_SOURCE = "android.theme.customization.color_source";
-    public static final String SYSTEM_PALETTE = "android.theme.customization.system_palette";
-    public static final String ACCENT_COLOR = "android.theme.customization.accent_color";
-    public static final String COLOR_BOTH = "android.theme.customization.color_both";
-    public static final String APPLIED_TIMESTAMP = "_applied_timestamp";
-
-    public static JSONObject getThemeCustomizationOverlayPackages() {
-        JSONObject object = new JSONObject();
-
-        try {
-            object.putOpt(
+            try {
+                `object`.putOpt(
                     THEME_STYLE,
-                    RPrefs.getString(MONET_STYLE_ORIGINAL_NAME, "TONAL_SPOT")
-            );
-            object.putOpt(COLOR_SOURCE, "preset");
-            object.putOpt(
+                    getString(MONET_STYLE_ORIGINAL_NAME, "TONAL_SPOT")
+                )
+                `object`.putOpt(COLOR_SOURCE, "preset")
+                `object`.putOpt(
                     SYSTEM_PALETTE,
-                    ColorUtil.intToHexColorNoHash(RPrefs.getInt(MONET_SEED_COLOR, Color.BLUE))
-            );
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                object.putOpt(
+                    intToHexColorNoHash(
+                        getInt(
+                            MONET_SEED_COLOR,
+                            Color.BLUE
+                        )
+                    )
+                )
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                    `object`.putOpt(
                         ACCENT_COLOR,
-                        ColorUtil.intToHexColorNoHash(RPrefs.getInt(MONET_SEED_COLOR, Color.BLUE))
-                );
+                        intToHexColorNoHash(
+                            getInt(
+                                MONET_SEED_COLOR,
+                                Color.BLUE
+                            )
+                        )
+                    )
+                }
+                `object`.putOpt(
+                    APPLIED_TIMESTAMP,
+                    System.currentTimeMillis()
+                )
+            } catch (e: Exception) {
+                Log.e(
+                    TAG,
+                    "getThemeCustomizationOverlayPackages:",
+                    e
+                )
             }
-            object.putOpt(APPLIED_TIMESTAMP, System.currentTimeMillis());
-        } catch (Exception e) {
-            Log.e(TAG, "getThemeCustomizationOverlayPackages:", e);
-        }
 
-        return object;
-    }
+            return `object`
+        }
 }

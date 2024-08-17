@@ -1,240 +1,243 @@
-package com.drdisagree.colorblendr.ui.widgets;
+package com.drdisagree.colorblendr.ui.widgets
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.content.Context
+import android.content.res.ColorStateList
+import android.content.res.TypedArray
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.os.Parcel
+import android.os.Parcelable
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.google.android.material.card.MaterialCardView
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+class ColorPickerWidget : RelativeLayout {
 
-import com.drdisagree.colorblendr.R;
-import com.drdisagree.colorblendr.utils.SystemUtil;
-import com.google.android.material.card.MaterialCardView;
+    private var container: MaterialCardView? = null
+    private var titleTextView: TextView? = null
+    private var summaryTextView: TextView? = null
+    private var iconImageView: ImageView? = null
+    private var colorView: View? = null
 
-public class ColorPickerWidget extends RelativeLayout {
+    @ColorInt
+    private var selectedColor: Int = Color.WHITE
 
-    private MaterialCardView container;
-    private TextView titleTextView;
-    private TextView summaryTextView;
-    private ImageView iconImageView;
-    private View colorView;
-    private @ColorInt int selectedColor = Color.WHITE;
-
-    public ColorPickerWidget(Context context) {
-        super(context);
-        init(context, null);
+    constructor(context: Context) : super(context) {
+        init(context, null)
     }
 
-    public ColorPickerWidget(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
     }
 
-    public ColorPickerWidget(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context, attrs)
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        inflate(context, R.layout.view_widget_colorpicker, this);
+    private fun init(context: Context, attrs: AttributeSet?) {
+        inflate(context, R.layout.view_widget_colorpicker, this)
 
-        initializeId();
+        initializeId()
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorPickerWidget);
-        setTitle(typedArray.getString(R.styleable.ColorPickerWidget_titleText));
-        setSummary(typedArray.getString(R.styleable.ColorPickerWidget_summaryText));
-        int icon = typedArray.getResourceId(R.styleable.ColorPickerWidget_icon, 0);
-        boolean iconSpaceReserved = typedArray.getBoolean(R.styleable.SwitchWidget_iconSpaceReserved, false);
-        int colorResId = typedArray.getResourceId(R.styleable.ColorPickerWidget_previewColor, Integer.MIN_VALUE);
-        selectedColor = typedArray.getColor(R.styleable.ColorPickerWidget_previewColor, Color.WHITE);
-        typedArray.recycle();
+        val typedArray: TypedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.ColorPickerWidget)
+        setTitle(typedArray.getString(R.styleable.ColorPickerWidget_titleText))
+        setSummary(typedArray.getString(R.styleable.ColorPickerWidget_summaryText))
+        val icon: Int = typedArray.getResourceId(R.styleable.ColorPickerWidget_icon, 0)
+        var iconSpaceReserved: Boolean =
+            typedArray.getBoolean(R.styleable.SwitchWidget_iconSpaceReserved, false)
+        val colorResId: Int =
+            typedArray.getResourceId(R.styleable.ColorPickerWidget_previewColor, Int.MIN_VALUE)
+        selectedColor = typedArray.getColor(R.styleable.ColorPickerWidget_previewColor, Color.WHITE)
+        typedArray.recycle()
 
         if (icon != 0) {
-            iconSpaceReserved = true;
-            iconImageView.setImageResource(icon);
+            iconSpaceReserved = true
+            iconImageView!!.setImageResource(icon)
         }
 
         if (!iconSpaceReserved) {
-            iconImageView.setVisibility(GONE);
+            iconImageView!!.setVisibility(GONE)
         }
 
-        if (colorResId != Integer.MIN_VALUE) {
-            setPreviewColor(ContextCompat.getColor(getContext(), colorResId));
+        if (colorResId != Int.MIN_VALUE) {
+            previewColor = ContextCompat.getColor(getContext(), colorResId)
         }
     }
 
-    public void setTitle(int titleResId) {
-        titleTextView.setText(titleResId);
+    fun setTitle(titleResId: Int) {
+        titleTextView!!.setText(titleResId)
     }
 
-    public void setTitle(String title) {
-        titleTextView.setText(title);
+    fun setTitle(title: String?) {
+        titleTextView!!.text = title
     }
 
-    public void setSummary(int summaryResId) {
-        summaryTextView.setText(summaryResId);
+    fun setSummary(summaryResId: Int) {
+        summaryTextView!!.setText(summaryResId)
     }
 
-    public void setSummary(String summary) {
-        summaryTextView.setText(summary);
+    fun setSummary(summary: String?) {
+        summaryTextView!!.text = summary
     }
 
-    public void setIcon(int icon) {
-        iconImageView.setImageResource(icon);
-        iconImageView.setVisibility(VISIBLE);
+    fun setIcon(icon: Int) {
+        iconImageView!!.setImageResource(icon)
+        iconImageView!!.setVisibility(VISIBLE)
     }
 
-    public void setIcon(Drawable drawable) {
-        iconImageView.setImageDrawable(drawable);
-        iconImageView.setVisibility(VISIBLE);
+    fun setIcon(drawable: Drawable?) {
+        iconImageView!!.setImageDrawable(drawable)
+        iconImageView!!.setVisibility(VISIBLE)
     }
 
-    public void setIconVisibility(int visibility) {
-        iconImageView.setVisibility(visibility);
+    fun setIconVisibility(visibility: Int) {
+        iconImageView!!.setVisibility(visibility)
     }
 
-    public @ColorInt int getPreviewColor() {
-        return selectedColor;
-    }
+    @get:ColorInt
+    var previewColor: Int
+        get() {
+            return selectedColor
+        }
+        set(color) {
+            var colorTemp: Int = color
+            this.selectedColor = colorTemp
 
-    public void setPreviewColor(@ColorInt int color) {
-        this.selectedColor = color;
-
-        if (!isEnabled()) {
-            if (SystemUtil.isDarkMode()) {
-                color = Color.DKGRAY;
-            } else {
-                color = Color.LTGRAY;
+            if (!isEnabled) {
+                colorTemp = if (isDarkMode) {
+                    Color.DKGRAY
+                } else {
+                    Color.LTGRAY
+                }
             }
+
+            val drawable = GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(colorTemp, colorTemp)
+            )
+            drawable.setShape(GradientDrawable.OVAL)
+            colorView!!.background = drawable
         }
 
-        GradientDrawable drawable = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{color, color}
-        );
-        drawable.setShape(GradientDrawable.OVAL);
-        colorView.setBackground(drawable);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
 
         if (enabled) {
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = getContext().obtainStyledAttributes(
-                    typedValue.data,
-                    new int[]{com.google.android.material.R.attr.colorPrimary}
-            );
-            int color = a.getColor(0, 0);
-            a.recycle();
+            val typedValue = TypedValue()
+            val a: TypedArray = context.obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(com.google.android.material.R.attr.colorPrimary)
+            )
+            val color: Int = a.getColor(0, 0)
+            a.recycle()
 
-            iconImageView.setImageTintList(ColorStateList.valueOf(color));
+            iconImageView!!.setImageTintList(ColorStateList.valueOf(color))
 
-            titleTextView.setAlpha(1.0f);
-            summaryTextView.setAlpha(0.8f);
+            titleTextView!!.setAlpha(1.0f)
+            summaryTextView!!.setAlpha(0.8f)
         } else {
-            if (SystemUtil.isDarkMode()) {
-                iconImageView.setImageTintList(ColorStateList.valueOf(Color.DKGRAY));
+            if (isDarkMode) {
+                iconImageView!!.setImageTintList(ColorStateList.valueOf(Color.DKGRAY))
             } else {
-                iconImageView.setImageTintList(ColorStateList.valueOf(Color.LTGRAY));
+                iconImageView!!.setImageTintList(ColorStateList.valueOf(Color.LTGRAY))
             }
 
-            titleTextView.setAlpha(0.6f);
-            summaryTextView.setAlpha(0.4f);
+            titleTextView!!.setAlpha(0.6f)
+            summaryTextView!!.setAlpha(0.4f)
         }
 
-        container.setEnabled(enabled);
-        titleTextView.setEnabled(enabled);
-        summaryTextView.setEnabled(enabled);
-        iconImageView.setEnabled(enabled);
-        setPreviewColor(enabled ? getPreviewColor() : Color.GRAY);
+        container!!.setEnabled(enabled)
+        titleTextView!!.setEnabled(enabled)
+        summaryTextView!!.setEnabled(enabled)
+        iconImageView!!.setEnabled(enabled)
+        previewColor = if (enabled) previewColor else Color.GRAY
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view
-    private void initializeId() {
-        container = findViewById(R.id.container);
-        iconImageView = findViewById(R.id.icon);
-        titleTextView = findViewById(R.id.title);
-        summaryTextView = findViewById(R.id.summary);
-        colorView = findViewById(R.id.color_widget);
+    private fun initializeId() {
+        container = findViewById(R.id.container)
+        iconImageView = findViewById(R.id.icon)
+        titleTextView = findViewById(R.id.title)
+        summaryTextView = findViewById(R.id.summary)
+        colorView = findViewById(R.id.color_widget)
 
-        container.setId(View.generateViewId());
-        iconImageView.setId(View.generateViewId());
-        titleTextView.setId(View.generateViewId());
-        summaryTextView.setId(View.generateViewId());
-        colorView.setId(View.generateViewId());
+        container!!.setId(generateViewId())
+        iconImageView!!.setId(generateViewId())
+        titleTextView!!.setId(generateViewId())
+        summaryTextView!!.setId(generateViewId())
+        colorView!!.setId(generateViewId())
 
-        LayoutParams layoutParams = (LayoutParams) findViewById(R.id.text_container).getLayoutParams();
-        layoutParams.addRule(RelativeLayout.START_OF, colorView.getId());
-        layoutParams.addRule(RelativeLayout.END_OF, iconImageView.getId());
-        findViewById(R.id.text_container).setLayoutParams(layoutParams);
+        val layoutParams: LayoutParams =
+            findViewById<View>(R.id.text_container).layoutParams as LayoutParams
+        layoutParams.addRule(START_OF, colorView!!.id)
+        layoutParams.addRule(END_OF, iconImageView!!.id)
+        findViewById<View>(R.id.text_container).setLayoutParams(layoutParams)
     }
 
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
-        container.setOnClickListener(l);
+    override fun setOnClickListener(l: OnClickListener?) {
+        container!!.setOnClickListener(l)
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
+    override fun onSaveInstanceState(): Parcelable {
+        val superState: Parcelable? = super.onSaveInstanceState()
 
-        SavedState ss = new SavedState(superState);
-        ss.selectedColor = selectedColor;
+        val ss = SavedState(superState)
+        ss.selectedColor = selectedColor
 
-        return ss;
+        return ss
     }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState ss)) {
-            super.onRestoreInstanceState(state);
-            return;
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
         }
 
-        super.onRestoreInstanceState(ss.getSuperState());
+        super.onRestoreInstanceState(state.superState)
 
-        setPreviewColor(ss.selectedColor);
+        previewColor = state.selectedColor
     }
 
-    private static class SavedState extends BaseSavedState {
-        public static final Creator<SavedState> CREATOR = new Creator<>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
+    private class SavedState : BaseSavedState {
+        var selectedColor: Int = 0
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        private constructor(`in`: Parcel) : super(`in`) {
+            selectedColor = `in`.readInt()
+        }
+
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            super.writeToParcel(dest, flags)
+            dest.writeInt(selectedColor)
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
             }
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
             }
-        };
-        int selectedColor;
-
-        SavedState(Parcelable superState) {
-            super(superState);
         }
 
-        private SavedState(Parcel in) {
-            super(in);
-            selectedColor = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(selectedColor);
+        override fun describeContents(): Int {
+            return 0
         }
     }
 }

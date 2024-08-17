@@ -1,60 +1,55 @@
-package com.drdisagree.colorblendr.provider;
+package com.drdisagree.colorblendr.provider
 
-import android.content.ComponentName;
-import android.content.ServiceConnection;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
-import android.util.Log;
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.util.Log
+import com.drdisagree.colorblendr.service.IShizukuConnection
+import com.drdisagree.colorblendr.service.ShizukuConnection
+import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService
+import com.drdisagree.colorblendr.utils.ShizukuUtil.getUserServiceArgs
 
-import com.drdisagree.colorblendr.service.IShizukuConnection;
-import com.drdisagree.colorblendr.service.ShizukuConnection;
-import com.drdisagree.colorblendr.utils.ShizukuUtil;
+object ShizukuConnectionProvider {
 
-public class ShizukuConnectionProvider {
+    private val TAG: String = ShizukuConnectionProvider::class.java.simpleName
+    var serviceProvider: IShizukuConnection? = null
+    private var isServiceConnected = false
 
-    private static final String TAG = ShizukuConnectionProvider.class.getSimpleName();
-    private static IShizukuConnection serviceProviderIPC;
-    private static boolean isServiceConnected = false;
-
-    public static final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            if (binder == null || !binder.pingBinder()) {
-                Log.w(TAG, "Service binder is null or not alive");
-                return;
+    val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+            if (!binder.pingBinder()) {
+                Log.w(TAG, "Service binder is null or not alive")
+                return
             }
 
-            serviceProviderIPC = IShizukuConnection.Stub.asInterface(binder);
-            isServiceConnected = true;
-            Log.i(TAG, "Service connected");
+            serviceProvider = IShizukuConnection.Stub.asInterface(binder)
+            isServiceConnected = true
+            Log.i(TAG, "Service connected")
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serviceProviderIPC = null;
-            isServiceConnected = false;
-            Log.w(TAG, "Service disconnected");
-            bindServiceConnection();
+        override fun onServiceDisconnected(name: ComponentName) {
+            serviceProvider = null
+            isServiceConnected = false
+            Log.w(TAG, "Service disconnected")
+            bindServiceConnection()
         }
-    };
-
-    public static IShizukuConnection getServiceProvider() {
-        return serviceProviderIPC;
     }
 
-    public static boolean isNotConnected() {
-        return !isServiceConnected;
-    }
+    val isNotConnected: Boolean
+        get() = !isServiceConnected
 
-    private static void bindServiceConnection() {
+    private fun bindServiceConnection() {
         if (isServiceConnected) {
-            return;
+            return
         }
 
-        new Handler(Looper.getMainLooper()).post(() -> ShizukuUtil.bindUserService(
-                ShizukuUtil.getUserServiceArgs(ShizukuConnection.class),
+        Handler(Looper.getMainLooper()).post {
+            bindUserService(
+                getUserServiceArgs(ShizukuConnection::class.java),
                 serviceConnection
-        ));
+            )
+        }
     }
 }
