@@ -1,0 +1,10 @@
+Changelog:
+
+• Converted codebase to kotlin.
+• Fixed lag issue while switching page.
+• Fixed crash in certain situations.
+• Adjust lightness for m3 ref palette.
+
+Note: Gboard is now obfuscated. RIP!
+
+Translation credit goes to all the contributors on our Crowdin platform.
