@@ -20,7 +20,6 @@ import android.util.Log
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.colorblendr.extension.MethodInterface
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.Utils
@@ -405,7 +404,7 @@ class RootConnection : RootService() {
             private var omtbClass: Class<*>? = null
             private var SystemUI_UID = -1
             private var mActivityManager: IActivityManager? = null
-            private val onSystemUIRestartedListener: MethodInterface? = null
+            private val onSystemUiRestart: (() -> Unit)? = null
 
             @SuppressLint("StaticFieldLeak", "RestrictedApi")
             private val context: Context = Utils.getContext()

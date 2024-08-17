@@ -9,31 +9,28 @@ import android.view.animation.Animation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.FIRST_RUN
-import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.common.Const.saveWorkingMethod
 import com.drdisagree.colorblendr.config.RPrefs.putBoolean
-import com.drdisagree.colorblendr.config.RPrefs.putString
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding
-import com.drdisagree.colorblendr.extension.MethodInterface
-import com.drdisagree.colorblendr.provider.RootConnectionProvider.Companion.builder
+import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.ui.adapters.OnboardingAdapter
-import com.drdisagree.colorblendr.utils.AppUtil.hasStoragePermission
 import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
-import com.drdisagree.colorblendr.utils.FabricatedUtil.getAndSaveSelectedFabricatedApps
+import com.drdisagree.colorblendr.utils.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.ShizukuUtil.requestShizukuPermission
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getAndSaveWallpaperColors
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getWallpaperColors
+import com.drdisagree.colorblendr.utils.WallpaperColorUtil.updateWallpaperColorList
+import kotlinx.coroutines.launch
 
 class OnboardingFragment : Fragment() {
 
@@ -57,6 +54,7 @@ class OnboardingFragment : Fragment() {
         adapter.addFragment(OnboardingItem3Fragment())
 
         binding.viewPager.adapter = adapter
+        binding.viewPager.offscreenPageLimit = adapter.itemCount
 
         binding.viewPager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
@@ -82,8 +80,11 @@ class OnboardingFragment : Fragment() {
 
                 when (Const.WORKING_METHOD) {
                     Const.WorkMethod.NULL -> {
-                        Toast.makeText(requireContext(), R.string.select_method, Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.select_method,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     Const.WorkMethod.ROOT -> {
@@ -113,12 +114,10 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun checkRootConnection() {
-        builder(requireContext())
-            .runOnSuccess(object : MethodInterface() {
-                override fun run() {
-                    goToHomeFragment()
-                }
-            }).run()
+        RootConnectionProvider
+            .builder(requireContext())
+            .onSuccess { goToHomeFragment() }
+            .run()
     }
 
     private fun checkShizukuConnection() {
@@ -148,11 +147,16 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun goToHomeFragment() {
-        saveWorkingMethod(Const.WORKING_METHOD)
-        getAndSaveWallpaperColors(requireContext())
-        getAndSaveSelectedFabricatedApps(requireContext())
-        putBoolean(FIRST_RUN, false)
-        MainActivity.Companion.replaceFragment(HomeFragment(), true)
+        lifecycleScope.launch {
+            try {
+                updateWallpaperColorList(requireContext())
+                updateFabricatedAppList(requireContext())
+                putBoolean(FIRST_RUN, false)
+                saveWorkingMethod(Const.WORKING_METHOD)
+                MainActivity.replaceFragment(HomeFragment(), true)
+            } catch (_: Exception) {
+            }
+        }
     }
 
     private fun animateBackButton(position: Int) {
@@ -212,20 +216,6 @@ class OnboardingFragment : Fragment() {
     private fun changeContinueButtonText(position: Int) {
         if (position == adapter.itemCount - 1) {
             binding.btnNext.setText(R.string.start)
-
-            Thread {
-                try {
-                    if (hasStoragePermission()) {
-                        val wallpaperColors =
-                            getWallpaperColors(requireContext())
-                        putString(
-                            WALLPAPER_COLOR_LIST,
-                            Const.GSON.toJson(wallpaperColors)
-                        )
-                    }
-                } catch (ignored: Exception) {
-                }
-            }.start()
         } else {
             binding.btnNext.setText(R.string.btn_continue)
         }

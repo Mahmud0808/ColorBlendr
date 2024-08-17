@@ -51,31 +51,28 @@ class ShizukuConnection : IShizukuConnection.Stub {
     @get:Throws(JSONException::class)
     private val originalSettings: JSONObject
         get() {
-            val currentSettings = currentSettings
-            val jsonObject = JSONObject(currentSettings)
+            return JSONObject(currentSettings).apply {
+                val keysToRemove = arrayOf(
+                    ThemeOverlayPackage.THEME_STYLE,
+                    ThemeOverlayPackage.COLOR_SOURCE,
+                    ThemeOverlayPackage.SYSTEM_PALETTE
+                )
 
-            val keysToRemove = arrayOf(
-                ThemeOverlayPackage.THEME_STYLE,
-                ThemeOverlayPackage.COLOR_SOURCE,
-                ThemeOverlayPackage.SYSTEM_PALETTE
-            )
+                for (key in keysToRemove) {
+                    remove(key)
+                }
 
-            for (key in keysToRemove) {
-                jsonObject.remove(key)
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                    remove(ThemeOverlayPackage.ACCENT_COLOR)
+                }
+
+                putOpt(ThemeOverlayPackage.COLOR_BOTH, "0")
+                putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper")
+                putOpt(
+                    ThemeOverlayPackage.APPLIED_TIMESTAMP,
+                    System.currentTimeMillis()
+                )
             }
-
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                jsonObject.remove(ThemeOverlayPackage.ACCENT_COLOR)
-            }
-
-            jsonObject.putOpt(ThemeOverlayPackage.COLOR_BOTH, "0")
-            jsonObject.putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper")
-            jsonObject.putOpt(
-                ThemeOverlayPackage.APPLIED_TIMESTAMP,
-                System.currentTimeMillis()
-            )
-
-            return jsonObject
         }
 
     companion object {

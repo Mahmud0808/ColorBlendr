@@ -20,14 +20,12 @@ class OnboardingItem3Fragment : Fragment() {
         binding = FragmentOnboardingItem3Binding.inflate(inflater, container, false)
 
         binding.root.setOnClickListener {
-            Const.WORKING_METHOD =
-                Const.WorkMethod.ROOT
+            Const.WORKING_METHOD = Const.WorkMethod.ROOT
             binding.shizuku.isSelected = false
         }
 
         binding.shizuku.setOnClickListener {
-            Const.WORKING_METHOD =
-                Const.WorkMethod.SHIZUKU
+            Const.WORKING_METHOD = Const.WorkMethod.SHIZUKU
             binding.root.isSelected = false
         }
 

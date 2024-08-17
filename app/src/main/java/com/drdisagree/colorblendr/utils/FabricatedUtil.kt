@@ -127,7 +127,7 @@ object FabricatedUtil {
         }
     }
 
-    fun getAndSaveSelectedFabricatedApps(context: Context) {
+    fun updateFabricatedAppList(context: Context) {
         val packageManager = context.packageManager
         val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
         val selectedApps = HashMap<String, Boolean>()

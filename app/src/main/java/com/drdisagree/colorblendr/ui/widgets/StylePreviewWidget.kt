@@ -2,11 +2,10 @@ package com.drdisagree.colorblendr.ui.widgets
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.os.Handler
-import android.os.Looper
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -29,6 +28,11 @@ import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StylePreviewWidget : RelativeLayout {
 
@@ -42,6 +46,7 @@ class StylePreviewWidget : RelativeLayout {
     private var styleName: String? = null
     private var monetStyle: MONET? = null
     private var colorPalette: ArrayList<ArrayList<Int>>? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -72,7 +77,9 @@ class StylePreviewWidget : RelativeLayout {
         setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText))
         typedArray.recycle()
 
-        setColorPreview()
+        coroutineScope.launch {
+            setColorPreview()
+        }
 
         container!!.setOnClickListener { v: View? ->
             if (onClickListener != null && !isSelected()) {
@@ -113,12 +120,15 @@ class StylePreviewWidget : RelativeLayout {
     fun applyColorScheme() {
         styleName?.let {
             putString(MONET_STYLE, it)
-            applyFabricatedColors(context!!)
+
+            coroutineScope.launch {
+                applyFabricatedColors(context!!)
+            }
         }
     }
 
-    private fun setColorPreview() {
-        Thread {
+    private suspend fun setColorPreview() {
+        withContext(Dispatchers.IO) {
             try {
                 if (styleName == null) {
                     styleName = context!!.getString(R.string.monet_tonalspot)
@@ -130,7 +140,6 @@ class StylePreviewWidget : RelativeLayout {
                 )
 
                 colorPalette = generateModifiedColors(
-                    context!!,
                     monetStyle!!,
                     getInt(MONET_ACCENT_SATURATION, 100),
                     getInt(MONET_BACKGROUND_SATURATION, 100),
@@ -138,18 +147,21 @@ class StylePreviewWidget : RelativeLayout {
                     getBoolean(MONET_PITCH_BLACK_THEME, false),
                     getBoolean(MONET_ACCURATE_SHADES, true)
                 )
-
-                Handler(Looper.getMainLooper()).post {
-                    val isDarkMode: Boolean = isDarkMode
-                    colorContainer!!.setHalfCircleColor(colorPalette!![0][4])
-                    colorContainer!!.setFirstQuarterCircleColor(colorPalette!![2][5])
-                    colorContainer!!.setSecondQuarterCircleColor(colorPalette!![1][6])
-                    colorContainer!!.setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
-                    colorContainer!!.invalidateColors()
-                }
-            } catch (ignored: Exception) {
+            } catch (e: Exception) {
+                Log.e(TAG, "Error generating color palette", e)
+                return@withContext
             }
-        }.start()
+
+            withContext(Dispatchers.Main) {
+                colorContainer?.apply {
+                    setHalfCircleColor(colorPalette!![0][4])
+                    setFirstQuarterCircleColor(colorPalette!![2][5])
+                    setSecondQuarterCircleColor(colorPalette!![1][6])
+                    setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
+                    invalidateColors()
+                }
+            }
+        }
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
@@ -214,7 +226,10 @@ class StylePreviewWidget : RelativeLayout {
         super.onRestoreInstanceState(state.superState)
 
         setSelected(state.isSelected)
-        setColorPreview()
+
+        coroutineScope.launch {
+            setColorPreview()
+        }
     }
 
     override fun setEnabled(enabled: Boolean) {
@@ -259,5 +274,9 @@ class StylePreviewWidget : RelativeLayout {
         override fun describeContents(): Int {
             return 0
         }
+    }
+
+    companion object {
+        private val TAG: String = StylePreviewWidget::class.java.simpleName
     }
 }

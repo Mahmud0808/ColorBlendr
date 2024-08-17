@@ -5,19 +5,15 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
@@ -41,15 +37,18 @@ import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
-import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.MiscUtil.convertListToIntArray
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
-import me.jfenn.colorpickerdialog.interfaces.OnColorPickedListener
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
 class ColorPaletteFragment : Fragment() {
@@ -146,62 +145,56 @@ class ColorPaletteFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun initColorTablePreview(colorTableRows: Array<LinearLayout>) {
-        Thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val palette: ArrayList<ArrayList<Int>>? = generateModifiedColors()
+                val systemColors: Array<IntArray> = if (palette == null) {
+                    getSystemColors(requireContext())
+                } else {
+                    convertListToIntArray(palette)
+                }
 
-                val systemColors: Array<IntArray> =
-                    if (palette == null) {
-                        getSystemColors(requireContext())
-                    } else {
-                        convertListToIntArray(palette)
-                    }
+                withContext(Dispatchers.Main) {
+                    for (i in colorTableRows.indices) {
+                        for (j in 0 until colorTableRows[i].childCount) {
+                            val childView = colorTableRows[i].getChildAt(j)
+                            childView.background.setTint(systemColors[i][j])
+                            childView.tag = systemColors[i][j]
 
-                for (i in colorTableRows.indices) {
-                    for (j in 0 until colorTableRows[i].childCount) {
-                        colorTableRows[i].getChildAt(j).background
-                            .setTint(systemColors[i][j])
-                        colorTableRows[i].getChildAt(j).tag = systemColors[i][j]
+                            if (getInt(colorNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
+                                childView.background.setTint(getInt(colorNames[i][j], 0))
+                            }
 
-                        if (getInt(colorNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
-                            colorTableRows[i].getChildAt(j).background
-                                .setTint(getInt(colorNames[i][j], 0))
-                        }
+                            val textView = TextView(requireContext()).apply {
+                                text = colorCodes[j].toString()
+                                rotation = 270f
+                                setTextColor(calculateTextColor(systemColors[i][j]))
+                                setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+                                alpha = 0.8f
+                                setMaxLines(1)
+                                setSingleLine(true)
+                                setAutoSizeTextTypeUniformWithConfiguration(
+                                    1,
+                                    20,
+                                    1,
+                                    TypedValue.COMPLEX_UNIT_SP
+                                )
+                            }
 
-                        val textView = TextView(requireContext())
-                        textView.text = colorCodes[j].toString()
-                        textView.rotation = 270f
-                        textView.setTextColor(calculateTextColor(systemColors[i][j]))
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
-                        textView.setAlpha(0.8f)
-                        textView.setMaxLines(1)
-                        textView.setSingleLine(true)
-                        textView.setAutoSizeTextTypeUniformWithConfiguration(
-                            1,
-                            20,
-                            1,
-                            TypedValue.COMPLEX_UNIT_SP
-                        )
-
-                        val finalI: Int = i
-                        val finalJ: Int = j
-                        requireActivity().runOnUiThread {
-                            (colorTableRows[finalI].getChildAt(finalJ) as ViewGroup)
-                                .addView(textView)
-                            (colorTableRows[finalI].getChildAt(finalJ) as LinearLayout).gravity =
+                            (colorTableRows[i].getChildAt(j) as ViewGroup).addView(textView)
+                            (colorTableRows[i].getChildAt(j) as LinearLayout).gravity =
                                 Gravity.CENTER
                         }
                     }
-                }
 
-                requireActivity().runOnUiThread {
-                    enablePaletteOnClickListener(
-                        colorTableRows
-                    )
+                    // Enable click listeners on the main thread
+                    enablePaletteOnClickListener(colorTableRows)
                 }
-            } catch (ignored: Exception) {
+            } catch (e: Exception) {
+                // Handle any exceptions (e.g., logging)
+                Log.e(TAG, "Error initializing color table preview", e)
             }
-        }.start()
+        }
     }
 
     private fun enablePaletteOnClickListener(colorTableRows: Array<LinearLayout>) {
@@ -264,13 +257,19 @@ class ColorPaletteFragment : Fragment() {
                                                 .setTextColor(calculateTextColor(color))
                                             putInt(colorNames[finalI][finalJ], color)
 
-                                            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                try {
-                                                    applyFabricatedColors(requireContext())
-                                                } catch (ignored: Exception) {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                putLong(
+                                                    MONET_LAST_UPDATED,
+                                                    System.currentTimeMillis()
+                                                )
+                                                delay(200)
+                                                withContext(Dispatchers.IO) {
+                                                    try {
+                                                        applyFabricatedColors(requireContext())
+                                                    } catch (ignored: Exception) {
+                                                    }
                                                 }
-                                            }, 200)
+                                            }
                                         }
                                     }
                                     .show(
@@ -289,9 +288,17 @@ class ColorPaletteFragment : Fragment() {
 
                         clearPref(colorNames[finalI][finalJ])
 
-                        try {
-                            applyFabricatedColors(requireContext())
-                        } catch (ignored: Exception) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            putLong(
+                                MONET_LAST_UPDATED,
+                                System.currentTimeMillis()
+                            )
+                            withContext(Dispatchers.IO) {
+                                try {
+                                    applyFabricatedColors(requireContext())
+                                } catch (ignored: Exception) {
+                                }
+                            }
                         }
                         true
                     }
@@ -301,8 +308,7 @@ class ColorPaletteFragment : Fragment() {
 
     private fun generateModifiedColors(): ArrayList<ArrayList<Int>>? {
         try {
-            return generateModifiedColors(
-                requireContext(),
+            return ColorUtil.generateModifiedColors(
                 stringToEnumMonetStyle(
                     requireContext(),
                     RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))!!

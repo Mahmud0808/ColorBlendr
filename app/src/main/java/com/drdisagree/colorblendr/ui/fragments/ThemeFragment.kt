@@ -1,8 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,10 +26,15 @@ import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
-import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ThemeFragment : Fragment() {
 
@@ -78,13 +81,7 @@ class ThemeFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 monetAccentSaturation[0] = seekBar.progress
                 putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0])
-                putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-                Handler(Looper.getMainLooper()).postDelayed({
-                    try {
-                        applyFabricatedColors(requireContext())
-                    } catch (ignored: Exception) {
-                    }
-                }, 200)
+                applyFabricatedColors()
             }
         })
 
@@ -93,13 +90,7 @@ class ThemeFragment : Fragment() {
             monetAccentSaturation[0] = 100
             updatePreviewColors()
             clearPref(MONET_ACCENT_SATURATION)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
-            }, 200)
+            applyFabricatedColors()
             true
         }
         binding.accentSaturation.setEnabled(notShizukuMode)
@@ -119,13 +110,7 @@ class ThemeFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 monetBackgroundSaturation[0] = seekBar.progress
                 putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0])
-                putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-                Handler(Looper.getMainLooper()).postDelayed({
-                    try {
-                        applyFabricatedColors(requireContext())
-                    } catch (ignored: Exception) {
-                    }
-                }, 200)
+                applyFabricatedColors()
             }
         })
 
@@ -134,13 +119,7 @@ class ThemeFragment : Fragment() {
             monetBackgroundSaturation[0] = 100
             updatePreviewColors()
             clearPref(MONET_BACKGROUND_SATURATION)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
-            }, 200)
+            applyFabricatedColors()
             true
         }
         binding.backgroundSaturation.setEnabled(notShizukuMode)
@@ -160,13 +139,7 @@ class ThemeFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 monetBackgroundLightness[0] = seekBar.progress
                 putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0])
-                putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-                Handler(Looper.getMainLooper()).postDelayed({
-                    try {
-                        applyFabricatedColors(requireContext())
-                    } catch (ignored: Exception) {
-                    }
-                }, 200)
+                applyFabricatedColors()
             }
         })
 
@@ -175,13 +148,7 @@ class ThemeFragment : Fragment() {
             monetBackgroundLightness[0] = 100
             updatePreviewColors()
             clearPref(MONET_BACKGROUND_LIGHTNESS)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
-            }, 200)
+            applyFabricatedColors()
             true
         }
         binding.backgroundLightness.setEnabled(notShizukuMode)
@@ -193,6 +160,22 @@ class ThemeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         updatePreviewColors()
+    }
+
+    private fun applyFabricatedColors() {
+        CoroutineScope(Dispatchers.Main).launch {
+            putLong(
+                MONET_LAST_UPDATED,
+                System.currentTimeMillis()
+            )
+            delay(200)
+            withContext(Dispatchers.IO) {
+                try {
+                    applyFabricatedColors(requireContext())
+                } catch (ignored: Exception) {
+                }
+            }
+        }
     }
 
     private fun updatePreviewColors() {
@@ -252,8 +235,7 @@ class ThemeFragment : Fragment() {
         accurateShades: Boolean
     ): ArrayList<ArrayList<Int>>? {
         try {
-            return generateModifiedColors(
-                requireContext(),
+            return ColorUtil.generateModifiedColors(
                 stringToEnumMonetStyle(
                     requireContext(),
                     RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))!!

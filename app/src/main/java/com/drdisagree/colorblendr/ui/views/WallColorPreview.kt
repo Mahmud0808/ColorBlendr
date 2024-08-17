@@ -27,6 +27,11 @@ import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.SystemUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WallColorPreview : View {
 
@@ -46,21 +51,22 @@ class WallColorPreview : View {
     private var circleRadius = 0f
     private var isSelected = false
     private var colorPalette: ArrayList<ArrayList<Int>>? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
     @ColorInt
-    private var halfCircleColor = 0
+    private var halfCircleColor = Color.DKGRAY
 
     @ColorInt
-    private var firstQuarterCircleColor = 0
+    private var firstQuarterCircleColor = Color.DKGRAY
 
     @ColorInt
-    private var secondQuarterCircleColor = 0
+    private var secondQuarterCircleColor = Color.DKGRAY
 
     @ColorInt
-    private var squareColor = 0
+    private var squareColor = Color.DKGRAY
 
     @ColorInt
-    private var centerCircleColor = 0
+    private var centerCircleColor = Color.DKGRAY
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -220,36 +226,40 @@ class WallColorPreview : View {
     }
 
     fun setMainColor(@ColorInt color: Int) {
-        Thread {
+        coroutineScope.launch {
             try {
-                colorPalette = generateModifiedColors(
-                    stringToEnumMonetStyle(
-                        context!!,
-                        getString(
-                            MONET_STYLE,
-                            context!!.getString(R.string.monet_tonalspot)
-                        )!!
-                    ),
-                    color,
-                    getInt(MONET_ACCENT_SATURATION, 100),
-                    getInt(MONET_BACKGROUND_SATURATION, 100),
-                    getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                    getBoolean(MONET_PITCH_BLACK_THEME, false),
-                    getBoolean(MONET_ACCURATE_SHADES, true),
-                    false,
-                    SystemUtil.isDarkMode,
-                    false
-                )
+                colorPalette = withContext(Dispatchers.IO) {
+                    generateModifiedColors(
+                        stringToEnumMonetStyle(
+                            context!!,
+                            getString(
+                                MONET_STYLE,
+                                context!!.getString(R.string.monet_tonalspot)
+                            )!!
+                        ),
+                        color,
+                        getInt(MONET_ACCENT_SATURATION, 100),
+                        getInt(MONET_BACKGROUND_SATURATION, 100),
+                        getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                        getBoolean(MONET_PITCH_BLACK_THEME, false),
+                        getBoolean(MONET_ACCURATE_SHADES, true),
+                        false,
+                        SystemUtil.isDarkMode,
+                        false
+                    )
+                }
 
-                setHalfCircleColor(colorPalette!![0][4])
-                setFirstQuarterCircleColor(colorPalette!![2][5])
-                setSecondQuarterCircleColor(colorPalette!![1][6])
-                setSquareColor(colorPalette!![4][if (!isDarkMode) 3 else 9])
-                setCenterCircleColor(color)
-                invalidateColors()
+                withContext(Dispatchers.Main) {
+                    setHalfCircleColor(colorPalette!![0][4])
+                    setFirstQuarterCircleColor(colorPalette!![2][5])
+                    setSecondQuarterCircleColor(colorPalette!![1][6])
+                    setSquareColor(colorPalette!![4][if (!isDarkMode) 3 else 9])
+                    setCenterCircleColor(color)
+                    invalidateColors()
+                }
             } catch (ignored: Exception) {
             }
-        }.start()
+        }
     }
 
     override fun setSelected(selected: Boolean) {

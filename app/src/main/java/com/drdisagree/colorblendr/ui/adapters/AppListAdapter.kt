@@ -21,6 +21,9 @@ import com.drdisagree.colorblendr.utils.ColorUtil.getColorFromAttribute
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
 import com.drdisagree.colorblendr.utils.OverlayManager.unregisterFabricatedOverlay
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AppListAdapter(private val appList: List<AppInfoModel>) :
     RecyclerView.Adapter<AppListAdapter.ViewHolder>() {
@@ -62,15 +65,18 @@ class AppListAdapter(private val appList: List<AppInfoModel>) :
 
             selectedApps[appInfo.packageName] = !isSelected
             saveSelectedFabricatedApps(selectedApps)
-            if (isSelected) {
-                unregisterFabricatedOverlay(
-                    String.format(
-                        FABRICATED_OVERLAY_NAME_APPS,
-                        appInfo.packageName
+
+            CoroutineScope(Dispatchers.Main).launch {
+                if (isSelected) {
+                    unregisterFabricatedOverlay(
+                        String.format(
+                            FABRICATED_OVERLAY_NAME_APPS,
+                            appInfo.packageName
+                        )
                     )
-                )
-            } else {
-                applyFabricatedColorsPerApp(context!!, appInfo.packageName, null)
+                } else {
+                    applyFabricatedColorsPerApp(context!!, appInfo.packageName, null)
+                }
             }
         }
 

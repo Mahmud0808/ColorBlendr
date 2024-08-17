@@ -15,6 +15,7 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 @Suppress("unused")
 object OverlayManager {
+
     private val TAG: String = OverlayManager::class.java.simpleName
     private var mRootConnection = rootConnection
     private var mShizukuConnection = shizukuConnection
@@ -71,7 +72,7 @@ object OverlayManager {
         }
 
         try {
-            return mRootConnection!!.isOverlayInstalled(packageName) ?: false
+            return mRootConnection!!.isOverlayInstalled(packageName)
         } catch (e: RemoteException) {
             Log.e(
                 TAG,
@@ -92,7 +93,7 @@ object OverlayManager {
         }
 
         try {
-            return mRootConnection!!.isOverlayEnabled(packageName) ?: false
+            return mRootConnection!!.isOverlayEnabled(packageName)
         } catch (e: RemoteException) {
             Log.e(
                 TAG,
@@ -168,7 +169,7 @@ object OverlayManager {
         }
     }
 
-    fun applyFabricatedColors(context: Context) {
+    suspend fun applyFabricatedColors(context: Context) {
         if (!RPrefs.getBoolean(
                 Const.THEMING_ENABLED,
                 true
@@ -192,25 +193,23 @@ object OverlayManager {
         val accurateShades = RPrefs.getBoolean(Const.MONET_ACCURATE_SHADES, true)
 
         val paletteLight = ColorUtil.generateModifiedColors(
-            context,
-            style,
-            monetAccentSaturation,
-            monetBackgroundSaturation,
-            monetBackgroundLightness,
-            pitchBlackTheme,
-            accurateShades,
+            style = style,
+            accentSaturation = monetAccentSaturation,
+            backgroundSaturation = monetBackgroundSaturation,
+            backgroundLightness = monetBackgroundLightness,
+            pitchBlackTheme = pitchBlackTheme,
+            accurateShades = accurateShades,
             modifyPitchBlack = false,
             isDark = false
         )
 
         val paletteDark = ColorUtil.generateModifiedColors(
-            context,
-            style,
-            monetAccentSaturation,
-            monetBackgroundSaturation,
-            monetBackgroundLightness,
-            pitchBlackTheme,
-            accurateShades,
+            style = style,
+            accentSaturation = monetAccentSaturation,
+            backgroundSaturation = monetBackgroundSaturation,
+            backgroundLightness = monetBackgroundLightness,
+            pitchBlackTheme = pitchBlackTheme,
+            accurateShades = accurateShades,
             modifyPitchBlack = false,
             isDark = true
         )
@@ -305,7 +304,7 @@ object OverlayManager {
         }
     }
 
-    fun applyFabricatedColorsPerApp(
+    suspend fun applyFabricatedColorsPerApp(
         context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
@@ -346,7 +345,7 @@ object OverlayManager {
         }
     }
 
-    private fun getFabricatedColorsPerApp(
+    private suspend fun getFabricatedColorsPerApp(
         context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
@@ -355,7 +354,6 @@ object OverlayManager {
 
         if (paletteTemp == null) {
             paletteTemp = generateModifiedColors(
-                context,
                 ColorSchemeUtil.stringToEnumMonetStyle(
                     context,
                     RPrefs.getString(

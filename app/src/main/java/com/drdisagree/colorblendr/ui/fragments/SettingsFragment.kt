@@ -6,8 +6,6 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -54,6 +52,11 @@ import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 
 class SettingsFragment : Fragment() {
@@ -66,25 +69,31 @@ class SettingsFragment : Fragment() {
     private val masterSwitch: CompoundButton.OnCheckedChangeListener =
         CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
             if (!isMasterSwitchEnabled) {
-                buttonView.setChecked(!isChecked)
+                buttonView.isChecked = !isChecked
                 return@OnCheckedChangeListener
             }
+
             putBoolean(THEMING_ENABLED, isChecked)
             putBoolean(SHIZUKU_THEMING_ENABLED, isChecked)
             putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            Handler(Looper.getMainLooper()).postDelayed({
+
+            CoroutineScope(Dispatchers.Main).launch {
                 try {
-                    if (isChecked) {
-                        applyFabricatedColors(requireContext())
-                    } else {
-                        removeFabricatedColors(requireContext())
+                    delay(300)
+
+                    withContext(Dispatchers.IO) {
+                        if (isChecked) {
+                            applyFabricatedColors(requireContext())
+                        } else {
+                            removeFabricatedColors(requireContext())
+                        }
                     }
 
                     isMasterSwitchEnabled = false
                     val isOverlayEnabled: Boolean =
                         isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) ||
                                 getBoolean(SHIZUKU_THEMING_ENABLED, true)
-                    buttonView.setChecked(isOverlayEnabled)
+                    buttonView.isChecked = isOverlayEnabled
                     isMasterSwitchEnabled = true
 
                     if (isChecked != isOverlayEnabled) {
@@ -92,12 +101,11 @@ class SettingsFragment : Fragment() {
                             requireContext(),
                             getString(R.string.something_went_wrong),
                             Toast.LENGTH_SHORT
-                        )
-                            .show()
+                        ).show()
                     }
                 } catch (ignored: Exception) {
                 }
-            }, 300)
+            }
         }
 
     override fun onCreateView(
@@ -314,9 +322,7 @@ class SettingsFragment : Fragment() {
         }
 
     private var startRestoreActivityIntent: ActivityResultLauncher<Intent> =
-        registerForActivityResult<Intent, ActivityResult>(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 if (data?.data == null) return@registerForActivityResult
@@ -326,7 +332,8 @@ class SettingsFragment : Fragment() {
                     .setMessage(getString(R.string.confirmation_desc))
                     .setPositiveButton(getString(android.R.string.ok)) { dialog: DialogInterface, _: Int ->
                         dialog.dismiss()
-                        Executors.newSingleThreadExecutor().execute {
+
+                        CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 restorePrefs(
                                     appContext
@@ -334,25 +341,29 @@ class SettingsFragment : Fragment() {
                                         .openInputStream(data.data!!)!!
                                 )
 
-                                try {
-                                    applyFabricatedColors(requireContext())
-                                } catch (ignored: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    try {
+                                        applyFabricatedColors(requireContext())
+                                    } catch (ignored: Exception) {
+                                    }
                                 }
                             } catch (exception: Exception) {
-                                Snackbar
-                                    .make(
-                                        binding.getRoot(),
-                                        getString(R.string.restore_fail),
-                                        Snackbar.LENGTH_INDEFINITE
-                                    )
-                                    .setAction(getString(R.string.retry)) {
-                                        backupRestoreSettings(
-                                            false
+                                withContext(Dispatchers.Main) {
+                                    Snackbar
+                                        .make(
+                                            binding.getRoot(),
+                                            getString(R.string.restore_fail),
+                                            Snackbar.LENGTH_INDEFINITE
                                         )
-                                    }
-                                    .show()
+                                        .setAction(getString(R.string.retry)) {
+                                            backupRestoreSettings(
+                                                false
+                                            )
+                                        }
+                                        .show()
 
-                                Log.e(TAG, "startBackupActivityIntent: ", exception)
+                                    Log.e(TAG, "startBackupActivityIntent: ", exception)
+                                }
                             }
                         }
                     }
@@ -389,13 +400,19 @@ class SettingsFragment : Fragment() {
     }
 
     private fun applyFabricatedColors() {
-        putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-        Handler(Looper.getMainLooper()).postDelayed({
-            try {
-                applyFabricatedColors(requireContext())
-            } catch (ignored: Exception) {
+        CoroutineScope(Dispatchers.Main).launch {
+            putLong(
+                MONET_LAST_UPDATED,
+                System.currentTimeMillis()
+            )
+            delay(300)
+            withContext(Dispatchers.IO) {
+                try {
+                    applyFabricatedColors(requireContext())
+                } catch (ignored: Exception) {
+                }
             }
-        }, 300)
+        }
     }
 
     companion object {

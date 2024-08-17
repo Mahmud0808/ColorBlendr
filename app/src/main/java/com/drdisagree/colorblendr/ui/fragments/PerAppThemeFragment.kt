@@ -8,8 +8,6 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -37,6 +35,11 @@ import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eightbitlab.com.blurview.RenderEffectBlur
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class PerAppThemeFragment : Fragment() {
@@ -87,15 +90,14 @@ class PerAppThemeFragment : Fragment() {
             binding.warn.container.visibility = View.GONE
         }
         binding.warn.close.setOnClickListener {
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    putBoolean(SHOW_PER_APP_THEME_WARN, false)
-                    binding.warn.container.animate()
-                        .translationX(binding.warn.container.width * 2f).alpha(0f).withEndAction {
-                            binding.warn.container.visibility = View.GONE
-                        }.start()
-                }, 50
-            )
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(50)
+                putBoolean(SHOW_PER_APP_THEME_WARN, false)
+                binding.warn.container.animate()
+                    .translationX(binding.warn.container.width * 2f).alpha(0f).withEndAction {
+                        binding.warn.container.visibility = View.GONE
+                    }.start()
+            }
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -119,11 +121,12 @@ class PerAppThemeFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.searchBox.search.removeTextChangedListener(textWatcher)
 
-        Thread {
+        CoroutineScope(Dispatchers.IO).launch {
             appList = getAllInstalledApps(requireContext(), appType)
             adapter = AppListAdapter(appList!!)
+
             try {
-                requireActivity().runOnUiThread {
+                withContext(Dispatchers.Main) {
                     binding.recyclerView.adapter = adapter
                     binding.searchBox.search.addTextChangedListener(textWatcher)
 
@@ -141,7 +144,7 @@ class PerAppThemeFragment : Fragment() {
             } catch (ignored: Exception) {
                 // Fragment was not attached to activity
             }
-        }.start()
+        }
     }
 
     private fun filterList(query: String) {

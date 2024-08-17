@@ -6,14 +6,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
@@ -35,12 +32,14 @@ import com.drdisagree.colorblendr.ui.views.WallColorPreview
 import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getWallpaperColor
 import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.button.MaterialButtonToggleGroup.OnButtonCheckedListener
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
-import me.jfenn.colorpickerdialog.interfaces.OnColorPickedListener
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 import java.util.Arrays
 import java.util.stream.Collectors
@@ -80,14 +79,9 @@ class ColorsFragment : Fragment() {
 
         setToolbarTitle(requireContext(), R.string.app_name, false, binding.header.toolbar)
 
-        monetSeedColor = intArrayOf(
-            getInt(
-                MONET_SEED_COLOR,
-                getWallpaperColor(requireContext())
-            )
-        )
+        monetSeedColor = intArrayOf(getInt(MONET_SEED_COLOR, 0))
 
-        return binding.getRoot()
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -140,13 +134,20 @@ class ColorsFragment : Fragment() {
                         monetSeedColor[0] = color
                         binding.seedColorPicker.previewColor = color
                         putInt(MONET_SEED_COLOR, monetSeedColor[0])
-                        putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            try {
-                                applyFabricatedColors(requireContext())
-                            } catch (ignored: Exception) {
+
+                        CoroutineScope(Dispatchers.Main).launch {
+                            putLong(
+                                MONET_LAST_UPDATED,
+                                System.currentTimeMillis()
+                            )
+                            delay(300)
+                            withContext(Dispatchers.IO) {
+                                try {
+                                    applyFabricatedColors(requireContext())
+                                } catch (ignored: Exception) {
+                                }
                             }
-                        }, 300)
+                        }
                     }
                 }
                 .show(getChildFragmentManager(), "seedColorPicker")
@@ -248,8 +249,19 @@ class ColorsFragment : Fragment() {
                 )
                 putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
                 binding.seedColorPicker.previewColor = colorPreview.tag as Int
-                putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-                applyFabricatedColors(requireContext())
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    putLong(
+                        MONET_LAST_UPDATED,
+                        System.currentTimeMillis()
+                    )
+                    withContext(Dispatchers.IO) {
+                        try {
+                            applyFabricatedColors(requireContext())
+                        } catch (ignored: Exception) {
+                        }
+                    }
+                }
             }
 
             binding.colorsContainer.addView(colorPreview)

@@ -22,7 +22,6 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.extension.MethodInterface
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.utils.ColorUtil.getAccentColor
@@ -37,7 +36,9 @@ import java.util.Timer
 import java.util.TimerTask
 
 class AutoStartService : Service() {
+
     private var notificationManager: NotificationManager? = null
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -51,14 +52,14 @@ class AutoStartService : Service() {
         showNotification()
         registerReceivers()
 
-        if (BroadcastListener.Companion.lastOrientation == -1) {
-            BroadcastListener.Companion.lastOrientation = getScreenRotation(
+        if (BroadcastListener.lastOrientation == -1) {
+            BroadcastListener.lastOrientation = getScreenRotation(
                 this
             )
         }
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
         setupSystemUIRestartListener()
@@ -179,11 +180,7 @@ class AutoStartService : Service() {
             RootConnectionProvider.isNotConnected
         ) {
             RootConnectionProvider.builder(appContext)
-                .runOnSuccess(object : MethodInterface() {
-                    override fun run() {
-                        initSystemUIRestartListener()
-                    }
-                })
+                .onSuccess { initSystemUIRestartListener() }
                 .run()
         } else if (workingMethod == Const.WorkMethod.SHIZUKU &&
             ShizukuConnectionProvider.isNotConnected &&

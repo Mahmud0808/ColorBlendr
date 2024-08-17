@@ -19,6 +19,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 object ColorUtil {
+
     @ColorInt
     fun getColorFromAttribute(context: Context, attr: Int): Int {
         val typedValue = TypedValue()
@@ -27,7 +28,6 @@ object ColorUtil {
     }
 
     fun generateModifiedColors(
-        context: Context,
         style: MONET,
         accentSaturation: Int,
         backgroundSaturation: Int,
@@ -37,16 +37,16 @@ object ColorUtil {
         modifyPitchBlack: Boolean = true,
         isDark: Boolean = SystemUtil.isDarkMode
     ): ArrayList<ArrayList<Int>> {
-        val wallpaperColors = RPrefs.getString(Const.WALLPAPER_COLOR_LIST, null)
+        val wallpaperColorList: ArrayList<Int>? =
+            RPrefs.getString(Const.WALLPAPER_COLOR_LIST, null)?.let {
+                Const.GSON.fromJson(
+                    it,
+                    object : TypeToken<ArrayList<Int>>() {}.type
+                )
+            }
 
-        val wallpaperColorList = if (wallpaperColors != null) {
-            Const.GSON.fromJson(
-                wallpaperColors,
-                object : TypeToken<ArrayList<Int>>() {
-                }.type
-            )
-        } else {
-            WallpaperColorUtil.getWallpaperColors(context)
+        if (wallpaperColorList == null) {
+            throw Exception("No wallpaper color list found")
         }
 
         return generateModifiedColors(
