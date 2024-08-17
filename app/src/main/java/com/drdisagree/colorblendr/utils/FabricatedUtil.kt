@@ -8,7 +8,6 @@ import androidx.core.util.Pair
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
-import java.util.function.Consumer
 
 object FabricatedUtil {
     private val colorNames: Array<Array<String>> = ColorUtil.colorNames
@@ -39,50 +38,59 @@ object FabricatedUtil {
         assignFixedColorsToOverlay(overlay, paletteLight)
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun assignDynamicPaletteToOverlay(
         overlay: FabricatedOverlayResource,
         isDark: Boolean,
         palette: ArrayList<ArrayList<Int>>
     ) {
         val suffix = if (isDark) "dark" else "light"
-        val pitchBlackTheme = RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
+        val isPitchBlackTheme = RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
 
-        DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach(Consumer { pair: Pair<String, Any> ->
-            val resourceName = "system_" + pair.first + "_" + suffix
-            var colorValue: Int
+        DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach { colorMapping ->
+            val pair = extractResourceFromColorMapping(
+                colorMapping = colorMapping,
+                prefix = "system_",
+                suffix = suffix,
+                palette = palette,
+                isDark = isDark
+            )
+            val resourceName = pair.first
+            var colorValue: Int = pair.second
 
-            val valPair = pair.second as Pair<Any, Any>?
-            if (valPair!!.first is String) {
-                colorValue = Color.parseColor(
-                    (if (isDark) valPair.second else valPair.first
-                            ) as String
-                )
-            } else {
-                val colorIndexPair = valPair.second as Pair<Int, Int>
-                colorValue =
-                    palette[(valPair.first as Int)][if (isDark) colorIndexPair.second else colorIndexPair.first]
+            if (colorMapping.tonalPalette != null) {
+                val colorIndex = colorMapping.colorIndex ?: if (isDark) {
+                    colorMapping.darkModeColorIndex
+                } else {
+                    colorMapping.lightModeColorIndex
+                }!!
 
                 colorValue = replaceColorForPitchBlackTheme(
-                    pitchBlackTheme,
-                    resourceName,
-                    colorValue,
-                    if (isDark) colorIndexPair.second else colorIndexPair.first
+                    pitchBlackTheme = isPitchBlackTheme,
+                    resourceName = resourceName,
+                    colorValue = colorValue,
+                    colorIndex = colorIndex
                 )
             }
+
             overlay.setColor(resourceName, colorValue)
-        })
+        }
     }
 
     private fun assignFixedColorsToOverlay(
         overlay: FabricatedOverlayResource,
         paletteLight: ArrayList<ArrayList<Int>>
     ) {
-        DynamicColors.FIXED_COLORS_MAPPED.forEach(Consumer { pair: Pair<String, Pair<Int, Int>> ->
-            val resourceName = "system_" + pair.first
-            val colorValue = paletteLight[pair.second!!.first!!][pair.second!!.second!!]
+        DynamicColors.FIXED_COLORS_MAPPED.forEach { colorMapping ->
+            val pair = extractResourceFromColorMapping(
+                colorMapping = colorMapping,
+                prefix = "system_",
+                palette = paletteLight
+            )
+            val resourceName = pair.first
+            val colorValue = pair.second
+
             overlay.setColor(resourceName, colorValue)
-        })
+        }
     }
 
     fun assignPerAppColorsToOverlay(
@@ -91,25 +99,38 @@ object FabricatedUtil {
     ) {
         val pitchBlackTheme = RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
 
-        // Format of pair: <resourceName, <lightnessToChange, <colorIndexRow, colorIndexColumn>>>
-        DynamicColors.M3_REF_PALETTE.forEach(Consumer { pair: Pair<String, Pair<Int, Pair<Int, Int>>> ->
-            val resourceName = pair.first
-            val valPair = pair.second
-
-            // TODO: Use lightness value to modify the color
-            // int lightnessToChange = valPair.first + 100;
-            val colorIndexPair = valPair!!.second
-            var baseColor = palette[colorIndexPair!!.first!!][colorIndexPair.second]
-            baseColor = replaceColorForPitchBlackTheme(
-                pitchBlackTheme,
-                resourceName,
-                baseColor,
-                colorIndexPair.second
+        DynamicColors.M3_REF_PALETTE.forEach { colorMapping ->
+            val pair = extractResourceFromColorMapping(
+                colorMapping = colorMapping,
+                palette = palette
             )
+            val resourceName = pair.first
+            var colorValue = pair.second
 
-            overlay.setColor(resourceName, baseColor)
-            overlay.setColor("g$resourceName", baseColor)
-        })
+            if (colorMapping.colorIndex != null) {
+                val colorIndex = colorMapping.colorIndex
+
+                if (colorMapping.lightnessAdjustment != null) {
+                    val lightnessAdjustment = colorMapping.lightnessAdjustment + 100
+
+                    colorValue = ColorUtil.modifyLightness(
+                        colorValue,
+                        lightnessAdjustment,
+                        colorIndex
+                    )
+                }
+
+                colorValue = replaceColorForPitchBlackTheme(
+                    pitchBlackTheme = pitchBlackTheme,
+                    resourceName = resourceName,
+                    colorValue = colorValue,
+                    colorIndex = colorIndex
+                )
+            }
+
+            overlay.setColor(resourceName, colorValue)
+            overlay.setColor("g$resourceName", colorValue)
+        }
 
         for (i in 0..4) {
             for (j in 0..12) {
@@ -150,33 +171,45 @@ object FabricatedUtil {
     @ColorInt
     fun replaceColorForPitchBlackTheme(
         pitchBlackTheme: Boolean,
-        resourceName: String?,
+        resourceName: String,
         colorValue: Int,
         colorIndex: Int
     ): Int {
         if (pitchBlackTheme) {
             val lightness = RPrefs.getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100)
+
             return when (resourceName) {
-                "m3_ref_palette_dynamic_neutral_variant6", "gm3_ref_palette_dynamic_neutral_variant6", "system_background_dark", "system_surface_dark" -> Color.BLACK
-                "m3_ref_palette_dynamic_neutral_variant12", "gm3_ref_palette_dynamic_neutral_variant12" -> ColorUtil.modifyLightness(
-                    colorValue,
-                    lightness - 40,
-                    colorIndex
-                )
+                "m3_ref_palette_dynamic_neutral_variant6", "gm3_ref_palette_dynamic_neutral_variant6", "system_background_dark", "system_surface_dark" -> {
+                    Color.BLACK
+                }
 
-                "m3_ref_palette_dynamic_neutral_variant17", "gm3_ref_palette_dynamic_neutral_variant17", "gm3_system_bar_color_night" -> ColorUtil.modifyLightness(
-                    colorValue,
-                    lightness - 60,
-                    colorIndex
-                )
+                "m3_ref_palette_dynamic_neutral_variant12", "gm3_ref_palette_dynamic_neutral_variant12" -> {
+                    ColorUtil.modifyLightness(
+                        colorValue,
+                        lightness - 40,
+                        colorIndex
+                    )
+                }
 
-                "system_surface_container_dark" -> ColorUtil.modifyLightness(
-                    colorValue,
-                    lightness - 20,
-                    colorIndex
-                )
+                "m3_ref_palette_dynamic_neutral_variant17", "gm3_ref_palette_dynamic_neutral_variant17", "gm3_system_bar_color_night" -> {
+                    ColorUtil.modifyLightness(
+                        colorValue,
+                        lightness - 60,
+                        colorIndex
+                    )
+                }
 
-                else -> colorValue
+                "system_surface_container_dark" -> {
+                    ColorUtil.modifyLightness(
+                        colorValue,
+                        lightness - 20,
+                        colorIndex
+                    )
+                }
+
+                else -> {
+                    colorValue
+                }
             }
         }
 
@@ -300,5 +333,35 @@ object FabricatedUtil {
             overlay.setColor("gm_ref_palette_grey500", palette[3][1])
             overlay.setColor("replay__pal_games_dark_300", palette[0][5])
         }
+    }
+
+    private fun extractResourceFromColorMapping(
+        colorMapping: ColorMapping,
+        prefix: String = "",
+        suffix: String = "",
+        palette: ArrayList<ArrayList<Int>>,
+        isDark: Boolean = false
+    ): Pair<String, Int> {
+        val resourceName = prefix + colorMapping.resourceName + "_" + suffix
+
+        val colorValue: Int = if (colorMapping.tonalPalette != null) {
+            if (colorMapping.colorIndex != null) {
+                palette[colorMapping.tonalPalette.index][colorMapping.colorIndex]
+            } else {
+                if (isDark) {
+                    palette[colorMapping.tonalPalette.index][colorMapping.darkModeColorIndex!!]
+                } else {
+                    palette[colorMapping.tonalPalette.index][colorMapping.lightModeColorIndex!!]
+                }
+            }
+        } else {
+            colorMapping.colorCode ?: if (isDark) {
+                colorMapping.darkModeColorCode
+            } else {
+                colorMapping.lightModeColorCode
+            }
+        }!!
+
+        return Pair(resourceName, colorValue)
     }
 }
