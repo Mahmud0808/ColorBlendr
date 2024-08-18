@@ -17,33 +17,44 @@
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
         app:layout_constraintTop_toTopOf="@id/guidelineTop" />
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:fadingEdgeLength="16dp"
+        android:fillViewport="true"
         android:gravity="center"
-        android:orientation="vertical"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="@id/guidelineBottom"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineMiddle"
         app:layout_constraintTop_toTopOf="@id/guidelineTop">
 
-        <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-            android:id="@+id/root"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:descriptionText="@string/mode_one_desc"
-            app:titleText="@string/mode_one_title" />
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="14dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-            android:id="@+id/shizuku"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:descriptionText="@string/mode_two_desc"
-            app:titleText="@string/mode_two_title" />
+            <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
+                android:id="@+id/root"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/mode_one_desc"
+                app:titleText="@string/mode_one_title" />
 
-    </LinearLayout>
+            <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
+                android:id="@+id/shizuku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:descriptionText="@string/mode_two_desc"
+                app:titleText="@string/mode_two_title" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineTop"
@@ -78,6 +89,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.86" />
+        app:layout_constraintGuide_percent="0.88" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
