@@ -18,6 +18,7 @@
         app:layout_constraintTop_toTopOf="@id/guidelineTop" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fadingEdgeLength="16dp"
@@ -58,7 +59,6 @@
                 android:id="@+id/all_files_access"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 app:descriptionText="@string/perm_three_desc"
                 app:titleText="@string/perm_three_title" />
 
