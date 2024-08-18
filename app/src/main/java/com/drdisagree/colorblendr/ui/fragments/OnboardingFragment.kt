@@ -153,7 +153,14 @@ class OnboardingFragment : Fragment() {
                 updateFabricatedAppList(requireContext())
                 putBoolean(FIRST_RUN, false)
                 saveWorkingMethod(Const.WORKING_METHOD)
-                MainActivity.replaceFragment(HomeFragment(), true)
+                MainActivity.replaceFragment(
+                    HomeFragment().apply {
+                        arguments = Bundle().apply {
+                            putBoolean("success", true)
+                        }
+                    },
+                    true
+                )
             } catch (_: Exception) {
             }
         }

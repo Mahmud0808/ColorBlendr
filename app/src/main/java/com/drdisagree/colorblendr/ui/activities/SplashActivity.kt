@@ -92,6 +92,7 @@ class SplashActivity : AppCompatActivity() {
                 countDownLatch.countDown()
             }
         } else {
+            success.set(false)
             keepShowing = false
             countDownLatch.countDown()
         }

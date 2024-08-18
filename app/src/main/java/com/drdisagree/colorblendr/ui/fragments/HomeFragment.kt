@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,8 +16,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding
-import com.drdisagree.colorblendr.service.AutoStartService
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
+import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.utils.AppUtil
 import com.drdisagree.colorblendr.utils.AppUtil.hasStoragePermission
 import com.drdisagree.colorblendr.utils.AppUtil.openAppSettings
@@ -56,13 +55,10 @@ class HomeFragment : Fragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             try {
                 if (permissionsGranted(requireContext())) {
-                    if (isServiceNotRunning) {
-                        requireContext().startForegroundService(
-                            Intent(
-                                requireContext(),
-                                AutoStartService::class.java
-                            )
-                        )
+                    if (isServiceNotRunning &&
+                        arguments?.getBoolean("success", false) == true
+                    ) {
+                        scheduleJob(requireContext())
                     }
                 } else {
                     requestPermissionsLauncher.launch(AppUtil.REQUIRED_PERMISSIONS)
@@ -170,13 +166,10 @@ class HomeFragment : Fragment() {
             return
         }
 
-        if (isServiceNotRunning) {
-            requireContext().startForegroundService(
-                Intent(
-                    requireContext(),
-                    AutoStartService::class.java
-                )
-            )
+        if (isServiceNotRunning &&
+            arguments?.getBoolean("success", false) == true
+        ) {
+            scheduleJob(requireContext())
         }
     }
 
