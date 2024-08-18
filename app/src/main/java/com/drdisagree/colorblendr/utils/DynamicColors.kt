@@ -12,7 +12,9 @@ data class ColorMapping(
     val lightModeColorCode: Int? = null,
     val colorCode: Int? = null,
     val darkModeColorCode: Int? = null,
-    val lightnessAdjustment: Int? = null
+    val lightnessAdjustment: Int? = null,
+    val lightModeLightnessAdjustment: Int? = null,
+    val darkModeLightnessAdjustment: Int? = null
 )
 
 enum class TonalPalette(val index: Int) {
@@ -195,7 +197,9 @@ object DynamicColors {
                     resourceName = "surface_container",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
-                    darkModeColorIndex = 10
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -2,
+                    darkModeLightnessAdjustment = -20
                 )
             )
             add(
