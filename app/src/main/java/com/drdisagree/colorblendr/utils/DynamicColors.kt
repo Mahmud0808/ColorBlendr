@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
-import android.os.Build
 
 data class ColorMapping(
     val resourceName: String,
@@ -206,12 +205,10 @@ object DynamicColors {
                 ColorMapping(
                     resourceName = "surface_container_high",
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        1
-                    } else {
-                        2
-                    },
-                    darkModeColorIndex = 10
+                    lightModeColorIndex = 2,
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -2,
+                    darkModeLightnessAdjustment = 8
                 )
             )
             add(
