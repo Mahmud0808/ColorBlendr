@@ -101,6 +101,8 @@
     <string name="perm_two_desc">This permission is required to retrieve home and lockscreen wallpaper.</string>
     <string name="perm_three_title">All Files Access</string>
     <string name="perm_three_desc">This permission is required to retrieve home and lockscreen  wallpaper.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Start</string>
     <string name="btn_continue">Continue</string>
     <string name="monet_neutral_desc">Lively and refreshing color palette inspired by the effervescence of spritz beverages.</string>
@@ -124,6 +126,7 @@
     <string name="force_per_app_theme_desc">Apply custom colors to specific apps which do not follow system monet</string>
     <string name="back">Back</string>
     <string name="permissions">Permissions</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Choose method</string>
     <string name="auto_startup">Auto startup</string>
     <string name="auto_startup_title">Start service on boot</string>
@@ -159,4 +162,5 @@
     <string name="filter_user_apps">User apps</string>
     <string name="filter_launchable_apps">Launchable apps</string>
     <string name="filter_all">All apps</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>

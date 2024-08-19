@@ -52,6 +52,7 @@ class OnboardingFragment : Fragment() {
         adapter.addFragment(OnboardingItem1Fragment())
         adapter.addFragment(OnboardingItem2Fragment())
         adapter.addFragment(OnboardingItem3Fragment())
+        adapter.addFragment(OnboardingItem4Fragment())
 
         binding.viewPager.adapter = adapter
         binding.viewPager.offscreenPageLimit = adapter.itemCount
