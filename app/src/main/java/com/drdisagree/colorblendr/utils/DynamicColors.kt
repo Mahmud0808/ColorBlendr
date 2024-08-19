@@ -232,7 +232,8 @@ object DynamicColors {
                     resourceName = "surface_dim",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
-                    darkModeColorIndex = 11
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -8
                 )
             )
             add(
