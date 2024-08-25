@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Questa autorizzazione è necessaria per recuperare lo sfondo home e lockscreen.</string>
     <string name="perm_three_title">Accesso a tutti i file</string>
     <string name="perm_three_desc">Questa autorizzazione è necessaria per recuperare lo sfondo home e lockscreen.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Inizio</string>
     <string name="btn_continue">Continua</string>
     <string name="monet_neutral_desc">Tavolozza di colori vivace e rinfrescante ispirata all\'effervescenza delle bevande spritz.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Applica colori personalizzati a specifiche applicazioni che non seguono monet di sistema</string>
     <string name="back">Indietro</string>
     <string name="permissions">Permessi</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Scegli il metodo</string>
     <string name="auto_startup">Avvio automatico</string>
     <string name="auto_startup_title">Avvia il servizio all\'avvio</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">User apps</string>
     <string name="filter_launchable_apps">Launchable apps</string>
     <string name="filter_all">All apps</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>

@@ -89,6 +89,8 @@
     <string name="perm_two_desc">To uprawnienie jest wymagane do pobrania tapety ekranu głównego i ekranu blokady.</string>
     <string name="perm_three_title">Dostęp do wszystkich plików</string>
     <string name="perm_three_desc">To uprawnienie jest wymagane do pobrania tapety ekranu głównego i ekranu blokady.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Start</string>
     <string name="btn_continue">Kontynuuj</string>
     <string name="monet_neutral_desc">Ożywiająca i odświeżająca paleta kolorów inspirowana musujami napojów spirytusowych.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Zastosuj niestandardowe kolory do określonych aplikacji, które nie śledzą systemu monet</string>
     <string name="back">Wstecz</string>
     <string name="permissions">Uprawnienia</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Wybierz metodę</string>
     <string name="auto_startup">Startuj wraz z systemem</string>
     <string name="auto_startup_title">Uruchom usługę przy starcie</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">User apps</string>
     <string name="filter_launchable_apps">Launchable apps</string>
     <string name="filter_all">All apps</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>

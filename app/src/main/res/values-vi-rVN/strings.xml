@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Cần có quyền này để biết hình nền màn hình chính và màn hình khóa.</string>
     <string name="perm_three_title">Truy cập tất cả các tệp</string>
     <string name="perm_three_desc">Cần có quyền này để biết hình nền màn hình chính và màn hình khóa.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Bắt đầu</string>
     <string name="btn_continue">Tiếp tục</string>
     <string name="monet_neutral_desc">Lively and refreshing color palette inspired by the effervescence of spritz beverages.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Áp dụng màu tùy chỉnh cho ứng dụng không theo monet hệ thống</string>
     <string name="back">Quay lại</string>
     <string name="permissions">Quyền</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Chọn phương pháp</string>
     <string name="auto_startup">Tự khởi động</string>
     <string name="auto_startup_title">Khởi động dịch vụ khi bật nguồn</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">User apps</string>
     <string name="filter_launchable_apps">Launchable apps</string>
     <string name="filter_all">All apps</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>
