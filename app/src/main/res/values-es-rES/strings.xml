@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Este permiso es necesario para acceder a los fondos de pantalla del inicio y la pantalla de bloqueo.</string>
     <string name="perm_three_title">Acceso a Todos los Archivos</string>
     <string name="perm_three_desc">Este permiso es necesario para acceder a los fondos de pantalla del inicio y la pantalla de bloqueo.</string>
+    <string name="perm_four_title">Optimización de la batería</string>
+    <string name="perm_four_desc">Se requiere una optimización sin restricciones de la batería para permitir la ejecución en segundo plano.</string>
     <string name="start">Iniciar</string>
     <string name="btn_continue">Continuar</string>
     <string name="monet_neutral_desc">Paleta de colores vivaz y refrescante inspirada en la efervescencia de las bebidas spritz.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Aplica colores personalizados a aplicaciones específicas las cuales no siguen el sistema Monet</string>
     <string name="back">Atrás</string>
     <string name="permissions">Permisos</string>
+    <string name="optimization">Optimización</string>
     <string name="choose_method">Seleccionar método</string>
     <string name="auto_startup">Inicio automático</string>
     <string name="auto_startup_title">Iniciar servicio al arrancar</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">Aplicaciones del usuario</string>
     <string name="filter_launchable_apps">Aplicaciones lanzables</string>
     <string name="filter_all">Todas las aplicaciones</string>
+    <string name="disable_battery_optimization_hint">No es obligatorio pero se recomienda desactivar la optimización de la batería</string>
 </resources>

@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Ez a jogosultság kell a zár- és főképernyő háttérkép eléréséhez.</string>
     <string name="perm_three_title">Hozzáférés minden fájlhoz</string>
     <string name="perm_three_desc">Ez a jogosultság kell a zár- és főképernyő háttérkép eléréséhez.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Kezdés</string>
     <string name="btn_continue">Folytatás</string>
     <string name="monet_neutral_desc">Élénk és felfrissítő színpaletta, amelyet a fröccsös italok pezsgése ihletett.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Alkalmazz egyedi színeket specifikus alkalmazásoknak, amik nem követik a rendszer témát</string>
     <string name="back">Vissza</string>
     <string name="permissions">Engedélyek</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Válassz módszert</string>
     <string name="auto_startup">Automatikus indítás</string>
     <string name="auto_startup_title">Szolgáltatás indítása bootnál</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">Felhasználói alkalmazások</string>
     <string name="filter_launchable_apps">Indítható alkalmazások</string>
     <string name="filter_all">Összes Alkalmazás</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>

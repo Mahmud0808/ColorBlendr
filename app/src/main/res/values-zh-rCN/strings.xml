@@ -89,6 +89,8 @@
     <string name="perm_two_desc">检索主屏幕和锁屏壁纸需要此权限。</string>
     <string name="perm_three_title">所有文件访问</string>
     <string name="perm_three_desc">检索主屏幕和锁屏壁纸需要此权限。</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">开始</string>
     <string name="btn_continue">继续</string>
     <string name="monet_neutral_desc">活泼清爽的调色板，灵感来自汽水饮料的泡腾。</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">将自定义颜色应用于不遵循系统 monet 的特定应用程序</string>
     <string name="back">返回</string>
     <string name="permissions">权限</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">选择方法</string>
     <string name="auto_startup">自动启动</string>
     <string name="auto_startup_title">启动时启动服务</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">用户应用</string>
     <string name="filter_launchable_apps">可启动的应用</string>
     <string name="filter_all">所有应用</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>

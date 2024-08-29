@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Cette permission est nécessaire pour récupérer le fond d\'écran d\'accueil et de l\'écran de verrouillage.</string>
     <string name="perm_three_title">Accès à tous les fichiers</string>
     <string name="perm_three_desc">Cette permission est nécessaire pour récupérer le fond d\'écran d\'accueil et de l\'écran de verrouillage.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Démarrer</string>
     <string name="btn_continue">Continuer</string>
     <string name="monet_neutral_desc">Palette de couleurs vives et rafraîchissantes inspirée de l\'effervescence des boissons au spritz.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Appliquer des couleurs personnalisées à des applications spécifiques qui ne suivent pas le système monet</string>
     <string name="back">Précédent</string>
     <string name="permissions">Permissions</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Choisissez un mode</string>
     <string name="auto_startup">Démarrage automatique</string>
     <string name="auto_startup_title">Lancement du service au démarrage</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">User apps</string>
     <string name="filter_launchable_apps">Launchable apps</string>
     <string name="filter_all">All apps</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>

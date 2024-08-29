@@ -89,6 +89,8 @@
     <string name="perm_two_desc">ホーム画面とロック画面の壁紙を取得するためにこの権限が必要です。</string>
     <string name="perm_three_title">すべてのファイルへのアクセス</string>
     <string name="perm_three_desc">ホーム画面とロック画面の壁紙を取得するためにこの権限が必要です。</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">開始</string>
     <string name="btn_continue">続行</string>
     <string name="monet_neutral_desc">スプリッツの飲み物にインスパイアされた、生き生きとした爽やかなカラーパレットです。</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Monetに従わないアプリにテーマを適用する</string>
     <string name="back">戻る</string>
     <string name="permissions">権限</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">選択の方式</string>
     <string name="auto_startup">自動起動</string>
     <string name="auto_startup_title">システムの起動時に自動で起動する</string>
@@ -147,4 +150,5 @@
     <string name="filter_user_apps">ユーザーアプリ</string>
     <string name="filter_launchable_apps">起動可能なアプリ</string>
     <string name="filter_all">すべてのアプリ</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
 </resources>
