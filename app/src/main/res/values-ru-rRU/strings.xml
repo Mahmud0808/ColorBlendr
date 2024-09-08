@@ -89,8 +89,8 @@
     <string name="perm_two_desc">Это разрешение требуется для получения обоев домашнего экрана и экрана блокировки.</string>
     <string name="perm_three_title">Доступ ко всем файлам</string>
     <string name="perm_three_desc">Это разрешение требуется для получения обоев домашнего экрана и экрана блокировки.</string>
-    <string name="perm_four_title">Battery Optimization</string>
-    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
+    <string name="perm_four_title">Оптимизация батареи</string>
+    <string name="perm_four_desc">Для работы в фоновом режиме требуется неограниченная оптимизация расхода заряда батареи.</string>
     <string name="start">Начать</string>
     <string name="btn_continue">Продолжить</string>
     <string name="monet_neutral_desc">Яркая и освежающая цветовая палитра вдохновлённая шипучими напитками.</string>
@@ -114,7 +114,7 @@
     <string name="force_per_app_theme_desc">Применяйте собственные цвета к определенным приложениям которые не соответствуют системным monet</string>
     <string name="back">Назад</string>
     <string name="permissions">Разрешения</string>
-    <string name="optimization">Optimization</string>
+    <string name="optimization">Оптимизация</string>
     <string name="choose_method">Выберите метод</string>
     <string name="auto_startup">Автозапуск</string>
     <string name="auto_startup_title">Запустить службу при загрузке</string>
@@ -150,5 +150,5 @@
     <string name="filter_user_apps">Пользовательские приложения</string>
     <string name="filter_launchable_apps">Запускаемые приложения</string>
     <string name="filter_all">Все приложения</string>
-    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
+    <string name="disable_battery_optimization_hint">Это не обязательно, но рекомендуется отключить оптимизацию батареи</string>
 </resources>

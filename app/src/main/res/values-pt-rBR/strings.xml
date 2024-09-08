@@ -150,5 +150,5 @@
     <string name="filter_user_apps">Apps do usuário</string>
     <string name="filter_launchable_apps">Apps iniciáveis</string>
     <string name="filter_all">Todos os apps</string>
-    <string name="disable_battery_optimization_hint">Não é obrigatório, mas é recomendado desativar a otimização de bateria.</string>
+    <string name="disable_battery_optimization_hint">Não é obrigatório, mas é recomendado desativar a otimização de bateria</string>
 </resources>

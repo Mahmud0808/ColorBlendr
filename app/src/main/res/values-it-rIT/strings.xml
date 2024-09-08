@@ -89,8 +89,8 @@
     <string name="perm_two_desc">Questa autorizzazione è necessaria per recuperare lo sfondo home e lockscreen.</string>
     <string name="perm_three_title">Accesso a tutti i file</string>
     <string name="perm_three_desc">Questa autorizzazione è necessaria per recuperare lo sfondo home e lockscreen.</string>
-    <string name="perm_four_title">Battery Optimization</string>
-    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
+    <string name="perm_four_title">Ottimizzazione batteria</string>
+    <string name="perm_four_desc">Per consentire l\'esecuzione in background è richiesta l\'ottimizzazione illimitata della batteria.</string>
     <string name="start">Inizio</string>
     <string name="btn_continue">Continua</string>
     <string name="monet_neutral_desc">Tavolozza di colori vivace e rinfrescante ispirata all\'effervescenza delle bevande spritz.</string>
@@ -114,7 +114,7 @@
     <string name="force_per_app_theme_desc">Applica colori personalizzati a specifiche applicazioni che non seguono monet di sistema</string>
     <string name="back">Indietro</string>
     <string name="permissions">Permessi</string>
-    <string name="optimization">Optimization</string>
+    <string name="optimization">Ottimizzazione</string>
     <string name="choose_method">Scegli il metodo</string>
     <string name="auto_startup">Avvio automatico</string>
     <string name="auto_startup_title">Avvia il servizio all\'avvio</string>
@@ -141,14 +141,14 @@
     <string name="mode_one_desc">Usa l\'accesso root per cambiare colori. Tutte le opzioni di personalizzazione saranno disponibili.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Usa shizuku per utilizzare l\'app senza permessi root. Le personalizzazioni saranno limitate.</string>
-    <string name="color_palette_title">Color palette</string>
-    <string name="color_palette_desc">Explore all the colors of your material palette</string>
-    <string name="color_palette_root_warn">Tap on any color in the palette to customize its appearance; long press to reset to the default color.</string>
-    <string name="color_palette_rootless_warn">Tap on any color in the palette to copy its hexadecimal color code.</string>
-    <string name="filter_app_category">Select app category</string>
-    <string name="filter_system_apps">System apps</string>
-    <string name="filter_user_apps">User apps</string>
-    <string name="filter_launchable_apps">Launchable apps</string>
-    <string name="filter_all">All apps</string>
-    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
+    <string name="color_palette_title">Tavolozza dei colori</string>
+    <string name="color_palette_desc">Esplora tutti i colori della tua tavolozza</string>
+    <string name="color_palette_root_warn">Tocca qualsiasi colore nella tavolozza per personalizzare il suo aspetto; premere a lungo per reimpostare al colore predefinito.</string>
+    <string name="color_palette_rootless_warn">Tocca qualsiasi colore nella tavolozza per copiare il suo codice di colore esadecimale.</string>
+    <string name="filter_app_category">Seleziona categoria app</string>
+    <string name="filter_system_apps">App di sistema</string>
+    <string name="filter_user_apps">App utente</string>
+    <string name="filter_launchable_apps">Applicazioni lanciabili</string>
+    <string name="filter_all">Tutte le app</string>
+    <string name="disable_battery_optimization_hint">Non è obbligatorio, ma si consiglia di disabilitare l\'ottimizzazione della batteria</string>
 </resources>
