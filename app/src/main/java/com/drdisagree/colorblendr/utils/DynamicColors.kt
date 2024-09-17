@@ -34,18 +34,6 @@ object DynamicColors {
      * This is a list of all the dynamic and fixed colors that are available in the system.
      */
     init {
-        /*
-         * **Dynamic colors:**
-         * -> First item is the name of the color.
-         * -> Second item is the tonal palette index.
-         * 0 = primary
-         * 1 = secondary
-         * 2 = tertiary
-         * 3 = neutral
-         * 4 = neutral variant
-         * -> Third item is the color index in light mode.
-         * -> Fourth item is the color index in dark mode.
-         */
         ALL_DYNAMIC_COLORS_MAPPED.apply {
             add(
                 ColorMapping(
@@ -182,15 +170,19 @@ object DynamicColors {
                     resourceName = "surface_container_low",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
-                    darkModeColorIndex = 10
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = 1,
+                    darkModeLightnessAdjustment = -22
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "surface_container_lowest",
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    lightModeColorIndex = 2,
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = 4,
+                    darkModeLightnessAdjustment = -26
                 )
             )
             add(
@@ -209,16 +201,18 @@ object DynamicColors {
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
-                    lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = 8
+                    lightModeLightnessAdjustment = -4,
+                    darkModeLightnessAdjustment = -16
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "surface_container_highest",
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = 3,
-                    darkModeColorIndex = 9
+                    lightModeColorIndex = 2,
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -6,
+                    darkModeLightnessAdjustment = -12
                 )
             )
             add(
@@ -361,17 +355,6 @@ object DynamicColors {
             )
         }
 
-        /*
-         * **Fixed colors:**
-         * -> First item is the name of the color.
-         * -> Second item is the tonal palette index.
-         * 0 = primary
-         * 1 = secondary
-         * 2 = tertiary
-         * 3 = neutral
-         * 4 = neutral variant
-         * -> Third item is the color index.
-         */
         FIXED_COLORS_MAPPED.apply {
             add(
                 ColorMapping(
@@ -460,19 +443,8 @@ object DynamicColors {
         }
 
         /*
-         * **M3 ref colors:**
-         * -> First item is the name of the color.
-         * -> Second item is the lightness percentage to increase or decrease
-         * from the base color given by the second item of the inner pair.
-         * -> Third item is the tonal palette index.
-         * 0 = primary
-         * 1 = secondary
-         * 2 = tertiary
-         * 3 = neutral
-         * 4 = neutral variant
-         * -> Fourth item is the color index.
-         *
-         * Google uses "gm3" prefix for these resources, MaterialComponents uses "m3" instead.
+         * Google uses the "gm3" prefix for these resources,
+         * while MaterialComponents uses "m3" instead.
          */
         M3_REF_PALETTE.apply {
             add(
