@@ -164,7 +164,9 @@ object DynamicColors {
                     resourceName = "surface",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -2,
+                    darkModeLightnessAdjustment = 8
                 )
             )
             add(
@@ -268,34 +270,34 @@ object DynamicColors {
                     darkModeColorIndex = 9
                 )
             )
-//            add(
-//                ColorMapping(
-//                    resourceName = "error",
-//                    lightModeColorCode = Color.parseColor("#1EB326"),
-//                    darkModeColorCode = Color.parseColor("#B5F2B8")
-//                )
-//            )
-//            add(
-//                ColorMapping(
-//                    resourceName = "on_error",
-//                    lightModeColorCode = Color.parseColor("#FFFFFF"),
-//                    darkModeColorCode = Color.parseColor("#106014")
-//                )
-//            )
-//            add(
-//                ColorMapping(
-//                    resourceName = "error_container",
-//                    lightModeColorCode = Color.parseColor("#DCF9DE"),
-//                    darkModeColorCode = Color.parseColor("#188C1D")
-//                )
-//            )
-//            add(
-//                ColorMapping(
-//                    resourceName = "on_error_container",
-//                    lightModeColorCode = Color.parseColor("#0B410E"),
-//                    darkModeColorCode = Color.parseColor("#DCF9DE")
-//                )
-//            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "error",
+            //                    lightModeColorCode = Color.parseColor("#1EB326"),
+            //                    darkModeColorCode = Color.parseColor("#B5F2B8")
+            //                )
+            //            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "on_error",
+            //                    lightModeColorCode = Color.parseColor("#FFFFFF"),
+            //                    darkModeColorCode = Color.parseColor("#106014")
+            //                )
+            //            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "error_container",
+            //                    lightModeColorCode = Color.parseColor("#DCF9DE"),
+            //                    darkModeColorCode = Color.parseColor("#188C1D")
+            //                )
+            //            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "on_error_container",
+            //                    lightModeColorCode = Color.parseColor("#0B410E"),
+            //                    darkModeColorCode = Color.parseColor("#DCF9DE")
+            //                )
+            //            )
             add(
                 ColorMapping(
                     resourceName = "control_activated",
@@ -304,7 +306,7 @@ object DynamicColors {
                     darkModeColorIndex = 4
                 )
             )
-//            add(ColorMapping(resourceName = "control_normal"))
+            //            add(ColorMapping(resourceName = "control_normal"))
             add(
                 ColorMapping(
                     resourceName = "control_highlight",
@@ -312,11 +314,11 @@ object DynamicColors {
                     darkModeColorCode = Color.parseColor("#33FFFFFF")
                 )
             )
-//            add(ColorMapping(resourceName = "text_primary_inverse"))
-//            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse"))
-//            add(ColorMapping(resourceName = "text_primary_inverse_disable_only"))
-//            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse_disabled"))
-//            add(ColorMapping(resourceName = "text_hint_inverse"))
+            //            add(ColorMapping(resourceName = "text_primary_inverse"))
+            //            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse"))
+            //            add(ColorMapping(resourceName = "text_primary_inverse_disable_only"))
+            //            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse_disabled"))
+            //            add(ColorMapping(resourceName = "text_hint_inverse"))
             add(
                 ColorMapping(
                     resourceName = "palette_key_color_primary",
