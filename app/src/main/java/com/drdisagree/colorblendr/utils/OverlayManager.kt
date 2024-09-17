@@ -9,6 +9,8 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
@@ -190,8 +192,8 @@ object OverlayManager {
     }
 
     suspend fun applyFabricatedColors(context: Context) {
-        if (!RPrefs.getBoolean(Const.THEMING_ENABLED, true) &&
-            !RPrefs.getBoolean(Const.SHIZUKU_THEMING_ENABLED, true)
+        if (!getBoolean(Const.THEMING_ENABLED, true) &&
+            !getBoolean(Const.SHIZUKU_THEMING_ENABLED, true)
         ) {
             return
         }
@@ -204,13 +206,13 @@ object OverlayManager {
             context,
             RPrefs.getString(Const.MONET_STYLE, context.getString(R.string.monet_tonalspot))!!
         )
-        val monetAccentSaturation = RPrefs.getInt(Const.MONET_ACCENT_SATURATION, 100)
-        val monetBackgroundSaturation = RPrefs.getInt(Const.MONET_BACKGROUND_SATURATION, 100)
-        val monetBackgroundLightness = RPrefs.getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100)
-        val pitchBlackTheme = RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
-        val accurateShades = RPrefs.getBoolean(Const.MONET_ACCURATE_SHADES, true)
+        val monetAccentSaturation = getInt(Const.MONET_ACCENT_SATURATION, 100)
+        val monetBackgroundSaturation = getInt(Const.MONET_BACKGROUND_SATURATION, 100)
+        val monetBackgroundLightness = getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100)
+        val pitchBlackTheme = getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
+        val accurateShades = getBoolean(Const.MONET_ACCURATE_SHADES, true)
 
-        val paletteLight = ColorUtil.generateModifiedColors(
+        val paletteLight = generateModifiedColors(
             style = style,
             accentSaturation = monetAccentSaturation,
             backgroundSaturation = monetBackgroundSaturation,
@@ -221,7 +223,7 @@ object OverlayManager {
             isDark = false
         )
 
-        val paletteDark = ColorUtil.generateModifiedColors(
+        val paletteDark = generateModifiedColors(
             style = style,
             accentSaturation = monetAccentSaturation,
             backgroundSaturation = monetBackgroundSaturation,
@@ -301,7 +303,7 @@ object OverlayManager {
             )
         }
 
-        if (!RPrefs.getBoolean(Const.TINT_TEXT_COLOR, true)) {
+        if (!getBoolean(Const.TINT_TEXT_COLOR, true)) {
             fabricatedOverlays[0].setColor("text_color_primary_device_default_dark", Color.WHITE)
             fabricatedOverlays[0].setColor("text_color_secondary_device_default_dark", -0x4c000001)
             fabricatedOverlays[0].setColor("text_color_primary_device_default_light", Color.BLACK)
@@ -379,11 +381,11 @@ object OverlayManager {
                         context.getString(R.string.monet_tonalspot)
                     )!!
                 ),
-                RPrefs.getInt(Const.MONET_ACCENT_SATURATION, 100),
-                RPrefs.getInt(Const.MONET_BACKGROUND_SATURATION, 100),
-                RPrefs.getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100),
-                RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false),
-                RPrefs.getBoolean(Const.MONET_ACCURATE_SHADES, true),
+                getInt(Const.MONET_ACCENT_SATURATION, 100),
+                getInt(Const.MONET_BACKGROUND_SATURATION, 100),
+                getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100),
+                getBoolean(Const.MONET_PITCH_BLACK_THEME, false),
+                getBoolean(Const.MONET_ACCURATE_SHADES, true),
                 modifyPitchBlack = false
             )
         }

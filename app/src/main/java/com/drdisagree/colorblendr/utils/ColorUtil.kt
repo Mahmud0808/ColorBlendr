@@ -9,7 +9,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
+import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
@@ -83,6 +86,26 @@ object ColorUtil {
             seedColor,
             isDark
         )
+
+        // Set custom secondary accent color
+        val secondaryAccent = getInt(MONET_SECONDARY_COLOR, Color.WHITE)
+        if (secondaryAccent != Color.WHITE) {
+            palette[1] = generateColorPalette(
+                style,
+                secondaryAccent,
+                isDark
+            )[0]
+        }
+
+        // Set custom tertiary accent color
+        val tertiaryAccent = getInt(MONET_TERTIARY_COLOR, Color.WHITE)
+        if (tertiaryAccent != Color.WHITE) {
+            palette[2] = generateColorPalette(
+                style,
+                tertiaryAccent,
+                isDark
+            )[0]
+        }
 
         // Modify colors
         for (i in palette.indices) {

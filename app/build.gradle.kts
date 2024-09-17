@@ -98,5 +98,6 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.recyclerview.selection)
     implementation(libs.blurView)
+    implementation(libs.lifecycle.common.jvm)
     annotationProcessor(libs.glide.compiler)
 }
