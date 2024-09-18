@@ -357,6 +357,29 @@ object FabricatedUtil {
             overlay.setColor("gm_ref_palette_grey600", palette[4][8])
             overlay.setColor("gm_ref_palette_grey500", palette[3][1])
             overlay.setColor("replay__pal_games_dark_300", palette[0][5])
+        } else if (overlay.targetPackage == "com.google.android.settings.intelligence" &&
+            pitchBlackTheme
+        ) { // Settings search
+            overlay.setColor("m3_sys_color_dark_surface_container_lowest", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dark_surface_container_lowest", Color.BLACK)
+            overlay.setColor("m3_sys_color_dynamic_dark_surface_container_lowest", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dynamic_dark_surface_container_lowest", Color.BLACK)
+            overlay.setColor("m3_sys_color_dark_surface_container_low", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dark_surface_container_low", Color.BLACK)
+            overlay.setColor("m3_sys_color_dynamic_dark_surface_container_low", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dynamic_dark_surface_container_low", Color.BLACK)
+            overlay.setColor("m3_sys_color_dark_surface_container", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dark_surface_container", Color.BLACK)
+            overlay.setColor("m3_sys_color_dynamic_dark_surface_container", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dynamic_dark_surface_container", Color.BLACK)
+            overlay.setColor("m3_sys_color_dark_surface_container_high", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dark_surface_container_high", Color.BLACK)
+            overlay.setColor("m3_sys_color_dynamic_dark_surface_container_high", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dynamic_dark_surface_container_high", Color.BLACK)
+            overlay.setColor("m3_sys_color_dark_surface_container_highest", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dark_surface_container_highest", Color.BLACK)
+            overlay.setColor("m3_sys_color_dynamic_dark_surface_container_highest", Color.BLACK)
+            overlay.setColor("gm3_sys_color_dynamic_dark_surface_container_highest", Color.BLACK)
         }
     }
 
