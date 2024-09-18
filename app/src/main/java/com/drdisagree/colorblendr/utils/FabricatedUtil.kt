@@ -9,6 +9,7 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 object FabricatedUtil {
@@ -133,6 +134,10 @@ object FabricatedUtil {
     }
 
     fun updateFabricatedAppList(context: Context) {
+        if (Const.workingMethod != Const.WorkMethod.ROOT ||
+            !getBoolean(Const.THEMING_ENABLED, true)
+        ) return
+
         val packageManager = context.packageManager
         val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
         val selectedApps = HashMap<String, Boolean>()

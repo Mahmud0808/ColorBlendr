@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.common.Const.AppType
@@ -31,6 +32,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding
 import com.drdisagree.colorblendr.ui.adapters.AppListAdapter
 import com.drdisagree.colorblendr.ui.models.AppInfoModel
+import com.drdisagree.colorblendr.utils.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -122,11 +124,12 @@ class PerAppThemeFragment : Fragment() {
         binding.searchBox.search.removeTextChangedListener(textWatcher)
 
         CoroutineScope(Dispatchers.IO).launch {
+            updateFabricatedAppList(appContext)
             appList = getAllInstalledApps(requireContext(), appType)
             adapter = AppListAdapter(appList!!)
 
-            try {
-                withContext(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
+                try {
                     binding.recyclerView.adapter = adapter
                     binding.searchBox.search.addTextChangedListener(textWatcher)
 
@@ -140,9 +143,9 @@ class PerAppThemeFragment : Fragment() {
                     if (binding.searchBox.search.text.toString().trim().isNotEmpty()) {
                         filterList(binding.searchBox.search.text.toString().trim { it <= ' ' })
                     }
+                } catch (ignored: Exception) {
+                    // Fragment was not attached to activity
                 }
-            } catch (ignored: Exception) {
-                // Fragment was not attached to activity
             }
         }
     }
