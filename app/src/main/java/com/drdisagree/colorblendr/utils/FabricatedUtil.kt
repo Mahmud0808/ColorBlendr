@@ -47,29 +47,38 @@ object FabricatedUtil {
     ) {
         val suffix = if (isDark) "dark" else "light"
         val isPitchBlackTheme = getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
+        val prefixSuffix = arrayOf(
+            "system_" to "_${suffix}",
+            "m3_sys_color_${suffix}_" to "",
+            "m3_sys_color_dynamic_${suffix}_" to "",
+            "gm3_sys_color_${suffix}_" to "",
+            "gm3_sys_color_dynamic_${suffix}_" to ""
+        )
 
         DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach { colorMapping ->
-            val (resourceName, colorValue) = extractResourceFromColorMapping(
-                colorMapping = colorMapping,
-                prefix = "system_",
-                suffix = "_${suffix}",
-                palette = palette,
-                isDark = isDark
-            )
-
-            val adjustedColorValue = adjustColorForPitchBlackThemeIfRequired(
-                pitchBlackTheme = isPitchBlackTheme,
-                resourceName = resourceName,
-                colorValue = colorValue
-            ).let { value ->
-                adjustColorBrightnessIfRequired(
-                    colorValue = value,
+            for ((tempPrefix, tempSuffix) in prefixSuffix) {
+                val (resourceName, colorValue) = extractResourceFromColorMapping(
                     colorMapping = colorMapping,
+                    prefix = tempPrefix,
+                    suffix = tempSuffix,
+                    palette = palette,
                     isDark = isDark
                 )
-            }
 
-            overlay.setColor(resourceName, adjustedColorValue)
+                val adjustedColorValue = adjustColorForPitchBlackThemeIfRequired(
+                    pitchBlackTheme = isPitchBlackTheme,
+                    resourceName = resourceName,
+                    colorValue = colorValue
+                ).let { value ->
+                    adjustColorBrightnessIfRequired(
+                        colorValue = value,
+                        colorMapping = colorMapping,
+                        isDark = isDark
+                    )
+                }
+
+                overlay.setColor(resourceName, adjustedColorValue)
+            }
         }
     }
 
