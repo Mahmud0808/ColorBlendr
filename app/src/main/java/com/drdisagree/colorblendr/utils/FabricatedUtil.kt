@@ -8,7 +8,6 @@ import androidx.core.util.Pair
 import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
@@ -47,13 +46,13 @@ object FabricatedUtil {
         palette: ArrayList<ArrayList<Int>>
     ) {
         val suffix = if (isDark) "dark" else "light"
-        val isPitchBlackTheme = RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
+        val isPitchBlackTheme = getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
 
         DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach { colorMapping ->
             val (resourceName, colorValue) = extractResourceFromColorMapping(
                 colorMapping = colorMapping,
                 prefix = "system_",
-                suffix = suffix,
+                suffix = "_${suffix}",
                 palette = palette,
                 isDark = isDark
             )
@@ -93,7 +92,7 @@ object FabricatedUtil {
         overlay: FabricatedOverlayResource,
         palette: ArrayList<ArrayList<Int>>
     ) {
-        val pitchBlackTheme = RPrefs.getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
+        val pitchBlackTheme = getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
 
         DynamicColors.M3_REF_PALETTE.forEach { colorMapping ->
             val (resourceName, colorValue) = extractResourceFromColorMapping(
@@ -128,7 +127,7 @@ object FabricatedUtil {
 
         replaceColorsPerPackageName(overlay, palette, pitchBlackTheme)
 
-        if (!RPrefs.getBoolean(Const.TINT_TEXT_COLOR, true)) {
+        if (!getBoolean(Const.TINT_TEXT_COLOR, true)) {
             addTintlessTextColors(overlay)
         }
     }
@@ -165,21 +164,41 @@ object FabricatedUtil {
     ): Int {
         if (pitchBlackTheme) {
             return when (resourceName) {
-                "m3_ref_palette_dynamic_neutral_variant6", "gm3_ref_palette_dynamic_neutral_variant6", "system_background_dark", "system_surface_dark" -> {
+                "m3_ref_palette_dynamic_neutral_variant6",
+                "gm3_ref_palette_dynamic_neutral_variant6",
+                "system_background_dark",
+                "system_surface_dark" -> {
                     Color.BLACK
                 }
 
-                "m3_ref_palette_dynamic_neutral_variant12", "gm3_ref_palette_dynamic_neutral_variant12" -> {
+                "m3_ref_palette_dynamic_neutral_variant12",
+                "gm3_ref_palette_dynamic_neutral_variant12" -> {
                     ColorUtil.modifyBrightness(
                         color = colorValue,
                         brightnessPercentage = -40
                     )
                 }
 
-                "m3_ref_palette_dynamic_neutral_variant17", "gm3_ref_palette_dynamic_neutral_variant17", "gm3_system_bar_color_night" -> {
+                "m3_ref_palette_dynamic_neutral_variant17",
+                "gm3_ref_palette_dynamic_neutral_variant17",
+                "gm3_system_bar_color_night" -> {
                     ColorUtil.modifyBrightness(
                         color = colorValue,
                         brightnessPercentage = -60
+                    )
+                }
+
+                "system_surface_container_lowest_dark" -> {
+                    ColorUtil.modifyBrightness(
+                        color = colorValue,
+                        brightnessPercentage = -36
+                    )
+                }
+
+                "system_surface_container_low_dark" -> {
+                    ColorUtil.modifyBrightness(
+                        color = colorValue,
+                        brightnessPercentage = -28
                     )
                 }
 
@@ -187,6 +206,20 @@ object FabricatedUtil {
                     ColorUtil.modifyBrightness(
                         color = colorValue,
                         brightnessPercentage = -20
+                    )
+                }
+
+                "system_surface_container_high_dark" -> {
+                    ColorUtil.modifyBrightness(
+                        color = colorValue,
+                        brightnessPercentage = -12
+                    )
+                }
+
+                "system_surface_container_highest_dark" -> {
+                    ColorUtil.modifyBrightness(
+                        color = colorValue,
+                        brightnessPercentage = -4
                     )
                 }
 
@@ -325,7 +358,7 @@ object FabricatedUtil {
         palette: ArrayList<ArrayList<Int>>,
         isDark: Boolean = false
     ): Pair<String, Int> {
-        val resourceName = prefix + colorMapping.resourceName + "_" + suffix
+        val resourceName = prefix + colorMapping.resourceName + suffix
 
         val colorValue: Int = if (colorMapping.tonalPalette != null) {
             if (colorMapping.colorIndex != null) {

@@ -273,19 +273,6 @@ object OverlayManager {
             }
         }
 
-        fabricatedOverlays[0].setColor(
-            "system_surface_dim_dark",
-            fabricatedOverlays[0].getColor(
-                colorNames[3][11]
-            ) // system_neutral1_900
-        ) // A14 notification scrim color
-        fabricatedOverlays[0].setColor(
-            "system_surface_container_high_dark",
-            fabricatedOverlays[0].getColor(
-                colorNames[3][10]
-            ) // system_neutral1_800
-        ) // A14 notification background color
-
         if (pitchBlackTheme) {
             fabricatedOverlays[0].setColor(
                 "surface_header_dark_sysui",
