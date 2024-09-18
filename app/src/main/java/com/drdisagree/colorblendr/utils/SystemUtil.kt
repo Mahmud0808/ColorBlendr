@@ -13,13 +13,13 @@ import com.drdisagree.colorblendr.common.Const
 import kotlin.math.abs
 
 object SystemUtil {
+
     val isDarkMode: Boolean
-        get() = (appContext!!.resources
-            .configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES
+        get() = (appContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES
 
     fun isAppInstalled(packageName: String): Boolean {
         try {
-            appContext!!
+            appContext
                 .packageManager
                 .getPackageInfo(packageName, PackageManager.GET_META_DATA)
             return true

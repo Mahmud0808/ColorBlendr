@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.common
 
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.utils.SystemUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.concurrent.atomic.AtomicInteger
@@ -19,9 +20,27 @@ object Const {
     const val FIRST_RUN: String = "firstRun"
     const val THEMING_ENABLED: String = "themingEnabled"
     const val MONET_STYLE: String = "customMonetStyle"
-    const val MONET_ACCENT_SATURATION: String = "monetAccentSaturationValue"
-    const val MONET_BACKGROUND_SATURATION: String = "monetBackgroundSaturationValue"
-    const val MONET_BACKGROUND_LIGHTNESS: String = "monetBackgroundLightnessValue"
+    const val MODE_SPECIFIC_THEMES: String = "modeSpecificThemes"
+    private val modeSpecificThemes: Boolean
+        get() = RPrefs.getBoolean(MODE_SPECIFIC_THEMES, false)
+    val MONET_ACCENT_SATURATION: String
+        get() = if (!modeSpecificThemes) {
+            "monetAccentSaturationValue"
+        } else {
+            if (SystemUtil.isDarkMode) "monetAccentSaturationValue" else "monetAccentSaturationValueLight"
+        }
+    val MONET_BACKGROUND_SATURATION: String
+        get() = if (!modeSpecificThemes) {
+            "monetBackgroundSaturationValue"
+        } else {
+            if (SystemUtil.isDarkMode) "monetBackgroundSaturationValue" else "monetBackgroundSaturationValueLight"
+        }
+    val MONET_BACKGROUND_LIGHTNESS: String
+        get() = if (!modeSpecificThemes) {
+            "monetBackgroundLightnessValue"
+        } else {
+            if (SystemUtil.isDarkMode) "monetBackgroundLightnessValue" else "monetBackgroundLightnessValueLight"
+        }
     const val MONET_ACCURATE_SHADES: String = "monetAccurateShades"
     const val MONET_PITCH_BLACK_THEME: String = "monetPitchBlackTheme"
     const val MONET_SEED_COLOR_ENABLED: String = "monetSeedColorEnabled"

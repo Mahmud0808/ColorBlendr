@@ -6,10 +6,11 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
@@ -17,10 +18,10 @@ import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.putBoolean
 import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.CoroutineScope
@@ -34,14 +35,7 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 class SettingsAdvancedFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsAdvancedBinding
-    private var sharedViewModel: SharedViewModel? = null
     private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,6 +91,14 @@ class SettingsAdvancedFragment : Fragment() {
                     }
                 }
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
+        }
+
+        // Accurate shades
+        binding.modeSpecificThemes.setEnabled(notShizukuMode)
+        binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
+        binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            putBoolean(MODE_SPECIFIC_THEMES, isChecked)
+            applyFabricatedColors()
         }
 
         return binding.getRoot()

@@ -58,6 +58,7 @@
         </activity>
         <activity
             android:name=".ui.activities.MainActivity"
+            android:configChanges="orientation|uiMode"
             android:exported="true" />
 
         <receiver

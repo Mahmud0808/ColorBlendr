@@ -168,4 +168,6 @@
     <string name="custom_secondary_color_summary">Select pure white color to disable</string>
     <string name="custom_tertiary_color_title">Custom tertiary color</string>
     <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
+    <string name="mode_specific_theme_title">Mode-specific theme</string>
+    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
 </resources>
