@@ -136,7 +136,9 @@ object DynamicColors {
                     resourceName = "background",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -1,
+                    darkModeLightnessAdjustment = -18
                 )
             )
             add(
@@ -152,7 +154,9 @@ object DynamicColors {
                     resourceName = "surface",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -1,
+                    darkModeLightnessAdjustment = -18
                 )
             )
             add(
@@ -170,7 +174,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = 4,
-                    darkModeLightnessAdjustment = -36
+                    darkModeLightnessAdjustment = -42
                 )
             )
             add(
@@ -180,7 +184,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = 1,
-                    darkModeLightnessAdjustment = -28
+                    darkModeLightnessAdjustment = -38
                 )
             )
             add(
@@ -190,26 +194,26 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = -20
+                    darkModeLightnessAdjustment = -34
                 )
             )
             add(
                 ColorMapping(
-                    resourceName = "surface_container_high",
+                    resourceName = "surface_container_high", // android 14+ notification bg color
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 10,
-                    darkModeLightnessAdjustment = -12 // android 14+ notification bg color
+                    lightModeLightnessAdjustment = -4
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "surface_container_highest",
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = 2,
+                    lightModeColorIndex = 1,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -6,
-                    darkModeLightnessAdjustment = -2
+                    darkModeLightnessAdjustment = 4
                 )
             )
             add(
@@ -219,17 +223,17 @@ object DynamicColors {
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = -6
+                    darkModeLightnessAdjustment = 12
                 )
             )
             add(
                 ColorMapping(
-                    resourceName = "surface_dim",
+                    resourceName = "surface_dim", // android 14+ notification scrim color
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 11,
-                    lightModeLightnessAdjustment = -5,
-                    darkModeLightnessAdjustment = 8 // android 14+ notification scrim color
+                    lightModeLightnessAdjustment = -10,
+                    darkModeLightnessAdjustment = 8
                 )
             )
             add(
