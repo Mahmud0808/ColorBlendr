@@ -170,7 +170,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = 4,
-                    darkModeLightnessAdjustment = -44
+                    darkModeLightnessAdjustment = -36
                 )
             )
             add(
@@ -180,7 +180,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = 1,
-                    darkModeLightnessAdjustment = -36
+                    darkModeLightnessAdjustment = -28
                 )
             )
             add(
@@ -190,7 +190,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = -28
+                    darkModeLightnessAdjustment = -20
                 )
             )
             add(
@@ -219,7 +219,7 @@ object DynamicColors {
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = -20
+                    darkModeLightnessAdjustment = -6
                 )
             )
             add(
