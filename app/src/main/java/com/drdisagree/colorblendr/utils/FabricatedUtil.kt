@@ -171,74 +171,74 @@ object FabricatedUtil {
         resourceName: String,
         colorValue: Int
     ): Int {
-        if (pitchBlackTheme) {
-            return when (resourceName) {
-                "m3_ref_palette_dynamic_neutral_variant6",
-                "gm3_ref_palette_dynamic_neutral_variant6",
-                "system_background_dark",
-                "system_surface_dark" -> {
-                    Color.BLACK
-                }
+        if (!pitchBlackTheme) return colorValue
 
-                "m3_ref_palette_dynamic_neutral_variant12",
-                "gm3_ref_palette_dynamic_neutral_variant12" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -40
-                    )
-                }
+        return when (resourceName) {
+            "m3_ref_palette_dynamic_neutral_variant6",
+            "gm3_ref_palette_dynamic_neutral_variant6",
+            "system_background_dark",
+            "system_surface_dark" -> {
+                Color.BLACK
+            }
 
-                "m3_ref_palette_dynamic_neutral_variant17",
-                "gm3_ref_palette_dynamic_neutral_variant17",
-                "gm3_system_bar_color_night" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -60
-                    )
-                }
+            "m3_ref_palette_dynamic_neutral_variant12",
+            "gm3_ref_palette_dynamic_neutral_variant12" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -40
+                )
+            }
 
-                "system_surface_container_lowest_dark" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -36
-                    )
-                }
+            "m3_ref_palette_dynamic_neutral_variant17",
+            "gm3_ref_palette_dynamic_neutral_variant17",
+            "gm3_system_bar_color_night" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -60
+                )
+            }
 
-                "system_surface_container_low_dark" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -28
-                    )
-                }
+            "system_surface_container_lowest_dark" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -44
+                )
+            }
 
-                "system_surface_container_dark" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -20
-                    )
-                }
+            "system_surface_container_low_dark" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -36
+                )
+            }
 
-                "system_surface_container_high_dark" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -12
-                    )
-                }
+            "system_surface_container_dark" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -28
+                )
+            }
 
-                "system_surface_container_highest_dark" -> {
-                    ColorUtil.modifyBrightness(
-                        color = colorValue,
-                        brightnessPercentage = -4
-                    )
-                }
+            "system_surface_container_high_dark",
+            "system_surface_dim_dark" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -20
+                )
+            }
 
-                else -> {
-                    colorValue
-                }
+            "system_surface_container_highest_dark",
+            "system_surface_bright_dark" -> {
+                ColorUtil.modifyBrightness(
+                    color = colorValue,
+                    brightnessPercentage = -12
+                )
+            }
+
+            else -> {
+                colorValue
             }
         }
-
-        return colorValue
     }
 
     private fun addTintlessTextColors(overlay: FabricatedOverlayResource) {
