@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 15
         versionName = "v1.7"
     }

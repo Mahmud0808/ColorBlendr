@@ -1,5 +1,5 @@
 [versions]
-agp = "8.6.0"
+agp = "8.6.1"
 androidUtils = "0.0.5"
 annotation = "1.8.2"
 appcompat = "1.7.0"
@@ -23,7 +23,7 @@ recyclerviewSelection = "1.1.0"
 remotepreferences = "0.8"
 shizuku = "12.1.0"
 workRuntime = "2.9.1"
-lifecycleCommonJvm = "2.8.5"
+lifecycleCommonJvm = "2.8.6"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
