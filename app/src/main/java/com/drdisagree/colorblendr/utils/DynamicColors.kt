@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
-import android.os.Build
 
 data class ColorMapping(
     val resourceName: String,
@@ -12,7 +11,9 @@ data class ColorMapping(
     val lightModeColorCode: Int? = null,
     val colorCode: Int? = null,
     val darkModeColorCode: Int? = null,
-    val lightnessAdjustment: Int? = null
+    val lightnessAdjustment: Int? = null,
+    val lightModeLightnessAdjustment: Int? = null,
+    val darkModeLightnessAdjustment: Int? = null
 )
 
 enum class TonalPalette(val index: Int) {
@@ -33,18 +34,6 @@ object DynamicColors {
      * This is a list of all the dynamic and fixed colors that are available in the system.
      */
     init {
-        /*
-         * **Dynamic colors:**
-         * -> First item is the name of the color.
-         * -> Second item is the tonal palette index.
-         * 0 = primary
-         * 1 = secondary
-         * 2 = tertiary
-         * 3 = neutral
-         * 4 = neutral variant
-         * -> Third item is the color index in light mode.
-         * -> Fourth item is the color index in dark mode.
-         */
         ALL_DYNAMIC_COLORS_MAPPED.apply {
             add(
                 ColorMapping(
@@ -147,7 +136,9 @@ object DynamicColors {
                     resourceName = "background",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -1,
+                    darkModeLightnessAdjustment = -18
                 )
             )
             add(
@@ -163,7 +154,9 @@ object DynamicColors {
                     resourceName = "surface",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -1,
+                    darkModeLightnessAdjustment = -18
                 )
             )
             add(
@@ -176,18 +169,22 @@ object DynamicColors {
             )
             add(
                 ColorMapping(
-                    resourceName = "surface_container_low",
+                    resourceName = "surface_container_lowest",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
-                    darkModeColorIndex = 10
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = 4,
+                    darkModeLightnessAdjustment = -42
                 )
             )
             add(
                 ColorMapping(
-                    resourceName = "surface_container_lowest",
+                    resourceName = "surface_container_low",
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = 1,
-                    darkModeColorIndex = 11
+                    lightModeColorIndex = 2,
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = 1,
+                    darkModeLightnessAdjustment = -38
                 )
             )
             add(
@@ -195,27 +192,28 @@ object DynamicColors {
                     resourceName = "surface_container",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
-                    darkModeColorIndex = 10
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -2,
+                    darkModeLightnessAdjustment = -34
                 )
             )
             add(
                 ColorMapping(
-                    resourceName = "surface_container_high",
+                    resourceName = "surface_container_high", // android 14+ notification bg color
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        1
-                    } else {
-                        2
-                    },
-                    darkModeColorIndex = 10
+                    lightModeColorIndex = 1,
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -4
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "surface_container_highest",
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = 3,
-                    darkModeColorIndex = 9
+                    lightModeColorIndex = 1,
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -6,
+                    darkModeLightnessAdjustment = 4
                 )
             )
             add(
@@ -223,15 +221,19 @@ object DynamicColors {
                     resourceName = "surface_bright",
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
-                    darkModeColorIndex = 10
+                    darkModeColorIndex = 10,
+                    lightModeLightnessAdjustment = -2,
+                    darkModeLightnessAdjustment = 12
                 )
             )
             add(
                 ColorMapping(
-                    resourceName = "surface_dim",
+                    resourceName = "surface_dim", // android 14+ notification scrim color
                     tonalPalette = TonalPalette.NEUTRAL,
-                    lightModeColorIndex = 2,
-                    darkModeColorIndex = 11
+                    lightModeColorIndex = 1,
+                    darkModeColorIndex = 11,
+                    lightModeLightnessAdjustment = -10,
+                    darkModeLightnessAdjustment = 8
                 )
             )
             add(
@@ -266,34 +268,34 @@ object DynamicColors {
                     darkModeColorIndex = 9
                 )
             )
-//            add(
-//                ColorMapping(
-//                    resourceName = "error",
-//                    lightModeColorCode = Color.parseColor("#1EB326"),
-//                    darkModeColorCode = Color.parseColor("#B5F2B8")
-//                )
-//            )
-//            add(
-//                ColorMapping(
-//                    resourceName = "on_error",
-//                    lightModeColorCode = Color.parseColor("#FFFFFF"),
-//                    darkModeColorCode = Color.parseColor("#106014")
-//                )
-//            )
-//            add(
-//                ColorMapping(
-//                    resourceName = "error_container",
-//                    lightModeColorCode = Color.parseColor("#DCF9DE"),
-//                    darkModeColorCode = Color.parseColor("#188C1D")
-//                )
-//            )
-//            add(
-//                ColorMapping(
-//                    resourceName = "on_error_container",
-//                    lightModeColorCode = Color.parseColor("#0B410E"),
-//                    darkModeColorCode = Color.parseColor("#DCF9DE")
-//                )
-//            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "error",
+            //                    lightModeColorCode = Color.parseColor("#1EB326"),
+            //                    darkModeColorCode = Color.parseColor("#B5F2B8")
+            //                )
+            //            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "on_error",
+            //                    lightModeColorCode = Color.parseColor("#FFFFFF"),
+            //                    darkModeColorCode = Color.parseColor("#106014")
+            //                )
+            //            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "error_container",
+            //                    lightModeColorCode = Color.parseColor("#DCF9DE"),
+            //                    darkModeColorCode = Color.parseColor("#188C1D")
+            //                )
+            //            )
+            //            add(
+            //                ColorMapping(
+            //                    resourceName = "on_error_container",
+            //                    lightModeColorCode = Color.parseColor("#0B410E"),
+            //                    darkModeColorCode = Color.parseColor("#DCF9DE")
+            //                )
+            //            )
             add(
                 ColorMapping(
                     resourceName = "control_activated",
@@ -302,7 +304,7 @@ object DynamicColors {
                     darkModeColorIndex = 4
                 )
             )
-//            add(ColorMapping(resourceName = "control_normal"))
+            //            add(ColorMapping(resourceName = "control_normal"))
             add(
                 ColorMapping(
                     resourceName = "control_highlight",
@@ -310,11 +312,11 @@ object DynamicColors {
                     darkModeColorCode = Color.parseColor("#33FFFFFF")
                 )
             )
-//            add(ColorMapping(resourceName = "text_primary_inverse"))
-//            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse"))
-//            add(ColorMapping(resourceName = "text_primary_inverse_disable_only"))
-//            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse_disabled"))
-//            add(ColorMapping(resourceName = "text_hint_inverse"))
+            //            add(ColorMapping(resourceName = "text_primary_inverse"))
+            //            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse"))
+            //            add(ColorMapping(resourceName = "text_primary_inverse_disable_only"))
+            //            add(ColorMapping(resourceName = "text_secondary_and_tertiary_inverse_disabled"))
+            //            add(ColorMapping(resourceName = "text_hint_inverse"))
             add(
                 ColorMapping(
                     resourceName = "palette_key_color_primary",
@@ -357,17 +359,6 @@ object DynamicColors {
             )
         }
 
-        /*
-         * **Fixed colors:**
-         * -> First item is the name of the color.
-         * -> Second item is the tonal palette index.
-         * 0 = primary
-         * 1 = secondary
-         * 2 = tertiary
-         * 3 = neutral
-         * 4 = neutral variant
-         * -> Third item is the color index.
-         */
         FIXED_COLORS_MAPPED.apply {
             add(
                 ColorMapping(
@@ -456,25 +447,14 @@ object DynamicColors {
         }
 
         /*
-         * **M3 ref colors:**
-         * -> First item is the name of the color.
-         * -> Second item is the lightness percentage to increase or decrease
-         * from the base color given by the second item of the inner pair.
-         * -> Third item is the tonal palette index.
-         * 0 = primary
-         * 1 = secondary
-         * 2 = tertiary
-         * 3 = neutral
-         * 4 = neutral variant
-         * -> Fourth item is the color index.
-         *
-         * Google uses "gm3" prefix for these resources, MaterialComponents uses "m3" instead.
+         * Google uses the "gm3" prefix for these resources,
+         * while MaterialComponents uses "m3" instead.
          */
         M3_REF_PALETTE.apply {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral4",
-                    lightnessAdjustment = -60,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 11
                 )
@@ -482,7 +462,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral6",
-                    lightnessAdjustment = -40,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 11
                 )
@@ -490,7 +470,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral12",
-                    lightnessAdjustment = 20,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 10
                 )
@@ -498,7 +478,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral17",
-                    lightnessAdjustment = 70,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 10
                 )
@@ -506,23 +486,23 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral22",
-                    lightnessAdjustment = 20,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 11
+                    colorIndex = 9
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral24",
-                    lightnessAdjustment = 40,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 11
+                    colorIndex = 9
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral87",
-                    lightnessAdjustment = 70,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 4
                 )
@@ -530,7 +510,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral92",
-                    lightnessAdjustment = 20,
+                    lightnessAdjustment = -6,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 3
                 )
@@ -538,7 +518,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral94",
-                    lightnessAdjustment = 40,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 3
                 )
@@ -546,7 +526,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral96",
-                    lightnessAdjustment = 10,
+                    lightnessAdjustment = -14,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 2
                 )
@@ -554,7 +534,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral98",
-                    lightnessAdjustment = 30,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 2
                 )
@@ -562,7 +542,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant4",
-                    lightnessAdjustment = -60,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 11
                 )
@@ -570,7 +550,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant6",
-                    lightnessAdjustment = -40,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 11
                 )
@@ -578,7 +558,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant12",
-                    lightnessAdjustment = 20,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 10
                 )
@@ -586,7 +566,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant17",
-                    lightnessAdjustment = 70,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 10
                 )
@@ -594,23 +574,23 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant22",
-                    lightnessAdjustment = 20,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 11
+                    colorIndex = 9
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant24",
-                    lightnessAdjustment = 40,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 11
+                    colorIndex = 9
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant87",
-                    lightnessAdjustment = 70,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 4
                 )
@@ -618,7 +598,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant92",
-                    lightnessAdjustment = 20,
+                    lightnessAdjustment = -6,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 3
                 )
@@ -626,7 +606,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant94",
-                    lightnessAdjustment = 40,
+                    lightnessAdjustment = -10,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 3
                 )
@@ -634,7 +614,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant96",
-                    lightnessAdjustment = 10,
+                    lightnessAdjustment = -14,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 2
                 )
@@ -642,7 +622,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant98",
-                    lightnessAdjustment = 30,
+                    lightnessAdjustment = -20,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 2
                 )

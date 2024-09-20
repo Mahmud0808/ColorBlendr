@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Цей дозвіл потрібен для отримання шпалер для головного екрана та екрана блокування.</string>
     <string name="perm_three_title">Доступ до всіх файлів</string>
     <string name="perm_three_desc">Цей дозвіл потрібен для отримання шпалер для головного екрана та екрана блокування.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Почати</string>
     <string name="btn_continue">Продовжити</string>
     <string name="monet_neutral_desc">Жива та освіжаюча кольорова палітра, натхненна шипучістю газованих напоїв.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Застосовуйте власні кольори до певних застосунків, які не дотримуються системної monet-теми</string>
     <string name="back">Назад</string>
     <string name="permissions">Дозволи</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Оберіть метод</string>
     <string name="auto_startup">Автозапуск</string>
     <string name="auto_startup_title">Запускати службу при завантажені</string>
@@ -147,4 +150,12 @@
     <string name="filter_user_apps">Користувацькі застосунки</string>
     <string name="filter_launchable_apps">Застосунки, що запускаються</string>
     <string name="filter_all">Всі застосунки</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
+    <string name="advanced_settings">Advanced</string>
+    <string name="custom_secondary_color_desc">Custom secondary color</string>
+    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
+    <string name="custom_tertiary_color_title">Custom tertiary color</string>
+    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
+    <string name="mode_specific_theme_title">Mode-specific theme</string>
+    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
 </resources>

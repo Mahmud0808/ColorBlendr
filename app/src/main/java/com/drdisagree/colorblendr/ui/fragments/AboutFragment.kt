@@ -49,45 +49,68 @@ class AboutFragment : Fragment() {
         )
 
         binding.btnNews.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://t.me/IconifyOfficial")
+            try {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://t.me/IconifyOfficial")
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+
         binding.btnSupport.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://t.me/IconifyDiscussion")
+            try {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://t.me/IconifyDiscussion")
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+
         binding.btnGithub.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/Mahmud0808/ColorBlendr")
+            try {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/Mahmud0808/ColorBlendr")
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         binding.developer.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/Mahmud0808")
+            try {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/Mahmud0808")
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+
         binding.buymeacoffee.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://buymeacoffee.com/drdisagree")
+            try {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://buymeacoffee.com/drdisagree")
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         return binding.root

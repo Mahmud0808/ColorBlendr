@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.OnboardingItem2Fragment">
+    tools:context=".ui.fragments.OnboardingItem4Fragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
         style="@style/TextAppearance.Material3.HeadlineLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/permissions"
+        android:text="@string/choose_method"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/guidelineTop" />
@@ -39,27 +39,19 @@
             android:orientation="vertical">
 
             <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-                android:id="@+id/post_notifications"
+                android:id="@+id/root"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:descriptionText="@string/perm_one_desc"
-                app:titleText="@string/perm_one_title" />
+                android:layout_marginBottom="24dp"
+                app:descriptionText="@string/mode_one_desc"
+                app:titleText="@string/mode_one_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-                android:id="@+id/read_media_images"
+                android:id="@+id/shizuku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:descriptionText="@string/perm_two_desc"
-                app:titleText="@string/perm_two_title" />
-
-            <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-                android:id="@+id/all_files_access"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:descriptionText="@string/perm_three_desc"
-                app:titleText="@string/perm_three_title" />
+                app:descriptionText="@string/mode_two_desc"
+                app:titleText="@string/mode_two_title" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

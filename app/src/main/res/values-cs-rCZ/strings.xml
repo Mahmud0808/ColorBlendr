@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Toto oprávnění je vyžadováno pro načtení tapety domovské a zamykací obrazovky.</string>
     <string name="perm_three_title">Přístup ke všem souborům</string>
     <string name="perm_three_desc">Toto oprávnění je vyžadováno pro načtení tapety domovské a zamykací obrazovky.</string>
+    <string name="perm_four_title">Optimalizace baterie</string>
+    <string name="perm_four_desc">Neomezená optimalizace baterie je nutná k běhu na pozadí.</string>
     <string name="start">Začít</string>
     <string name="btn_continue">Pokračovat</string>
     <string name="monet_neutral_desc">Osvěžující barevná paleta inspirovaná šumivostí spritzových nápojů.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Použít vlastní barvy pro konkrétní aplikace, které nepodporují Monet systém</string>
     <string name="back">Zpět</string>
     <string name="permissions">Oprávnění</string>
+    <string name="optimization">Optimalizace</string>
     <string name="choose_method">Vyberte metodu</string>
     <string name="auto_startup">Automatické spuštění</string>
     <string name="auto_startup_title">Spustit službu po startu</string>
@@ -147,4 +150,12 @@
     <string name="filter_user_apps">Uživatelské aplikace</string>
     <string name="filter_launchable_apps">Spustitelné aplikace</string>
     <string name="filter_all">Všechny aplikace</string>
+    <string name="disable_battery_optimization_hint">Není povinné, ale doporučuje se zakázat optimalizaci baterie</string>
+    <string name="advanced_settings">Advanced</string>
+    <string name="custom_secondary_color_desc">Custom secondary color</string>
+    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
+    <string name="custom_tertiary_color_title">Custom tertiary color</string>
+    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
+    <string name="mode_specific_theme_title">Mode-specific theme</string>
+    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
 </resources>

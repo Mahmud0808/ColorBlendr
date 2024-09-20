@@ -7,6 +7,7 @@ import com.drdisagree.colorblendr.ui.fragments.AboutFragment
 import com.drdisagree.colorblendr.ui.fragments.ColorPaletteFragment
 import com.drdisagree.colorblendr.ui.fragments.ColorsFragment
 import com.drdisagree.colorblendr.ui.fragments.PerAppThemeFragment
+import com.drdisagree.colorblendr.ui.fragments.SettingsAdvancedFragment
 import com.drdisagree.colorblendr.ui.fragments.SettingsFragment
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
 import com.drdisagree.colorblendr.ui.fragments.ThemeFragment
@@ -94,6 +95,7 @@ object FragmentUtil {
 
     private fun isInGroup4(fragment: Fragment): Boolean {
         return fragment is SettingsFragment ||
+                fragment is SettingsAdvancedFragment ||
                 fragment is AboutFragment
     }
 

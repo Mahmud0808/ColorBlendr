@@ -4,45 +4,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.OnboardingItem3Fragment">
+    tools:context=".ui.fragments.OnboardingItem2Fragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
         style="@style/TextAppearance.Material3.HeadlineLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/choose_method"
+        android:text="@string/optimization"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/guidelineTop" />
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:fadingEdgeLength="16dp"
+        android:fillViewport="true"
         android:gravity="center"
-        android:orientation="vertical"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@id/guidelineBottom"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
         app:layout_constraintTop_toBottomOf="@id/textView">
 
-        <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-            android:id="@+id/root"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:descriptionText="@string/mode_one_desc"
-            app:titleText="@string/mode_one_title" />
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
-            android:id="@+id/shizuku"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:descriptionText="@string/mode_two_desc"
-            app:titleText="@string/mode_two_title" />
+            <ImageView
+                android:id="@+id/battery_view"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_marginBottom="24dp"
+                android:adjustViewBounds="true"
+                android:foreground="@drawable/ic_battery_landscape_fg"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_battery_landscape_bg" />
 
-    </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginBottom="24dp"
+                android:alpha="0.5"
+                android:text="@string/disable_battery_optimization_hint"
+                android:textAlignment="center" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SelectableViewWidget
+                android:id="@+id/battery_optimization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:descriptionText="@string/perm_four_desc"
+                app:titleText="@string/perm_four_title" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineTop"
@@ -63,13 +87,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.16" />
+        app:layout_constraintGuide_percent="0.13" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.84" />
+        app:layout_constraintGuide_percent="0.87" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

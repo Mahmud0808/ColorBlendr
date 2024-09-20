@@ -70,7 +70,7 @@ class ColorPickerWidget : RelativeLayout {
         }
 
         if (!iconSpaceReserved) {
-            iconImageView!!.setVisibility(GONE)
+            iconImageView!!.visibility = GONE
         }
 
         if (colorResId != Int.MIN_VALUE) {
@@ -88,24 +88,28 @@ class ColorPickerWidget : RelativeLayout {
 
     fun setSummary(summaryResId: Int) {
         summaryTextView!!.setText(summaryResId)
+
+        summaryTextView!!.visibility = if (summaryResId == 0) GONE else VISIBLE
     }
 
     fun setSummary(summary: String?) {
         summaryTextView!!.text = summary
+
+        summaryTextView!!.visibility = if (summary == null) GONE else VISIBLE
     }
 
     fun setIcon(icon: Int) {
         iconImageView!!.setImageResource(icon)
-        iconImageView!!.setVisibility(VISIBLE)
+        iconImageView!!.visibility = VISIBLE
     }
 
     fun setIcon(drawable: Drawable?) {
         iconImageView!!.setImageDrawable(drawable)
-        iconImageView!!.setVisibility(VISIBLE)
+        iconImageView!!.visibility = VISIBLE
     }
 
     fun setIconVisibility(visibility: Int) {
-        iconImageView!!.setVisibility(visibility)
+        iconImageView!!.visibility = visibility
     }
 
     @get:ColorInt
@@ -129,7 +133,7 @@ class ColorPickerWidget : RelativeLayout {
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 intArrayOf(colorTemp, colorTemp)
             )
-            drawable.setShape(GradientDrawable.OVAL)
+            drawable.shape = GradientDrawable.OVAL
             colorView!!.background = drawable
         }
 
@@ -145,25 +149,25 @@ class ColorPickerWidget : RelativeLayout {
             val color: Int = a.getColor(0, 0)
             a.recycle()
 
-            iconImageView!!.setImageTintList(ColorStateList.valueOf(color))
+            iconImageView!!.imageTintList = ColorStateList.valueOf(color)
 
-            titleTextView!!.setAlpha(1.0f)
-            summaryTextView!!.setAlpha(0.8f)
+            titleTextView!!.alpha = 1.0f
+            summaryTextView!!.alpha = 0.8f
         } else {
             if (isDarkMode) {
-                iconImageView!!.setImageTintList(ColorStateList.valueOf(Color.DKGRAY))
+                iconImageView!!.imageTintList = ColorStateList.valueOf(Color.DKGRAY)
             } else {
-                iconImageView!!.setImageTintList(ColorStateList.valueOf(Color.LTGRAY))
+                iconImageView!!.imageTintList = ColorStateList.valueOf(Color.LTGRAY)
             }
 
-            titleTextView!!.setAlpha(0.6f)
-            summaryTextView!!.setAlpha(0.4f)
+            titleTextView!!.alpha = 0.6f
+            summaryTextView!!.alpha = 0.4f
         }
 
-        container!!.setEnabled(enabled)
-        titleTextView!!.setEnabled(enabled)
-        summaryTextView!!.setEnabled(enabled)
-        iconImageView!!.setEnabled(enabled)
+        container!!.isEnabled = enabled
+        titleTextView!!.isEnabled = enabled
+        summaryTextView!!.isEnabled = enabled
+        iconImageView!!.isEnabled = enabled
         previewColor = if (enabled) previewColor else Color.GRAY
     }
 
@@ -175,17 +179,17 @@ class ColorPickerWidget : RelativeLayout {
         summaryTextView = findViewById(R.id.summary)
         colorView = findViewById(R.id.color_widget)
 
-        container!!.setId(generateViewId())
-        iconImageView!!.setId(generateViewId())
-        titleTextView!!.setId(generateViewId())
-        summaryTextView!!.setId(generateViewId())
-        colorView!!.setId(generateViewId())
+        container!!.id = generateViewId()
+        iconImageView!!.id = generateViewId()
+        titleTextView!!.id = generateViewId()
+        summaryTextView!!.id = generateViewId()
+        colorView!!.id = generateViewId()
 
-        val layoutParams: LayoutParams =
-            findViewById<View>(R.id.text_container).layoutParams as LayoutParams
+        val textContainer = findViewById<View>(R.id.text_container)
+        val layoutParams: LayoutParams = textContainer.layoutParams as LayoutParams
         layoutParams.addRule(START_OF, colorView!!.id)
         layoutParams.addRule(END_OF, iconImageView!!.id)
-        findViewById<View>(R.id.text_container).setLayoutParams(layoutParams)
+        textContainer.layoutParams = layoutParams
     }
 
     override fun setOnClickListener(l: OnClickListener?) {

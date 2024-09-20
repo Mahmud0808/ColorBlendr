@@ -25,7 +25,7 @@
     <string name="dev_bio">Учащийся | Разработчик | Дизайнер</string>
     <string name="news">Новости</string>
     <string name="support">Поддержка</string>
-    <string name="github">Github</string>
+    <string name="github">GitHub</string>
     <string name="version">Версия</string>
     <string name="pitch_black_theme_title">Кромешно черная тема</string>
     <string name="pitch_black_theme_desc">Черный фон в темном режиме</string>
@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Это разрешение требуется для получения обоев домашнего экрана и экрана блокировки.</string>
     <string name="perm_three_title">Доступ ко всем файлам</string>
     <string name="perm_three_desc">Это разрешение требуется для получения обоев домашнего экрана и экрана блокировки.</string>
+    <string name="perm_four_title">Оптимизация батареи</string>
+    <string name="perm_four_desc">Для работы в фоновом режиме требуется неограниченная оптимизация расхода заряда батареи.</string>
     <string name="start">Начать</string>
     <string name="btn_continue">Продолжить</string>
     <string name="monet_neutral_desc">Яркая и освежающая цветовая палитра вдохновлённая шипучими напитками.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Применяйте собственные цвета к определенным приложениям которые не соответствуют системным monet</string>
     <string name="back">Назад</string>
     <string name="permissions">Разрешения</string>
+    <string name="optimization">Оптимизация</string>
     <string name="choose_method">Выберите метод</string>
     <string name="auto_startup">Автозапуск</string>
     <string name="auto_startup_title">Запустить службу при загрузке</string>
@@ -147,4 +150,12 @@
     <string name="filter_user_apps">Пользовательские приложения</string>
     <string name="filter_launchable_apps">Запускаемые приложения</string>
     <string name="filter_all">Все приложения</string>
+    <string name="disable_battery_optimization_hint">Это не обязательно, но рекомендуется отключить оптимизацию батареи</string>
+    <string name="advanced_settings">Advanced</string>
+    <string name="custom_secondary_color_desc">Custom secondary color</string>
+    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
+    <string name="custom_tertiary_color_title">Custom tertiary color</string>
+    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
+    <string name="mode_specific_theme_title">Mode-specific theme</string>
+    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
 </resources>

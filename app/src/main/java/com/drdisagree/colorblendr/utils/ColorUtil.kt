@@ -9,7 +9,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
+import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
@@ -84,6 +87,26 @@ object ColorUtil {
             isDark
         )
 
+        // Set custom secondary accent color
+        val secondaryAccent = getInt(MONET_SECONDARY_COLOR, Color.WHITE)
+        if (secondaryAccent != Color.WHITE) {
+            palette[1] = generateColorPalette(
+                style,
+                secondaryAccent,
+                isDark
+            )[0]
+        }
+
+        // Set custom tertiary accent color
+        val tertiaryAccent = getInt(MONET_TERTIARY_COLOR, Color.WHITE)
+        if (tertiaryAccent != Color.WHITE) {
+            palette[2] = generateColorPalette(
+                style,
+                tertiaryAccent,
+                isDark
+            )[0]
+        }
+
         // Modify colors
         for (i in palette.indices) {
             val modifiedShades = ColorModifiers.modifyColors(
@@ -156,6 +179,41 @@ object ColorUtil {
         hsl[2] = shade + lightnessFloat
 
         return ColorUtils.HSLToColor(hsl)
+    }
+
+    fun modifyBrightness(color: Int, brightnessPercentage: Int): Int {
+        // Ensure brightnessPercentage is within -100 to 100
+        val clampedPercentage = brightnessPercentage.coerceIn(-100, 100)
+
+        // Convert brightness percentage to a factor
+        val factor = 1.0f + (clampedPercentage / 100f)
+
+        // Extract RGB components
+        val r = (color shr 16 and 0xFF) / 255f
+        val g = (color shr 8 and 0xFF) / 255f
+        val b = (color and 0xFF) / 255f
+
+        // Calculate current brightness
+        val currentBrightness = 0.2126f * r + 0.7152f * g + 0.0722f * b
+
+        // Determine the adjustment factor to achieve the desired brightness
+        val adjustedFactor = if (currentBrightness == 0f) 0f else factor
+
+        // Adjust RGB components by the factor
+        val newR = (r * adjustedFactor).coerceIn(0f, 1f)
+        val newG = (g * adjustedFactor).coerceIn(0f, 1f)
+        val newB = (b * adjustedFactor).coerceIn(0f, 1f)
+
+        // Convert back to color integer
+        val newRInt = (newR * 255).toInt()
+        val newGInt = (newG * 255).toInt()
+        val newBInt = (newB * 255).toInt()
+
+        // Return the adjusted color, preserving the alpha channel
+        return (color and 0xFF000000.toInt()) or
+                (newRInt shl 16) or
+                (newGInt shl 8) or
+                newBInt
     }
 
     fun getHue(color: Int): Float {

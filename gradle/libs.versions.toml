@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.6.1"
 androidUtils = "0.0.5"
 annotation = "1.8.2"
 appcompat = "1.7.0"
@@ -12,8 +12,8 @@ flexbox = "3.0.0"
 glide = "4.16.0"
 gson = "2.11.0"
 hiddenapibypassVersion = "4.3"
-kapt = "2.0.0-RC1"
-kotlin = "1.9.23"
+kapt = "2.0.0"
+kotlin = "2.0.0"
 libsuVersion = "5.2.2"
 material = "1.12.0"
 palette = "1.0.0"
@@ -23,6 +23,7 @@ recyclerviewSelection = "1.1.0"
 remotepreferences = "0.8"
 shizuku = "12.1.0"
 workRuntime = "2.9.1"
+lifecycleCommonJvm = "2.8.6"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
@@ -55,3 +56,4 @@ remotepreferences = { module = "com.crossbowffs.remotepreferences:remotepreferen
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
+lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }

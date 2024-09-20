@@ -41,11 +41,18 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             if (getBoolean(FIRST_RUN, true) || workingMethod == Const.WorkMethod.NULL ||
-                !intent.getBooleanExtra("success", false)
+                intent?.getBooleanExtra("success", false) == false
             ) {
                 replaceFragment(OnboardingFragment(), false)
             } else {
-                replaceFragment(HomeFragment(), false)
+                replaceFragment(
+                    HomeFragment().apply {
+                        arguments = Bundle().apply {
+                            putBoolean("success", true)
+                        }
+                    },
+                    false
+                )
             }
         }
     }
@@ -89,8 +96,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        scheduleJob(applicationContext)
+
+        if (intent?.getBooleanExtra("success", false) == true) {
+            scheduleJob(applicationContext)
+        }
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        if (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES ||
+            newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
+        ) {
+            recreate()
+        }
+    }
+
 
     companion object {
         private lateinit var myFragmentManager: FragmentManager

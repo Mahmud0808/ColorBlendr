@@ -52,6 +52,7 @@ class OnboardingFragment : Fragment() {
         adapter.addFragment(OnboardingItem1Fragment())
         adapter.addFragment(OnboardingItem2Fragment())
         adapter.addFragment(OnboardingItem3Fragment())
+        adapter.addFragment(OnboardingItem4Fragment())
 
         binding.viewPager.adapter = adapter
         binding.viewPager.offscreenPageLimit = adapter.itemCount
@@ -153,7 +154,14 @@ class OnboardingFragment : Fragment() {
                 updateFabricatedAppList(requireContext())
                 putBoolean(FIRST_RUN, false)
                 saveWorkingMethod(Const.WORKING_METHOD)
-                MainActivity.replaceFragment(HomeFragment(), true)
+                MainActivity.replaceFragment(
+                    HomeFragment().apply {
+                        arguments = Bundle().apply {
+                            putBoolean("success", true)
+                        }
+                    },
+                    true
+                )
             } catch (_: Exception) {
             }
         }

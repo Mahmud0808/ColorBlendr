@@ -8,6 +8,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +18,10 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
@@ -107,6 +112,12 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -235,17 +246,38 @@ class SettingsFragment : Fragment() {
         return binding.getRoot()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.clear()
+                menuInflater.inflate(R.menu.settings_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.advanced_settings -> {
+                        HomeFragment.replaceFragment(
+                            SettingsAdvancedFragment()
+                        )
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun crossfade(view: View) {
         try {
             val animTime: Int = resources.getInteger(android.R.integer.config_mediumAnimTime)
             if (view.visibility == View.GONE) {
-                view.setAlpha(0f)
+                view.alpha = 0f
                 view.visibility = View.VISIBLE
                 view.animate()
                     .alpha(1f)
@@ -259,7 +291,7 @@ class SettingsFragment : Fragment() {
                         override fun onAnimationEnd(animation: Animator) {
                             super.onAnimationEnd(animation)
                             try {
-                                view.setAlpha(0f)
+                                view.alpha = 0f
                                 view.visibility = View.GONE
                             } catch (ignored: Exception) {
                             }
@@ -272,8 +304,8 @@ class SettingsFragment : Fragment() {
 
     private fun backupRestoreSettings(isBackingUp: Boolean) {
         val fileIntent = Intent().apply {
-            setAction(if (isBackingUp) Intent.ACTION_CREATE_DOCUMENT else Intent.ACTION_GET_CONTENT)
-            setType("*/*")
+            action = if (isBackingUp) Intent.ACTION_CREATE_DOCUMENT else Intent.ACTION_GET_CONTENT
+            type = "*/*"
             putExtra(Intent.EXTRA_TITLE, "theme_config" + ".colorblendr")
         }
         if (isBackingUp) {
@@ -416,7 +448,7 @@ class SettingsFragment : Fragment() {
     }
 
     companion object {
-        private val TAG: String = SettingsFragment::class.java.getSimpleName()
+        private val TAG: String = SettingsFragment::class.java.simpleName
         private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
         fun clearCustomColors() {

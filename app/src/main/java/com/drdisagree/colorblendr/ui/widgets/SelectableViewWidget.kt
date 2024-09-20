@@ -23,7 +23,6 @@ import com.google.android.material.color.MaterialColors
 
 class SelectableViewWidget : RelativeLayout {
 
-    private var context: Context? = null
     private var container: MaterialCardView? = null
     private var titleTextView: TextView? = null
     private var descriptionTextView: TextView? = null
@@ -47,7 +46,6 @@ class SelectableViewWidget : RelativeLayout {
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
-        this.context = context
         inflate(context, R.layout.view_widget_selectable, this)
 
         initializeId()
@@ -108,7 +106,7 @@ class SelectableViewWidget : RelativeLayout {
 
         if (enabled) {
             val typedValue: TypedValue = TypedValue()
-            val a: TypedArray = getContext().obtainStyledAttributes(
+            val a: TypedArray = context.obtainStyledAttributes(
                 typedValue.data,
                 intArrayOf(com.google.android.material.R.attr.colorPrimary)
             )
@@ -188,8 +186,8 @@ class SelectableViewWidget : RelativeLayout {
         val isLandscape: Boolean = config.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         if (isLandscape) {
-            val screenWidth: Int = context!!.resources.displayMetrics.widthPixels
-            val screenHeight: Int = context!!.resources.displayMetrics.heightPixels
+            val screenWidth: Int = resources.displayMetrics.widthPixels
+            val screenHeight: Int = resources.displayMetrics.heightPixels
 
             val isSmallHeightDevice: Boolean = screenWidth >= screenHeight * 1.8
 

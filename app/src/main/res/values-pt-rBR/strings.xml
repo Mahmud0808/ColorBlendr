@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Esta permissão é necessária para recuperar o plano de fundo inicial e da tela de bloqueio.</string>
     <string name="perm_three_title">Acesso a todos os arquivos</string>
     <string name="perm_three_desc">Esta permissão é necessária para recuperar o plano de fundo inicial e da tela de bloqueio.</string>
+    <string name="perm_four_title">Otimização de bateria</string>
+    <string name="perm_four_desc">A otimização irrestrita da bateria é necessária para permitir a execução em segundo plano.</string>
     <string name="start">Começar</string>
     <string name="btn_continue">Continuar</string>
     <string name="monet_neutral_desc">Paleta de cores vivas e refrescantes inspiradas na efervescência das bebidas spritz.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Aplique cores personalizadas a apps específicos que não seguem o sistema monet</string>
     <string name="back">Voltar</string>
     <string name="permissions">Permissões</string>
+    <string name="optimization">Otimização</string>
     <string name="choose_method">Escolha o método</string>
     <string name="auto_startup">Inicialização automática</string>
     <string name="auto_startup_title">Iniciar serviço na inicialização</string>
@@ -147,4 +150,12 @@
     <string name="filter_user_apps">Apps do usuário</string>
     <string name="filter_launchable_apps">Apps iniciáveis</string>
     <string name="filter_all">Todos os apps</string>
+    <string name="disable_battery_optimization_hint">Não é obrigatório, mas é recomendado desativar a otimização de bateria</string>
+    <string name="advanced_settings">Avançado</string>
+    <string name="custom_secondary_color_desc">Cor secundária personalizada</string>
+    <string name="custom_secondary_color_summary">Selecione a cor branca pura para desativar</string>
+    <string name="custom_tertiary_color_title">Cor terciária personalizada</string>
+    <string name="custom_tertiary_color_desc">Selecione a cor branca pura para desativar</string>
+    <string name="mode_specific_theme_title">Tema específico do modo</string>
+    <string name="mode_specific_theme_desc">Aplique saturação e luminosidade diferentes para modos claro e escuro</string>
 </resources>

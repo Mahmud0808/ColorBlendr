@@ -89,6 +89,8 @@
     <string name="perm_two_desc">Diese Berechtigung ist erforderlich, um das Hintergrundbild für den Startbildschirm und den Sperrbildschirm abzurufen.</string>
     <string name="perm_three_title">Zugriff auf alle Dateien</string>
     <string name="perm_three_desc">Diese Berechtigung ist erforderlich, um das Hintergrundbild für den Startbildschirm und den Sperrbildschirm abzurufen.</string>
+    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">Starten</string>
     <string name="btn_continue">Fortsetzen</string>
     <string name="monet_neutral_desc">Lebendige und erfrischende Farbpalette, inspiriert von der Spritzigkeit von Getränken.</string>
@@ -112,6 +114,7 @@
     <string name="force_per_app_theme_desc">Benutzerdefinierte Farben für bestimmte Apps anwenden, die das System-Monet nicht benutzen</string>
     <string name="back">Zurück</string>
     <string name="permissions">Berechtigungen</string>
+    <string name="optimization">Optimization</string>
     <string name="choose_method">Methode wählen</string>
     <string name="auto_startup">Automatischer Start</string>
     <string name="auto_startup_title">Starte den Dienst bei Systemstart</string>
@@ -147,4 +150,12 @@
     <string name="filter_user_apps">Vom Benutzer installierte Apps</string>
     <string name="filter_launchable_apps">Startfähige Apps</string>
     <string name="filter_all">Alle Apps</string>
+    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
+    <string name="advanced_settings">Advanced</string>
+    <string name="custom_secondary_color_desc">Custom secondary color</string>
+    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
+    <string name="custom_tertiary_color_title">Custom tertiary color</string>
+    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
+    <string name="mode_specific_theme_title">Mode-specific theme</string>
+    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
 </resources>
