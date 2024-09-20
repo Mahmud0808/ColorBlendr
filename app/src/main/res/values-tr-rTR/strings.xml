@@ -151,4 +151,11 @@
     <string name="filter_launchable_apps">Başlatılabilir Uygulamalar</string>
     <string name="filter_all">Tüm Uygulamalar</string>
     <string name="disable_battery_optimization_hint">Pil optimizasyonunu devre dışı bırakmak zorunlu değildir ancak önerilir</string>
+    <string name="advanced_settings">Gelişmiş</string>
+    <string name="custom_secondary_color_desc">Özel ikincil renk</string>
+    <string name="custom_secondary_color_summary">Devre dışı bırakmak için saf beyaz rengi seçin</string>
+    <string name="custom_tertiary_color_title">Özel üçüncül renk</string>
+    <string name="custom_tertiary_color_desc">Devre dışı bırakmak için saf beyaz rengi seçin</string>
+    <string name="mode_specific_theme_title">Moda özgü tema</string>
+    <string name="mode_specific_theme_desc">Açık ve koyu modlar için farklı doygunluk ve açıklık uygulayın</string>
 </resources>
