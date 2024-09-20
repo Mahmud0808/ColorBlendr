@@ -1,0 +1,12 @@
+Changelog:
+
+• Added option to use separate lightness/saturation for light and dark modes. [Root]
+• Added option to change secondary and tertiary colors. [Root]
+• Added pitch black theme for Settings Services. [Root]
+• Added and improved several dynamic colors. [Root]
+• Fixed surface container colors for Android 15. [Root]
+• Bumped target SDK to Android 15.
+• Updated AGP and dependencies.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
