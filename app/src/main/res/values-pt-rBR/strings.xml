@@ -151,4 +151,11 @@
     <string name="filter_launchable_apps">Apps iniciáveis</string>
     <string name="filter_all">Todos os apps</string>
     <string name="disable_battery_optimization_hint">Não é obrigatório, mas é recomendado desativar a otimização de bateria</string>
+    <string name="advanced_settings">Avançado</string>
+    <string name="custom_secondary_color_desc">Cor secundária personalizada</string>
+    <string name="custom_secondary_color_summary">Selecione a cor branca pura para desativar</string>
+    <string name="custom_tertiary_color_title">Cor terciária personalizada</string>
+    <string name="custom_tertiary_color_desc">Selecione a cor branca pura para desativar</string>
+    <string name="mode_specific_theme_title">Tema específico do modo</string>
+    <string name="mode_specific_theme_desc">Aplique saturação e luminosidade diferentes para modos claro e escuro</string>
 </resources>
