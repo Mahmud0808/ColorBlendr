@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png" width="100%" alt="Banner">
 
-  #
+#
 </div>
 <p align="center">
   <a href="https://github.com/Mahmud0808/ColorBlendr"><img alt="Repo Size" src="https://img.shields.io/github/repo-size/Mahmud0808/ColorBlendr?style=for-the-badge"></a>
@@ -28,15 +28,15 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 ## Features 🔥
 
 - Accent saturation changer
-  
+
 - Background saturation changer
-  
+
 - Background lightness changer
-  
+
 - Pitch black theme in dark mode
 
 - Manual color overriding
-  
+
 - and many more...
 
 ## Requirements 🛠
@@ -48,11 +48,11 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 ## How to Use 🚀
 
 - Download and install the apk
-  
+
 - Allow permissions for the app
-  
+
 - Select root or shizuku mode
-  
+
 - That's it. Now you are good to go!
 
 ## Note 📝
@@ -60,6 +60,32 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 - Root is recommended if you want to have the full experience
 
 - Shizuku is also supported but customizations are limited
+
+## FAQ 🤓
+
+<details>
+  <summary>How does ColorBlendr work without root access?</summary>
+
+- ColorBlendr utilizes adb commands to change Material You colors, allowing users to modify these colors without needing root access.
+</details>
+
+<details>
+  <summary>How does ColorBlendr work with root access?</summary>
+
+- ColorBlendr leverages the [FabricatedOverlay](https://developer.android.com/reference/android/content/om/FabricatedOverlay) API to dynamically change Material You colors at runtime without creating any permanent files.
+</details>
+
+<details>
+  <summary>Why doesn't ColorBlendr work properly on OneUI?</summary>
+
+- OneUI uses its own color palette for system apps, not Material You colors. As a result, ColorBlendr's modifications only affect Google apps and other apps that support Material You, but not OneUI system apps.
+</details>
+
+<details>
+  <summary>How do I properly uninstall ColorBlendr?</summary>
+
+- First, disable the ColorBlendr Service from app settings. Then, uninstall the app and reboot your device.
+</details>
 
 ## Translation 🌐
 
