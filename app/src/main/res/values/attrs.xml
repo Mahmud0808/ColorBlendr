@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="HeaderTextView">
-        <attr name="fontName" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="TitleWidget">
+    <declare-styleable name="MenuWidget">
         <attr name="titleText" format="string" />
         <attr name="summaryText" format="string" />
-        <attr name="iconSpaceReserved" format="boolean" />
-    </declare-styleable>
-
-    <declare-styleable name="MenuWidget">
-        <attr name="titleText" />
-        <attr name="summaryText" />
         <attr name="icon" format="reference" />
         <attr name="iconSpaceReserved" />
         <attr name="showEndArrow" format="boolean" />
@@ -48,22 +38,6 @@
         <attr name="previewColor" format="reference" />
         <attr name="icon" />
         <attr name="iconSpaceReserved" />
-    </declare-styleable>
-
-    <declare-styleable name="FilePickerWidget">
-        <attr name="titleText" />
-        <attr name="summaryText" />
-        <attr name="buttonText" format="string" />
-        <attr name="filePickerType" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="RadioDialogWidget">
-        <attr name="titleText" />
-        <attr name="summaryText" />
-        <attr name="icon" />
-        <attr name="iconSpaceReserved" />
-        <attr name="entries" format="reference" />
-        <attr name="showSelectedPrefix" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="SelectableViewWidget">
