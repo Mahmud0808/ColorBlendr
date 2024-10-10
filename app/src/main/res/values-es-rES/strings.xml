@@ -151,11 +151,11 @@
     <string name="filter_launchable_apps">Aplicaciones lanzables</string>
     <string name="filter_all">Todas las aplicaciones</string>
     <string name="disable_battery_optimization_hint">No es obligatorio pero se recomienda desactivar la optimización de la batería</string>
-    <string name="advanced_settings">Advanced</string>
-    <string name="custom_secondary_color_desc">Custom secondary color</string>
-    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
-    <string name="custom_tertiary_color_title">Custom tertiary color</string>
-    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
-    <string name="mode_specific_theme_title">Mode-specific theme</string>
-    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="advanced_settings">Avanzado</string>
+    <string name="custom_secondary_color_desc">Color secundario personalizado</string>
+    <string name="custom_secondary_color_summary">Selecciona el color blanco puro para desactivar</string>
+    <string name="custom_tertiary_color_title">Color terciario personalizado</string>
+    <string name="custom_tertiary_color_desc">Selecciona el color blanco puro para desactivar</string>
+    <string name="mode_specific_theme_title">Tema específico del modo</string>
+    <string name="mode_specific_theme_desc">Aplica diferentes valores de saturación y luminosidad para los modos claro y oscuro</string>
 </resources>
