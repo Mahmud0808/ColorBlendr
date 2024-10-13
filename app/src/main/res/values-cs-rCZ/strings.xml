@@ -151,11 +151,11 @@
     <string name="filter_launchable_apps">Spustitelné aplikace</string>
     <string name="filter_all">Všechny aplikace</string>
     <string name="disable_battery_optimization_hint">Není povinné, ale doporučuje se zakázat optimalizaci baterie</string>
-    <string name="advanced_settings">Advanced</string>
-    <string name="custom_secondary_color_desc">Custom secondary color</string>
-    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
-    <string name="custom_tertiary_color_title">Custom tertiary color</string>
-    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
-    <string name="mode_specific_theme_title">Mode-specific theme</string>
-    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="advanced_settings">Pokročilé</string>
+    <string name="custom_secondary_color_desc">Vlastní sekundární barva</string>
+    <string name="custom_secondary_color_summary">Vyberte čistě bílou barvu pro vypnutí</string>
+    <string name="custom_tertiary_color_title">Vlastní terciární barva</string>
+    <string name="custom_tertiary_color_desc">Vyberte čistě bílou barvu pro zakázání</string>
+    <string name="mode_specific_theme_title">Šablona pro konkrétní režim</string>
+    <string name="mode_specific_theme_desc">Použít odlišnou sytost a světlost pro světlé a tmavé režimy</string>
 </resources>
