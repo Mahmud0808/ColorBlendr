@@ -191,7 +191,7 @@ object OverlayManager {
         }
     }
 
-    suspend fun applyFabricatedColors(context: Context) {
+    fun applyFabricatedColors(context: Context) {
         if (!getBoolean(Const.THEMING_ENABLED, true) &&
             !getBoolean(Const.SHIZUKU_THEMING_ENABLED, true)
         ) {
@@ -311,7 +311,7 @@ object OverlayManager {
         }
     }
 
-    suspend fun applyFabricatedColorsPerApp(
+    fun applyFabricatedColorsPerApp(
         context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
@@ -352,7 +352,7 @@ object OverlayManager {
         }
     }
 
-    private suspend fun getFabricatedColorsPerApp(
+    private fun getFabricatedColorsPerApp(
         context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
