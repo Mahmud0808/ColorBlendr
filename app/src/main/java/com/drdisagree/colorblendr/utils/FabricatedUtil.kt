@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.utils
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import androidx.annotation.ColorInt
 import androidx.core.util.Pair
 import androidx.core.util.component1
@@ -357,9 +358,13 @@ object FabricatedUtil {
             overlay.setColor("gm_ref_palette_grey600", palette[4][8])
             overlay.setColor("gm_ref_palette_grey500", palette[3][1])
             overlay.setColor("replay__pal_games_dark_300", palette[0][5])
-        } else if (overlay.targetPackage == "com.google.android.settings.intelligence" &&
-            pitchBlackTheme
-        ) { // Settings search
+        } else if (overlay.targetPackage == "com.android.settings" && pitchBlackTheme) { // Settings app
+            if (Build.VERSION.SDK_INT >= 35) { // Android 15
+                overlay.setColor("settingslib_materialColorSurfaceContainer", Color.BLACK) // inner page background
+                overlay.setColor("settingslib_materialColorSurfaceVariant", palette[3][11]) // app bar
+                overlay.setColor("settingslib_colorSurfaceHeader", palette[3][11]) // app bar
+            }
+        } else if (overlay.targetPackage == "com.google.android.settings.intelligence" && pitchBlackTheme) { // Settings search
             overlay.setColor("m3_sys_color_dark_surface_container_lowest", Color.BLACK)
             overlay.setColor("gm3_sys_color_dark_surface_container_lowest", Color.BLACK)
             overlay.setColor("m3_sys_color_dynamic_dark_surface_container_lowest", Color.BLACK)

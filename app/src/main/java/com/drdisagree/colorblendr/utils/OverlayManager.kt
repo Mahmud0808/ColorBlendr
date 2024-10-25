@@ -275,6 +275,10 @@ object OverlayManager {
 
         if (pitchBlackTheme) {
             fabricatedOverlays[0].setColor(
+                "background_dark",
+                Color.BLACK
+            )
+            fabricatedOverlays[0].setColor(
                 "surface_header_dark_sysui",
                 Color.BLACK
             ) // QS top part color
