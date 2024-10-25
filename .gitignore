@@ -13,5 +13,5 @@ local.properties
 /app/debug/
 /app/release/
 /*.hprof
-/.idea/*
+/.idea
 /.kotlin/sessions/*.salive
