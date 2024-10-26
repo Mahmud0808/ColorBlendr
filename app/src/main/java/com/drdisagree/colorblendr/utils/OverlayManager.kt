@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.utils
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.RemoteException
 import android.util.Log
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
@@ -258,6 +259,23 @@ object OverlayManager {
             paletteLight,
             paletteDark
         )
+
+        // Temporary workaround for Android 15 QPR1 beta 3 background color issue in settings.
+        // Currently, we set the status bar color to match the background color
+        // to achieve a uniform appearance when the background lightness is reduced.
+        // TODO: Remove once the Settings background color issue is resolved.
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // Light theme
+            fabricatedOverlays[0].setColor(
+                "primary_dark_device_default_settings_light", // status bar
+                fabricatedOverlays[0].getColor("system_surface_container_light") // background
+            )
+            // Dark theme
+            fabricatedOverlays[0].setColor(
+                "primary_dark_device_default_settings", // status bar
+                fabricatedOverlays[0].getColor("system_surface_container_dark") // background
+            )
+        }
 
         val selectedApps = Const.selectedFabricatedApps
 
