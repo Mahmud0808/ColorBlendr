@@ -8,11 +8,14 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
+import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 @Suppress("unused")
@@ -24,7 +27,7 @@ object OverlayManager {
     private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
     fun enableOverlay(packageName: String) {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return
         }
 
@@ -48,7 +51,7 @@ object OverlayManager {
     }
 
     fun disableOverlay(packageName: String) {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return
         }
 
@@ -72,7 +75,7 @@ object OverlayManager {
     }
 
     fun isOverlayInstalled(packageName: String): Boolean {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return false
         }
 
@@ -97,7 +100,7 @@ object OverlayManager {
     }
 
     fun isOverlayEnabled(packageName: String): Boolean {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return false
         }
 
@@ -122,7 +125,7 @@ object OverlayManager {
     }
 
     fun uninstallOverlayUpdates(packageName: String) {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return
         }
 
@@ -146,7 +149,7 @@ object OverlayManager {
     }
 
     private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return
         }
 
@@ -168,7 +171,7 @@ object OverlayManager {
     }
 
     fun unregisterFabricatedOverlay(packageName: String) {
-        if (Const.workingMethod != Const.WorkMethod.ROOT) {
+        if (workingMethod != Const.WorkMethod.ROOT) {
             return
         }
 
@@ -251,8 +254,7 @@ object OverlayManager {
             }
         }
 
-        FabricatedUtil.createDynamicOverlay(
-            fabricatedOverlays[0],
+        fabricatedOverlays[0].createDynamicOverlay(
             paletteLight,
             paletteDark
         )
@@ -386,13 +388,13 @@ object OverlayManager {
             packageName
         )
 
-        FabricatedUtil.assignPerAppColorsToOverlay(fabricatedOverlay, paletteTemp)
+        fabricatedOverlay.assignPerAppColorsToOverlay(paletteTemp)
 
         return fabricatedOverlay
     }
 
     private fun applyFabricatedColorsNonRoot(context: Context): Boolean {
-        if (Const.workingMethod != Const.WorkMethod.SHIZUKU) {
+        if (workingMethod != Const.WorkMethod.SHIZUKU) {
             return false
         }
 
@@ -427,7 +429,7 @@ object OverlayManager {
     }
 
     private fun removeFabricatedColorsNonRoot(context: Context): Boolean {
-        if (Const.workingMethod != Const.WorkMethod.SHIZUKU) {
+        if (workingMethod != Const.WorkMethod.SHIZUKU) {
             return false
         }
 
