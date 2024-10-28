@@ -136,13 +136,14 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
     pitchBlackTheme: Boolean
 ) {
     /*
-     * qsb_icon_tint_quaternary_mono = monochrome icon color
+     * qsb_icon_tint_quaternary_mono = monochrome icon color; removed in Android 15 QPR1 beta 3
+     * themed_icon_color = monochrome icon color; added in Android 15 QPR1 beta 3
      * themed_icon_background_color = monochrome icon background
      * material_color_surface_container_low = search bar color in homepage
      * material_color_surface_bright = search bar color in app drawer
      * material_color_surface_dim = app drawer background color
-     * folder_preview_xxx = folder preview background color
-     * folder_background_xxx = expanded folder background color
+     * folder_preview_dark/light = folder preview background color
+     * folder_background_dark/light = expanded folder background color
      */
 
     val isSemiTransparent = getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
@@ -151,6 +152,7 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
         val darkerIcon = getBoolean(DARKER_LAUNCHER_ICONS, false)
 
         setColor("qsb_icon_tint_quaternary_mono", palette[0][5])
+        setColor("themed_icon_color", palette[0][5])
 
         if (pitchBlackTheme) {
             val iconBgColor = if (isSemiTransparent) {
@@ -207,6 +209,7 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
         }
 
         setColor("qsb_icon_tint_quaternary_mono", palette[0][9])
+        setColor("themed_icon_color", palette[0][9])
         setColor("themed_icon_background_color", iconBgColor)
         setColor("material_color_surface_container_low", iconBgColor)
         setColor("material_color_surface_bright", palette[3][1])
