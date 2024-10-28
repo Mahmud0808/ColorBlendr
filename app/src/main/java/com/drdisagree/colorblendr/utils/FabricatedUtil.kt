@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import androidx.annotation.ColorInt
-import androidx.core.util.Pair
 import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.common.Const
@@ -24,22 +23,12 @@ import com.drdisagree.colorblendr.utils.DynamicColors.M3_REF_PALETTE
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 object FabricatedUtil {
-    private val colorNames: Array<Array<String>> = ColorUtil.colorNames
-    private val colorNamesM3var1: Array<Array<String>> = getColorNamesM3(
-        isDynamic = false,
-        prefixG = false
-    )
-    private val colorNamesM3var2: Array<Array<String>> = getColorNamesM3(
-        isDynamic = true,
-        prefixG = false
-    )
-    private val colorNamesM3var3: Array<Array<String>> = getColorNamesM3(
-        isDynamic = true,
-        prefixG = true
-    )
-    private val colorNamesM3var4: Array<Array<String>> = getColorNamesM3(
-        isDynamic = false,
-        prefixG = true
+
+    private val colorNamesM3Variants = listOf(
+        getColorNamesM3(isDynamic = false, prefixG = false),
+        getColorNamesM3(isDynamic = true, prefixG = false),
+        getColorNamesM3(isDynamic = true, prefixG = true),
+        getColorNamesM3(isDynamic = false, prefixG = true)
     )
 
     fun FabricatedOverlayResource.createDynamicOverlay(
@@ -72,20 +61,17 @@ object FabricatedUtil {
                     suffix = tempSuffix,
                     palette = palette,
                     isDark = isDark
-                )
-
-                val adjustedColorValue = adjustColorForPitchBlackThemeIfRequired(
-                    pitchBlackTheme = isPitchBlackTheme,
-                    resourceName = resourceName,
-                    colorValue = colorValue
-                ).let { value ->
-                    colorMapping.adjustColorBrightnessIfRequired(
-                        colorValue = value,
-                        isDark = isDark
+                ).let { (name, value) ->
+                    name to applyColorAdjustments(
+                        colorMapping,
+                        name,
+                        value,
+                        isDark,
+                        isPitchBlackTheme
                     )
                 }
 
-                setColor(resourceName, adjustedColorValue)
+                setColor(resourceName, colorValue)
             }
         }
     }
@@ -106,40 +92,37 @@ object FabricatedUtil {
     fun FabricatedOverlayResource.assignPerAppColorsToOverlay(
         palette: ArrayList<ArrayList<Int>>
     ) {
-        val pitchBlackTheme = getBoolean(MONET_PITCH_BLACK_THEME, false)
+        val isPitchBlackTheme = getBoolean(MONET_PITCH_BLACK_THEME, false)
+        val tintTextColor = getBoolean(TINT_TEXT_COLOR, true)
 
         M3_REF_PALETTE.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
                 palette = palette
-            )
-
-            val adjustedColorValue = adjustColorForPitchBlackThemeIfRequired(
-                pitchBlackTheme = pitchBlackTheme,
-                resourceName = resourceName,
-                colorValue = colorValue
-            ).let { value ->
-                colorMapping.adjustColorBrightnessIfRequired(
-                    colorValue = value,
-                    isDark = false
+            ).let { (name, value) ->
+                name to applyColorAdjustments(
+                    colorMapping,
+                    name,
+                    value,
+                    isDark = false,
+                    isPitchBlackTheme
                 )
             }
 
-            setColor(resourceName, adjustedColorValue)
-            setColor("g$resourceName", adjustedColorValue)
+            setColor(resourceName, colorValue)
+            setColor("g$resourceName", colorValue)
         }
 
-        for (i in 0..4) {
-            for (j in 0..12) {
-                setColor(colorNamesM3var1[i][j], palette[i][j])
-                setColor(colorNamesM3var2[i][j], palette[i][j])
-                setColor(colorNamesM3var3[i][j], palette[i][j])
-                setColor(colorNamesM3var4[i][j], palette[i][j])
+        colorNamesM3Variants.forEach { variant ->
+            variant.forEachIndexed { i, row ->
+                row.forEachIndexed { j, name ->
+                    setColor(name, palette[i][j])
+                }
             }
         }
 
-        replaceColorsPerPackageName(palette, pitchBlackTheme)
+        replaceColorsPerPackageName(palette, isPitchBlackTheme)
 
-        if (!getBoolean(TINT_TEXT_COLOR, true)) {
+        if (!tintTextColor) {
             addTintlessTextColors()
         }
     }
@@ -151,21 +134,39 @@ object FabricatedUtil {
 
         val packageManager = context.packageManager
         val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-        val selectedApps = HashMap<String, Boolean>()
 
-        //        selectedApps.put(BuildConfig.APPLICATION_ID, true);
-        for (appInfo in applications) {
-            val packageName = appInfo.packageName
-            val isSelected = OverlayManager.isOverlayEnabled(
-                String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
-            )
+        val selectedApps = HashMap<String, Boolean>().apply {
+            applications.forEach { appInfo ->
+                val packageName = appInfo.packageName
+                val isSelected = OverlayManager.isOverlayEnabled(
+                    String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
+                )
 
-            if (isSelected) {
-                selectedApps[packageName] = true
+                if (isSelected) {
+                    put(packageName, true)
+                }
             }
         }
 
+        //        selectedApps.put(BuildConfig.APPLICATION_ID, true);
+
         saveSelectedFabricatedApps(selectedApps)
+    }
+
+    private fun applyColorAdjustments(
+        colorMapping: ColorMapping,
+        resourceName: String,
+        colorValue: Int,
+        isDark: Boolean,
+        pitchBlackTheme: Boolean
+    ): Int {
+        return adjustColorForPitchBlackThemeIfRequired(
+            pitchBlackTheme,
+            resourceName,
+            colorValue
+        ).let { adjustedValue ->
+            colorMapping.adjustColorBrightnessIfRequired(adjustedValue, isDark)
+        }
     }
 
     @ColorInt
@@ -186,56 +187,35 @@ object FabricatedUtil {
 
             "m3_ref_palette_dynamic_neutral_variant12",
             "gm3_ref_palette_dynamic_neutral_variant12" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -40
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -40)
             }
 
             "m3_ref_palette_dynamic_neutral_variant17",
             "gm3_ref_palette_dynamic_neutral_variant17",
             "gm3_system_bar_color_night" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -60
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -60)
             }
 
             "system_surface_container_lowest_dark" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -44
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -44)
             }
 
             "system_surface_container_low_dark" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -36
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -36)
             }
 
             "system_surface_container_dark" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -28
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -28)
             }
 
             "system_surface_container_high_dark",
             "system_surface_dim_dark" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -20
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -20)
             }
 
             "system_surface_container_highest_dark",
             "system_surface_bright_dark" -> {
-                modifyBrightness(
-                    color = colorValue,
-                    brightnessPercentage = -12
-                )
+                modifyBrightness(color = colorValue, brightnessPercentage = -12)
             }
 
             else -> {
@@ -245,222 +225,82 @@ object FabricatedUtil {
     }
 
     private fun FabricatedOverlayResource.addTintlessTextColors() {
-        val prefixes = arrayOf(
-            "m3_sys_color_",
-            "m3_sys_color_dynamic_"
-        )
-        val variants = arrayOf(
-            "dark_",
-            "light_",
-        )
-        val suffixes = arrayOf(
-            "on_surface",
-            "on_surface_variant",
-            "on_background"
-        )
+        val prefixes = arrayOf("m3_sys_color_", "m3_sys_color_dynamic_")
+        val variants = arrayOf("dark_", "light_")
+        val suffixes = arrayOf("on_surface", "on_surface_variant", "on_background")
 
-        for (prefix in prefixes) {
-            for (variant in variants) {
-                for (suffix in suffixes) {
-                    val resourceName = prefix + variant + suffix
+        prefixes.forEach { prefix ->
+            variants.forEach { variant ->
+                suffixes.forEach { suffix ->
                     setColor(
-                        resourceName,
+                        "$prefix$variant$suffix",
                         if (variant.contains("dark")) Color.WHITE else Color.BLACK
                     )
                 }
             }
         }
 
-        // Dark mode
-        val resourcesDark = ArrayList<Pair<String, Int>>().apply {
-            add(Pair("m3_ref_palette_dynamic_neutral90", Color.WHITE))
-            add(Pair("m3_ref_palette_dynamic_neutral95", Color.WHITE))
-            add(Pair("m3_ref_palette_dynamic_neutral_variant70", -0x333334))
-            add(Pair("m3_ref_palette_dynamic_neutral_variant80", Color.WHITE))
-            add(Pair("text_color_primary_dark", Color.WHITE))
-            add(Pair("text_color_secondary_dark", -0x4c000001))
-            add(Pair("text_color_tertiary_dark", -0x7f000001))
-            add(Pair("google_dark_default_color_on_background", Color.WHITE))
-            add(Pair("gm_ref_palette_grey500", Color.WHITE))
-        }
-
-        // Light mode
-        val resourcesLight = ArrayList<Pair<String, Int>>().apply {
-            add(Pair("m3_ref_palette_dynamic_neutral10", Color.BLACK))
-            add(Pair("m3_ref_palette_dynamic_neutral_variant30", -0x4d000000))
-            add(Pair("text_color_primary_light", Color.BLACK))
-            add(Pair("text_color_secondary_light", -0x4d000000))
-            add(Pair("text_color_tertiary_light", -0x80000000))
-            add(Pair("google_default_color_on_background", Color.BLACK))
-            add(Pair("gm_ref_palette_grey700", Color.BLACK))
-        }
-
-        for (pair in resourcesDark) {
-            setColor(pair.first, pair.second)
-            setColor("g" + pair.first, pair.second)
-        }
-
-        for (pair in resourcesLight) {
-            setColor(pair.first, pair.second)
-            setColor("g" + pair.first, pair.second)
-        }
-
-        if (targetPackage == "com.android.settings") {
-            // For settings text color on android 14
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                setColor(
-                    "settingslib_text_color_primary_device_default",
-                    Color.WHITE,
-                    "night"
-                )
-                setColor(
-                    "settingslib_text_color_secondary_device_default",
-                    -0x4c000001,
-                    "night"
-                )
-            }
-
-            // For settings text color on android 15
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                setColor(
-                    "settingslib_materialColorOnSurface",
-                    Color.WHITE,
-                    "night"
-                )
-                setColor(
-                    "settingslib_materialColorOnSurfaceVariant",
-                    -0x4c000001,
-                    "night"
-                )
-            }
-        }
-    }
-
-    private fun FabricatedOverlayResource.replaceColorsPerPackageName(
-        palette: ArrayList<ArrayList<Int>>,
-        pitchBlackTheme: Boolean
-    ) {
-        if (targetPackage.startsWith("com.android.systemui.clocks.")) { // Android 14 clocks
-            for (i in 0..4) {
-                for (j in 0..12) {
-                    setColor(colorNames[i][j], palette[i][j])
-                }
-            }
-        } else if (targetPackage == "com.google.android.googlequicksearchbox") { // Google Feeds
-            if (pitchBlackTheme) {
-                setColor("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK)
-            }
-        } else if (targetPackage == "com.google.android.apps.magazines") { // Google News
-            setColor("cluster_divider_bg", Color.TRANSPARENT)
-            setColor("cluster_divider_border", Color.TRANSPARENT)
-
-            setColor("appwidget_background_day", palette[3][2])
-            setColor("home_background_day", palette[3][2])
-            setColor("google_default_color_background", palette[3][2])
-            setColor("gm3_system_bar_color_day", palette[4][3])
-            setColor("google_default_color_on_background", palette[3][11])
-            setColor("google_dark_default_color_on_background", palette[3][1])
-            setColor("google_default_color_on_background", palette[3][11])
-            setColor("gm3_system_bar_color_night", palette[4][10])
-
-            if (pitchBlackTheme) {
-                setColor("appwidget_background_night", Color.BLACK)
-                setColor("home_background_night", Color.BLACK)
-                setColor("google_dark_default_color_background", Color.BLACK)
-            } else {
-                setColor("appwidget_background_night", palette[3][11])
-                setColor("home_background_night", palette[3][11])
-                setColor("google_dark_default_color_background", palette[3][11])
-            }
-        } else if (targetPackage == "com.google.android.play.games") { // Google Play Games
-            // Light mode
-            setColor("google_white", palette[3][2])
-            setColor("gm_ref_palette_grey300", palette[4][4])
-            setColor("gm_ref_palette_grey700", palette[3][11])
-            setColor("replay__pal_games_light_600", palette[0][8])
-
-            // Dark mode
-            setColor(
-                "gm_ref_palette_grey900",
-                if (pitchBlackTheme) Color.BLACK else palette[3][11]
+        // Resources for dark and light modes
+        val resources = mapOf(
+            "dark" to listOf(
+                "m3_ref_palette_dynamic_neutral90" to Color.WHITE,
+                "m3_ref_palette_dynamic_neutral95" to Color.WHITE,
+                "m3_ref_palette_dynamic_neutral_variant70" to -0x333334,
+                "m3_ref_palette_dynamic_neutral_variant80" to Color.WHITE,
+                "text_color_primary_dark" to Color.WHITE,
+                "text_color_secondary_dark" to -0x4c000001,
+                "text_color_tertiary_dark" to -0x7f000001,
+                "google_dark_default_color_on_background" to Color.WHITE,
+                "gm_ref_palette_grey500" to Color.WHITE
+            ),
+            "light" to listOf(
+                "m3_ref_palette_dynamic_neutral10" to Color.BLACK,
+                "m3_ref_palette_dynamic_neutral_variant30" to -0x4d000000,
+                "text_color_primary_light" to Color.BLACK,
+                "text_color_secondary_light" to -0x4d000000,
+                "text_color_tertiary_light" to -0x80000000,
+                "google_default_color_on_background" to Color.BLACK,
+                "gm_ref_palette_grey700" to Color.BLACK
             )
-            setColor("gm_ref_palette_grey600", palette[4][8])
-            setColor("gm_ref_palette_grey500", palette[3][1])
-            setColor("replay__pal_games_dark_300", palette[0][5])
-        } else if (targetPackage == "com.android.settings") { // Settings app
-            if (Build.VERSION.SDK_INT >= 35 && pitchBlackTheme) { // Android 15 pitch black settings
-                setColor(
-                    "settingslib_materialColorSurfaceContainer",
-                    Color.BLACK
-                ) // inner page background
-                setColor("settingslib_materialColorSurfaceVariant", palette[3][11]) // app bar
-                setColor("settingslib_colorSurfaceHeader", palette[3][11]) // app bar
+        )
+
+        resources.forEach { (_, pairs) ->
+            pairs.forEach { (name, color) ->
+                setColor(name, color)
+                setColor("g$name", color)
             }
-        } else if (targetPackage == "com.google.android.settings.intelligence" && pitchBlackTheme) { // Settings search
-            setColor("m3_sys_color_dark_surface_container_lowest", Color.BLACK)
-            setColor("gm3_sys_color_dark_surface_container_lowest", Color.BLACK)
-            setColor("m3_sys_color_dynamic_dark_surface_container_lowest", Color.BLACK)
-            setColor("gm3_sys_color_dynamic_dark_surface_container_lowest", Color.BLACK)
-            setColor("m3_sys_color_dark_surface_container_low", Color.BLACK)
-            setColor("gm3_sys_color_dark_surface_container_low", Color.BLACK)
-            setColor("m3_sys_color_dynamic_dark_surface_container_low", Color.BLACK)
-            setColor("gm3_sys_color_dynamic_dark_surface_container_low", Color.BLACK)
-            setColor("m3_sys_color_dark_surface_container", Color.BLACK)
-            setColor("gm3_sys_color_dark_surface_container", Color.BLACK)
-            setColor("m3_sys_color_dynamic_dark_surface_container", Color.BLACK)
-            setColor("gm3_sys_color_dynamic_dark_surface_container", Color.BLACK)
-            setColor("m3_sys_color_dark_surface_container_high", Color.BLACK)
-            setColor("gm3_sys_color_dark_surface_container_high", Color.BLACK)
-            setColor("m3_sys_color_dynamic_dark_surface_container_high", Color.BLACK)
-            setColor("gm3_sys_color_dynamic_dark_surface_container_high", Color.BLACK)
-            setColor("m3_sys_color_dark_surface_container_highest", Color.BLACK)
-            setColor("gm3_sys_color_dark_surface_container_highest", Color.BLACK)
-            setColor("m3_sys_color_dynamic_dark_surface_container_highest", Color.BLACK)
-            setColor("gm3_sys_color_dynamic_dark_surface_container_highest", Color.BLACK)
         }
-    }
 
-    private fun ColorMapping.extractResourceFromColorMap(
-        prefix: String = "",
-        suffix: String = "",
-        palette: ArrayList<ArrayList<Int>>,
-        isDark: Boolean = false
-    ): Pair<String, Int> {
-        val resourceName = prefix + resourceName + suffix
+        when {
+            targetPackage == "com.android.settings" -> {
+                when {
+                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                        setColor(
+                            "settingslib_text_color_primary_device_default",
+                            Color.WHITE,
+                            "night"
+                        )
+                        setColor(
+                            "settingslib_text_color_secondary_device_default",
+                            -0x4c000001,
+                            "night"
+                        )
+                    }
 
-        val colorValue: Int = if (tonalPalette != null) {
-            if (colorIndex != null) {
-                palette[tonalPalette.index][colorIndex]
-            } else {
-                if (isDark) {
-                    palette[tonalPalette.index][darkModeColorIndex!!]
-                } else {
-                    palette[tonalPalette.index][lightModeColorIndex!!]
+                    Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                        setColor(
+                            "settingslib_materialColorOnSurface",
+                            Color.WHITE,
+                            "night"
+                        )
+                        setColor(
+                            "settingslib_materialColorOnSurfaceVariant",
+                            -0x4c000001,
+                            "night"
+                        )
+                    }
                 }
             }
-        } else {
-            colorCode ?: if (isDark) {
-                darkModeColorCode
-            } else {
-                lightModeColorCode
-            }
-        }!!
-
-        return Pair(resourceName, colorValue)
-    }
-
-    private fun ColorMapping.adjustColorBrightnessIfRequired(
-        colorValue: Int,
-        isDark: Boolean
-    ): Int {
-        return if (lightnessAdjustment != null) {
-            modifyBrightness(colorValue, lightnessAdjustment)
-        } else if (darkModeLightnessAdjustment != null && isDark) {
-            modifyBrightness(colorValue, darkModeLightnessAdjustment)
-        } else if (lightModeLightnessAdjustment != null && !isDark) {
-            modifyBrightness(colorValue, lightModeLightnessAdjustment)
-        } else {
-            colorValue
         }
     }
 }

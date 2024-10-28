@@ -681,4 +681,16 @@ object ColorUtil {
             )
             return colors
         }
+
+    fun Int.applyAlphaToColor(percentage: Int): Int {
+        require(percentage in 0..100) { "Percentage must be between 0 and 100" }
+
+        val alpha = (percentage * 255 / 100).coerceIn(0, 255)
+
+        val red = (this shr 16) and 0xFF
+        val green = (this shr 8) and 0xFF
+        val blue = this and 0xFF
+
+        return (alpha shl 24) or (red shl 16) or (green shl 8) or blue
+    }
 }

@@ -170,4 +170,8 @@
     <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
     <string name="mode_specific_theme_title">Mode-specific theme</string>
     <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="darker_launcher_icons_title">Darker launcher icons</string>
+    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
+    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
+    <string name="semitransparent_launcher_desc">Apply a semi-transparent background to pixel launcher monochrome icons and search bar</string>
 </resources>

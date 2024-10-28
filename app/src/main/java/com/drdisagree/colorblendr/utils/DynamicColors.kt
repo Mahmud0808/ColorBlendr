@@ -3,20 +3,6 @@ package com.drdisagree.colorblendr.utils
 import android.graphics.Color
 import android.os.Build
 
-data class ColorMapping(
-    val resourceName: String,
-    val tonalPalette: TonalPalette? = null,
-    val colorIndex: Int? = null,
-    val lightModeColorIndex: Int? = null,
-    val darkModeColorIndex: Int? = null,
-    val lightModeColorCode: Int? = null,
-    val colorCode: Int? = null,
-    val darkModeColorCode: Int? = null,
-    val lightnessAdjustment: Int? = null,
-    val lightModeLightnessAdjustment: Int? = null,
-    val darkModeLightnessAdjustment: Int? = null
-)
-
 enum class TonalPalette(val index: Int) {
     PRIMARY(0),
     SECONDARY(1),

@@ -48,6 +48,22 @@
                 app:summaryText="@string/mode_specific_theme_desc"
                 app:titleText="@string/mode_specific_theme_title" />
 
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/darker_launcher_icons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_dark_icon"
+                app:summaryText="@string/darker_launcher_icons_desc"
+                app:titleText="@string/darker_launcher_icons_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/semitransparent_launcher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_semi_transparent"
+                app:summaryText="@string/semitransparent_launcher_desc"
+                app:titleText="@string/semitransparent_launcher_title" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

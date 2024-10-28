@@ -9,6 +9,18 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
+import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEMUI
+import com.drdisagree.colorblendr.common.Const.FRAMEWORK_PACKAGE
+import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
@@ -238,101 +250,88 @@ object OverlayManager {
             isDark = true
         )
 
-        val fabricatedOverlays = ArrayList<FabricatedOverlayResource>()
-        fabricatedOverlays.add(
-            FabricatedOverlayResource(
-                Const.FABRICATED_OVERLAY_NAME_SYSTEM,
-                Const.FRAMEWORK_PACKAGE
-            )
-        )
+        ArrayList<FabricatedOverlayResource>().apply {
+            add(
+                FabricatedOverlayResource(
+                    FABRICATED_OVERLAY_NAME_SYSTEM,
+                    FRAMEWORK_PACKAGE
+                ).also { frameworkOverlay ->
+                    val isDarkMode = SystemUtil.isDarkMode
 
-        for (i in 0..4) {
-            for (j in 0..12) {
-                fabricatedOverlays[0].setColor(
-                    colorNames[i][j],
-                    paletteDark[i][j]
+                    frameworkOverlay.apply {
+                        for (i in colorNames.indices) {
+                            for (j in colorNames[i].indices) {
+                                setColor(
+                                    colorNames[i][j],
+                                    if (isDarkMode) paletteDark[i][j] else paletteLight[i][j]
+                                )
+                            }
+                        }
+
+                        createDynamicOverlay(
+                            paletteLight,
+                            paletteDark
+                        )
+
+                        // Temporary workaround for Android 15 QPR1 beta 3 background color issue in settings.
+                        // Currently, we set the status bar color to match the background color
+                        // to achieve a uniform appearance when the background lightness is reduced.
+                        // TODO: Remove once the Settings background color issue is resolved.
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            // Light theme
+                            setColor(
+                                "primary_dark_device_default_settings_light", // status bar
+                                getColor("system_surface_container_light") // background
+                            )
+                            // Dark theme
+                            setColor(
+                                "primary_dark_device_default_settings", // status bar
+                                getColor("system_surface_container_dark") // background
+                            )
+                        }
+
+                        if (pitchBlackTheme) {
+                            setColor("background_dark", Color.BLACK)
+                            setColor("surface_header_dark_sysui", Color.BLACK) // QS top part color
+                            setColor(
+                                "system_surface_dim_dark",
+                                Color.BLACK
+                            ) // A14 notification scrim color
+                            setColor(colorNames[3][11], Color.BLACK)
+                            setColor(colorNames[4][11], Color.BLACK)
+                        }
+
+                        if (!getBoolean(Const.TINT_TEXT_COLOR, true)) {
+                            setColor("text_color_primary_device_default_dark", Color.WHITE)
+                            setColor("text_color_secondary_device_default_dark", -0x4c000001)
+                            setColor("text_color_primary_device_default_light", Color.BLACK)
+                            setColor("text_color_secondary_device_default_light", -0x4d000000)
+                        }
+                    }
+                }
+            )
+
+            add(
+                FabricatedOverlayResource(
+                    FABRICATED_OVERLAY_NAME_SYSTEMUI,
+                    SYSTEMUI_PACKAGE
+                ).also { systemuiOverlay ->
+                    systemuiOverlay.setBoolean("flag_monet", false)
+                }
+            )
+
+            selectedFabricatedApps.filter { (packageName, isSelected) ->
+                isSelected == java.lang.Boolean.TRUE && SystemUtil.isAppInstalled(packageName)
+            }.forEach { (packageName) ->
+                add(
+                    getFabricatedColorsPerApp(
+                        context,
+                        packageName,
+                        if (SystemUtil.isDarkMode) paletteDark else paletteLight
+                    )
                 )
             }
-        }
-
-        fabricatedOverlays[0].createDynamicOverlay(
-            paletteLight,
-            paletteDark
-        )
-
-        // Temporary workaround for Android 15 QPR1 beta 3 background color issue in settings.
-        // Currently, we set the status bar color to match the background color
-        // to achieve a uniform appearance when the background lightness is reduced.
-        // TODO: Remove once the Settings background color issue is resolved.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // Light theme
-            fabricatedOverlays[0].setColor(
-                "primary_dark_device_default_settings_light", // status bar
-                fabricatedOverlays[0].getColor("system_surface_container_light") // background
-            )
-            // Dark theme
-            fabricatedOverlays[0].setColor(
-                "primary_dark_device_default_settings", // status bar
-                fabricatedOverlays[0].getColor("system_surface_container_dark") // background
-            )
-        }
-
-        val selectedApps = Const.selectedFabricatedApps
-
-        for (packageName in selectedApps.keys) {
-            if (java.lang.Boolean.TRUE == selectedApps[packageName] &&
-                SystemUtil.isAppInstalled(packageName)
-            ) {
-                val fabricatedOverlayPerApp = getFabricatedColorsPerApp(
-                    context,
-                    packageName,
-                    if (SystemUtil.isDarkMode) paletteDark else paletteLight
-                )
-
-                fabricatedOverlays.add(fabricatedOverlayPerApp)
-            }
-        }
-
-        if (pitchBlackTheme) {
-            fabricatedOverlays[0].setColor(
-                "background_dark",
-                Color.BLACK
-            )
-            fabricatedOverlays[0].setColor(
-                "surface_header_dark_sysui",
-                Color.BLACK
-            ) // QS top part color
-            fabricatedOverlays[0].setColor(
-                "system_surface_dim_dark",
-                Color.BLACK
-            ) // A14 notification scrim color
-            fabricatedOverlays[0].setColor(
-                colorNames[3][11], Color.BLACK
-            )
-            fabricatedOverlays[0].setColor(
-                colorNames[4][11], Color.BLACK
-            )
-        }
-
-        if (!getBoolean(Const.TINT_TEXT_COLOR, true)) {
-            fabricatedOverlays[0].setColor("text_color_primary_device_default_dark", Color.WHITE)
-            fabricatedOverlays[0].setColor("text_color_secondary_device_default_dark", -0x4c000001)
-            fabricatedOverlays[0].setColor("text_color_primary_device_default_light", Color.BLACK)
-            fabricatedOverlays[0].setColor("text_color_secondary_device_default_light", -0x4d000000)
-        }
-
-        fabricatedOverlays.add(
-            FabricatedOverlayResource(
-                Const.FABRICATED_OVERLAY_NAME_SYSTEMUI,
-                Const.SYSTEMUI_PACKAGE
-            )
-        )
-
-        fabricatedOverlays[fabricatedOverlays.size - 1].setBoolean("flag_monet", false)
-
-        for (fabricatedOverlay in fabricatedOverlays) {
-            registerFabricatedOverlay(fabricatedOverlay)
-        }
+        }.forEach { registerFabricatedOverlay(it) }
     }
 
     fun applyFabricatedColorsPerApp(
@@ -354,26 +353,21 @@ object OverlayManager {
             return
         }
 
-        val fabricatedOverlays = ArrayList<String>()
-        val selectedApps = Const.selectedFabricatedApps
-
-        for (packageName in selectedApps.keys) {
-            if (java.lang.Boolean.TRUE == selectedApps[packageName]) {
-                fabricatedOverlays.add(
+        ArrayList<String>().apply {
+            selectedFabricatedApps.filter { (_, isSelected) ->
+                isSelected == java.lang.Boolean.TRUE
+            }.forEach { (packageName) ->
+                add(
                     String.format(
-                        Const.FABRICATED_OVERLAY_NAME_APPS,
+                        FABRICATED_OVERLAY_NAME_APPS,
                         packageName
                     )
                 )
             }
-        }
 
-        fabricatedOverlays.add(Const.FABRICATED_OVERLAY_NAME_SYSTEM)
-        fabricatedOverlays.add(Const.FABRICATED_OVERLAY_NAME_SYSTEMUI)
-
-        for (packageName in fabricatedOverlays) {
-            unregisterFabricatedOverlay(packageName)
-        }
+            add(FABRICATED_OVERLAY_NAME_SYSTEM)
+            add(FABRICATED_OVERLAY_NAME_SYSTEMUI)
+        }.forEach { unregisterFabricatedOverlay(it) }
     }
 
     private fun getFabricatedColorsPerApp(
@@ -388,27 +382,25 @@ object OverlayManager {
                 ColorSchemeUtil.stringToEnumMonetStyle(
                     context,
                     RPrefs.getString(
-                        Const.MONET_STYLE,
+                        MONET_STYLE,
                         context.getString(R.string.monet_tonalspot)
                     )!!
                 ),
-                getInt(Const.MONET_ACCENT_SATURATION, 100),
-                getInt(Const.MONET_BACKGROUND_SATURATION, 100),
-                getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100),
-                getBoolean(Const.MONET_PITCH_BLACK_THEME, false),
-                getBoolean(Const.MONET_ACCURATE_SHADES, true),
+                getInt(MONET_ACCENT_SATURATION, 100),
+                getInt(MONET_BACKGROUND_SATURATION, 100),
+                getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                getBoolean(MONET_PITCH_BLACK_THEME, false),
+                getBoolean(MONET_ACCURATE_SHADES, true),
                 modifyPitchBlack = false
             )
         }
 
-        val fabricatedOverlay = FabricatedOverlayResource(
-            String.format(Const.FABRICATED_OVERLAY_NAME_APPS, packageName),
+        return FabricatedOverlayResource(
+            String.format(FABRICATED_OVERLAY_NAME_APPS, packageName),
             packageName
-        )
-
-        fabricatedOverlay.assignPerAppColorsToOverlay(paletteTemp)
-
-        return fabricatedOverlay
+        ).also { overlay ->
+            overlay.assignPerAppColorsToOverlay(paletteTemp)
+        }
     }
 
     private fun applyFabricatedColorsNonRoot(context: Context): Boolean {

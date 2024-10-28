@@ -10,11 +10,14 @@ import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.common.Const.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
+import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
@@ -24,6 +27,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.SystemUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,6 +40,7 @@ class SettingsAdvancedFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsAdvancedBinding
     private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
+    private val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,11 +98,31 @@ class SettingsAdvancedFragment : Fragment() {
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
         }
 
-        // Accurate shades
+        // Mode specific themes
         binding.modeSpecificThemes.setEnabled(notShizukuMode)
         binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(MODE_SPECIFIC_THEMES, isChecked)
+            applyFabricatedColors()
+        }
+
+        // Darker launcher icons
+        binding.darkerLauncherIcons.setEnabled(notShizukuMode)
+        binding.darkerLauncherIcons.visibility = if (hasPixelLauncher) View.VISIBLE else View.GONE
+        binding.darkerLauncherIcons.isSwitchChecked = getBoolean(DARKER_LAUNCHER_ICONS, false)
+        binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            putBoolean(DARKER_LAUNCHER_ICONS, isChecked)
+            applyFabricatedColors()
+        }
+
+        // Semi-transparent launcher icons
+        binding.semitransparentLauncher.setEnabled(notShizukuMode)
+        binding.semitransparentLauncher.visibility =
+            if (hasPixelLauncher) View.VISIBLE else View.GONE
+        binding.semitransparentLauncher.isSwitchChecked =
+            getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
+        binding.semitransparentLauncher.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, isChecked)
             applyFabricatedColors()
         }
 
