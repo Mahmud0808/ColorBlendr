@@ -27,7 +27,7 @@
     <string name="dev_bio">Learner | Developer | Designer</string>
     <string name="news">News</string>
     <string name="support">Support</string>
-    <string name="github">Github</string>
+    <string name="github">GitHub</string>
     <string name="version">Version</string>
     <string name="version_codes" translatable="false">%s (#%d)</string>
     <string name="pitch_black_theme_title">Pitch black theme</string>
