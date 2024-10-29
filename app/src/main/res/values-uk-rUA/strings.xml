@@ -25,7 +25,7 @@
     <string name="dev_bio">Студент | Розробник | Дизайнер</string>
     <string name="news">Новини</string>
     <string name="support">Підтримка</string>
-    <string name="github">Github</string>
+    <string name="github">GitHub</string>
     <string name="version">Версія</string>
     <string name="pitch_black_theme_title">Темна тема</string>
     <string name="pitch_black_theme_desc">Чорний фон у темному режимі</string>
@@ -158,4 +158,10 @@
     <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
     <string name="mode_specific_theme_title">Mode-specific theme</string>
     <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="darker_launcher_icons_title">Darker launcher icons</string>
+    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
+    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
+    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
+    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
 </resources>
