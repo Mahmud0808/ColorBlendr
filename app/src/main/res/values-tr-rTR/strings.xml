@@ -25,7 +25,7 @@
     <string name="dev_bio">Öğrenici | Geliştirici | Tasarımcı</string>
     <string name="news">Haberler</string>
     <string name="support">Destek</string>
-    <string name="github">Github</string>
+    <string name="github">GitHub</string>
     <string name="version">Sürüm</string>
     <string name="pitch_black_theme_title">Saf Siyah Tema</string>
     <string name="pitch_black_theme_desc">Karanlık modda siyah arka plan</string>
@@ -158,4 +158,10 @@
     <string name="custom_tertiary_color_desc">Devre dışı bırakmak için saf beyaz rengi seçin</string>
     <string name="mode_specific_theme_title">Moda özgü tema</string>
     <string name="mode_specific_theme_desc">Açık ve koyu modlar için farklı doygunluk ve açıklık uygulayın</string>
+    <string name="darker_launcher_icons_title">Darker launcher icons</string>
+    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
+    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
+    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
+    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
 </resources>

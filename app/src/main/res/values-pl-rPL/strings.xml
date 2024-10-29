@@ -25,7 +25,7 @@
     <string name="dev_bio">Learner | Developer | Designer</string>
     <string name="news">Aktualności</string>
     <string name="support">Wsparcie</string>
-    <string name="github">Github</string>
+    <string name="github">GitHub</string>
     <string name="version">Wersja</string>
     <string name="pitch_black_theme_title">Ciemny motyw</string>
     <string name="pitch_black_theme_desc">Czarne tło w trybie ciemnym</string>
@@ -83,14 +83,14 @@
     <string name="background_service_notification_channel_text">Możesz wyłączyć te powiadomienia.</string>
     <string name="file_access_permission_required">Dostęp do plików jest wymagany do generowania z kolorów tapety.</string>
     <string name="onboarding_image">Onboarding image</string>
-    <string name="perm_one_title">Post Notifications</string>
+    <string name="perm_one_title">Wysyłanie powiadomień</string>
     <string name="perm_one_desc">To uprawnienie jest wymagane, aby usługa działała w tle.</string>
     <string name="perm_two_title">Odczytywanie obrazów multimediów</string>
     <string name="perm_two_desc">To uprawnienie jest wymagane do pobrania tapety ekranu głównego i ekranu blokady.</string>
     <string name="perm_three_title">Dostęp do wszystkich plików</string>
     <string name="perm_three_desc">To uprawnienie jest wymagane do pobrania tapety ekranu głównego i ekranu blokady.</string>
-    <string name="perm_four_title">Battery Optimization</string>
-    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
+    <string name="perm_four_title">Optymalizacja baterii</string>
+    <string name="perm_four_desc">Wyłącz optymalizację baterii, aby zezwolić na działanie w tle.</string>
     <string name="start">Start</string>
     <string name="btn_continue">Kontynuuj</string>
     <string name="monet_neutral_desc">Ożywiająca i odświeżająca paleta kolorów inspirowana musujami napojów spirytusowych.</string>
@@ -158,4 +158,10 @@
     <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
     <string name="mode_specific_theme_title">Mode-specific theme</string>
     <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="darker_launcher_icons_title">Darker launcher icons</string>
+    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
+    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
+    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
+    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
 </resources>

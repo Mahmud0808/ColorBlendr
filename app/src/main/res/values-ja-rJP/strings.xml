@@ -89,8 +89,8 @@
     <string name="perm_two_desc">ホーム画面とロック画面の壁紙を取得するためにこの権限が必要です。</string>
     <string name="perm_three_title">すべてのファイルへのアクセス</string>
     <string name="perm_three_desc">ホーム画面とロック画面の壁紙を取得するためにこの権限が必要です。</string>
-    <string name="perm_four_title">Battery Optimization</string>
-    <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
+    <string name="perm_four_title">バッテリーの最適化</string>
+    <string name="perm_four_desc">バックグラウンドで実行させるには、バッテリーの最適化を無効化する必要があります。</string>
     <string name="start">開始</string>
     <string name="btn_continue">続行</string>
     <string name="monet_neutral_desc">スプリッツの飲み物にインスパイアされた、生き生きとした爽やかなカラーパレットです。</string>
@@ -114,7 +114,7 @@
     <string name="force_per_app_theme_desc">Monetに従わないアプリにテーマを適用する</string>
     <string name="back">戻る</string>
     <string name="permissions">権限</string>
-    <string name="optimization">Optimization</string>
+    <string name="optimization">最適化</string>
     <string name="choose_method">選択の方式</string>
     <string name="auto_startup">自動起動</string>
     <string name="auto_startup_title">システムの起動時に自動で起動する</string>
@@ -150,12 +150,18 @@
     <string name="filter_user_apps">ユーザーアプリ</string>
     <string name="filter_launchable_apps">起動可能なアプリ</string>
     <string name="filter_all">すべてのアプリ</string>
-    <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
-    <string name="advanced_settings">Advanced</string>
-    <string name="custom_secondary_color_desc">Custom secondary color</string>
-    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
-    <string name="custom_tertiary_color_title">Custom tertiary color</string>
-    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
-    <string name="mode_specific_theme_title">Mode-specific theme</string>
-    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="disable_battery_optimization_hint">これは必須ではありませんが、バッテリーの最適化を無効化することをお勧めします。</string>
+    <string name="advanced_settings">高度な設定</string>
+    <string name="custom_secondary_color_desc">カスタムセカンダリカラー</string>
+    <string name="custom_secondary_color_summary">ピュアホワイトを選択して無効化します</string>
+    <string name="custom_tertiary_color_title">カスタムトライナリカラー</string>
+    <string name="custom_tertiary_color_desc">ピュアホワイトを選択して無効化します</string>
+    <string name="mode_specific_theme_title">モード固有のテーマ</string>
+    <string name="mode_specific_theme_desc">ライトモードとダークモードで異なる彩度と明度を適用します</string>
+    <string name="darker_launcher_icons_title">Darker launcher icons</string>
+    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
+    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
+    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
+    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
 </resources>
