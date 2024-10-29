@@ -1,0 +1,12 @@
+Changelog:
+
+• Updated color palette preview.
+• Fixed QS tiles colors for Android 15 QPR1 beta 3. [Root]
+• Updated material color utilities for expressive on-colors. [Root]
+• Added workaround for settings pitch black theme on Android 15. [Root]
+• Themed Pixel Launcher and added darker monochrome icon option. [Root]
+• Added semi-transparent style for Pixel Launcher. [Root]
+• Updated AGP and dependencies.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
