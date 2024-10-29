@@ -288,7 +288,7 @@ object OverlayManager {
                                     "system_surface_container_dark",
                                     modifyBrightness(
                                         getColor("system_surface_container_dark"),
-                                        -60
+                                        -48
                                     )
                                 )
                             }
