@@ -30,6 +30,7 @@ object Const {
     const val MODE_SPECIFIC_THEMES: String = "modeSpecificThemes"
     const val DARKER_LAUNCHER_ICONS: String = "darkerLauncherIcons"
     const val SEMI_TRANSPARENT_LAUNCHER_ICONS: String = "semiTransparentLauncherIcons"
+    const val FORCE_PITCH_BLACK_SETTINGS: String = "forcePitchBlackSettings"
     private val modeSpecificThemes: Boolean
         get() = RPrefs.getBoolean(MODE_SPECIFIC_THEMES, false)
     val MONET_ACCENT_SATURATION: String

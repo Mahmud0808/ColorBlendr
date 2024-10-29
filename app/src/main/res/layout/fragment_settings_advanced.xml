@@ -64,6 +64,14 @@
                 app:summaryText="@string/semitransparent_launcher_desc"
                 app:titleText="@string/semitransparent_launcher_title" />
 
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/pitch_black_settings_workaround"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_settings_starry"
+                app:summaryText="@string/pitch_black_settings_workaround_desc"
+                app:titleText="@string/pitch_black_settings_workaround_title" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

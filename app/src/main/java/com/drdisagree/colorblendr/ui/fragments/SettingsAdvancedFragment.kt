@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.fragments
 
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -11,8 +12,10 @@ import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.DARKER_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.common.Const.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.common.Const.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
+import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
@@ -101,7 +104,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Mode specific themes
-        binding.modeSpecificThemes.setEnabled(notShizukuMode)
+        binding.modeSpecificThemes.isEnabled = notShizukuMode
         binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(MODE_SPECIFIC_THEMES, isChecked)
@@ -109,8 +112,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Darker launcher icons
-        binding.darkerLauncherIcons.setEnabled(notShizukuMode)
-        binding.darkerLauncherIcons.visibility = if (hasPixelLauncher) View.VISIBLE else View.GONE
+        binding.darkerLauncherIcons.isEnabled = notShizukuMode && hasPixelLauncher
         binding.darkerLauncherIcons.isSwitchChecked = getBoolean(DARKER_LAUNCHER_ICONS, false)
         binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
@@ -121,9 +123,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Semi-transparent launcher icons
-        binding.semitransparentLauncher.setEnabled(notShizukuMode)
-        binding.semitransparentLauncher.visibility =
-            if (hasPixelLauncher) View.VISIBLE else View.GONE
+        binding.semitransparentLauncher.isEnabled = notShizukuMode && hasPixelLauncher
         binding.semitransparentLauncher.isSwitchChecked =
             getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
         binding.semitransparentLauncher.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
@@ -131,6 +131,18 @@ class SettingsAdvancedFragment : Fragment() {
                 savePixelLauncherInPerAppTheme()
             }
             putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, isChecked)
+            applyFabricatedColors()
+        }
+
+        // Semi-transparent launcher icons
+        binding.pitchBlackSettingsWorkaround.isEnabled =
+            notShizukuMode && getBoolean(MONET_PITCH_BLACK_THEME, false)
+        binding.pitchBlackSettingsWorkaround.visibility =
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) View.VISIBLE else View.GONE
+        binding.pitchBlackSettingsWorkaround.isSwitchChecked =
+            getBoolean(FORCE_PITCH_BLACK_SETTINGS, false)
+        binding.pitchBlackSettingsWorkaround.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            putBoolean(FORCE_PITCH_BLACK_SETTINGS, isChecked)
             applyFabricatedColors()
         }
 

@@ -174,4 +174,6 @@
     <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
     <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
     <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
+    <string name="pitch_black_settings_workaround_desc">Nearly black background in dark mode; causes side effects</string>
 </resources>

@@ -12,6 +12,7 @@ import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEMUI
+import com.drdisagree.colorblendr.common.Const.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
@@ -27,6 +28,7 @@ import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
 import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
@@ -220,13 +222,13 @@ object OverlayManager {
 
         val style = ColorSchemeUtil.stringToEnumMonetStyle(
             context,
-            RPrefs.getString(Const.MONET_STYLE, context.getString(R.string.monet_tonalspot))!!
+            RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))!!
         )
-        val monetAccentSaturation = getInt(Const.MONET_ACCENT_SATURATION, 100)
-        val monetBackgroundSaturation = getInt(Const.MONET_BACKGROUND_SATURATION, 100)
-        val monetBackgroundLightness = getInt(Const.MONET_BACKGROUND_LIGHTNESS, 100)
-        val pitchBlackTheme = getBoolean(Const.MONET_PITCH_BLACK_THEME, false)
-        val accurateShades = getBoolean(Const.MONET_ACCURATE_SHADES, true)
+        val monetAccentSaturation = getInt(MONET_ACCENT_SATURATION, 100)
+        val monetBackgroundSaturation = getInt(MONET_BACKGROUND_SATURATION, 100)
+        val monetBackgroundLightness = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+        val pitchBlackTheme = getBoolean(MONET_PITCH_BLACK_THEME, false)
+        val accurateShades = getBoolean(MONET_ACCURATE_SHADES, true)
 
         val paletteLight = generateModifiedColors(
             style = style,
@@ -278,6 +280,18 @@ object OverlayManager {
                         // to achieve a uniform appearance when the background lightness is reduced.
                         // TODO: Remove once the Settings background color issue is resolved.
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            // Pitch black settings workaround
+                            if (pitchBlackTheme && isDarkMode &&
+                                getBoolean(FORCE_PITCH_BLACK_SETTINGS, false)
+                            ) {
+                                setColor(
+                                    "system_surface_container_dark",
+                                    modifyBrightness(
+                                        getColor("system_surface_container_dark"),
+                                        -60
+                                    )
+                                )
+                            }
                             // Light theme
                             setColor(
                                 "primary_dark_device_default_settings_light", // status bar
