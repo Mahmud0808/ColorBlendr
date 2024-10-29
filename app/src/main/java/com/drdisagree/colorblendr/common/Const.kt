@@ -11,16 +11,26 @@ object Const {
     // Preferences file
     const val SHARED_PREFS: String = BuildConfig.APPLICATION_ID + "_preferences"
 
-    // System packages
+    // Package names
     const val FRAMEWORK_PACKAGE: String = "android"
     const val SYSTEMUI_PACKAGE: String = "com.android.systemui"
     const val SHELL_PACKAGE: String = "com.android.shell"
+    const val SYSTEMUI_CLOCKS: String = "com.android.systemui.clocks."
+    const val GOOGLE_FEEDS: String = "com.google.android.googlequicksearchbox"
+    const val GOOGLE_NEWS: String = "com.google.android.apps.magazines"
+    const val PLAY_GAMES: String = "com.google.android.play.games"
+    const val SETTINGS: String = "com.android.settings"
+    const val SETTINGS_SEARCH: String = "com.google.android.settings.intelligence"
+    const val PIXEL_LAUNCHER: String = "com.google.android.apps.nexuslauncher"
 
     // General preferences
     const val FIRST_RUN: String = "firstRun"
     const val THEMING_ENABLED: String = "themingEnabled"
     const val MONET_STYLE: String = "customMonetStyle"
     const val MODE_SPECIFIC_THEMES: String = "modeSpecificThemes"
+    const val DARKER_LAUNCHER_ICONS: String = "darkerLauncherIcons"
+    const val SEMI_TRANSPARENT_LAUNCHER_ICONS: String = "semiTransparentLauncherIcons"
+    const val FORCE_PITCH_BLACK_SETTINGS: String = "forcePitchBlackSettings"
     private val modeSpecificThemes: Boolean
         get() = RPrefs.getBoolean(MODE_SPECIFIC_THEMES, false)
     val MONET_ACCENT_SATURATION: String

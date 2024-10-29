@@ -1,20 +1,7 @@
 package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
-
-data class ColorMapping(
-    val resourceName: String,
-    val tonalPalette: TonalPalette? = null,
-    val colorIndex: Int? = null,
-    val lightModeColorIndex: Int? = null,
-    val darkModeColorIndex: Int? = null,
-    val lightModeColorCode: Int? = null,
-    val colorCode: Int? = null,
-    val darkModeColorCode: Int? = null,
-    val lightnessAdjustment: Int? = null,
-    val lightModeLightnessAdjustment: Int? = null,
-    val darkModeLightnessAdjustment: Int? = null
-)
+import android.os.Build
 
 enum class TonalPalette(val index: Int) {
     PRIMARY(0),
@@ -357,6 +344,73 @@ object DynamicColors {
                     darkModeColorIndex = 8
                 )
             )
+            // New resources which are added on Android 15 QPR1 Beta 3
+            if (Build.VERSION.SDK_INT >= 35) {
+                add(
+                    ColorMapping(
+                        resourceName = "under_surface",
+                        tonalPalette = TonalPalette.NEUTRAL,
+                        colorIndex = 12
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "shade_active",
+                        tonalPalette = TonalPalette.PRIMARY,
+                        colorIndex = 3
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "on_shade_active",
+                        tonalPalette = TonalPalette.PRIMARY,
+                        colorIndex = 11
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "on_shade_active_variant",
+                        tonalPalette = TonalPalette.PRIMARY,
+                        colorIndex = 9
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "shade_inactive",
+                        tonalPalette = TonalPalette.NEUTRAL,
+                        colorIndex = 10
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "on_shade_inactive",
+                        tonalPalette = TonalPalette.NEUTRAL,
+                        colorIndex = 3
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "on_shade_inactive_variant",
+                        tonalPalette = TonalPalette.NEUTRAL_VARIANT,
+                        colorIndex = 4
+                    )
+                )
+                add(
+                    ColorMapping(
+                        resourceName = "shade_disabled",
+                        tonalPalette = TonalPalette.NEUTRAL,
+                        colorIndex = 11
+                    )
+                )
+                //                add(
+                //                    ColorMapping(
+                //                        resourceName = "overview_background",
+                //                        tonalPalette = TonalPalette.NEUTRAL,
+                //                        lightModeColorIndex = 5,
+                //                        darkModeColorIndex = 2,
+                //                    )
+                //                )
+            }
         }
 
         FIXED_COLORS_MAPPED.apply {

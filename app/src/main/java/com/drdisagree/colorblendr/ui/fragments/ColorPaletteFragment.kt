@@ -167,9 +167,8 @@ class ColorPaletteFragment : Fragment() {
 
                             val textView = TextView(requireContext()).apply {
                                 text = colorCodes[j].toString()
-                                rotation = 270f
                                 setTextColor(calculateTextColor(systemColors[i][j]))
-                                setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+                                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                                 alpha = 0.8f
                                 setMaxLines(1)
                                 setSingleLine(true)
@@ -181,9 +180,8 @@ class ColorPaletteFragment : Fragment() {
                                 )
                             }
 
-                            (colorTableRows[i].getChildAt(j) as ViewGroup).addView(textView)
-                            (colorTableRows[i].getChildAt(j) as LinearLayout).gravity =
-                                Gravity.CENTER
+                            (childView as ViewGroup).addView(textView)
+                            (childView as LinearLayout).gravity = Gravity.CENTER
                         }
                     }
 

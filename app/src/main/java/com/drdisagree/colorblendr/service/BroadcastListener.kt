@@ -168,9 +168,9 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private fun updateAllColors(context: Context) {
-        if (!getBoolean(THEMING_ENABLED, true) && !getBoolean(SHIZUKU_THEMING_ENABLED, true)) {
-            return
-        }
+        if ((!getBoolean(THEMING_ENABLED, true) && !getBoolean(SHIZUKU_THEMING_ENABLED, true)) ||
+            workingMethod == Const.WorkMethod.NULL
+        ) return
 
         if (abs(
                 (getLong(
