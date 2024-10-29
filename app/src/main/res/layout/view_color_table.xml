@@ -16,6 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorSurfaceContainer"
             android:baselineAligned="false"
             android:orientation="horizontal"
             android:paddingVertical="10dp">
