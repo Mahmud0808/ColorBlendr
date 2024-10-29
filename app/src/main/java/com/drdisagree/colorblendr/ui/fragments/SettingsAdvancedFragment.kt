@@ -18,6 +18,8 @@ import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
+import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
@@ -111,6 +113,9 @@ class SettingsAdvancedFragment : Fragment() {
         binding.darkerLauncherIcons.visibility = if (hasPixelLauncher) View.VISIBLE else View.GONE
         binding.darkerLauncherIcons.isSwitchChecked = getBoolean(DARKER_LAUNCHER_ICONS, false)
         binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            if (isChecked) {
+                savePixelLauncherInPerAppTheme()
+            }
             putBoolean(DARKER_LAUNCHER_ICONS, isChecked)
             applyFabricatedColors()
         }
@@ -122,6 +127,9 @@ class SettingsAdvancedFragment : Fragment() {
         binding.semitransparentLauncher.isSwitchChecked =
             getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
         binding.semitransparentLauncher.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            if (isChecked) {
+                savePixelLauncherInPerAppTheme()
+            }
             putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, isChecked)
             applyFabricatedColors()
         }
@@ -137,6 +145,16 @@ class SettingsAdvancedFragment : Fragment() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun savePixelLauncherInPerAppTheme() {
+        if (!hasPixelLauncher || !notShizukuMode) {
+            return
+        }
+
+        val selectedApps = selectedFabricatedApps
+        selectedApps[PIXEL_LAUNCHER] = true
+        saveSelectedFabricatedApps(selectedApps)
     }
 
     private fun applyFabricatedColors() {

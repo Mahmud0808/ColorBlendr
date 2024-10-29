@@ -173,5 +173,5 @@
     <string name="darker_launcher_icons_title">Darker launcher icons</string>
     <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
     <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent background to pixel launcher monochrome icons and search bar</string>
+    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
 </resources>

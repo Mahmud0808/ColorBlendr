@@ -156,12 +156,17 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
 
         if (pitchBlackTheme) {
             val iconBgColor = if (isSemiTransparent) {
-                Color.BLACK.applyAlphaToColor(60)
+                Color.BLACK.applyAlphaToColor(80)
             } else {
                 Color.BLACK
             }
             val folderColor = if (isSemiTransparent) {
-                Color.BLACK.applyAlphaToColor(60)
+                Color.BLACK.applyAlphaToColor(80)
+            } else {
+                Color.BLACK
+            }
+            val appDrawerColor = if (isSemiTransparent) {
+                Color.BLACK.applyAlphaToColor(95)
             } else {
                 Color.BLACK
             }
@@ -169,17 +174,22 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
             setColor("themed_icon_background_color", iconBgColor)
             setColor("material_color_surface_container_low", iconBgColor)
             setColor("material_color_surface_bright", palette[3][11])
-            setColor("material_color_surface_dim", Color.BLACK)
+            setColor("material_color_surface_dim", appDrawerColor)
             setColor("folder_preview_dark", folderColor)
             setColor("folder_background_dark", folderColor)
         } else {
             val iconBgColor = if (isSemiTransparent) {
-                (if (darkerIcon) palette[1][11] else palette[1][10]).applyAlphaToColor(60)
+                (if (darkerIcon) palette[1][11] else palette[1][10]).applyAlphaToColor(80)
             } else {
                 (if (darkerIcon) palette[1][11] else palette[1][10])
             }
             val folderColor = if (isSemiTransparent) {
-                palette[3][11].applyAlphaToColor(60)
+                palette[3][11].applyAlphaToColor(80)
+            } else {
+                palette[3][11]
+            }
+            val appDrawerColor = if (isSemiTransparent) {
+                palette[3][11].applyAlphaToColor(95)
             } else {
                 palette[3][11]
             }
@@ -187,7 +197,7 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
             setColor("themed_icon_background_color", iconBgColor)
             setColor("material_color_surface_container_low", iconBgColor)
             setColor("material_color_surface_bright", palette[3][10])
-            setColor("material_color_surface_dim", palette[3][11])
+            setColor("material_color_surface_dim", appDrawerColor)
             setColor("folder_preview_dark", folderColor)
             setColor("folder_background_dark", folderColor)
         }
@@ -207,13 +217,18 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
         } else {
             palette[3][1]
         }
+        val appDrawerColor = if (isSemiTransparent) {
+            palette[4][2].applyAlphaToColor(95)
+        } else {
+            palette[4][2]
+        }
 
         setColor("qsb_icon_tint_quaternary_mono", palette[0][9])
         setColor("themed_icon_color", palette[0][9])
         setColor("themed_icon_background_color", iconBgColor)
         setColor("material_color_surface_container_low", iconBgColor)
         setColor("material_color_surface_bright", palette[3][1])
-        setColor("material_color_surface_dim", palette[4][2])
+        setColor("material_color_surface_dim", appDrawerColor)
         setColor("folder_preview_light", folderPreviewColor)
         setColor("folder_background_light", folderBackgroundColor)
     }
