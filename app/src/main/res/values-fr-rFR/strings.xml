@@ -158,10 +158,10 @@
     <string name="custom_tertiary_color_desc">Sélectionnez la couleur blanche pure pour désactiver</string>
     <string name="mode_specific_theme_title">Thème spécifique au mode</string>
     <string name="mode_specific_theme_desc">Appliquer une saturation et une luminosité différentes pour les modes clair et foncé</string>
-    <string name="darker_launcher_icons_title">Darker launcher icons</string>
-    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
-    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
-    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
+    <string name="darker_launcher_icons_title">Icônes du launcher plus sombres</string>
+    <string name="darker_launcher_icons_desc">Appliquer un arrière-plan plus sombre aux icônes monochromes du pixel launcher</string>
+    <string name="semitransparent_launcher_title">Launcher semi-transparent</string>
+    <string name="semitransparent_launcher_desc">Appliquer un style semi-transparent au pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Solution de contournement pour le thème noir des paramètres</string>
+    <string name="pitch_black_settings_workaround_desc">Assombrir la couleur d\'arrière-plan des paramètres ; provoque des effets secondaires</string>
 </resources>

@@ -25,7 +25,7 @@
     <string name="dev_bio">متعلم | مطوّر | مصمّم</string>
     <string name="news">أخبار</string>
     <string name="support">دعم</string>
-    <string name="github">GitHub</string>
+    <string name="github">غيت هب</string>
     <string name="version">الإصدار</string>
     <string name="pitch_black_theme_title">سمة الأسود المطفي</string>
     <string name="pitch_black_theme_desc">خلفية سوداء في الوضع المظلم</string>
@@ -89,7 +89,7 @@
     <string name="perm_two_desc">هذا الإذن مطلوب لاسترداد الخلفية الرئيسية وشاشة القفل.</string>
     <string name="perm_three_title">الوصول إلى كل الملفات</string>
     <string name="perm_three_desc">هذا الإذن مطلوب لاسترداد الخلفية الرئيسية وشاشة القفل.</string>
-    <string name="perm_four_title">Battery Optimization</string>
+    <string name="perm_four_title">تحسين البطارية</string>
     <string name="perm_four_desc">Unrestricted battery optimization is required to allow running in background.</string>
     <string name="start">إبدأ</string>
     <string name="btn_continue">استمر</string>
@@ -114,7 +114,7 @@
     <string name="force_per_app_theme_desc">تطبيق ألوان مخصصة على تطبيقات محددة لا تتبع Monet الخاص بالنظام</string>
     <string name="back">عودة</string>
     <string name="permissions">صلاحيات</string>
-    <string name="optimization">Optimization</string>
+    <string name="optimization">تحسين</string>
     <string name="choose_method">اختر طريقة</string>
     <string name="auto_startup">تشغيل تلقائي</string>
     <string name="auto_startup_title">بدء الخدمة عند الإقلاع</string>
@@ -151,9 +151,9 @@
     <string name="filter_launchable_apps">تطبيقات قابلة للتشغيل</string>
     <string name="filter_all">كل التطبيقات</string>
     <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
-    <string name="advanced_settings">Advanced</string>
-    <string name="custom_secondary_color_desc">Custom secondary color</string>
-    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
+    <string name="advanced_settings">متقدم</string>
+    <string name="custom_secondary_color_desc">لون ثانوي مخصص</string>
+    <string name="custom_secondary_color_summary">اختر اللون الأبيض النقي لتعطيل</string>
     <string name="custom_tertiary_color_title">Custom tertiary color</string>
     <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
     <string name="mode_specific_theme_title">Mode-specific theme</string>
