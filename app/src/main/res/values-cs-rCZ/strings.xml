@@ -158,10 +158,10 @@
     <string name="custom_tertiary_color_desc">Vyberte čistě bílou barvu pro zakázání</string>
     <string name="mode_specific_theme_title">Šablona pro konkrétní režim</string>
     <string name="mode_specific_theme_desc">Použít odlišnou sytost a světlost pro světlé a tmavé režimy</string>
-    <string name="darker_launcher_icons_title">Darker launcher icons</string>
-    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
-    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
-    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
+    <string name="darker_launcher_icons_title">Tmavší ikony launcheru</string>
+    <string name="darker_launcher_icons_desc">Použít tmavší pozadí na monochromatické ikony Pixe launcheru</string>
+    <string name="semitransparent_launcher_title">Poloprůhledný launcher</string>
+    <string name="semitransparent_launcher_desc">Použít poloprůhledný styl Pixel launcheru</string>
+    <string name="pitch_black_settings_workaround_title">Obejití nastavení černé barvy</string>
+    <string name="pitch_black_settings_workaround_desc">Ztmavit barvu pozadí nastavení; způsobuje vedlejší účinky</string>
 </resources>

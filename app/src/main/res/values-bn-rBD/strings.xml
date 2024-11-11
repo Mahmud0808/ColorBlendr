@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_moto">Express yourself with colors</string>
+    <string name="app_moto">রং দ্বারা নিজেকে প্রকাশ করুন</string>
     <string name="app_description">Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.</string>
     <string name="monet_neutral">Neutral</string>
     <string name="monet_monochrome">Monochrome</string>
@@ -36,7 +36,7 @@
     <string name="colorPickerDialog_dialogName">Color Picker</string>
     <string name="colorPickerDialog_reset">Reset</string>
     <string name="colorPickerDialog_preset">Preset</string>
-    <string name="colorPickerDialog_image">Image</string>
+    <string name="colorPickerDialog_image">ছবি</string>
     <string name="colorPickerDialog_imageColorPicker">Pick Color from Image</string>
     <string name="colorPickerDialog_imageName">Image Picker</string>
     <string name="colorPickerDialog_grant_permissions">Grant Permissions</string>
