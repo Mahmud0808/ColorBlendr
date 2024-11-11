@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.drdisagree.colorblendr"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 31
