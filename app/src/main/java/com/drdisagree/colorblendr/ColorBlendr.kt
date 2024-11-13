@@ -11,6 +11,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.ref.WeakReference
 
 class ColorBlendr : Application() {
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -29,7 +30,6 @@ class ColorBlendr : Application() {
         private lateinit var instance: ColorBlendr
         private lateinit var contextReference: WeakReference<Context>
 
-        @JvmStatic
         val appContext: Context
             get() {
                 if (!this::contextReference.isInitialized || contextReference.get() == null) {
@@ -47,11 +47,9 @@ class ColorBlendr : Application() {
             return instance
         }
 
-        @JvmStatic
         val rootConnection: IRootConnection?
             get() = RootConnectionProvider.getServiceProvider
 
-        @JvmStatic
         val shizukuConnection: IShizukuConnection?
             get() = ShizukuConnectionProvider.getServiceProvider
     }
