@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">カスタムプライマリカラー</string>
     <string name="custom_primary_color_desc">カスタムカラーからパレットを生成します</string>
     <string name="meet_the_developer">開発者に会う</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">アプリに満足していただいていますか?</string>
     <string name="buymeacoffee_desc">コーヒーを奢ってくれると嬉しいです</string>
     <string name="override_colors_manually_title">色の編集</string>
