@@ -95,3 +95,4 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - [@siavash79](https://github.com/siavash79) for helping me.
 - [@fennifith](https://github.com/fennifith) for color picker.
+- And everyone who [contributed](https://github.com/Mahmud0808/ColorBlendr/blob/beta/docs/contributors.md) and [translated](https://github.com/Mahmud0808/ColorBlendr/blob/beta/docs/translators.md)... :)

@@ -20,6 +20,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate translators table
+        id: "translators"
+        uses: andrii-bodnar/action-crowdin-contributors@v2
+        with:
+          contributors_per_line: 6
+          max_contributors: 500
+          image_size: 32
+          min_words_contributed: 1
+          files: ./docs/translators.md
+          crowdin_project_link: 'https://crowdin.com/project/ColorBlendr'
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Save translators in assets
+        run:
+          printf '%s\n' '${{ steps.translators.outputs.json_report }}' > ./app/src/main/assets/translators.json
+
       - name: Download translations
         uses: crowdin/github-action@v1
         with:

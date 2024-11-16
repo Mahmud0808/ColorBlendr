@@ -12,6 +12,9 @@ import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.drdisagree.colorblendr.BuildConfig
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 object AppUtil {
     val REQUIRED_PERMISSIONS: Array<String> =
@@ -64,5 +67,17 @@ object AppUtil {
         val uri = Uri.fromParts("package", context.packageName, null)
         intent.setData(uri)
         context.startActivity(intent)
+    }
+
+    fun readJsonFileFromAssets(fileName: String): String {
+        val stringBuilder = StringBuilder()
+        val inputStream = appContext.assets.open(fileName)
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        var line: String?
+        while (bufferedReader.readLine().also { line = it } != null) {
+            stringBuilder.append(line)
+        }
+        bufferedReader.close()
+        return stringBuilder.toString()
     }
 }
