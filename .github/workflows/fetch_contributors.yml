@@ -41,7 +41,7 @@ jobs:
         uses: github-actions-x/commit@v2.9
         with:
           github-token: ${{ secrets.GH_TOKEN }}
-          push-branch: 'beta'
+          push-branch: 'master'
           commit-message: 'Update contributors.json'
           force-add: 'true'
           files: app/src/main/assets/contributors.json
