@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">自定义颜色</string>
     <string name="custom_primary_color_desc">从自定义颜色生成调色板</string>
     <string name="meet_the_developer">了解开发者</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">喜欢这个应用吗？</string>
     <string name="buymeacoffee_desc">考虑给我买杯咖啡</string>
     <string name="override_colors_manually_title">手动覆盖颜色</string>

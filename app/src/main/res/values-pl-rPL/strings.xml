@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Niestandardowy kolor podstawowy</string>
     <string name="custom_primary_color_desc">Wygeneruj paletę z niestandardowego koloru</string>
     <string name="meet_the_developer">Meet the developer</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Podoba Ci się ta aplikacja?</string>
     <string name="buymeacoffee_desc">Rozważ zakup mi kawy</string>
     <string name="override_colors_manually_title">Zastąp kolory ręcznie</string>

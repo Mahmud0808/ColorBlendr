@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Egyedi elsődleges szín</string>
     <string name="custom_primary_color_desc">Paletta generálás egyedi színből</string>
     <string name="meet_the_developer">Ismerd meg a fejlesztőt</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Tetszik az alkalmazás?</string>
     <string name="buymeacoffee_desc">Fontold meg, hogy meghívsz egy kávéra</string>
     <string name="override_colors_manually_title">A színek manuális felülbírálása</string>

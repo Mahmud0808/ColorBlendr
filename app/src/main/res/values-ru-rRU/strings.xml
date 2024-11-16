@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Пользовательский основной цвет</string>
     <string name="custom_primary_color_desc">Создать палитру из пользовательского цвета</string>
     <string name="meet_the_developer">Познакомьтесь с разработчиком</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Понравилось приложение?</string>
     <string name="buymeacoffee_desc">Подумайте о том, чтобы купить мне кофе</string>
     <string name="override_colors_manually_title">Переопределять цвета вручную</string>

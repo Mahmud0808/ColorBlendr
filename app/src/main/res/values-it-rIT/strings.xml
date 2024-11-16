@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Colore primario personalizzato</string>
     <string name="custom_primary_color_desc">Genera tavolozza da colore personalizzato</string>
     <string name="meet_the_developer">Incontra lo sviluppatore</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Ti piace questa app?</string>
     <string name="buymeacoffee_desc">Considera di comprarmi un caffè</string>
     <string name="override_colors_manually_title">Sovrascrivi i colori manualmente</string>
