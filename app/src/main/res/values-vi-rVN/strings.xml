@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Màu chủ đạo tùy chỉnh</string>
     <string name="custom_primary_color_desc">Tạo bảng màu từ màu tùy chỉnh</string>
     <string name="meet_the_developer">Gặp lập trình viên</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Thích ứng dụng này chứ?</string>
     <string name="buymeacoffee_desc">Hãy cân nhắc việc mua tôi một ly cà phê</string>
     <string name="override_colors_manually_title">Ghi đè màu thủ công</string>

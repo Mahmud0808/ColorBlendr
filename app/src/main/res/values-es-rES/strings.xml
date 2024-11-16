@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Color primario personalizado</string>
     <string name="custom_primary_color_desc">Generar paleta a partir de un color personalizado</string>
     <string name="meet_the_developer">Conoce a los desarrolladores</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">¿Estás disfrutando esta app?</string>
     <string name="buymeacoffee_desc">Considera apoyarme con un café</string>
     <string name="override_colors_manually_title">Sobreescribir manualmente los colores</string>

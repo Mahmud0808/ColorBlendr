@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Налаштувати основний колір</string>
     <string name="custom_primary_color_desc">Створити палітру з особливого кольору</string>
     <string name="meet_the_developer">Познайомитися з розробником</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Подобається додаток?</string>
     <string name="buymeacoffee_desc">Розгляньте можливість подякувати на Buy Me a Coffe</string>
     <string name="override_colors_manually_title">Перевизначити кольори вручну</string>

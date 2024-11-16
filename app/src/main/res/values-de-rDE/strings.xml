@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Benutzerdefinierte Primärfarbe</string>
     <string name="custom_primary_color_desc">Erstelle eine Farbpalette aus benutzerdefinierten Farben</string>
     <string name="meet_the_developer">Entwickler-Informationen</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Gefällt dir diese App?</string>
     <string name="buymeacoffee_desc">Überlegen Sie, ob Sie mir einen Kaffee spendieren möchten</string>
     <string name="override_colors_manually_title">Farben manuell überschreiben</string>
