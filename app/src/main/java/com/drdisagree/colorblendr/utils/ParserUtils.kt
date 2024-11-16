@@ -28,7 +28,7 @@ fun parseContributors(): ArrayList<AboutAppModel> {
         if (excludedContributors.contains(name)) continue // Skip the excluded contributors
 
         val picture = jsonObject.getString("avatar_url")
-        val commitsUrl = "https://github.com/Mahmud0808/Iconify/commits?author=$name"
+        val commitsUrl = "https://github.com/Mahmud0808/ColorBlendr/commits?author=$name"
         val contributions = jsonObject.getInt("contributions")
 
         contributorsList.add(
