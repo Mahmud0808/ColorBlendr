@@ -48,9 +48,9 @@
     <string name="custom_primary_color_title">Vlastní primární barva</string>
     <string name="custom_primary_color_desc">Vygenerovat paletu z vlastní barvy</string>
     <string name="meet_the_developer">Seznamte se s vývojářem</string>
-    <string name="contributors">Contributors behind the scene</string>
-    <string name="translators">Translators bridging languages</string>
-    <string name="total_contributions">Contributions: %d</string>
+    <string name="contributors">Ostatní přispěvatelé</string>
+    <string name="translators">Překladatelé přemostění jazyků</string>
+    <string name="total_contributions">Příspěvky: %d</string>
     <string name="buymeacoffee_title">Líbí se Vám tato aplikace?</string>
     <string name="buymeacoffee_desc">Zvažte možnost přispět mi na kávu</string>
     <string name="override_colors_manually_title">Přepsat barvy ručně</string>
