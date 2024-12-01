@@ -48,9 +48,9 @@
     <string name="custom_primary_color_title">Özel Birincil Renk</string>
     <string name="custom_primary_color_desc">Özel renkten palet oluştur</string>
     <string name="meet_the_developer">Geliştiriciyle tanış</string>
-    <string name="contributors">Contributors behind the scene</string>
-    <string name="translators">Translators bridging languages</string>
-    <string name="total_contributions">Contributions: %d</string>
+    <string name="contributors">Sahne arkasında katkı sağlayanlar</string>
+    <string name="translators">Diller arasında köprü kuran tercümanlar</string>
+    <string name="total_contributions">Katkıda bulunanlar: %d</string>
     <string name="buymeacoffee_title">Bu uygulamayı beğendiniz mi?</string>
     <string name="buymeacoffee_desc">Bana bir kahve ısmarlamayı düşünün</string>
     <string name="override_colors_manually_title">Renkleri Manuel Olarak Geçersiz Kıl</string>
