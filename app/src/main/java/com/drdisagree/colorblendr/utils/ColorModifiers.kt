@@ -104,7 +104,7 @@ object ColorModifiers {
 
                 if (overriddenColor != Int.MIN_VALUE) {
                     palette[j] = overriddenColor
-                } else if (!accurateShades && i == 0 && j == 2) {
+                } else if (!accurateShades && (i in 0..2) && j == 2) {
                     palette[j] = palette[j + 2]
                 }
             }
