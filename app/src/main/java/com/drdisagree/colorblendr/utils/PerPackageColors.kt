@@ -45,6 +45,7 @@ private fun FabricatedOverlayResource.applyClockColors(palette: ArrayList<ArrayL
 private fun FabricatedOverlayResource.applyGoogleFeedsColors(pitchBlackTheme: Boolean) {
     if (!pitchBlackTheme || !isDarkMode) return
 
+    // TODO: Find new background color resource used in dark mode
     setColor("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK)
 }
 
