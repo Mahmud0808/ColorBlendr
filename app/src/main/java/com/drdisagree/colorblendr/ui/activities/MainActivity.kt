@@ -22,7 +22,7 @@ import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment
-import com.drdisagree.colorblendr.ui.fragments.OnboardingFragment
+import com.drdisagree.colorblendr.ui.fragments.onboarding.OnboardingFragment
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.shape.MaterialShapeDrawable
 
