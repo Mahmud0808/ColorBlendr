@@ -42,7 +42,7 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           push-branch: 'master'
-          commit-message: 'Update contributors.json'
+          commit-message: 'ci: update contributors.json'
           force-add: 'true'
           files: app/src/main/assets/contributors.json
           name: Mahmud0808
