@@ -172,6 +172,8 @@
     <string name="custom_tertiary_color_title">Custom tertiary color</string>
     <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
     <string name="mode_specific_theme_title">Mode-specific theme</string>
+    <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
+    <string name="screen_off_update_title">Update colors on screen off</string>
     <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
     <string name="darker_launcher_icons_title">Darker launcher icons</string>
     <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>

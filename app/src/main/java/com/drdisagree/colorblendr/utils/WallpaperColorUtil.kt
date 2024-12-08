@@ -47,14 +47,26 @@ object WallpaperColorUtil {
             return ColorUtil.monetAccentColors
         }
 
+        val mergedColors = mutableSetOf<Int>()
+
+        val wallpaperManager = WallpaperManager.getInstance(context)
+        wallpaperManager.wallpaperInfo?.let {
+            wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
+                ?.let { wallpaperColors ->
+                    mergedColors.add(wallpaperColors.primaryColor.toArgb())
+                    wallpaperColors.secondaryColor?.let { mergedColors.add(it.toArgb()) }
+                    wallpaperColors.tertiaryColor?.let { mergedColors.add(it.toArgb()) }
+                }
+        }
+
         return try {
-            val wallpaperBitmap = WallpaperLoader.loadWallpaperAsync(
-                context,
-                WallpaperManager.FLAG_SYSTEM
-            )
-            wallpaperBitmap?.let {
-                getWallpaperColors(it)
-            } ?: ColorUtil.monetAccentColors
+            withContext(Dispatchers.IO) {
+                WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
+            }?.let { bitmap ->
+                mergedColors.addAll(getWallpaperColors(bitmap))
+            }
+
+            if (mergedColors.isEmpty()) ColorUtil.monetAccentColors else ArrayList(mergedColors)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting wallpaper color", e)
             ColorUtil.monetAccentColors

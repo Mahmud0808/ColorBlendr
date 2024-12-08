@@ -41,6 +41,14 @@
                 app:titleText="@string/custom_tertiary_color_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/screen_off_update"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_update"
+                app:summaryText="@string/screen_off_update_desc"
+                app:titleText="@string/screen_off_update_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/mode_specific_themes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
