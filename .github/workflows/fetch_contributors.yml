@@ -1,0 +1,50 @@
+name: Fetch Contributors
+
+on:
+  pull_request: # This will run the workflow on pull request events
+    types:
+      - closed
+  workflow_dispatch: # This will run the workflow on manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  contrib-readme-job:
+    name: Fetch and update contributors list
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch contributors list
+        uses: akhilmhdh/contributors-readme-action@v2.3.10
+        with:
+          image_size: 100
+          readme_path: "docs/contributors.md"
+          collaborators: all
+          columns_per_row: 6
+          commit_message: "Update contributors.md"
+          committer_username: "Mahmud0808"
+          committer_email: "crazymahmud08@gmail.com"
+          pr_title_on_protected: "Update contributors list"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Save contributors in assets
+        if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+        run: |
+          printf '%s\n' $(curl "https://api.github.com/repos/Mahmud0808/ColorBlendr/contributors") > ./app/src/main/assets/contributors.json
+
+      - name: Commit changes and push
+        uses: github-actions-x/commit@v2.9
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          push-branch: 'master'
+          commit-message: 'ci: update contributors.json'
+          force-add: 'true'
+          files: app/src/main/assets/contributors.json
+          name: Mahmud0808
+          email: crazymahmud08@gmail.com
+          rebase: 'true'

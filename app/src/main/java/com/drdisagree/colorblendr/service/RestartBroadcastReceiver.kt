@@ -18,7 +18,6 @@ class RestartBroadcastReceiver : BroadcastReceiver() {
         private val TAG: String = RestartBroadcastReceiver::class.java.simpleName
         private var jobScheduler: JobScheduler? = null
 
-        @JvmStatic
         fun scheduleJob(context: Context) {
             if (jobScheduler == null) {
                 jobScheduler =

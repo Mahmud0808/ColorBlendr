@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Özel Birincil Renk</string>
     <string name="custom_primary_color_desc">Özel renkten palet oluştur</string>
     <string name="meet_the_developer">Geliştiriciyle tanış</string>
+    <string name="contributors">Sahne arkasında katkı sağlayanlar</string>
+    <string name="translators">Diller arasında köprü kuran tercümanlar</string>
+    <string name="total_contributions">Katkıda bulunanlar: %d</string>
     <string name="buymeacoffee_title">Bu uygulamayı beğendiniz mi?</string>
     <string name="buymeacoffee_desc">Bana bir kahve ısmarlamayı düşünün</string>
     <string name="override_colors_manually_title">Renkleri Manuel Olarak Geçersiz Kıl</string>
@@ -158,10 +161,10 @@
     <string name="custom_tertiary_color_desc">Devre dışı bırakmak için saf beyaz rengi seçin</string>
     <string name="mode_specific_theme_title">Moda özgü tema</string>
     <string name="mode_specific_theme_desc">Açık ve koyu modlar için farklı doygunluk ve açıklık uygulayın</string>
-    <string name="darker_launcher_icons_title">Darker launcher icons</string>
-    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
-    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
-    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
+    <string name="darker_launcher_icons_title">Daha koyu başlatıcı simgeleri</string>
+    <string name="darker_launcher_icons_desc">Pixel başlatıcı tek renkli simgelerine daha koyu bir arka plan uygula</string>
+    <string name="semitransparent_launcher_title">Yarı şeffaf başlatıcı</string>
+    <string name="semitransparent_launcher_desc">Pixel başlatıcıya yarı saydam bir stil uygula</string>
+    <string name="pitch_black_settings_workaround_title">Zifiri siyah ayarları geçici çözümü</string>
+    <string name="pitch_black_settings_workaround_desc">Ayarların arka plan rengini koyulaştır; yan etkilere neden olur</string>
 </resources>

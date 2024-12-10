@@ -20,6 +20,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
@@ -101,6 +102,12 @@ class SettingsAdvancedFragment : Fragment() {
                     }
                 }
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
+        }
+
+        // Update colors on screen off
+        binding.screenOffUpdate.isSwitchChecked = getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
+        binding.screenOffUpdate.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            putBoolean(SCREEN_OFF_UPDATE_COLORS, isChecked)
         }
 
         // Mode specific themes

@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.fragments
+package com.drdisagree.colorblendr.ui.fragments.onboarding.pages
 
 import android.annotation.SuppressLint
 import android.content.Context

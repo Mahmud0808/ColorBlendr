@@ -31,7 +31,7 @@ import com.drdisagree.colorblendr.utils.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.SystemUtil.getScreenRotation
 import com.drdisagree.colorblendr.utils.SystemUtil.sensorEventListener
-import com.drdisagree.colorblendr.utils.annotations.TestingOnly
+import com.drdisagree.colorblendr.utils.annotations.Test
 import java.util.Timer
 import java.util.TimerTask
 
@@ -119,17 +119,19 @@ class AutoStartService : Service() {
             NOTIFICATION_CHANNEL_ID,
             getString(R.string.background_service_notification_channel_title),
             NotificationManager.IMPORTANCE_DEFAULT
-        )
-        channel.description = getString(R.string.background_service_notification_channel_text)
+        ).apply {
+            description = getString(R.string.background_service_notification_channel_text)
+        }
         notificationManager!!.createNotificationChannel(channel)
     }
 
     private fun showNotification() {
-        val notificationIntent = Intent()
-        notificationIntent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-        notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
+        val notificationIntent = Intent().apply {
+            setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
+        }
 
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -156,20 +158,22 @@ class AutoStartService : Service() {
 
     @Suppress("DEPRECATION")
     private fun registerReceivers() {
-        val intentFilterWithoutScheme = IntentFilter()
-        intentFilterWithoutScheme.addAction(Intent.ACTION_WALLPAPER_CHANGED)
-        intentFilterWithoutScheme.addAction(Intent.ACTION_CONFIGURATION_CHANGED)
-        intentFilterWithoutScheme.addAction(Intent.ACTION_SCREEN_OFF)
-        intentFilterWithoutScheme.addAction(Intent.ACTION_MY_PACKAGE_REPLACED)
-        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_ADDED)
-        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REMOVED)
-        intentFilterWithoutScheme.addAction(Intent.ACTION_PACKAGE_REPLACED)
+        val intentFilterWithoutScheme = IntentFilter().apply {
+            addAction(Intent.ACTION_WALLPAPER_CHANGED)
+            addAction(Intent.ACTION_CONFIGURATION_CHANGED)
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_MY_PACKAGE_REPLACED)
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+        }
 
-        val intentFilterWithScheme = IntentFilter()
-        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_ADDED)
-        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REMOVED)
-        intentFilterWithScheme.addAction(Intent.ACTION_PACKAGE_REPLACED)
-        intentFilterWithScheme.addDataScheme("package")
+        val intentFilterWithScheme = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+            addDataScheme("package")
+        }
 
         registerReceiver(myReceiver, intentFilterWithoutScheme)
         registerReceiver(myReceiver, intentFilterWithScheme)
@@ -204,16 +208,16 @@ class AutoStartService : Service() {
         }
     }
 
-    @TestingOnly
+    @Test
     private val testBackgroundService = false
 
-    @TestingOnly
+    @Test
     private val isTestingService = BuildConfig.DEBUG && testBackgroundService
 
-    @TestingOnly
+    @Test
     var counter: Int = 0
 
-    @TestingOnly
+    @Test
     private var timer: Timer? = null
 
     init {
@@ -221,7 +225,7 @@ class AutoStartService : Service() {
         myReceiver = BroadcastListener()
     }
 
-    @TestingOnly
+    @Test
     fun startTimer(context: Context) {
         timer = Timer()
         timer!!.schedule(object : TimerTask() {
@@ -232,7 +236,7 @@ class AutoStartService : Service() {
         }, 1000, 1000)
     }
 
-    @TestingOnly
+    @Test
     fun stopTimer() {
         if (timer != null) {
             timer!!.cancel()
@@ -246,28 +250,26 @@ class AutoStartService : Service() {
         private const val NOTIFICATION_ID = 1
         private const val NOTIFICATION_CHANNEL_ID = "Background Service"
         private lateinit var myReceiver: BroadcastListener
-        var sensorManager: SensorManager? = null
-
-        @JvmStatic
+        private var sensorManager: SensorManager? = null
         val isServiceNotRunning: Boolean
             get() = !isRunning
 
         /*
-    * The following fields and methods are for testing purposes only
-    */
-        @TestingOnly
+         * The following fields and methods are for testing purposes only
+         */
+        @Test
         private val TEST_TAG = AutoStartService::class.java.simpleName + "_TEST"
 
-        @TestingOnly
+        @Test
         private val packageName: String = appContext.packageName
 
-        @TestingOnly
+        @Test
         val ACTION_FOO: String = "$packageName.FOO"
 
-        @TestingOnly
+        @Test
         val EXTRA_PARAM_A: String = "$packageName.PARAM_A"
 
-        @TestingOnly
+        @Test
         fun broadcastActionTest(context: Context, param: String?) {
             val intent = Intent(ACTION_FOO)
             intent.putExtra(EXTRA_PARAM_A, param)

@@ -10,4 +10,4 @@ package com.drdisagree.colorblendr.utils.annotations
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER
 )
-annotation class TestingOnly 
+annotation class Test

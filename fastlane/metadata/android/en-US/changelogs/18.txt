@@ -1,0 +1,10 @@
+Changelog:
+
+• Fixed pixel launcher search bar color on Android 15 QPR beta builds.
+• Disabled accurate shade now changes all accent colors. [Root]
+• Improved live wallpaper color extraction. [Root/Shizuku]
+• Added option to update colors when screen is off. [Root/Shizuku]
+• Updated AGP and dependencies.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.

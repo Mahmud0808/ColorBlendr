@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">カスタムプライマリカラー</string>
     <string name="custom_primary_color_desc">カスタムカラーからパレットを生成します</string>
     <string name="meet_the_developer">開発者に会う</string>
+    <string name="contributors">舞台裏の貢献者</string>
+    <string name="translators">言語の架け橋となる翻訳者</string>
+    <string name="total_contributions">貢献: %d</string>
     <string name="buymeacoffee_title">アプリに満足していただいていますか?</string>
     <string name="buymeacoffee_desc">コーヒーを奢ってくれると嬉しいです</string>
     <string name="override_colors_manually_title">色の編集</string>
@@ -158,10 +161,10 @@
     <string name="custom_tertiary_color_desc">ピュアホワイトを選択して無効化します</string>
     <string name="mode_specific_theme_title">モード固有のテーマ</string>
     <string name="mode_specific_theme_desc">ライトモードとダークモードで異なる彩度と明度を適用します</string>
-    <string name="darker_launcher_icons_title">Darker launcher icons</string>
-    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
-    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
-    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
+    <string name="darker_launcher_icons_title">より暗いランチャーアイコン</string>
+    <string name="darker_launcher_icons_desc">Pixel Launcher のモノクロアイコンに暗い背景を適用します</string>
+    <string name="semitransparent_launcher_title">半透明なランチャー</string>
+    <string name="semitransparent_launcher_desc">Pixel Launcher に半透明なスタイルを適用します</string>
+    <string name="pitch_black_settings_workaround_title">ピッチブラック設定の回避策</string>
+    <string name="pitch_black_settings_workaround_desc">設定の背景色を黒くします、副作用を引き起こす問題があります</string>
 </resources>

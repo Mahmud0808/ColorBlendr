@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.fragments
+package com.drdisagree.colorblendr.ui.fragments.onboarding
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,6 +23,11 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.ui.adapters.OnboardingAdapter
+import com.drdisagree.colorblendr.ui.fragments.HomeFragment
+import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem1Fragment
+import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem2Fragment
+import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem3Fragment
+import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem4Fragment
 import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService

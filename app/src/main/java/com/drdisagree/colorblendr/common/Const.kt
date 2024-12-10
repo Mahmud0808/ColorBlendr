@@ -28,6 +28,7 @@ object Const {
     const val THEMING_ENABLED: String = "themingEnabled"
     const val MONET_STYLE: String = "customMonetStyle"
     const val MODE_SPECIFIC_THEMES: String = "modeSpecificThemes"
+    const val SCREEN_OFF_UPDATE_COLORS: String = "screenOffUpdateColors"
     const val DARKER_LAUNCHER_ICONS: String = "darkerLauncherIcons"
     const val SEMI_TRANSPARENT_LAUNCHER_ICONS: String = "semiTransparentLauncherIcons"
     const val FORCE_PITCH_BLACK_SETTINGS: String = "forcePitchBlackSettings"

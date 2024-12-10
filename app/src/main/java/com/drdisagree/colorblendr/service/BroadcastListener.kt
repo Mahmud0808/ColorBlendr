@@ -3,6 +3,8 @@ package com.drdisagree.colorblendr.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.common.Const
@@ -10,6 +12,7 @@ import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
@@ -36,6 +39,11 @@ import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 class BroadcastListener : BroadcastReceiver() {
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var sleepRunnable: Runnable? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+
     @Suppress("deprecation")
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Received intent: " + intent.action)
@@ -45,6 +53,7 @@ class BroadcastListener : BroadcastReceiver() {
         }
 
         val currentOrientation = getScreenRotation(context)
+        val screenOffUpdate = getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
 
         CoroutineScope(Dispatchers.Main).launch {
             when (intent.action) {
@@ -55,6 +64,24 @@ class BroadcastListener : BroadcastReceiver() {
 
                 Intent.ACTION_WALLPAPER_CHANGED -> {
                     handleWallpaperChanged(context)
+                }
+
+                Intent.ACTION_SCREEN_OFF -> {
+                    if (screenOffUpdate) {
+                        sleepRunnable = Runnable {
+                            coroutineScope.launch {
+                                handleWallpaperChanged(context)
+                            }
+                        }
+                        handler.postDelayed(sleepRunnable!!, 15000) // 15 seconds
+                    }
+                }
+
+                Intent.ACTION_SCREEN_ON -> {
+                    sleepRunnable?.let { runnable ->
+                        handler.removeCallbacks(runnable)
+                        sleepRunnable = null
+                    }
                 }
 
                 Intent.ACTION_CONFIGURATION_CHANGED -> {

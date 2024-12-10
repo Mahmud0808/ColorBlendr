@@ -1,18 +1,20 @@
 package com.drdisagree.colorblendr.ui.fragments
 
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.drdisagree.colorblendr.BuildConfig
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.databinding.FragmentAboutBinding
+import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter
+import com.drdisagree.colorblendr.ui.models.AboutAppModel
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.parseContributors
+import com.drdisagree.colorblendr.utils.parseTranslators
 
 class AboutFragment : Fragment() {
 
@@ -32,88 +34,46 @@ class AboutFragment : Fragment() {
             binding.header.toolbar
         )
 
-        try {
-            binding.appIcon.setImageDrawable(
-                requireContext().packageManager.getApplicationIcon(
-                    requireContext().packageName
+        binding.aboutAppContainer.apply {
+            setLayoutManager(LinearLayoutManager(requireContext()))
+            setAdapter(
+                ConcatAdapter(
+                    initAboutAppSection(),
+                    initContributorsSection(),
+                    initTranslatorsSection()
                 )
             )
-        } catch (ignored: PackageManager.NameNotFoundException) {
-            // Unlikely to happen
-            binding.appIcon.setImageResource(R.mipmap.ic_launcher)
-        }
-        binding.versionCode.text = getString(
-            R.string.version_codes,
-            BuildConfig.VERSION_NAME,
-            BuildConfig.VERSION_CODE
-        )
-
-        binding.btnNews.setOnClickListener {
-            try {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://t.me/IconifyOfficial")
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        binding.btnSupport.setOnClickListener {
-            try {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://t.me/IconifyDiscussion")
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        binding.btnGithub.setOnClickListener {
-            try {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/Mahmud0808/ColorBlendr")
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        binding.developer.setOnClickListener {
-            try {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/Mahmud0808")
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        binding.buymeacoffee.setOnClickListener {
-            try {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://buymeacoffee.com/drdisagree")
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            setHasFixedSize(true)
         }
 
         return binding.root
+    }
+
+    private fun initAboutAppSection(): AboutAppAdapter {
+        return AboutAppAdapter(
+            requireContext(),
+            ArrayList<AboutAppModel>().also {
+                it.add(AboutAppModel(R.layout.view_about_app))
+            }
+        )
+    }
+
+    private fun initContributorsSection(): AboutAppAdapter {
+        return AboutAppAdapter(
+            requireContext(),
+            parseContributors().also {
+                it.add(0, AboutAppModel(resources.getString(R.string.contributors)))
+            }
+        )
+    }
+
+    private fun initTranslatorsSection(): AboutAppAdapter {
+        return AboutAppAdapter(
+            requireContext(),
+            parseTranslators().also {
+                it.add(0, AboutAppModel(resources.getString(R.string.translators)))
+            }
+        )
     }
 
     @Suppress("DEPRECATION")

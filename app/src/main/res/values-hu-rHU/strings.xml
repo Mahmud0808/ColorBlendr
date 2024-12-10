@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Egyedi elsődleges szín</string>
     <string name="custom_primary_color_desc">Paletta generálás egyedi színből</string>
     <string name="meet_the_developer">Ismerd meg a fejlesztőt</string>
+    <string name="contributors">Contributors behind the scene</string>
+    <string name="translators">Translators bridging languages</string>
+    <string name="total_contributions">Contributions: %d</string>
     <string name="buymeacoffee_title">Tetszik az alkalmazás?</string>
     <string name="buymeacoffee_desc">Fontold meg, hogy meghívsz egy kávéra</string>
     <string name="override_colors_manually_title">A színek manuális felülbírálása</string>
@@ -114,7 +117,7 @@
     <string name="force_per_app_theme_desc">Alkalmazz egyedi színeket specifikus alkalmazásoknak, amik nem követik a rendszer témát</string>
     <string name="back">Vissza</string>
     <string name="permissions">Engedélyek</string>
-    <string name="optimization">Optimization</string>
+    <string name="optimization">Optimalizálás</string>
     <string name="choose_method">Válassz módszert</string>
     <string name="auto_startup">Automatikus indítás</string>
     <string name="auto_startup_title">Szolgáltatás indítása bootnál</string>
@@ -151,7 +154,7 @@
     <string name="filter_launchable_apps">Indítható alkalmazások</string>
     <string name="filter_all">Összes Alkalmazás</string>
     <string name="disable_battery_optimization_hint">It\'s not mandatory but recommended to disable the battery optimization</string>
-    <string name="advanced_settings">Advanced</string>
+    <string name="advanced_settings">Haladó</string>
     <string name="custom_secondary_color_desc">Custom secondary color</string>
     <string name="custom_secondary_color_summary">Select pure white color to disable</string>
     <string name="custom_tertiary_color_title">Custom tertiary color</string>

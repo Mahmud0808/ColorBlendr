@@ -48,6 +48,9 @@
     <string name="custom_primary_color_title">Cor primária personalizada</string>
     <string name="custom_primary_color_desc">Gerar paleta a partir de cores personalizadas</string>
     <string name="meet_the_developer">Conheça o desenvolvedor</string>
+    <string name="contributors">Colaboradores nos bastidores</string>
+    <string name="translators">Tradutores conectando idiomas</string>
+    <string name="total_contributions">Contribuições: %d</string>
     <string name="buymeacoffee_title">Está gostando deste app?</string>
     <string name="buymeacoffee_desc">Considere me comprar um café</string>
     <string name="override_colors_manually_title">Substituir cores manualmente</string>
@@ -161,7 +164,7 @@
     <string name="darker_launcher_icons_title">Ícones da launcher mais escuros</string>
     <string name="darker_launcher_icons_desc">Aplique um fundo mais escuro aos ícones monocromáticos da launcher pixel</string>
     <string name="semitransparent_launcher_title">Launcher semitransparente</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
-    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
+    <string name="semitransparent_launcher_desc">Aplique um estilo semitransparente ao pixel launcher</string>
+    <string name="pitch_black_settings_workaround_title">Solução alternativa para Configurações em preto puro</string>
+    <string name="pitch_black_settings_workaround_desc">Escureça a cor de fundo das Configurações. Pode causar efeitos colaterais.</string>
 </resources>
