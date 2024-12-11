@@ -69,6 +69,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
 }
 
 dependencies {
