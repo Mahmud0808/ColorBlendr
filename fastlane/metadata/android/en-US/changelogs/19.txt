@@ -1,0 +1,4 @@
+Changelog:
+
+• Fixed F-Droid build issue.
+• Suggest to open theme config with ColorBlendr.
