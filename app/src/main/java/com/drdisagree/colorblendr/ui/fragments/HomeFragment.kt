@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -26,6 +27,7 @@ import com.drdisagree.colorblendr.utils.AppUtil.requestStoragePermission
 import com.drdisagree.colorblendr.utils.FragmentUtil.TabSelection
 import com.drdisagree.colorblendr.utils.FragmentUtil.getSlidingDirection
 import com.drdisagree.colorblendr.utils.FragmentUtil.setCustomAnimations
+import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : Fragment() {
@@ -66,6 +68,19 @@ class HomeFragment : Fragment() {
             } catch (ignored: Exception) {
             }
         }, 2000)
+
+        arguments?.let { bundle ->
+            bundle.parcelable<Uri>("data")?.let { uri ->
+                replaceFragment(
+                    SettingsFragment().apply {
+                        arguments = Bundle().apply {
+                            putParcelable("data", uri)
+                        }
+                    }
+                )
+                bundle.remove("data")
+            }
+        }
 
         registerOnBackPressedCallback()
     }

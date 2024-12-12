@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -54,6 +55,7 @@ import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
+import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.reflect.TypeToken
@@ -271,6 +273,13 @@ class SettingsFragment : Fragment() {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        arguments?.let { bundle ->
+            bundle.parcelable<Uri>("data")?.let { data ->
+                showRestoreDialog(data)
+                bundle.remove("data")
+            }
+        }
     }
 
     private fun crossfade(view: View) {
@@ -359,50 +368,61 @@ class SettingsFragment : Fragment() {
                 val data: Intent? = result.data
                 if (data?.data == null) return@registerForActivityResult
 
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(getString(R.string.confirmation_title))
-                    .setMessage(getString(R.string.confirmation_desc))
-                    .setPositiveButton(getString(android.R.string.ok)) { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
-
-                        CoroutineScope(Dispatchers.IO).launch {
-                            try {
-                                restorePrefs(
-                                    appContext
-                                        .contentResolver
-                                        .openInputStream(data.data!!)!!
-                                )
-
-                                withContext(Dispatchers.Main) {
-                                    try {
-                                        applyFabricatedColors(requireContext())
-                                    } catch (ignored: Exception) {
-                                    }
-                                }
-                            } catch (exception: Exception) {
-                                withContext(Dispatchers.Main) {
-                                    Snackbar
-                                        .make(
-                                            binding.getRoot(),
-                                            getString(R.string.restore_fail),
-                                            Snackbar.LENGTH_INDEFINITE
-                                        )
-                                        .setAction(getString(R.string.retry)) {
-                                            backupRestoreSettings(
-                                                false
-                                            )
-                                        }
-                                        .show()
-
-                                    Log.e(TAG, "startBackupActivityIntent: ", exception)
-                                }
-                            }
-                        }
-                    }
-                    .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-                    .show()
+                showRestoreDialog(data.data)
             }
         }
+
+    private fun showRestoreDialog(uri: Uri?) {
+        if (uri == null) return
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.confirmation_title))
+            .setMessage(getString(R.string.confirmation_desc))
+            .setPositiveButton(getString(android.R.string.ok)) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        restorePrefs(
+                            appContext
+                                .contentResolver
+                                .openInputStream(uri)!!
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            try {
+                                applyFabricatedColors(requireContext())
+                            } catch (ignored: Exception) {
+                            }
+                        }
+                    } catch (exception: Exception) {
+                        withContext(Dispatchers.Main) {
+                            Snackbar
+                                .make(
+                                    binding.getRoot(),
+                                    getString(R.string.restore_fail),
+                                    Snackbar.LENGTH_INDEFINITE
+                                )
+                                .setAction(getString(R.string.retry)) {
+                                    backupRestoreSettings(
+                                        false
+                                    )
+                                }
+                                .show()
+
+                            Log.e(TAG, "startBackupActivityIntent: ", exception)
+                        }
+                    } finally {
+                        arguments?.remove("data")
+                    }
+                }
+            }
+            .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss();
+                arguments?.remove("data")
+            }
+            .show()
+    }
 
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
