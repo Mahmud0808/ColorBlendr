@@ -49,6 +49,10 @@ class SplashActivity : AppCompatActivity() {
                 MainActivity::class.java
             ).apply {
                 putExtra("success", success.get())
+                intent.data?.let { uri ->
+                    putExtra("data", uri)
+                    intent.removeExtra("data")
+                }
             }
         )
         finish()

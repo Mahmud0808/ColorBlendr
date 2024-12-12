@@ -23,6 +23,7 @@ import com.drdisagree.colorblendr.databinding.ActivityMainBinding
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment
 import com.drdisagree.colorblendr.ui.fragments.onboarding.OnboardingFragment
+import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.shape.MaterialShapeDrawable
 
@@ -49,10 +50,14 @@ class MainActivity : AppCompatActivity() {
                     HomeFragment().apply {
                         arguments = Bundle().apply {
                             putBoolean("success", true)
+                            if (intent?.hasExtra("data") == true) {
+                                putParcelable("data", intent.parcelable("data"))
+                            }
                         }
                     },
                     false
                 )
+                intent?.removeExtra("data")
             }
         }
     }

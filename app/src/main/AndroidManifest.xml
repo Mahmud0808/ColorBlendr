@@ -56,6 +56,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.OPENABLE" />
+
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:scheme="content" />
+                <data android:pathPattern=".*\\.colorblendr" />
+                <data android:pathPattern=".*\\..*\\.colorblendr" />
+                <data android:pathPattern=".*\\..*\\..*\\.colorblendr" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.colorblendr" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.colorblendr" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.colorblendr" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.colorblendr" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activities.MainActivity"
