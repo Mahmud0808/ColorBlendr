@@ -22,7 +22,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/yurtpage">
-                    <img src="https://private-avatars.githubusercontent.com/u/155876573?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzQyNjQwMDAsIm5iZiI6MTczNDI2MjgwMCwicGF0aCI6Ii91LzE1NTg3NjU3MyJ9.DEbTIarqRwx12GcHGCebejiObTz968rQwZKYzxMt0bc&v=4" width="100;" alt="yurtpage"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/155876573?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzQyNjQ5MDAsIm5iZiI6MTczNDI2MzcwMCwicGF0aCI6Ii91LzE1NTg3NjU3MyJ9.J7Uctu_jXiwE4HcrrNNTKdt0iDH5gpeZLgfEi5GgNoc&v=4" width="100;" alt="yurtpage"/>
                     <br />
                     <sub><b>Yurt Page</b></sub>
                 </a>
