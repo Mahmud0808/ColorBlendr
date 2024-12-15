@@ -15,7 +15,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/HiFIi">
-                    <img src="https://private-avatars.githubusercontent.com/u/7686387?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzQyNjM5NDAsIm5iZiI6MTczNDI2Mjc0MCwicGF0aCI6Ii91Lzc2ODYzODcifQ.gLJxyl1ezRLojbVK6wHfA_Lu85bDTUZYTS_7o1aCK24&v=4" width="100;" alt="HiFIi"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/7686387?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzQyNjQ4NDAsIm5iZiI6MTczNDI2MzY0MCwicGF0aCI6Ii91Lzc2ODYzODcifQ.Xp5cND5be7IaMaeDXVJJOrcmRea5684QX65S1GeXQYM&v=4" width="100;" alt="HiFIi"/>
                     <br />
                     <sub><b>Kyler</b></sub>
                 </a>
