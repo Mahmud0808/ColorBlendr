@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">لون ثالث مخصص</string>
     <string name="custom_tertiary_color_desc">حدد اللون الأبيض النقي لتعطيله</string>
     <string name="mode_specific_theme_title">ثيم مخصص حسب الوضع</string>
+    <string name="screen_off_update_desc">تحديث الألوان بعد 15 ثانية من إيقاف تشغيل الشاشة؛ مفيد للخلفيات الحية</string>
+    <string name="screen_off_update_title">تحديث الألوان على الشاشة المتوقفة</string>
     <string name="mode_specific_theme_desc">تطبيق تشبع وإضاءة مختلفين للوضعين الفاتح والداكن</string>
     <string name="darker_launcher_icons_title">أيقونات مشغل أغمق</string>
     <string name="darker_launcher_icons_desc">تطبيق خلفية أغمق لأيقونات Pixel Launcher أحادية اللون</string>

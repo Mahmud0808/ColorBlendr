@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">Vlastní terciární barva</string>
     <string name="custom_tertiary_color_desc">Vyberte čistě bílou barvu pro zakázání</string>
     <string name="mode_specific_theme_title">Šablona pro konkrétní režim</string>
+    <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
+    <string name="screen_off_update_title">Update colors on screen off</string>
     <string name="mode_specific_theme_desc">Použít odlišnou sytost a světlost pro světlé a tmavé režimy</string>
     <string name="darker_launcher_icons_title">Tmavší ikony launcheru</string>
     <string name="darker_launcher_icons_desc">Použít tmavší pozadí na monochromatické ikony Pixe launcheru</string>

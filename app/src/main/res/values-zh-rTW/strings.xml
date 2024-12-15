@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">自訂第三顏色</string>
     <string name="custom_tertiary_color_desc">選擇純白色以停用</string>
     <string name="mode_specific_theme_title">模式特定主題</string>
+    <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
+    <string name="screen_off_update_title">Update colors on screen off</string>
     <string name="mode_specific_theme_desc">為亮色和暗色模式套用不同的飽和度和亮度</string>
     <string name="darker_launcher_icons_title">更深色的啟動器圖示</string>
     <string name="darker_launcher_icons_desc">對像素啟動器單色圖示套用更深的背景</string>
