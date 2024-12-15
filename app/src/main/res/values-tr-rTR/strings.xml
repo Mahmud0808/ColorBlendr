@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">Özel üçüncül renk</string>
     <string name="custom_tertiary_color_desc">Devre dışı bırakmak için saf beyaz rengi seçin</string>
     <string name="mode_specific_theme_title">Moda özgü tema</string>
+    <string name="screen_off_update_desc">Ekran kapandıktan 15 saniye sonra renkleri günceller; canlı duvar kağıtları için kullanışlıdır</string>
+    <string name="screen_off_update_title">Ekrandaki renkleri güncelle kapalı</string>
     <string name="mode_specific_theme_desc">Açık ve koyu modlar için farklı doygunluk ve açıklık uygulayın</string>
     <string name="darker_launcher_icons_title">Daha koyu başlatıcı simgeleri</string>
     <string name="darker_launcher_icons_desc">Pixel başlatıcı tek renkli simgelerine daha koyu bir arka plan uygula</string>

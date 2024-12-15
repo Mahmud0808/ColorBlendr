@@ -48,9 +48,9 @@
     <string name="custom_primary_color_title">Color primario personalizado</string>
     <string name="custom_primary_color_desc">Generar paleta a partir de un color personalizado</string>
     <string name="meet_the_developer">Conoce a los desarrolladores</string>
-    <string name="contributors">Contributors behind the scene</string>
-    <string name="translators">Translators bridging languages</string>
-    <string name="total_contributions">Contributions: %d</string>
+    <string name="contributors">Contribuidores tras bambalinas</string>
+    <string name="translators">Traductores conectando idiomas</string>
+    <string name="total_contributions">Contribuciones: %d</string>
     <string name="buymeacoffee_title">¿Estás disfrutando esta app?</string>
     <string name="buymeacoffee_desc">Considera apoyarme con un café</string>
     <string name="override_colors_manually_title">Sobreescribir manualmente los colores</string>
@@ -160,11 +160,13 @@
     <string name="custom_tertiary_color_title">Color terciario personalizado</string>
     <string name="custom_tertiary_color_desc">Selecciona el color blanco puro para desactivar</string>
     <string name="mode_specific_theme_title">Tema específico del modo</string>
+    <string name="screen_off_update_desc">Actualiza los colores después de 15 segundos del apagado de la pantalla; útil para fondos de pantalla animados</string>
+    <string name="screen_off_update_title">Actualizar colores al apagar pantalla</string>
     <string name="mode_specific_theme_desc">Aplica diferentes valores de saturación y luminosidad para los modos claro y oscuro</string>
-    <string name="darker_launcher_icons_title">Darker launcher icons</string>
-    <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
-    <string name="semitransparent_launcher_title">Semi-transparent launcher</string>
-    <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
-    <string name="pitch_black_settings_workaround_desc">Darken the settings background color; causes side effects</string>
+    <string name="darker_launcher_icons_title">Iconos del lanzador más oscuros</string>
+    <string name="darker_launcher_icons_desc">Aplicar un fondo más oscuro a los iconos monocromáticos de Pixel Launcher</string>
+    <string name="semitransparent_launcher_title">Lanzador semitransparente</string>
+    <string name="semitransparent_launcher_desc">Aplicar un estilo semitransparente a Pixel Launcher</string>
+    <string name="pitch_black_settings_workaround_title">Solución alternativa de ajuste de negro puro</string>
+    <string name="pitch_black_settings_workaround_desc">Oscurece el color de fondo de los ajustes; causa efectos secundarios</string>
 </resources>

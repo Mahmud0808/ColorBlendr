@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">Cor terciária personalizada</string>
     <string name="custom_tertiary_color_desc">Selecione a cor branca pura para desativar</string>
     <string name="mode_specific_theme_title">Tema específico do modo</string>
+    <string name="screen_off_update_desc">Atualiza as cores após 15 segundos de tela desligada, útil para planos de fundo animados.</string>
+    <string name="screen_off_update_title">Atualizar cores na tela desligada</string>
     <string name="mode_specific_theme_desc">Aplique saturação e luminosidade diferentes para modos claro e escuro</string>
     <string name="darker_launcher_icons_title">Ícones da launcher mais escuros</string>
     <string name="darker_launcher_icons_desc">Aplique um fundo mais escuro aos ícones monocromáticos da launcher pixel</string>
