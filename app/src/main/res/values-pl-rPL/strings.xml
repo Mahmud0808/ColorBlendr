@@ -138,7 +138,7 @@
     <string name="neutral_1">Neutralny 1</string>
     <string name="neutral_2">Neutralny 2</string>
     <string name="long_press_to_reset">Naciśnij i przytrzymaj, aby zresetować</string>
-    <string name="this_cannot_be_undone">Proszę mieć świadomość, że wynik tego działania jest ostateczny i nie może zostać cofnięty.</string>
+    <string name="this_cannot_be_undone">Proszę pamiętać, że wynik tej akcji jest ostateczny i nie można go cofnąć.</string>
     <string name="select_method">Wybierz metodę, aby kontynuować</string>
     <string name="mode_one_title">Root</string>
     <string name="mode_one_desc">Użyj uprawnień roota do zmiany kolorów. Wszystkie opcje modyfikacji będą dostępne.</string>
@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">Niestandardowy trzeci kolor</string>
     <string name="custom_tertiary_color_desc">Wybierz czysty biały kolor, aby wyłączyć</string>
     <string name="mode_specific_theme_title">Motyw specyficzny dla trybu</string>
+    <string name="screen_off_update_desc">Aktualizuje kolory po 15 sekundach od wyłączenia ekranu; przydatne dla animowanych tapet</string>
+    <string name="screen_off_update_title">Aktualizuj kolory przy wyłączonym ekranie</string>
     <string name="mode_specific_theme_desc">Zastosuj różne nasycenie i jasność dla motywu jasnego i ciemnego</string>
     <string name="darker_launcher_icons_title">Ciemniejsze ikony w launcherze</string>
     <string name="darker_launcher_icons_desc">Zastosuj ciemniejsze tło dla monochromatycznych ikon w Pixel Launcherze</string>

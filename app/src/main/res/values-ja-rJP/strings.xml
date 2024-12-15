@@ -160,6 +160,8 @@
     <string name="custom_tertiary_color_title">カスタムトライナリカラー</string>
     <string name="custom_tertiary_color_desc">ピュアホワイトを選択して無効化します</string>
     <string name="mode_specific_theme_title">モード固有のテーマ</string>
+    <string name="screen_off_update_desc">画面がオフになってから 15 秒後に色を更新します、ライブ壁紙の使用時に役立ちます</string>
+    <string name="screen_off_update_title">画面オフで色を更新</string>
     <string name="mode_specific_theme_desc">ライトモードとダークモードで異なる彩度と明度を適用します</string>
     <string name="darker_launcher_icons_title">より暗いランチャーアイコン</string>
     <string name="darker_launcher_icons_desc">Pixel Launcher のモノクロアイコンに暗い背景を適用します</string>

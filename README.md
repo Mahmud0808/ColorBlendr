@@ -82,6 +82,12 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 </details>
 
 <details>
+  <summary>Why are some features grayed out or cannot be enabled?</summary>
+
+- These features either require a specific Android version or higher, or you need root access to unlock all features.
+</details>
+
+<details>
   <summary>How do I properly uninstall ColorBlendr?</summary>
 
 - First, disable the ColorBlendr Service from app settings. Then, uninstall the app and reboot your device.
