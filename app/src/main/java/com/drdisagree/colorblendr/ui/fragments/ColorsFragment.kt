@@ -19,7 +19,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
@@ -50,7 +50,6 @@ class ColorsFragment : Fragment() {
     private lateinit var binding: FragmentColorsBinding
     private lateinit var monetSeedColor: IntArray
     private lateinit var sharedViewModel: SharedViewModel
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     private val wallpaperChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -65,7 +64,7 @@ class ColorsFragment : Fragment() {
 
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
-        if (!notShizukuMode) {
+        if (isShizukuMode) {
             SettingsFragment.clearCustomColors()
         }
     }
@@ -171,7 +170,7 @@ class ColorsFragment : Fragment() {
                 PerAppThemeFragment()
             )
         }
-        binding.perAppTheme.setEnabled(notShizukuMode)
+        binding.perAppTheme.setEnabled(!isShizukuMode)
     }
 
     private fun updateViewVisibility(visibilityStates: Map<String, Int>) {

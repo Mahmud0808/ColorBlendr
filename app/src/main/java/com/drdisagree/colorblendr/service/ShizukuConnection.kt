@@ -4,7 +4,13 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.Keep
+import com.drdisagree.colorblendr.common.Const.COLOR_THEME_APP_ICON
+import com.drdisagree.colorblendr.common.Const.LOCK_ADAPTIVE_COLOR
 import com.drdisagree.colorblendr.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_THEME_COLORS
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_THEME_COLORS_FOR_GOOGLE
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_THEME_COLOR_IS_GRAY
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_THEME_STATE
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.topjohnwu.superuser.Shell
 import org.json.JSONException
@@ -17,10 +23,12 @@ class ShizukuConnection : IShizukuConnection.Stub {
         private val TAG: String = ShizukuConnection::class.java.simpleName
     }
 
+    @Suppress("unused")
     constructor() {
         Log.i(TAG, "Constructed with no arguments")
     }
 
+    @Suppress("unused")
     @Keep
     constructor(context: Context) {
         Log.i(TAG, "Constructed with context: $context")
@@ -40,11 +48,40 @@ class ShizukuConnection : IShizukuConnection.Stub {
         ).exec()
     }
 
+    override fun applyFabricatedColorsSamsung(paletteArray: String) {
+        Shell.cmd(
+            "settings put system $LOCK_ADAPTIVE_COLOR '3'",
+            "settings put system $WALLPAPER_THEME_COLORS '$paletteArray'",
+            "settings put system $WALLPAPER_THEME_COLORS_FOR_GOOGLE '$paletteArray'",
+            "settings put system $WALLPAPER_THEME_COLOR_IS_GRAY '0'",
+            "settings put system $WALLPAPER_THEME_STATE '1'",
+        ).exec()
+    }
+
+    override fun applyThemedIconSamsung(isThemed: Boolean) {
+        Shell.cmd(
+            "settings put system $COLOR_THEME_APP_ICON '${if (isThemed) "1" else "0"}'"
+        ).exec()
+    }
+
     override fun removeFabricatedColors() {
         try {
             applyFabricatedColors(originalSettings.toString())
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)
+        }
+    }
+
+    override fun removeFabricatedColorsSamsung() {
+        try {
+            Shell.cmd(
+                "settings put system $WALLPAPER_THEME_STATE '0'",
+                "settings put system $LOCK_ADAPTIVE_COLOR '3'",
+                "settings put system $WALLPAPER_THEME_COLORS ''",
+                "settings put system $WALLPAPER_THEME_COLORS_FOR_GOOGLE ''"
+            ).exec()
+        } catch (e: Exception) {
+            Log.e(TAG, "removeFabricatedColorsSamsung: ", e)
         }
     }
 

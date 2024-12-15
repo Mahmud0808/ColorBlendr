@@ -1,7 +1,9 @@
 package com.drdisagree.colorblendr.common
 
+import android.os.Build
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.utils.RomUtil.isSamsung
 import com.drdisagree.colorblendr.utils.SystemUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -72,10 +74,21 @@ object Const {
     const val SHOW_PER_APP_THEME_WARN: String = "showPerAppThemeWarn"
     const val TINT_TEXT_COLOR: String = "tintTextColor"
     const val SHIZUKU_PERMISSION_REQUEST_ID: Int = 100
-    const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES: String = "theme_customization_overlay_packages"
     const val SHIZUKU_THEMING_ENABLED: String = "shizukuThemingEnabled"
     const val APP_LIST_FILTER_METHOD: String = "appListFilterMethod"
     val screenOrientation: AtomicInteger = AtomicInteger(-1)
+    val isSamsungDevice: Boolean = isSamsung
+
+    // AOSP key
+    const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES: String = "theme_customization_overlay_packages"
+
+    // Samsung key
+    const val WALLPAPER_THEME_STATE: String = "wallpapertheme_state"
+    const val WALLPAPER_THEME_COLOR_IS_GRAY: String = "wallpapertheme_color_isgray"
+    const val LOCK_ADAPTIVE_COLOR: String = "lock_adaptive_color"
+    const val WALLPAPER_THEME_COLORS: String = "wallpapertheme_color"
+    const val WALLPAPER_THEME_COLORS_FOR_GOOGLE: String = "wallpapertheme_color_for_g"
+    const val COLOR_THEME_APP_ICON: String = "colortheme_app_icon"
 
     // Service preferences
     val GSON: Gson = Gson()
@@ -151,4 +164,12 @@ object Const {
         LAUNCHABLE,
         ALL
     }
+
+    val isRootMode: Boolean = workingMethod == Const.WorkMethod.ROOT
+    val isShizukuMode: Boolean = workingMethod == Const.WorkMethod.SHIZUKU
+
+    val isAtleastA13 = !isShizukuMode ||
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    val isAtleastA14 = !isShizukuMode ||
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 }

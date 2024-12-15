@@ -16,7 +16,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS
 import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
@@ -25,7 +24,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
@@ -56,7 +55,6 @@ class ColorPaletteFragment : Fragment() {
     private lateinit var colorTableRows: Array<LinearLayout>
     private lateinit var sharedViewModel: SharedViewModel
     private val colorNames: Array<Array<String>> = ColorUtil.colorNames
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +85,7 @@ class ColorPaletteFragment : Fragment() {
         )
 
         // Warning message
-        val isOverrideAvailable: Boolean = notShizukuMode &&
+        val isOverrideAvailable: Boolean = !isShizukuMode &&
                 getBoolean(MANUAL_OVERRIDE_COLORS, false)
 
         binding.warn.warningText.setText(
@@ -211,7 +209,7 @@ class ColorPaletteFragment : Fragment() {
                                 Snackbar.LENGTH_INDEFINITE
                             )
                             .setAction(snackbarButton) {
-                                if (!manualOverride || !notShizukuMode) {
+                                if (!manualOverride || isShizukuMode) {
                                     val clipboard: ClipboardManager =
                                         requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                     val clip: ClipData = ClipData.newPlainText(

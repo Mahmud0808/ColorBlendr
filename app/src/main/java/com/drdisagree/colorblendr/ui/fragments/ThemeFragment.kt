@@ -10,7 +10,6 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
@@ -18,7 +17,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
@@ -50,7 +49,6 @@ class ThemeFragment : Fragment() {
         getInt(MONET_BACKGROUND_LIGHTNESS, 100)
     )
     private var wasDarkMode: Boolean = isDarkMode
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,7 +93,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            accentSaturation.setEnabled(notShizukuMode)
+            accentSaturation.setEnabled(!isShizukuMode)
 
             // Monet background saturation
             backgroundSaturation.seekbarProgress = getInt(MONET_BACKGROUND_SATURATION, 100)
@@ -124,7 +122,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            backgroundSaturation.setEnabled(notShizukuMode)
+            backgroundSaturation.setEnabled(!isShizukuMode)
 
             // Monet background lightness
             backgroundLightness.seekbarProgress = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
@@ -153,7 +151,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            backgroundLightness.setEnabled(notShizukuMode)
+            backgroundLightness.setEnabled(!isShizukuMode)
         }
 
         return binding.getRoot()

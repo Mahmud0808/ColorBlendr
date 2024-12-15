@@ -38,7 +38,7 @@ import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -71,7 +71,6 @@ class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
     private var sharedViewModel: SharedViewModel? = null
     private var isMasterSwitchEnabled: Boolean = true
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     private val masterSwitch: CompoundButton.OnCheckedChangeListener =
         CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
@@ -150,7 +149,7 @@ class SettingsFragment : Fragment() {
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
             applyFabricatedColors()
         }
-        binding.accurateShades.setEnabled(notShizukuMode)
+        binding.accurateShades.setEnabled(!isShizukuMode)
 
         // Pitch black theme
         binding.pitchBlackTheme.isSwitchChecked = getBoolean(MONET_PITCH_BLACK_THEME, false)
@@ -158,7 +157,7 @@ class SettingsFragment : Fragment() {
             putBoolean(MONET_PITCH_BLACK_THEME, isChecked)
             applyFabricatedColors()
         }
-        binding.pitchBlackTheme.setEnabled(notShizukuMode)
+        binding.pitchBlackTheme.setEnabled(!isShizukuMode)
 
         // Custom primary color
         binding.customPrimaryColor.isSwitchChecked = getBoolean(MONET_SEED_COLOR_ENABLED, false)
@@ -186,7 +185,7 @@ class SettingsFragment : Fragment() {
             putBoolean(TINT_TEXT_COLOR, isChecked)
             applyFabricatedColors()
         }
-        binding.tintTextColor.setEnabled(notShizukuMode)
+        binding.tintTextColor.setEnabled(!isShizukuMode)
 
         // Override colors manually
         binding.overrideColorsManually.isSwitchChecked = getBoolean(MANUAL_OVERRIDE_COLORS, false)
@@ -220,7 +219,7 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
-        binding.overrideColorsManually.setEnabled(notShizukuMode)
+        binding.overrideColorsManually.setEnabled(!isShizukuMode)
 
         binding.backupRestore.container.setOnClickListener {
             crossfade(

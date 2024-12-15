@@ -21,6 +21,8 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.common.Const.isSamsungDevice
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs
@@ -220,6 +222,7 @@ object OverlayManager {
             return
         }
 
+        val isDarkMode = SystemUtil.isDarkMode
         val style = ColorSchemeUtil.stringToEnumMonetStyle(
             context,
             RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))!!
@@ -252,14 +255,21 @@ object OverlayManager {
             isDark = true
         )
 
+        if (
+            applyFabricatedColorsNonRootSamsung(
+                context,
+                if (isDarkMode) paletteDark else paletteLight
+            )
+        ) {
+            return
+        }
+
         ArrayList<FabricatedOverlayResource>().apply {
             add(
                 FabricatedOverlayResource(
                     FABRICATED_OVERLAY_NAME_SYSTEM,
                     FRAMEWORK_PACKAGE
                 ).also { frameworkOverlay ->
-                    val isDarkMode = SystemUtil.isDarkMode
-
                     frameworkOverlay.apply {
                         for (i in colorNames.indices) {
                             for (j in colorNames[i].indices) {
@@ -417,8 +427,8 @@ object OverlayManager {
         }
     }
 
-    private fun applyFabricatedColorsNonRoot(context: Context): Boolean {
-        if (workingMethod != Const.WorkMethod.SHIZUKU) {
+    private fun applyFabricatedColorsNonRoot(context: Context, force: Boolean = false): Boolean {
+        if (!isShizukuMode || (isSamsungDevice && !force)) {
             return false
         }
 
@@ -452,8 +462,42 @@ object OverlayManager {
         return true
     }
 
+    private fun applyFabricatedColorsNonRootSamsung(
+        context: Context,
+        palette: ArrayList<ArrayList<Int>>
+    ): Boolean {
+        if (!isShizukuMode || !isSamsungDevice) {
+            return false
+        }
+
+        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(context)) {
+            Log.w(TAG, "Shizuku permission not available")
+            return true
+        }
+
+        if (mShizukuConnection == null) {
+            mShizukuConnection = shizukuConnection
+
+            if (mShizukuConnection == null) {
+                Log.w(TAG, "Shizuku service connection is null")
+                return true
+            }
+        }
+
+        try {
+            applyFabricatedColorsNonRoot(context, true) // Material app colors
+            mShizukuConnection!!.applyFabricatedColorsSamsung(
+                palette.flatten().toString()
+            ) // Samsung app colors
+        } catch (e: Exception) {
+            Log.d(TAG, "applyFabricatedColorsNonRootSamsung: ", e)
+        }
+
+        return true
+    }
+
     private fun removeFabricatedColorsNonRoot(context: Context): Boolean {
-        if (workingMethod != Const.WorkMethod.SHIZUKU) {
+        if (!isShizukuMode) {
             return false
         }
 
@@ -473,6 +517,10 @@ object OverlayManager {
 
         try {
             mShizukuConnection!!.removeFabricatedColors()
+
+            if (isSamsungDevice) {
+                mShizukuConnection!!.removeFabricatedColorsSamsung()
+            }
         } catch (e: Exception) {
             Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
         }

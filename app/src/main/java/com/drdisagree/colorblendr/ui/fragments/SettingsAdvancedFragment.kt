@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.common.Const.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.common.Const.MODE_SPECIFIC_THEMES
@@ -22,9 +21,9 @@ import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
-import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.config.RPrefs.putBoolean
@@ -45,7 +44,6 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 class SettingsAdvancedFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsAdvancedBinding
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
     private val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 
     override fun onCreateView(
@@ -60,7 +58,7 @@ class SettingsAdvancedFragment : Fragment() {
         // Secondary color
         var monetSecondaryColor = getInt(MONET_SECONDARY_COLOR, Color.WHITE)
         binding.secondaryColorPicker.isEnabled =
-            getBoolean(MONET_SEED_COLOR_ENABLED, false) && notShizukuMode
+            getBoolean(MONET_SEED_COLOR_ENABLED, false) && !isShizukuMode
         binding.secondaryColorPicker.previewColor =
             getInt(MONET_SECONDARY_COLOR, monetSecondaryColor)
         binding.secondaryColorPicker.setOnClickListener {
@@ -84,7 +82,7 @@ class SettingsAdvancedFragment : Fragment() {
         // Tertiary color
         var monetTertiaryColor = getInt(MONET_TERTIARY_COLOR, Color.WHITE)
         binding.tertiaryColorPicker.isEnabled =
-            getBoolean(MONET_SEED_COLOR_ENABLED, false) && notShizukuMode
+            getBoolean(MONET_SEED_COLOR_ENABLED, false) && !isShizukuMode
         binding.tertiaryColorPicker.previewColor = monetTertiaryColor
         binding.tertiaryColorPicker.setOnClickListener {
             ColorPickerDialog()
@@ -111,7 +109,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Mode specific themes
-        binding.modeSpecificThemes.isEnabled = notShizukuMode
+        binding.modeSpecificThemes.isEnabled = !isShizukuMode
         binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(MODE_SPECIFIC_THEMES, isChecked)
@@ -119,7 +117,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Darker launcher icons
-        binding.darkerLauncherIcons.isEnabled = notShizukuMode && hasPixelLauncher
+        binding.darkerLauncherIcons.isEnabled = !isShizukuMode && hasPixelLauncher
         binding.darkerLauncherIcons.isSwitchChecked = getBoolean(DARKER_LAUNCHER_ICONS, false)
         binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
@@ -130,7 +128,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Semi-transparent launcher icons
-        binding.semitransparentLauncher.isEnabled = notShizukuMode && hasPixelLauncher
+        binding.semitransparentLauncher.isEnabled = !isShizukuMode && hasPixelLauncher
         binding.semitransparentLauncher.isSwitchChecked =
             getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
         binding.semitransparentLauncher.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
@@ -143,7 +141,7 @@ class SettingsAdvancedFragment : Fragment() {
 
         // Semi-transparent launcher icons
         binding.pitchBlackSettingsWorkaround.isEnabled =
-            notShizukuMode && getBoolean(MONET_PITCH_BLACK_THEME, false)
+            !isShizukuMode && getBoolean(MONET_PITCH_BLACK_THEME, false)
         binding.pitchBlackSettingsWorkaround.visibility =
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) View.VISIBLE else View.GONE
         binding.pitchBlackSettingsWorkaround.isSwitchChecked =
@@ -167,7 +165,7 @@ class SettingsAdvancedFragment : Fragment() {
     }
 
     private fun savePixelLauncherInPerAppTheme() {
-        if (!hasPixelLauncher || !notShizukuMode) {
+        if (!hasPixelLauncher || isShizukuMode) {
             return
         }
 

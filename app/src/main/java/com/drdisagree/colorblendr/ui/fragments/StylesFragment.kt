@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.fragments
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -9,11 +8,12 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.isAtleastA13
+import com.drdisagree.colorblendr.common.Const.isAtleastA14
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.config.RPrefs.putString
@@ -23,11 +23,6 @@ import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 class StylesFragment : Fragment() {
 
     private lateinit var binding: FragmentStylesBinding
-    private val notShizukuMode = workingMethod != Const.WorkMethod.SHIZUKU
-    private val isAtleastA13 = notShizukuMode ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    private val isAtleastA14 = notShizukuMode ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -108,7 +103,7 @@ class StylesFragment : Fragment() {
             putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fidelity))
             binding.monetFidelity.applyColorScheme()
         }
-        binding.monetFidelity.isEnabled = notShizukuMode
+        binding.monetFidelity.isEnabled = !isShizukuMode
 
         binding.monetContent.isSelected = getString(R.string.monet_content) == selectedStyle
         binding.monetContent.setOnClickListener {
@@ -118,7 +113,7 @@ class StylesFragment : Fragment() {
             putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_content))
             binding.monetContent.applyColorScheme()
         }
-        binding.monetContent.isEnabled = notShizukuMode
+        binding.monetContent.isEnabled = !isShizukuMode
 
         binding.monetFruitsalad.isSelected = getString(R.string.monet_fruitsalad) == selectedStyle
         binding.monetFruitsalad.setOnClickListener {
