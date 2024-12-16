@@ -21,7 +21,6 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
@@ -33,6 +32,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
 import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 @Suppress("unused")
@@ -428,7 +428,7 @@ object OverlayManager {
     }
 
     private fun applyFabricatedColorsNonRoot(context: Context, force: Boolean = false): Boolean {
-        if (!isShizukuMode || (isSamsungDevice && !force)) {
+        if (!isShizukuMode || (isOneUI && !force)) {
             return false
         }
 
@@ -466,7 +466,7 @@ object OverlayManager {
         context: Context,
         palette: ArrayList<ArrayList<Int>>
     ): Boolean {
-        if (!isShizukuMode || !isSamsungDevice) {
+        if (!isShizukuMode || !isOneUI) {
             return false
         }
 
@@ -518,7 +518,7 @@ object OverlayManager {
         try {
             mShizukuConnection!!.removeFabricatedColors()
 
-            if (isSamsungDevice) {
+            if (isOneUI) {
                 mShizukuConnection!!.removeFabricatedColorsSamsung()
             }
         } catch (e: Exception) {

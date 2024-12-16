@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.common
 import android.os.Build
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.utils.RomUtil.isSamsung
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.SystemUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -77,7 +77,6 @@ object Const {
     const val SHIZUKU_THEMING_ENABLED: String = "shizukuThemingEnabled"
     const val APP_LIST_FILTER_METHOD: String = "appListFilterMethod"
     val screenOrientation: AtomicInteger = AtomicInteger(-1)
-    val isSamsungDevice: Boolean = isSamsung
 
     // AOSP key
     const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES: String = "theme_customization_overlay_packages"
@@ -167,7 +166,7 @@ object Const {
 
     val isRootMode: Boolean = workingMethod == Const.WorkMethod.ROOT
     val isShizukuMode: Boolean = workingMethod == Const.WorkMethod.SHIZUKU
-    val isSamsungShizukuMode: Boolean = isSamsungDevice && workingMethod == Const.WorkMethod.SHIZUKU
+    val isOneUIShizukuMode: Boolean = isOneUI && workingMethod == Const.WorkMethod.SHIZUKU
 
     val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 

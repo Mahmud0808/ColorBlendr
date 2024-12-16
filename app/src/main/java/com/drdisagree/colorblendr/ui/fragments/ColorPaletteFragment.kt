@@ -24,7 +24,6 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -41,6 +40,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -210,7 +210,7 @@ class ColorPaletteFragment : Fragment() {
                                 Snackbar.LENGTH_INDEFINITE
                             )
                             .setAction(snackbarButton) {
-                                if (!manualOverride || (isShizukuMode && !isSamsungDevice)) {
+                                if (!manualOverride || (isShizukuMode && !isOneUI)) {
                                     val clipboard: ClipboardManager =
                                         requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                     val clip: ClipData = ClipData.newPlainText(

@@ -38,8 +38,7 @@ import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.common.Const.isSamsungDevice
-import com.drdisagree.colorblendr.common.Const.isSamsungShizukuMode
+import com.drdisagree.colorblendr.common.Const.isOneUIShizukuMode
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
@@ -57,6 +56,7 @@ import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -151,7 +151,7 @@ class SettingsFragment : Fragment() {
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
             applyFabricatedColors()
         }
-        binding.accurateShades.setEnabled(!isShizukuMode || isSamsungDevice)
+        binding.accurateShades.setEnabled(!isShizukuMode || isOneUI)
 
         // Pitch black theme
         binding.pitchBlackTheme.isSwitchChecked = getBoolean(MONET_PITCH_BLACK_THEME, false)
@@ -159,7 +159,7 @@ class SettingsFragment : Fragment() {
             putBoolean(MONET_PITCH_BLACK_THEME, isChecked)
             applyFabricatedColors()
         }
-        binding.pitchBlackTheme.setEnabled(!isShizukuMode || isSamsungDevice)
+        binding.pitchBlackTheme.setEnabled(!isShizukuMode || isOneUI)
 
         // Custom primary color
         binding.customPrimaryColor.isSwitchChecked = getBoolean(MONET_SEED_COLOR_ENABLED, false)
@@ -188,7 +188,7 @@ class SettingsFragment : Fragment() {
             applyFabricatedColors()
         }
         binding.tintTextColor.setEnabled(!isShizukuMode)
-        binding.tintTextColor.visibility = if (isSamsungShizukuMode) {
+        binding.tintTextColor.visibility = if (isOneUIShizukuMode) {
             View.GONE
         } else {
             View.VISIBLE
@@ -226,8 +226,8 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
-        binding.overrideColorsManually.setEnabled(!isShizukuMode || isSamsungDevice)
-        binding.overrideColorsManually.visibility = if (isSamsungShizukuMode) {
+        binding.overrideColorsManually.setEnabled(!isShizukuMode || isOneUI)
+        binding.overrideColorsManually.visibility = if (isOneUIShizukuMode) {
             View.GONE
         } else {
             View.VISIBLE

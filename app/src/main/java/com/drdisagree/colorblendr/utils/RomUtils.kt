@@ -211,6 +211,22 @@ object RomUtil {
          */
         get() = ROM_MOTOROLA[0] == romInfo!!.name
 
+    val isOneUI: Boolean
+        /**
+         * Return whether the rom is oneui.
+         *
+         * @return `true`: yes<br></br>`false`: no
+         */
+        get() {
+            if (!isSamsung) return false
+
+            return try {
+                Build.VERSION::class.java.getDeclaredField("SEM_PLATFORM_INT").getInt(null) >= 90000
+            } catch (e: Exception) {
+                false
+            }
+        }
+
     val romInfo: RomInfo?
         /**
          * Return the ROM's information.

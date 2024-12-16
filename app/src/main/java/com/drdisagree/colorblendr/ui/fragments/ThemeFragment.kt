@@ -17,7 +17,6 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -30,6 +29,7 @@ import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +94,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            accentSaturation.setEnabled(!isShizukuMode || isSamsungDevice)
+            accentSaturation.setEnabled(!isShizukuMode || isOneUI)
 
             // Monet background saturation
             backgroundSaturation.seekbarProgress = getInt(MONET_BACKGROUND_SATURATION, 100)
@@ -123,7 +123,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            backgroundSaturation.setEnabled(!isShizukuMode || isSamsungDevice)
+            backgroundSaturation.setEnabled(!isShizukuMode || isOneUI)
 
             // Monet background lightness
             backgroundLightness.seekbarProgress = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
@@ -152,7 +152,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            backgroundLightness.setEnabled(!isShizukuMode || isSamsungDevice)
+            backgroundLightness.setEnabled(!isShizukuMode || isOneUI)
         }
 
         return binding.getRoot()
