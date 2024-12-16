@@ -20,6 +20,8 @@ import android.util.Log
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.utils.SamsungPalette
+import com.drdisagree.colorblendr.utils.SystemPalette
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.Utils
@@ -390,6 +392,29 @@ class RootConnection : RootService() {
         @Throws(Exception::class)
         private fun commit(transaction: Any?) {
             oMS!!.commit(transaction as OverlayManagerTransaction?)
+        }
+
+        /**
+         * Samsung specific settings
+         */
+        override fun getCurrentSettings(): String {
+            return SystemPalette.currentSettings
+        }
+
+        override fun applyFabricatedColorsSamsung(jsonString: String, paletteArray: String) {
+            SamsungPalette.applySystemColors(jsonString, paletteArray)
+        }
+
+        override fun isThemedIconEnabledSamsung(): Boolean {
+            return SamsungPalette.isThemedIconEnabled
+        }
+
+        override fun enableThemedIconSamsung(isThemed: Boolean) {
+            SamsungPalette.enableThemedIcon(isThemed)
+        }
+
+        override fun removeFabricatedColorsSamsung() {
+            SamsungPalette.removeSystemColors()
         }
 
         @SuppressLint("PrivateApi", "NewApi")

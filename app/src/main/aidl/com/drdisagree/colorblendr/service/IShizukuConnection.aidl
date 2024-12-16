@@ -6,7 +6,8 @@ interface IShizukuConnection {
     void applyFabricatedColors(String jsonString) = 2;
     void removeFabricatedColors() = 3;
     String getCurrentSettings() = 4;
-    void applyFabricatedColorsSamsung(String paletteArray) = 5;
-    void applyThemedIconSamsung(boolean isThemed) = 6;
-    void removeFabricatedColorsSamsung() = 7;
+    void applyFabricatedColorsSamsung(String jsonString, String paletteArray) = 5;
+    boolean isThemedIconEnabledSamsung() = 6;
+    void enableThemedIconSamsung(boolean isThemed) = 7;
+    void removeFabricatedColorsSamsung() = 8;
 }

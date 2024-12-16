@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.RemoteException
 import android.util.Log
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
@@ -21,9 +22,9 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.common.Const.isRootMode
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
-import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
@@ -34,6 +35,7 @@ import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverl
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
+import com.topjohnwu.superuser.Shell
 
 @Suppress("unused")
 object OverlayManager {
@@ -44,18 +46,7 @@ object OverlayManager {
     private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
     fun enableOverlay(packageName: String) {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode || !validRootConnection) return
 
         try {
             mRootConnection!!.enableOverlay(listOf(packageName))
@@ -68,18 +59,7 @@ object OverlayManager {
     }
 
     fun disableOverlay(packageName: String) {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode || !validRootConnection) return
 
         try {
             mRootConnection!!.disableOverlay(listOf(packageName))
@@ -92,18 +72,7 @@ object OverlayManager {
     }
 
     fun isOverlayInstalled(packageName: String): Boolean {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return false
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return false
-            }
-        }
+        if (!isRootMode || !validRootConnection) return false
 
         try {
             return mRootConnection!!.isOverlayInstalled(packageName)
@@ -117,18 +86,7 @@ object OverlayManager {
     }
 
     fun isOverlayEnabled(packageName: String): Boolean {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return false
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return false
-            }
-        }
+        if (!isRootMode || !validRootConnection) return false
 
         try {
             return mRootConnection!!.isOverlayEnabled(packageName)
@@ -142,18 +100,7 @@ object OverlayManager {
     }
 
     fun uninstallOverlayUpdates(packageName: String) {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode || !validRootConnection) return
 
         try {
             mRootConnection!!.uninstallOverlayUpdates(packageName)
@@ -166,18 +113,7 @@ object OverlayManager {
     }
 
     private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode || !validRootConnection) return
 
         try {
             mRootConnection!!.registerFabricatedOverlay(fabricatedOverlay)
@@ -188,18 +124,7 @@ object OverlayManager {
     }
 
     fun unregisterFabricatedOverlay(packageName: String) {
-        if (workingMethod != Const.WorkMethod.ROOT) {
-            return
-        }
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode || !validRootConnection) return
 
         try {
             mRootConnection!!.unregisterFabricatedOverlay(packageName)
@@ -218,7 +143,7 @@ object OverlayManager {
             return
         }
 
-        if (applyFabricatedColorsNonRoot(context)) {
+        if (applyFabricatedColorsNonRoot()) {
             return
         }
 
@@ -255,14 +180,10 @@ object OverlayManager {
             isDark = true
         )
 
-        if (
-            applyFabricatedColorsNonRootSamsung(
-                context,
-                if (isDarkMode) paletteDark else paletteLight
-            )
-        ) {
-            return
-        }
+        // OneUI system theme
+        applyFabricatedColorsSamsung(
+            if (isDarkMode) paletteDark else paletteLight
+        )
 
         ArrayList<FabricatedOverlayResource>().apply {
             add(
@@ -372,8 +293,8 @@ object OverlayManager {
         )
     }
 
-    fun removeFabricatedColors(context: Context) {
-        if (removeFabricatedColorsNonRoot(context)) {
+    fun removeFabricatedColors() {
+        if (removeFabricatedColorsNonRoot()) {
             return
         }
 
@@ -427,24 +348,12 @@ object OverlayManager {
         }
     }
 
-    private fun applyFabricatedColorsNonRoot(context: Context, force: Boolean = false): Boolean {
+    private fun applyFabricatedColorsNonRoot(force: Boolean = false): Boolean {
         if (!isShizukuMode || (isOneUI && !force)) {
             return false
         }
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(context)) {
-            Log.w(TAG, "Shizuku permission not available")
-            return true
-        }
-
-        if (mShizukuConnection == null) {
-            mShizukuConnection = shizukuConnection
-
-            if (mShizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
-                return true
-            }
-        }
+        if (!validShizukuConnection) return true
 
         try {
             val currentSettings = mShizukuConnection!!.currentSettings
@@ -462,58 +371,96 @@ object OverlayManager {
         return true
     }
 
-    private fun applyFabricatedColorsNonRootSamsung(
-        context: Context,
-        palette: ArrayList<ArrayList<Int>>
-    ): Boolean {
-        if (!isShizukuMode || !isOneUI) {
-            return false
+    private fun applyFabricatedColorsSamsung(palette: ArrayList<ArrayList<Int>>) {
+        if (!isOneUI) return
+
+        if (isShizukuMode) {
+            if (!validShizukuConnection) return
+
+            try {
+                val currentSettings = mShizukuConnection!!.currentSettings
+                val jsonString = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
+
+                mShizukuConnection!!.applyFabricatedColorsSamsung(
+                    MiscUtil.mergeJsonStrings(currentSettings, jsonString), // Material app colors
+                    palette.flatten().toString() // Samsung app colors
+                )
+            } catch (e: Exception) {
+                Log.d(TAG, "applyFabricatedColorsNonRootSamsung: ", e)
+            }
+        } else if (isRootMode) {
+            if (!validRootConnection) return
+
+            try {
+                val currentSettings = mRootConnection!!.currentSettings
+                val jsonString = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
+
+                mRootConnection!!.applyFabricatedColorsSamsung(
+                    MiscUtil.mergeJsonStrings(currentSettings, jsonString), // Material app colors
+                    palette.flatten().toString() // Samsung app colors
+                )
+            } catch (e: Exception) {
+                Log.d(TAG, "applyFabricatedColorsNonRootSamsung: ", e)
+            }
         }
+    }
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(context)) {
-            Log.w(TAG, "Shizuku permission not available")
-            return true
-        }
+    fun isSamsungThemedIconsEnabled(): Boolean {
+        if (!isOneUI) return false
 
-        if (mShizukuConnection == null) {
-            mShizukuConnection = shizukuConnection
+        if (isShizukuMode) {
+            if (!validShizukuConnection) return false
 
-            if (mShizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
-                return true
+            try {
+                return mShizukuConnection!!.isThemedIconEnabledSamsung
+            } catch (e: Exception) {
+                Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
+                return false
+            }
+        } else if (isRootMode) {
+            if (!validRootConnection) return false
+
+            try {
+                return mRootConnection!!.isThemedIconEnabledSamsung
+            } catch (e: Exception) {
+                Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
+                return false
             }
         }
 
-        try {
-            applyFabricatedColorsNonRoot(context, true) // Material app colors
-            mShizukuConnection!!.applyFabricatedColorsSamsung(
-                palette.flatten().toString()
-            ) // Samsung app colors
-        } catch (e: Exception) {
-            Log.d(TAG, "applyFabricatedColorsNonRootSamsung: ", e)
-        }
-
-        return true
+        return false
     }
 
-    private fun removeFabricatedColorsNonRoot(context: Context): Boolean {
+    fun enableSamsungThemedIcons(enabled: Boolean) {
+        if (!isOneUI) return
+
+        if (isShizukuMode) {
+            if (!validShizukuConnection) return
+
+            try {
+                mShizukuConnection!!.enableThemedIconSamsung(enabled)
+            } catch (e: Exception) {
+                Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
+                return
+            }
+        } else if (isRootMode) {
+            if (!validRootConnection) return
+
+            try {
+                mRootConnection!!.enableThemedIconSamsung(enabled)
+            } catch (e: Exception) {
+                Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
+                return
+            }
+        }
+    }
+
+    private fun removeFabricatedColorsNonRoot(): Boolean {
         if (!isShizukuMode) {
             return false
         }
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(context)) {
-            Log.w(TAG, "Shizuku permission not available")
-            return true
-        }
-
-        if (mShizukuConnection == null) {
-            mShizukuConnection = shizukuConnection
-
-            if (mShizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
-                return true
-            }
-        }
+        if (!validShizukuConnection) return true
 
         try {
             mShizukuConnection!!.removeFabricatedColors()
@@ -527,4 +474,42 @@ object OverlayManager {
 
         return true
     }
+
+    private val validShizukuConnection: Boolean
+        get() {
+            if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(appContext)) {
+                Log.w(TAG, "Shizuku permission not available")
+                return false
+            }
+
+            if (mShizukuConnection == null) {
+                mShizukuConnection = shizukuConnection
+
+                if (mShizukuConnection == null) {
+                    Log.w(TAG, "Shizuku service connection is null")
+                    return false
+                }
+            }
+
+            return true
+        }
+
+    private val validRootConnection: Boolean
+        get() {
+            if (Shell.isAppGrantedRoot() != true) {
+                Log.w(TAG, "Root permission not available")
+                return false
+            }
+
+            if (mRootConnection == null) {
+                mRootConnection = rootConnection
+
+                if (mRootConnection == null) {
+                    Log.w(TAG, "Root service connection is null")
+                    return false
+                }
+            }
+
+            return true
+        }
 }

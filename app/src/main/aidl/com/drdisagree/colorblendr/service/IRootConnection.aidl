@@ -23,4 +23,9 @@ interface IRootConnection {
     void uninstallOverlayUpdates(String packageName);
     void restartSystemUI();
     String[] runCommand(in List<String> command);
+    String getCurrentSettings();
+    void applyFabricatedColorsSamsung(String jsonString, String paletteArray);
+    boolean isThemedIconEnabledSamsung();
+    void enableThemedIconSamsung(boolean isThemed);
+    void removeFabricatedColorsSamsung();
 }

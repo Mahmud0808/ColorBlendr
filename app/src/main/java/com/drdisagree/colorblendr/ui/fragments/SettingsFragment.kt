@@ -93,7 +93,7 @@ class SettingsFragment : Fragment() {
                         if (isChecked) {
                             applyFabricatedColors(requireContext())
                         } else {
-                            removeFabricatedColors(requireContext())
+                            removeFabricatedColors()
                         }
                     }
 
