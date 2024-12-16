@@ -46,14 +46,20 @@ class MainActivity : AppCompatActivity() {
                     HomeFragment().apply {
                         arguments = Bundle().apply {
                             putBoolean("success", true)
+
                             if (intent?.hasExtra("data") == true) {
                                 putParcelable("data", intent.parcelable("data"))
+                                intent.removeExtra("data")
+                            }
+
+                            if (intent?.hasExtra("disable_first_run") == true) {
+                                putBoolean("disable_first_run", true)
+                                intent.removeExtra("disable_first_run")
                             }
                         }
                     },
                     false
                 )
-                intent?.removeExtra("data")
             }
         }
     }

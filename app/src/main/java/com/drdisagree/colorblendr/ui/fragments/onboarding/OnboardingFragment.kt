@@ -14,9 +14,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.FIRST_RUN
 import com.drdisagree.colorblendr.common.Const.saveWorkingMethod
-import com.drdisagree.colorblendr.config.RPrefs.putBoolean
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
@@ -157,12 +155,13 @@ class OnboardingFragment : Fragment() {
             try {
                 updateWallpaperColorList(requireContext())
                 updateFabricatedAppList(requireContext())
-                putBoolean(FIRST_RUN, false)
                 saveWorkingMethod(Const.WORKING_METHOD)
+
                 MainActivity.replaceFragment(
                     HomeFragment().apply {
                         arguments = Bundle().apply {
                             putBoolean("success", true)
+                            putBoolean("disable_first_run", true)
                         }
                     },
                     true

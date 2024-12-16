@@ -16,6 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const.FIRST_RUN
+import com.drdisagree.colorblendr.common.Const.isShizukuMode
+import com.drdisagree.colorblendr.config.RPrefs.putBoolean
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
@@ -27,12 +30,29 @@ import com.drdisagree.colorblendr.utils.AppUtil.requestStoragePermission
 import com.drdisagree.colorblendr.utils.FragmentUtil.TabSelection
 import com.drdisagree.colorblendr.utils.FragmentUtil.getSlidingDirection
 import com.drdisagree.colorblendr.utils.FragmentUtil.setCustomAnimations
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.processphoenix.ProcessPhoenix
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let { bundle ->
+            if (bundle.getBoolean("disable_first_run", false)) {
+                putBoolean(FIRST_RUN, false)
+                bundle.remove("disable_first_run")
+
+                if (isOneUI || isShizukuMode) {
+                    ProcessPhoenix.triggerRebirth(requireContext())
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
