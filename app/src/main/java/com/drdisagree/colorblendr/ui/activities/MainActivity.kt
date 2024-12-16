@@ -15,10 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.FIRST_RUN
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.common.Const.isFirstRun
+import com.drdisagree.colorblendr.common.Const.isUnknownMode
 import com.drdisagree.colorblendr.databinding.ActivityMainBinding
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment
@@ -41,9 +39,7 @@ class MainActivity : AppCompatActivity() {
         myFragmentManager = supportFragmentManager
 
         if (savedInstanceState == null) {
-            if (getBoolean(FIRST_RUN, true) || workingMethod == Const.WorkMethod.NULL ||
-                intent?.getBooleanExtra("success", false) == false
-            ) {
+            if (isFirstRun || isUnknownMode || intent?.getBooleanExtra("success", false) != true) {
                 replaceFragment(OnboardingFragment(), false)
             } else {
                 replaceFragment(

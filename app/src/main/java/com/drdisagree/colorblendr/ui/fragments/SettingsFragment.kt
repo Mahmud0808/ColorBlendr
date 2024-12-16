@@ -40,6 +40,8 @@ import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.common.Const.isOneUIShizukuMode
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
+import com.drdisagree.colorblendr.common.Const.rootedThemingEnabled
+import com.drdisagree.colorblendr.common.Const.shizukuThemingEnabled
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -100,8 +102,7 @@ class SettingsFragment : Fragment() {
 
                     isMasterSwitchEnabled = false
                     val isOverlayEnabled: Boolean =
-                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) ||
-                                getBoolean(SHIZUKU_THEMING_ENABLED, true)
+                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) || shizukuThemingEnabled
                     buttonView.isChecked = isOverlayEnabled
                     isMasterSwitchEnabled = true
 
@@ -139,9 +140,8 @@ class SettingsFragment : Fragment() {
                 getString(R.string.app_name)
             )
         )
-        binding.themingEnabled.isSwitchChecked = (getBoolean(THEMING_ENABLED, true) &&
-                isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) ||
-                getBoolean(SHIZUKU_THEMING_ENABLED, true)
+        binding.themingEnabled.isSwitchChecked = (rootedThemingEnabled &&
+                isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) || shizukuThemingEnabled
 
         binding.themingEnabled.setSwitchChangeListener(masterSwitch)
 

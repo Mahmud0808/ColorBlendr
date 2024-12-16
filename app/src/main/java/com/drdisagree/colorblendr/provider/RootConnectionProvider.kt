@@ -10,7 +10,8 @@ import android.widget.Toast
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.WORKING_METHOD
+import com.drdisagree.colorblendr.common.Const.isRootMode
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.RootConnection
 import com.topjohnwu.superuser.ipc.RootService
@@ -88,9 +89,7 @@ class RootConnectionProvider private constructor(private val context: Context) :
     private fun handleFailure() {
         CoroutineScope(Dispatchers.Main).launch {
             onFailure?.invoke() ?: run {
-                if (workingMethod == Const.WorkMethod.ROOT ||
-                    Const.WORKING_METHOD == Const.WorkMethod.ROOT
-                ) {
+                if (isRootMode || WORKING_METHOD == Const.WorkMethod.ROOT) {
                     Toast.makeText(
                         appContext,
                         R.string.root_service_not_found,

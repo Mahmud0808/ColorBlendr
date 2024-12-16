@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.common
 import android.os.Build
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.SystemUtil
 import com.google.gson.Gson
@@ -34,8 +35,9 @@ object Const {
     const val DARKER_LAUNCHER_ICONS: String = "darkerLauncherIcons"
     const val SEMI_TRANSPARENT_LAUNCHER_ICONS: String = "semiTransparentLauncherIcons"
     const val FORCE_PITCH_BLACK_SETTINGS: String = "forcePitchBlackSettings"
+
     private val modeSpecificThemes: Boolean
-        get() = RPrefs.getBoolean(MODE_SPECIFIC_THEMES, false)
+        get() = getBoolean(MODE_SPECIFIC_THEMES, false)
     val MONET_ACCENT_SATURATION: String
         get() = if (!modeSpecificThemes) {
             "monetAccentSaturationValue"
@@ -54,6 +56,7 @@ object Const {
         } else {
             if (SystemUtil.isDarkMode) "monetBackgroundLightnessValue" else "monetBackgroundLightnessValueLight"
         }
+
     const val MONET_ACCURATE_SHADES: String = "monetAccurateShades"
     const val MONET_PITCH_BLACK_THEME: String = "monetPitchBlackTheme"
     const val MONET_SEED_COLOR_ENABLED: String = "monetSeedColorEnabled"
@@ -128,7 +131,7 @@ object Const {
 
     var WORKING_METHOD: WorkMethod = WorkMethod.NULL
 
-    val workingMethod: WorkMethod
+    private val workingMethod: WorkMethod
         get() = WorkMethod.fromString(
             RPrefs.getString(
                 PREF_WORKING_METHOD,
@@ -164,9 +167,11 @@ object Const {
         ALL
     }
 
+    val isFirstRun: Boolean = getBoolean(FIRST_RUN, true)
+    val isUnknownMode: Boolean = workingMethod == Const.WorkMethod.NULL
     val isRootMode: Boolean = workingMethod == Const.WorkMethod.ROOT
     val isShizukuMode: Boolean = workingMethod == Const.WorkMethod.SHIZUKU
-    val isOneUIShizukuMode: Boolean = isOneUI && workingMethod == Const.WorkMethod.SHIZUKU
+    val isOneUIShizukuMode: Boolean = isOneUI && isShizukuMode
 
     val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 
@@ -174,4 +179,7 @@ object Const {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     val isAtleastA14 = !isShizukuMode ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
+    val rootedThemingEnabled = getBoolean(THEMING_ENABLED, true)
+    val shizukuThemingEnabled = getBoolean(SHIZUKU_THEMING_ENABLED, true)
 }

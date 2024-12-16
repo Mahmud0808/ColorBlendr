@@ -13,12 +13,13 @@ import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
-import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.common.Const.isRootMode
+import com.drdisagree.colorblendr.common.Const.isUnknownMode
+import com.drdisagree.colorblendr.common.Const.rootedThemingEnabled
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.common.Const.shizukuThemingEnabled
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getLong
 import com.drdisagree.colorblendr.config.RPrefs.putInt
@@ -87,7 +88,7 @@ class BroadcastListener : BroadcastReceiver() {
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
                     if (lastOrientation == currentOrientation) {
                         validateRootAndUpdateColors(context) {
-                            updateAllColors(context)
+                            updateAllColors()
                         }
                     }
 
@@ -126,7 +127,7 @@ class BroadcastListener : BroadcastReceiver() {
                 delay(10000)
                 cooldownTime = 5000
             }
-            updateAllColors(context)
+            updateAllColors()
         }
     }
 
@@ -143,7 +144,7 @@ class BroadcastListener : BroadcastReceiver() {
         }
 
         validateRootAndUpdateColors(context) {
-            updateAllColors(context)
+            updateAllColors()
         }
     }
 
@@ -180,7 +181,7 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private suspend fun validateRootAndUpdateColors(context: Context, method: suspend () -> Unit) {
-        if (workingMethod == Const.WorkMethod.ROOT && RootConnectionProvider.isNotConnected) {
+        if (isRootMode && RootConnectionProvider.isNotConnected) {
             RootConnectionProvider
                 .builder(context)
                 .onSuccess {
@@ -194,10 +195,8 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private fun updateAllColors(context: Context) {
-        if ((!getBoolean(THEMING_ENABLED, true) && !getBoolean(SHIZUKU_THEMING_ENABLED, true)) ||
-            workingMethod == Const.WorkMethod.NULL
-        ) return
+    private fun updateAllColors() {
+        if ((!rootedThemingEnabled && !shizukuThemingEnabled) || isUnknownMode) return
 
         if (abs(
                 (getLong(
