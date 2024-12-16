@@ -28,6 +28,7 @@ import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import kotlinx.coroutines.CoroutineScope
@@ -81,7 +82,7 @@ class ThemeFragment : Fragment() {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     monetAccentSaturation[0] = seekBar.progress
                     putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0])
-                    applyFabricatedColors()
+                    updateFabricatedColors()
                 }
             })
 
@@ -90,7 +91,7 @@ class ThemeFragment : Fragment() {
                 monetAccentSaturation[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_ACCENT_SATURATION)
-                applyFabricatedColors()
+                updateFabricatedColors()
                 true
             }
             accentSaturation.setEnabled(!isShizukuMode || isOneUI)
@@ -110,7 +111,7 @@ class ThemeFragment : Fragment() {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     monetBackgroundSaturation[0] = seekBar.progress
                     putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0])
-                    applyFabricatedColors()
+                    updateFabricatedColors()
                 }
             })
 
@@ -119,7 +120,7 @@ class ThemeFragment : Fragment() {
                 monetBackgroundSaturation[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_BACKGROUND_SATURATION)
-                applyFabricatedColors()
+                updateFabricatedColors()
                 true
             }
             backgroundSaturation.setEnabled(!isShizukuMode || isOneUI)
@@ -139,7 +140,7 @@ class ThemeFragment : Fragment() {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     monetBackgroundLightness[0] = seekBar.progress
                     putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0])
-                    applyFabricatedColors()
+                    updateFabricatedColors()
                 }
             })
 
@@ -148,7 +149,7 @@ class ThemeFragment : Fragment() {
                 monetBackgroundLightness[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_BACKGROUND_LIGHTNESS)
-                applyFabricatedColors()
+                updateFabricatedColors()
                 true
             }
             backgroundLightness.setEnabled(!isShizukuMode || isOneUI)
@@ -193,7 +194,7 @@ class ThemeFragment : Fragment() {
         }
     }
 
-    private fun applyFabricatedColors() {
+    private fun updateFabricatedColors() {
         CoroutineScope(Dispatchers.Main).launch {
             putLong(
                 MONET_LAST_UPDATED,
