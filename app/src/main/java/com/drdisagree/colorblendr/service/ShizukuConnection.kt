@@ -62,6 +62,6 @@ class ShizukuConnection : IShizukuConnection.Stub {
     }
 
     override fun rebootDevice() {
-        Shell.cmd("reboot").exec()
+        Shell.cmd("svc power reboot").exec()
     }
 }
