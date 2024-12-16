@@ -17,6 +17,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -93,7 +94,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            accentSaturation.setEnabled(!isShizukuMode)
+            accentSaturation.setEnabled(!isShizukuMode || isSamsungDevice)
 
             // Monet background saturation
             backgroundSaturation.seekbarProgress = getInt(MONET_BACKGROUND_SATURATION, 100)
@@ -122,7 +123,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            backgroundSaturation.setEnabled(!isShizukuMode)
+            backgroundSaturation.setEnabled(!isShizukuMode || isSamsungDevice)
 
             // Monet background lightness
             backgroundLightness.seekbarProgress = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
@@ -151,7 +152,7 @@ class ThemeFragment : Fragment() {
                 applyFabricatedColors()
                 true
             }
-            backgroundLightness.setEnabled(!isShizukuMode)
+            backgroundLightness.setEnabled(!isShizukuMode || isSamsungDevice)
         }
 
         return binding.getRoot()

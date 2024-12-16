@@ -21,6 +21,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
@@ -57,8 +58,8 @@ class SettingsAdvancedFragment : Fragment() {
 
         // Secondary color
         var monetSecondaryColor = getInt(MONET_SECONDARY_COLOR, Color.WHITE)
-        binding.secondaryColorPicker.isEnabled =
-            getBoolean(MONET_SEED_COLOR_ENABLED, false) && !isShizukuMode
+        binding.secondaryColorPicker.isEnabled = getBoolean(MONET_SEED_COLOR_ENABLED, false) &&
+                (!isShizukuMode || isSamsungDevice)
         binding.secondaryColorPicker.previewColor =
             getInt(MONET_SECONDARY_COLOR, monetSecondaryColor)
         binding.secondaryColorPicker.setOnClickListener {
@@ -81,8 +82,8 @@ class SettingsAdvancedFragment : Fragment() {
 
         // Tertiary color
         var monetTertiaryColor = getInt(MONET_TERTIARY_COLOR, Color.WHITE)
-        binding.tertiaryColorPicker.isEnabled =
-            getBoolean(MONET_SEED_COLOR_ENABLED, false) && !isShizukuMode
+        binding.tertiaryColorPicker.isEnabled = getBoolean(MONET_SEED_COLOR_ENABLED, false) &&
+                (!isShizukuMode || isSamsungDevice)
         binding.tertiaryColorPicker.previewColor = monetTertiaryColor
         binding.tertiaryColorPicker.setOnClickListener {
             ColorPickerDialog()
@@ -109,7 +110,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Mode specific themes
-        binding.modeSpecificThemes.isEnabled = !isShizukuMode
+        binding.modeSpecificThemes.isEnabled = !isShizukuMode || isSamsungDevice
         binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(MODE_SPECIFIC_THEMES, isChecked)

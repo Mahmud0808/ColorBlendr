@@ -24,6 +24,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -209,7 +210,7 @@ class ColorPaletteFragment : Fragment() {
                                 Snackbar.LENGTH_INDEFINITE
                             )
                             .setAction(snackbarButton) {
-                                if (!manualOverride || isShizukuMode) {
+                                if (!manualOverride || (isShizukuMode && !isSamsungDevice)) {
                                     val clipboard: ClipboardManager =
                                         requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                     val clip: ClipData = ClipData.newPlainText(

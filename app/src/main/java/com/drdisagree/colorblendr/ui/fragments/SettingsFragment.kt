@@ -38,6 +38,7 @@ import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
@@ -149,7 +150,7 @@ class SettingsFragment : Fragment() {
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
             applyFabricatedColors()
         }
-        binding.accurateShades.setEnabled(!isShizukuMode)
+        binding.accurateShades.setEnabled(!isShizukuMode || isSamsungDevice)
 
         // Pitch black theme
         binding.pitchBlackTheme.isSwitchChecked = getBoolean(MONET_PITCH_BLACK_THEME, false)
@@ -157,7 +158,7 @@ class SettingsFragment : Fragment() {
             putBoolean(MONET_PITCH_BLACK_THEME, isChecked)
             applyFabricatedColors()
         }
-        binding.pitchBlackTheme.setEnabled(!isShizukuMode)
+        binding.pitchBlackTheme.setEnabled(!isShizukuMode || isSamsungDevice)
 
         // Custom primary color
         binding.customPrimaryColor.isSwitchChecked = getBoolean(MONET_SEED_COLOR_ENABLED, false)
@@ -219,7 +220,7 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
-        binding.overrideColorsManually.setEnabled(!isShizukuMode)
+        binding.overrideColorsManually.setEnabled(!isShizukuMode || isSamsungDevice)
 
         binding.backupRestore.container.setOnClickListener {
             crossfade(
