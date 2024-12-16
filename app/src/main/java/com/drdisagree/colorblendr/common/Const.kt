@@ -91,6 +91,8 @@ object Const {
     const val WALLPAPER_THEME_COLORS: String = "wallpapertheme_color"
     const val WALLPAPER_THEME_COLORS_FOR_GOOGLE: String = "wallpapertheme_color_for_g"
     const val COLOR_THEME_APP_ICON: String = "colortheme_app_icon"
+    const val NAVIGATIONBAR_USE_THEME_DEFAULT: String = "navigationbar_use_theme_default"
+    const val HOMESCREEN_PREVIEW_IMAGE_STATUS: String = "homescreen_preview_image_status"
 
     // Service preferences
     val GSON: Gson = Gson()
