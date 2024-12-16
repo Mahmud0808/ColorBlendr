@@ -68,6 +68,15 @@
                 app:titleText="@string/tint_text_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/samsung_themed_icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_themed_icon"
+                app:isChecked="true"
+                app:summaryText="@string/samsung_themed_icon_desc"
+                app:titleText="@string/samsung_themed_icon_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/override_colors_manually"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

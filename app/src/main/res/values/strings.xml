@@ -144,6 +144,8 @@
     <string name="app_service_desc_off">Theming is inactive</string>
     <string name="tint_text_title">Tint text color</string>
     <string name="tint_text_desc">Maintain a subtle tint for text</string>
+    <string name="samsung_themed_icon_title">Themed icons</string>
+    <string name="samsung_themed_icon_desc">Apply palette to launcher app icons</string>
     <string name="primary">Primary</string>
     <string name="secondary">Secondary</string>
     <string name="tertiary">Tertiary</string>

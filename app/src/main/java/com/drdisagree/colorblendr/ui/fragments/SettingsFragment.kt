@@ -54,7 +54,9 @@ import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.OverlayManager.enableSamsungThemedIcons
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
+import com.drdisagree.colorblendr.utils.OverlayManager.isSamsungThemedIconsEnabled
 import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
 import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.parcelable
@@ -189,6 +191,18 @@ class SettingsFragment : Fragment() {
         }
         binding.tintTextColor.setEnabled(!isShizukuMode)
         binding.tintTextColor.visibility = if (isOneUIShizukuMode) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+
+        // Samsung themed icon
+        binding.samsungThemedIcon.isSwitchChecked = isSamsungThemedIconsEnabled()
+        binding.samsungThemedIcon.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            enableSamsungThemedIcons(isChecked)
+        }
+        binding.samsungThemedIcon.setEnabled(isOneUI)
+        binding.samsungThemedIcon.visibility = if (!isOneUI) {
             View.GONE
         } else {
             View.VISIBLE
@@ -467,6 +481,22 @@ class SettingsFragment : Fragment() {
             withContext(Dispatchers.IO) {
                 try {
                     applyFabricatedColors(requireContext())
+                } catch (ignored: Exception) {
+                }
+            }
+        }
+    }
+
+    private fun enableSamsungThemedIcon(enabled: Boolean) {
+        CoroutineScope(Dispatchers.Main).launch {
+            putLong(
+                MONET_LAST_UPDATED,
+                System.currentTimeMillis()
+            )
+            delay(300)
+            withContext(Dispatchers.IO) {
+                try {
+                    enableSamsungThemedIcons(enabled)
                 } catch (ignored: Exception) {
                 }
             }
