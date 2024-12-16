@@ -37,7 +37,8 @@ object SamsungPalette {
         Shell.cmd(
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '${SystemPalette.originalSettings}'",
             "settings put system $WALLPAPER_THEME_STATE '0'",
-            "settings put system $LOCK_ADAPTIVE_COLOR '3'",
+            "settings put system $LOCK_ADAPTIVE_COLOR '1'",
+            "settings put system $COLOR_THEME_APP_ICON '0'",
             "settings put system $WALLPAPER_THEME_COLORS ''",
             "settings put system $WALLPAPER_THEME_COLORS_FOR_GOOGLE ''"
         ).exec()
