@@ -14,11 +14,11 @@ object SamsungPalette {
     fun applySystemColors(jsonString: String, paletteArray: String) {
         Shell.cmd(
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'",
+            "settings put system $WALLPAPER_THEME_STATE '1'",
             "settings put system $LOCK_ADAPTIVE_COLOR '3'",
             "settings put system $WALLPAPER_THEME_COLORS '$paletteArray'",
             "settings put system $WALLPAPER_THEME_COLORS_FOR_GOOGLE '$paletteArray'",
-            "settings put system $WALLPAPER_THEME_COLOR_IS_GRAY '0'",
-            "settings put system $WALLPAPER_THEME_STATE '1'",
+            "settings put system $WALLPAPER_THEME_COLOR_IS_GRAY '0'"
         ).exec()
     }
 

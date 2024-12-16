@@ -7,10 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.common.Const.isFirstRun
+import com.drdisagree.colorblendr.common.Const.FIRST_RUN
 import com.drdisagree.colorblendr.common.Const.isRootMode
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.isUnknownMode
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.provider.RootConnectionProvider.Companion.builder
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
@@ -62,7 +63,7 @@ class SplashActivity : AppCompatActivity() {
         success: AtomicBoolean,
         countDownLatch: CountDownLatch
     ) {
-        if (!isFirstRun && !isUnknownMode) {
+        if (!getBoolean(FIRST_RUN, true) && !isUnknownMode) {
             if (isRootMode) {
                 builder(appContext)
                     .onSuccess {

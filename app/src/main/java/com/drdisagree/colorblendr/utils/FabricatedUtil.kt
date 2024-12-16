@@ -9,9 +9,9 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.isRootMode
-import com.drdisagree.colorblendr.common.Const.rootedThemingEnabled
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.utils.ColorUtil.getColorNamesM3
@@ -127,7 +127,7 @@ object FabricatedUtil {
     }
 
     fun updateFabricatedAppList(context: Context) {
-        if (!isRootMode || !rootedThemingEnabled) return
+        if (!isRootMode || !getBoolean(THEMING_ENABLED, true)) return
 
         val packageManager = context.packageManager
         val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)

@@ -40,8 +40,6 @@ import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.common.Const.isOneUIShizukuMode
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
-import com.drdisagree.colorblendr.common.Const.rootedThemingEnabled
-import com.drdisagree.colorblendr.common.Const.shizukuThemingEnabled
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
@@ -55,6 +53,7 @@ import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.enableSamsungThemedIcons
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.OverlayManager.isSamsungThemedIconsEnabled
@@ -94,7 +93,7 @@ class SettingsFragment : Fragment() {
 
                     withContext(Dispatchers.IO) {
                         if (isChecked) {
-                            applyFabricatedColors()
+                            updateFabricatedColors()
                         } else {
                             removeFabricatedColors()
                         }
@@ -102,7 +101,8 @@ class SettingsFragment : Fragment() {
 
                     isMasterSwitchEnabled = false
                     val isOverlayEnabled: Boolean =
-                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) || shizukuThemingEnabled
+                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) ||
+                                getBoolean(SHIZUKU_THEMING_ENABLED, true)
                     buttonView.isChecked = isOverlayEnabled
                     isMasterSwitchEnabled = true
 
@@ -140,8 +140,11 @@ class SettingsFragment : Fragment() {
                 getString(R.string.app_name)
             )
         )
-        binding.themingEnabled.isSwitchChecked = (rootedThemingEnabled &&
-                isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) || shizukuThemingEnabled
+        binding.themingEnabled.isSwitchChecked = (getBoolean(THEMING_ENABLED, true) &&
+                isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) || getBoolean(
+            SHIZUKU_THEMING_ENABLED,
+            true
+        )
 
         binding.themingEnabled.setSwitchChangeListener(masterSwitch)
 
@@ -150,7 +153,7 @@ class SettingsFragment : Fragment() {
         binding.accurateShades.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(MONET_ACCURATE_SHADES, isChecked)
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
-            applyFabricatedColors()
+            updateFabricatedColors()
         }
         binding.accurateShades.setEnabled(!isShizukuMode || isOneUI)
 
@@ -158,7 +161,7 @@ class SettingsFragment : Fragment() {
         binding.pitchBlackTheme.isSwitchChecked = getBoolean(MONET_PITCH_BLACK_THEME, false)
         binding.pitchBlackTheme.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(MONET_PITCH_BLACK_THEME, isChecked)
-            applyFabricatedColors()
+            updateFabricatedColors()
         }
         binding.pitchBlackTheme.setEnabled(!isShizukuMode || isOneUI)
 
@@ -178,7 +181,7 @@ class SettingsFragment : Fragment() {
                     }.type
                 )
                 putInt(MONET_SEED_COLOR, wallpaperColorList[0])
-                applyFabricatedColors()
+                updateFabricatedColors()
             }
         }
 
@@ -186,7 +189,7 @@ class SettingsFragment : Fragment() {
         binding.tintTextColor.isSwitchChecked = getBoolean(TINT_TEXT_COLOR, true)
         binding.tintTextColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(TINT_TEXT_COLOR, isChecked)
-            applyFabricatedColors()
+            updateFabricatedColors()
         }
         binding.tintTextColor.setEnabled(!isShizukuMode)
         binding.tintTextColor.visibility = if (isOneUIShizukuMode) {
@@ -222,7 +225,7 @@ class SettingsFragment : Fragment() {
                             putBoolean(MANUAL_OVERRIDE_COLORS, false)
                             if (numColorsOverridden() != 0) {
                                 clearCustomColors()
-                                applyFabricatedColors()
+                                updateFabricatedColors()
                             }
                         }
                         .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
@@ -234,7 +237,7 @@ class SettingsFragment : Fragment() {
                     putBoolean(MANUAL_OVERRIDE_COLORS, false)
                     if (numColorsOverridden() != 0) {
                         clearCustomColors()
-                        applyFabricatedColors()
+                        updateFabricatedColors()
                     }
                 }
             }
@@ -410,7 +413,7 @@ class SettingsFragment : Fragment() {
 
                         withContext(Dispatchers.Main) {
                             try {
-                                applyFabricatedColors()
+                                updateFabricatedColors()
                             } catch (ignored: Exception) {
                             }
                         }
@@ -470,7 +473,7 @@ class SettingsFragment : Fragment() {
         return colorOverridden
     }
 
-    private fun applyFabricatedColors() {
+    private fun updateFabricatedColors() {
         CoroutineScope(Dispatchers.Main).launch {
             putLong(
                 MONET_LAST_UPDATED,

@@ -167,7 +167,6 @@ object Const {
         ALL
     }
 
-    val isFirstRun: Boolean = getBoolean(FIRST_RUN, true)
     val isUnknownMode: Boolean = workingMethod == Const.WorkMethod.NULL
     val isRootMode: Boolean = workingMethod == Const.WorkMethod.ROOT
     val isShizukuMode: Boolean = workingMethod == Const.WorkMethod.SHIZUKU
@@ -179,7 +178,4 @@ object Const {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     val isAtleastA14 = !isShizukuMode ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-
-    val rootedThemingEnabled = getBoolean(THEMING_ENABLED, true)
-    val shizukuThemingEnabled = getBoolean(SHIZUKU_THEMING_ENABLED, true)
 }

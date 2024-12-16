@@ -13,13 +13,13 @@ import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
+import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
+import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.common.Const.isRootMode
 import com.drdisagree.colorblendr.common.Const.isUnknownMode
-import com.drdisagree.colorblendr.common.Const.rootedThemingEnabled
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
-import com.drdisagree.colorblendr.common.Const.shizukuThemingEnabled
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getLong
 import com.drdisagree.colorblendr.config.RPrefs.putInt
@@ -196,7 +196,9 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private fun updateAllColors() {
-        if ((!rootedThemingEnabled && !shizukuThemingEnabled) || isUnknownMode) return
+        if ((!getBoolean(THEMING_ENABLED, true) && !getBoolean(SHIZUKU_THEMING_ENABLED, true)) ||
+            isUnknownMode
+        ) return
 
         if (abs(
                 (getLong(
