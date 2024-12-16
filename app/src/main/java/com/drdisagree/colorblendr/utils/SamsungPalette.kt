@@ -24,12 +24,12 @@ object SamsungPalette {
 
     val isThemedIconEnabled: Boolean
         get() = Shell.cmd(
-            "settings get system $COLOR_THEME_APP_ICON"
+            "settings get global $COLOR_THEME_APP_ICON"
         ).exec().out[0] == "1"
 
     fun enableThemedIcon(enabled: Boolean) {
         Shell.cmd(
-            "settings put system $COLOR_THEME_APP_ICON '${if (enabled) "1" else "0"}'"
+            "settings put global $COLOR_THEME_APP_ICON '${if (enabled) "1" else "0"}'"
         ).exec()
     }
 
@@ -38,9 +38,9 @@ object SamsungPalette {
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '${SystemPalette.originalSettings}'",
             "settings put system $WALLPAPER_THEME_STATE '0'",
             "settings put system $LOCK_ADAPTIVE_COLOR '1'",
-            "settings put system $COLOR_THEME_APP_ICON '0'",
             "settings put system $WALLPAPER_THEME_COLORS ''",
-            "settings put system $WALLPAPER_THEME_COLORS_FOR_GOOGLE ''"
+            "settings put system $WALLPAPER_THEME_COLORS_FOR_GOOGLE ''",
+            "settings put global $COLOR_THEME_APP_ICON '0'"
         ).exec()
     }
 }

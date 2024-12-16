@@ -438,8 +438,6 @@ object OverlayManager {
 
             try {
                 mShizukuConnection!!.enableThemedIconSamsung(enabled)
-
-                AppUtil.showRebootReminderNotification()
             } catch (e: Exception) {
                 Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
                 return
@@ -449,8 +447,6 @@ object OverlayManager {
 
             try {
                 mRootConnection!!.enableThemedIconSamsung(enabled)
-
-                AppUtil.showRebootReminderNotification()
             } catch (e: Exception) {
                 Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
                 return
