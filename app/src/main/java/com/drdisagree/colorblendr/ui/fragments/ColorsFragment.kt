@@ -32,6 +32,7 @@ import com.drdisagree.colorblendr.ui.views.WallColorPreview
 import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +65,7 @@ class ColorsFragment : Fragment() {
 
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
-        if (isShizukuMode) {
+        if (isShizukuMode && !isOneUI) {
             SettingsFragment.clearCustomColors()
         }
     }
