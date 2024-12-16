@@ -173,7 +173,7 @@ class BroadcastListener : BroadcastReceiver() {
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
                 validateRootAndUpdateColors(context) {
-                    applyFabricatedColorsPerApp(context, packageName, null)
+                    applyFabricatedColorsPerApp(packageName, null)
                 }
             }
         }
@@ -210,7 +210,7 @@ class BroadcastListener : BroadcastReceiver() {
 
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                applyFabricatedColors(context)
+                applyFabricatedColors()
             }
         }
     }

@@ -122,7 +122,7 @@ class StylePreviewWidget : RelativeLayout {
             putString(MONET_STYLE, it)
 
             coroutineScope.launch {
-                applyFabricatedColors(context!!)
+                applyFabricatedColors()
             }
         }
     }

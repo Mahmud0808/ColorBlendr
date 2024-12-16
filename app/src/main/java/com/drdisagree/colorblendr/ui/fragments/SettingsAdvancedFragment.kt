@@ -32,7 +32,6 @@ import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -190,7 +189,7 @@ class SettingsAdvancedFragment : Fragment() {
             delay(300)
             withContext(Dispatchers.IO) {
                 try {
-                    applyFabricatedColors(requireContext())
+                    applyFabricatedColors()
                 } catch (ignored: Exception) {
                 }
             }

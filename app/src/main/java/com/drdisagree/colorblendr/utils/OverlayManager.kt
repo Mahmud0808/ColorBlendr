@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.utils
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.RemoteException
@@ -136,7 +135,7 @@ object OverlayManager {
         }
     }
 
-    fun applyFabricatedColors(context: Context) {
+    fun applyFabricatedColors() {
         if (!getBoolean(Const.THEMING_ENABLED, true) &&
             !getBoolean(Const.SHIZUKU_THEMING_ENABLED, true)
         ) {
@@ -149,8 +148,8 @@ object OverlayManager {
 
         val isDarkMode = SystemUtil.isDarkMode
         val style = ColorSchemeUtil.stringToEnumMonetStyle(
-            context,
-            RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))!!
+            appContext,
+            RPrefs.getString(MONET_STYLE, appContext.getString(R.string.monet_tonalspot))!!
         )
         val monetAccentSaturation = getInt(MONET_ACCENT_SATURATION, 100)
         val monetBackgroundSaturation = getInt(MONET_BACKGROUND_SATURATION, 100)
@@ -270,7 +269,6 @@ object OverlayManager {
             }.forEach { (packageName) ->
                 add(
                     getFabricatedColorsPerApp(
-                        context,
                         packageName,
                         if (SystemUtil.isDarkMode) paletteDark else paletteLight
                     )
@@ -280,13 +278,11 @@ object OverlayManager {
     }
 
     fun applyFabricatedColorsPerApp(
-        context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
     ) {
         registerFabricatedOverlay(
             getFabricatedColorsPerApp(
-                context,
                 packageName,
                 palette
             )
@@ -316,7 +312,6 @@ object OverlayManager {
     }
 
     private fun getFabricatedColorsPerApp(
-        context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
     ): FabricatedOverlayResource {
@@ -325,10 +320,10 @@ object OverlayManager {
         if (paletteTemp == null) {
             paletteTemp = generateModifiedColors(
                 ColorSchemeUtil.stringToEnumMonetStyle(
-                    context,
+                    appContext,
                     RPrefs.getString(
                         MONET_STYLE,
-                        context.getString(R.string.monet_tonalspot)
+                        appContext.getString(R.string.monet_tonalspot)
                     )!!
                 ),
                 getInt(MONET_ACCENT_SATURATION, 100),

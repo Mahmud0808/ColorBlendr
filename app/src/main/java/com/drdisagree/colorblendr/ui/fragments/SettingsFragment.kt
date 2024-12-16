@@ -53,7 +53,6 @@ import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.enableSamsungThemedIcons
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.OverlayManager.isSamsungThemedIconsEnabled
@@ -93,7 +92,7 @@ class SettingsFragment : Fragment() {
 
                     withContext(Dispatchers.IO) {
                         if (isChecked) {
-                            applyFabricatedColors(requireContext())
+                            applyFabricatedColors()
                         } else {
                             removeFabricatedColors()
                         }
@@ -411,7 +410,7 @@ class SettingsFragment : Fragment() {
 
                         withContext(Dispatchers.Main) {
                             try {
-                                applyFabricatedColors(requireContext())
+                                applyFabricatedColors()
                             } catch (ignored: Exception) {
                             }
                         }
@@ -480,7 +479,7 @@ class SettingsFragment : Fragment() {
             delay(300)
             withContext(Dispatchers.IO) {
                 try {
-                    applyFabricatedColors(requireContext())
+                    applyFabricatedColors()
                 } catch (ignored: Exception) {
                 }
             }

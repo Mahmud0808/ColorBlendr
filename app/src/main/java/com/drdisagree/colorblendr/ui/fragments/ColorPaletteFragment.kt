@@ -254,7 +254,7 @@ class ColorPaletteFragment : Fragment() {
                                                 delay(200)
                                                 withContext(Dispatchers.IO) {
                                                     try {
-                                                        applyFabricatedColors(requireContext())
+                                                        applyFabricatedColors()
                                                     } catch (ignored: Exception) {
                                                     }
                                                 }
@@ -284,7 +284,7 @@ class ColorPaletteFragment : Fragment() {
                             )
                             withContext(Dispatchers.IO) {
                                 try {
-                                    applyFabricatedColors(requireContext())
+                                    applyFabricatedColors()
                                 } catch (ignored: Exception) {
                                 }
                             }

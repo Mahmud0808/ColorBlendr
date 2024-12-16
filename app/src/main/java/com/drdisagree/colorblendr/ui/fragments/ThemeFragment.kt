@@ -28,7 +28,6 @@ import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import kotlinx.coroutines.CoroutineScope
@@ -203,7 +202,7 @@ class ThemeFragment : Fragment() {
             delay(200)
             withContext(Dispatchers.IO) {
                 try {
-                    applyFabricatedColors(requireContext())
+                    applyFabricatedColors()
                 } catch (ignored: Exception) {
                 }
             }

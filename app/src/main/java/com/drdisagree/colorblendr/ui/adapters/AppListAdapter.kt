@@ -75,7 +75,7 @@ class AppListAdapter(private val appList: List<AppInfoModel>) :
                         )
                     )
                 } else {
-                    applyFabricatedColorsPerApp(context!!, appInfo.packageName, null)
+                    applyFabricatedColorsPerApp(appInfo.packageName, null)
                 }
             }
         }
