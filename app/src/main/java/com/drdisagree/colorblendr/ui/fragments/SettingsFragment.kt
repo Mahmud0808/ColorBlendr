@@ -227,11 +227,6 @@ class SettingsFragment : Fragment() {
             }
         }
         binding.overrideColorsManually.setEnabled(!isShizukuMode || isOneUI)
-        binding.overrideColorsManually.visibility = if (isOneUIShizukuMode) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
 
         binding.backupRestore.container.setOnClickListener {
             crossfade(
