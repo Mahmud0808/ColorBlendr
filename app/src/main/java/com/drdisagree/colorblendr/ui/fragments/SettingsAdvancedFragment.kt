@@ -21,6 +21,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.common.Const.hasPixelLauncher
 import com.drdisagree.colorblendr.common.Const.isSamsungDevice
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
@@ -33,7 +34,6 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.SystemUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -45,7 +45,6 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 class SettingsAdvancedFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsAdvancedBinding
-    private val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,7 +117,7 @@ class SettingsAdvancedFragment : Fragment() {
         }
 
         // Darker launcher icons
-        binding.darkerLauncherIcons.isEnabled = !isShizukuMode && hasPixelLauncher
+        binding.darkerLauncherIcons.isEnabled = !isShizukuMode
         binding.darkerLauncherIcons.isSwitchChecked = getBoolean(DARKER_LAUNCHER_ICONS, false)
         binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
@@ -126,6 +125,11 @@ class SettingsAdvancedFragment : Fragment() {
             }
             putBoolean(DARKER_LAUNCHER_ICONS, isChecked)
             applyFabricatedColors()
+        }
+        binding.darkerLauncherIcons.visibility = if (hasPixelLauncher) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
 
         // Semi-transparent launcher icons
@@ -138,6 +142,11 @@ class SettingsAdvancedFragment : Fragment() {
             }
             putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, isChecked)
             applyFabricatedColors()
+        }
+        binding.semitransparentLauncher.visibility = if (hasPixelLauncher) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
 
         // Semi-transparent launcher icons

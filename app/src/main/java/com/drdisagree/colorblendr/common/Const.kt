@@ -167,6 +167,9 @@ object Const {
 
     val isRootMode: Boolean = workingMethod == Const.WorkMethod.ROOT
     val isShizukuMode: Boolean = workingMethod == Const.WorkMethod.SHIZUKU
+    val isSamsungShizukuMode: Boolean = isSamsungDevice && workingMethod == Const.WorkMethod.SHIZUKU
+
+    val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 
     val isAtleastA13 = !isShizukuMode ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU

@@ -39,6 +39,7 @@ import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
 import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.common.Const.isSamsungDevice
+import com.drdisagree.colorblendr.common.Const.isSamsungShizukuMode
 import com.drdisagree.colorblendr.common.Const.isShizukuMode
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
@@ -187,6 +188,11 @@ class SettingsFragment : Fragment() {
             applyFabricatedColors()
         }
         binding.tintTextColor.setEnabled(!isShizukuMode)
+        binding.tintTextColor.visibility = if (isSamsungShizukuMode) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
 
         // Override colors manually
         binding.overrideColorsManually.isSwitchChecked = getBoolean(MANUAL_OVERRIDE_COLORS, false)
@@ -221,6 +227,11 @@ class SettingsFragment : Fragment() {
             }
         }
         binding.overrideColorsManually.setEnabled(!isShizukuMode || isSamsungDevice)
+        binding.overrideColorsManually.visibility = if (isSamsungShizukuMode) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
 
         binding.backupRestore.container.setOnClickListener {
             crossfade(
