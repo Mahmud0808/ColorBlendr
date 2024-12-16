@@ -131,14 +131,14 @@ object AppUtil {
 
         val notification = NotificationCompat.Builder(appContext, notificationChannelId)
             .setOnlyAlertOnce(true)
-            .setSmallIcon(R.drawable.ic_launcher_notification)
+            .setSmallIcon(R.drawable.ic_power)
             .setContentTitle(appContext.getString(R.string.reboot_reminder_notification_title))
             .setContentText(appContext.getString(R.string.reboot_reminder_notification_text))
             .setContentIntent(pendingIntent)
             .setColor(getAccentColor(appContext))
             .setSound(defaultSoundUri, AudioManager.STREAM_NOTIFICATION)
             .addAction(
-                R.drawable.ic_launcher_foreground,
+                R.drawable.ic_power,
                 appContext.getString(R.string.reboot_reminder_button),
                 rebootPendingIntent
             )
