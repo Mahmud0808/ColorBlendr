@@ -417,6 +417,10 @@ class RootConnection : RootService() {
             SamsungPalette.removeSystemColors()
         }
 
+        override fun rebootDevice() {
+            Shell.cmd("am start -a android.intent.action.REBOOT").exec()
+        }
+
         @SuppressLint("PrivateApi", "NewApi")
         companion object {
             private val TAG: String = RootConnectionImpl::class.java.simpleName

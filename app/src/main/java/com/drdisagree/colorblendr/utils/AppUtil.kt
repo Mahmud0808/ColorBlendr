@@ -2,21 +2,33 @@ package com.drdisagree.colorblendr.utils
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.service.RebootReceiver
+import com.drdisagree.colorblendr.service.RebootReceiver.Companion.REBOOT_REMINDER_NOTIFICATION_ID
+import com.drdisagree.colorblendr.ui.activities.SplashActivity
+import com.drdisagree.colorblendr.utils.ColorUtil.getAccentColor
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 object AppUtil {
+
     val REQUIRED_PERMISSIONS: Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(
             Manifest.permission.POST_NOTIFICATIONS,
@@ -79,5 +91,59 @@ object AppUtil {
         }
         bufferedReader.close()
         return stringBuilder.toString()
+    }
+
+    fun showRebootReminderNotification() {
+        val notificationManager = appContext.getSystemService(NotificationManager::class.java)
+            ?: return
+        val notificationChannelId = "Reboot Reminder"
+
+        notificationManager.createNotificationChannel(
+            NotificationChannel(
+                notificationChannelId,
+                appContext.getString(R.string.reboot_reminder_notification_channel_title),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description =
+                    appContext.getString(R.string.reboot_reminder_notification_channel_text)
+            }
+        )
+
+        val rebootIntent = Intent(appContext, RebootReceiver::class.java)
+        val rebootPendingIntent = PendingIntent.getBroadcast(
+            appContext,
+            100,
+            rebootIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val mainActivityIntent = Intent(appContext, SplashActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            appContext,
+            500,
+            mainActivityIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val defaultSoundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val notification = NotificationCompat.Builder(appContext, notificationChannelId)
+            .setOnlyAlertOnce(true)
+            .setSmallIcon(R.drawable.ic_launcher_notification)
+            .setContentTitle(appContext.getString(R.string.reboot_reminder_notification_title))
+            .setContentText(appContext.getString(R.string.reboot_reminder_notification_text))
+            .setContentIntent(pendingIntent)
+            .setColor(getAccentColor(appContext))
+            .setSound(defaultSoundUri, AudioManager.STREAM_NOTIFICATION)
+            .addAction(
+                R.drawable.ic_launcher_foreground,
+                appContext.getString(R.string.reboot_reminder_button),
+                rebootPendingIntent
+            )
+            .build()
+
+        notificationManager.notify(REBOOT_REMINDER_NOTIFICATION_ID, notification)
     }
 }

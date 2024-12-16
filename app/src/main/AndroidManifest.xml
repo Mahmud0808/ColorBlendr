@@ -92,6 +92,8 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".service.RebootReceiver" />
+
         <service
             android:name=".service.ScheduledJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />

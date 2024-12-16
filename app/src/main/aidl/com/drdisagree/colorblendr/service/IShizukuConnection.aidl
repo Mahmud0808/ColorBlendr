@@ -10,4 +10,5 @@ interface IShizukuConnection {
     boolean isThemedIconEnabledSamsung() = 6;
     void enableThemedIconSamsung(boolean isThemed) = 7;
     void removeFabricatedColorsSamsung() = 8;
+    void rebootDevice() = 9;
 }

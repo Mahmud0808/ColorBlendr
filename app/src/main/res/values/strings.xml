@@ -96,6 +96,11 @@
     <string name="background_service_notification_text">Useless notification. Tap to disable.</string>
     <string name="background_service_notification_channel_title">Background service</string>
     <string name="background_service_notification_channel_text">You can turn off these notifications.</string>
+    <string name="reboot_reminder_notification_title">Reboot to apply theme</string>
+    <string name="reboot_reminder_notification_text">Reboot required due to One UI limitations.</string>
+    <string name="reboot_reminder_notification_channel_title">Reboot reminder</string>
+    <string name="reboot_reminder_notification_channel_text">Remind to reboot to apply theme in One UI.</string>
+    <string name="reboot_reminder_button">Reboot</string>
     <string name="file_access_permission_required">Files access required to generate wallpaper colors.</string>
     <string name="onboarding_image">Onboarding image</string>
     <string name="perm_one_title">Post Notifications</string>

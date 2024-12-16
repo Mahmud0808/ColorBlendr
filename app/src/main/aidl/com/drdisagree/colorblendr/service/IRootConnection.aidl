@@ -28,4 +28,5 @@ interface IRootConnection {
     boolean isThemedIconEnabledSamsung();
     void enableThemedIconSamsung(boolean isThemed);
     void removeFabricatedColorsSamsung();
+    void rebootDevice();
 }

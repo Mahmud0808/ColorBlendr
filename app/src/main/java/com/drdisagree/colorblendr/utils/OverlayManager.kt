@@ -380,6 +380,8 @@ object OverlayManager {
                     MiscUtil.mergeJsonStrings(currentSettings, jsonString), // Material app colors
                     palette.flatten().toString() // Samsung app colors
                 )
+
+                AppUtil.showRebootReminderNotification()
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRootSamsung: ", e)
             }
@@ -394,6 +396,8 @@ object OverlayManager {
                     MiscUtil.mergeJsonStrings(currentSettings, jsonString), // Material app colors
                     palette.flatten().toString() // Samsung app colors
                 )
+
+                AppUtil.showRebootReminderNotification()
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRootSamsung: ", e)
             }
@@ -434,6 +438,8 @@ object OverlayManager {
 
             try {
                 mShizukuConnection!!.enableThemedIconSamsung(enabled)
+
+                AppUtil.showRebootReminderNotification()
             } catch (e: Exception) {
                 Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
                 return
@@ -443,6 +449,8 @@ object OverlayManager {
 
             try {
                 mRootConnection!!.enableThemedIconSamsung(enabled)
+
+                AppUtil.showRebootReminderNotification()
             } catch (e: Exception) {
                 Log.d(TAG, "isSamsungThemedIconsEnabled: ", e)
                 return
@@ -458,10 +466,12 @@ object OverlayManager {
         if (!validShizukuConnection) return true
 
         try {
-            mShizukuConnection!!.removeFabricatedColors()
-
             if (isOneUI) {
                 mShizukuConnection!!.removeFabricatedColorsSamsung()
+
+                AppUtil.showRebootReminderNotification()
+            } else {
+                mShizukuConnection!!.removeFabricatedColors()
             }
         } catch (e: Exception) {
             Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)

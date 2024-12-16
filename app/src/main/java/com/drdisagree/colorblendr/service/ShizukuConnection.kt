@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.Keep
 import com.drdisagree.colorblendr.utils.SamsungPalette
 import com.drdisagree.colorblendr.utils.SystemPalette
+import com.topjohnwu.superuser.Shell
 import kotlin.system.exitProcess
 
 class ShizukuConnection : IShizukuConnection.Stub {
@@ -58,5 +59,9 @@ class ShizukuConnection : IShizukuConnection.Stub {
 
     override fun getCurrentSettings(): String {
         return SystemPalette.currentSettings
+    }
+
+    override fun rebootDevice() {
+        Shell.cmd("reboot").exec()
     }
 }
