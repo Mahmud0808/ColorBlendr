@@ -13,10 +13,6 @@ import org.json.JSONObject
 
 object MiscUtil {
 
-    fun convertListToIntArray(arrayList: ArrayList<ArrayList<Int>>): Array<IntArray> {
-        return arrayList.map { row -> row.toIntArray() }.toTypedArray()
-    }
-
     fun setToolbarTitle(
         context: Context,
         @StringRes title: Int,

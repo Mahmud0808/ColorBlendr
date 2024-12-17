@@ -39,7 +39,6 @@ import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
-import com.drdisagree.colorblendr.utils.MiscUtil.convertListToIntArray
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
@@ -147,12 +146,7 @@ class ColorPaletteFragment : Fragment() {
     private fun initColorTablePreview(colorTableRows: Array<LinearLayout>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val palette: ArrayList<ArrayList<Int>>? = generateModifiedColors()
-                val systemColors: Array<IntArray> = if (palette == null) {
-                    getSystemColors(requireContext())
-                } else {
-                    convertListToIntArray(palette)
-                }
+                val systemColors = generateModifiedColors() ?: getSystemColors()
 
                 withContext(Dispatchers.Main) {
                     for (i in colorTableRows.indices) {
@@ -185,11 +179,9 @@ class ColorPaletteFragment : Fragment() {
                         }
                     }
 
-                    // Enable click listeners on the main thread
                     enablePaletteOnClickListener(colorTableRows)
                 }
             } catch (e: Exception) {
-                // Handle any exceptions (e.g., logging)
                 Log.e(TAG, "Error initializing color table preview", e)
             }
         }

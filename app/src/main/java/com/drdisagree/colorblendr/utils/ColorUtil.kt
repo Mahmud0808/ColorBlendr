@@ -306,9 +306,9 @@ object ColorUtil {
         return String.format("%06X", (0xFFFFFF and colorInt))
     }
 
-    fun getSystemColors(context: Context): Array<IntArray> {
-        return arrayOf(
-            intArrayOf(
+    fun getSystemColors(context: Context = appContext): ArrayList<ArrayList<Int>> {
+        return arrayListOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_primary100,
                     context.theme
@@ -363,7 +363,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_secondary100,
                     context.theme
@@ -418,7 +418,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_tertiary100,
                     context.theme
@@ -473,7 +473,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_neutral100,
                     context.theme
@@ -528,7 +528,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_neutral_variant100,
                     context.theme
