@@ -197,4 +197,9 @@ interface IOverlayManager {
      * If not then it should be sorted by /product/overlay/partition_order.xml.
      */
     boolean isDefaultPartitionOrder();
+
+    /**
+     * Apply color palette for Samsung devices
+     */
+    void applyWallpaperColors(in List wallpaperColors, int numColorType, int numLuminence);
 }

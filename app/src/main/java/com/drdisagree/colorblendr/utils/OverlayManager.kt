@@ -394,7 +394,7 @@ object OverlayManager {
 
                 mRootConnection!!.applyFabricatedColorsSamsung(
                     MiscUtil.mergeJsonStrings(currentSettings, jsonString), // Material app colors
-                    palette.flatten().toString() // Samsung app colors
+                    palette.flatten() // Samsung app colors
                 )
 
                 AppUtil.showRebootReminderNotification()

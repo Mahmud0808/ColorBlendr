@@ -20,6 +20,7 @@ import android.util.Log
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.utils.RomUtil.isOneUI
 import com.drdisagree.colorblendr.utils.SamsungPalette
 import com.drdisagree.colorblendr.utils.SystemPalette
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
@@ -401,8 +402,12 @@ class RootConnection : RootService() {
             return SystemPalette.currentSettings
         }
 
-        override fun applyFabricatedColorsSamsung(jsonString: String, paletteArray: String) {
-            SamsungPalette.applySystemColors(jsonString, paletteArray)
+        override fun applyFabricatedColorsSamsung(jsonString: String, colors: MutableList<Any?>) {
+            if (!isOneUI) return
+
+            SamsungPalette.applySystemColors(jsonString, colors.toString())
+
+            oMS!!.applyWallpaperColors(colors, 5, 13)
         }
 
         override fun isThemedIconEnabledSamsung(): Boolean {
