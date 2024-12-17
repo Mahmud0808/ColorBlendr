@@ -240,12 +240,14 @@ class ColorsFragment : Fragment() {
             colorPreview.setLayoutParams(layoutParams)
             colorPreview.setMainColor(colorList[i])
             colorPreview.tag = colorList[i]
-            colorPreview.setSelected(colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
+            colorPreview.isSelected = colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE)
 
             colorPreview.setOnClickListener {
                 putInt(MONET_SEED_COLOR, colorPreview.tag as Int)
                 putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
                 binding.seedColorPicker.previewColor = colorPreview.tag as Int
+
+                updateColorPreviewSelection(colorPreview)
 
                 CoroutineScope(Dispatchers.Main).launch {
                     putLong(
@@ -262,6 +264,13 @@ class ColorsFragment : Fragment() {
             }
 
             binding.colorsContainer.addView(colorPreview)
+        }
+    }
+
+    private fun updateColorPreviewSelection(selectedColorPreview: WallColorPreview) {
+        for (i in 0 until binding.colorsContainer.childCount) {
+            val child = binding.colorsContainer.getChildAt(i) as WallColorPreview
+            child.isSelected = child == selectedColorPreview
         }
     }
 
