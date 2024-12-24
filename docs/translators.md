@@ -319,7 +319,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>Mahmudul Hasan (DrDisagree)</b></sub></a>
         <br />
-        <sub><b>11305 words</b></sub>
+        <sub><b>11416 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/arefin.mostafa2004"><img alt="logo" style="width: 32px" src="https://crowdin-static.downloads.crowdin.com/avatar/16657829/medium/65c3fb7155313ba1ed817768a156de4f.jpeg" />
