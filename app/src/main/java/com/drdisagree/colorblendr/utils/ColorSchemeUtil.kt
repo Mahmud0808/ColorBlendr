@@ -1,8 +1,8 @@
 package com.drdisagree.colorblendr.utils
 
-import android.content.Context
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
 import com.drdisagree.colorblendr.utils.monet.hct.Hct
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette
@@ -71,47 +71,18 @@ object ColorSchemeUtil {
         return toneList
     }
 
-    fun stringToEnumMonetStyle(context: Context, enumString: String): MONET {
+    fun stringToEnumMonetStyle(enumString: String): MONET {
         return when (enumString) {
-            context.getString(R.string.monet_neutral) -> {
-                MONET.SPRITZ
-            }
-
-            context.getString(R.string.monet_monochrome) -> {
-                MONET.MONOCHROMATIC
-            }
-
-            context.getString(R.string.monet_tonalspot) -> {
-                MONET.TONAL_SPOT
-            }
-
-            context.getString(R.string.monet_vibrant) -> {
-                MONET.VIBRANT
-            }
-
-            context.getString(R.string.monet_rainbow) -> {
-                MONET.RAINBOW
-            }
-
-            context.getString(R.string.monet_expressive) -> {
-                MONET.EXPRESSIVE
-            }
-
-            context.getString(R.string.monet_fidelity) -> {
-                MONET.FIDELITY
-            }
-
-            context.getString(R.string.monet_content) -> {
-                MONET.CONTENT
-            }
-
-            context.getString(R.string.monet_fruitsalad) -> {
-                MONET.FRUIT_SALAD
-            }
-
-            else -> {
-                MONET.TONAL_SPOT
-            }
+            R.string.monet_neutral.getOriginalString() -> MONET.SPRITZ
+            R.string.monet_monochrome.getOriginalString() -> MONET.MONOCHROMATIC
+            R.string.monet_tonalspot.getOriginalString() -> MONET.TONAL_SPOT
+            R.string.monet_vibrant.getOriginalString() -> MONET.VIBRANT
+            R.string.monet_rainbow.getOriginalString() -> MONET.RAINBOW
+            R.string.monet_expressive.getOriginalString() -> MONET.EXPRESSIVE
+            R.string.monet_fidelity.getOriginalString() -> MONET.FIDELITY
+            R.string.monet_content.getOriginalString() -> MONET.CONTENT
+            R.string.monet_fruitsalad.getOriginalString() -> MONET.FRUIT_SALAD
+            else -> MONET.TONAL_SPOT
         }
     }
 

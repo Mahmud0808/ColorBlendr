@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
@@ -24,6 +25,7 @@ import com.drdisagree.colorblendr.ui.views.ColorPreview
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
@@ -70,10 +72,12 @@ class StylePreviewWidget : RelativeLayout {
 
         initializeId()
 
-        val typedArray: TypedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.StylePreviewWidget)
-        styleName = typedArray.getString(R.styleable.StylePreviewWidget_titleText)
-        setTitle(styleName)
+        val typedArray: TypedArray = appContext.obtainStyledAttributes(
+            attrs,
+            R.styleable.StylePreviewWidget
+        )
+        styleName = typedArray.getOriginalString(R.styleable.StylePreviewWidget_titleText)
+        setTitle(typedArray.getString(R.styleable.StylePreviewWidget_titleText))
         setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText))
         typedArray.recycle()
 
@@ -130,13 +134,8 @@ class StylePreviewWidget : RelativeLayout {
     private suspend fun setColorPreview() {
         withContext(Dispatchers.IO) {
             try {
-                if (styleName == null) {
-                    styleName = context!!.getString(R.string.monet_tonalspot)
-                }
-
                 monetStyle = stringToEnumMonetStyle(
-                    context!!,
-                    styleName!!
+                    styleName ?: R.string.monet_tonalspot.getOriginalString()
                 )
 
                 colorPalette = generateModifiedColors(

@@ -2,14 +2,18 @@ package com.drdisagree.colorblendr.utils
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.content.res.TypedArray
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.google.android.material.appbar.MaterialToolbar
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.Locale
 
 object MiscUtil {
 
@@ -55,6 +59,17 @@ object MiscUtil {
             target.put(key, source[key])
         }
         return target
+    }
+
+    fun Int.getOriginalString(): String {
+        val config = Configuration(appContext.resources.configuration)
+        config.setLocale(Locale("en"))
+        return appContext.createConfigurationContext(config).getString(this)
+    }
+
+    fun TypedArray.getOriginalString(resourceId: Int): String? {
+        val resId = getResourceId(resourceId, 0)
+        return if (resId != 0) resId.getOriginalString() else null
     }
 }
 

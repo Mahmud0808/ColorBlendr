@@ -31,6 +31,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
 import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 @Suppress("unused")
@@ -221,8 +222,10 @@ object OverlayManager {
         }
 
         val style = ColorSchemeUtil.stringToEnumMonetStyle(
-            context,
-            RPrefs.getString(MONET_STYLE, context.getString(R.string.monet_tonalspot))!!
+            RPrefs.getString(
+                MONET_STYLE,
+                R.string.monet_tonalspot.getOriginalString()
+            )!!
         )
         val monetAccentSaturation = getInt(MONET_ACCENT_SATURATION, 100)
         val monetBackgroundSaturation = getInt(MONET_BACKGROUND_SATURATION, 100)
@@ -339,7 +342,6 @@ object OverlayManager {
             }.forEach { (packageName) ->
                 add(
                     getFabricatedColorsPerApp(
-                        context,
                         packageName,
                         if (SystemUtil.isDarkMode) paletteDark else paletteLight
                     )
@@ -355,7 +357,6 @@ object OverlayManager {
     ) {
         registerFabricatedOverlay(
             getFabricatedColorsPerApp(
-                context,
                 packageName,
                 palette
             )
@@ -385,7 +386,6 @@ object OverlayManager {
     }
 
     private fun getFabricatedColorsPerApp(
-        context: Context,
         packageName: String,
         palette: ArrayList<ArrayList<Int>>?
     ): FabricatedOverlayResource {
@@ -394,10 +394,9 @@ object OverlayManager {
         if (paletteTemp == null) {
             paletteTemp = generateModifiedColors(
                 ColorSchemeUtil.stringToEnumMonetStyle(
-                    context,
                     RPrefs.getString(
                         MONET_STYLE,
-                        context.getString(R.string.monet_tonalspot)
+                        R.string.monet_tonalspot.getOriginalString()
                     )!!
                 ),
                 getInt(MONET_ACCENT_SATURATION, 100),

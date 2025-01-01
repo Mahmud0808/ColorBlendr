@@ -26,6 +26,7 @@ import com.drdisagree.colorblendr.config.RPrefs.getString
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.SystemUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -231,10 +232,9 @@ class WallColorPreview : View {
                 colorPalette = withContext(Dispatchers.IO) {
                     generateModifiedColors(
                         stringToEnumMonetStyle(
-                            context!!,
                             getString(
                                 MONET_STYLE,
-                                context!!.getString(R.string.monet_tonalspot)
+                                R.string.monet_tonalspot.getOriginalString()
                             )!!
                         ),
                         color,

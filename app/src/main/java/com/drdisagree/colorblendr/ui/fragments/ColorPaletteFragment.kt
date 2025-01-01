@@ -39,6 +39,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
@@ -300,8 +301,10 @@ class ColorPaletteFragment : Fragment() {
         try {
             return ColorUtil.generateModifiedColors(
                 stringToEnumMonetStyle(
-                    requireContext(),
-                    RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))!!
+                    RPrefs.getString(
+                        MONET_STYLE,
+                        R.string.monet_tonalspot.getOriginalString()
+                    )!!
                 ),
                 getInt(MONET_ACCENT_SATURATION, 100),
                 getInt(MONET_BACKGROUND_SATURATION, 100),
