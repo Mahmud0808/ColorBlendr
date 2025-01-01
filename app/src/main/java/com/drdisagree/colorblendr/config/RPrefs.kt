@@ -6,7 +6,11 @@ import android.util.Log
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.EXCLUDED_PREFS_FROM_BACKUP
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
+import com.google.gson.reflect.TypeToken
 import java.io.IOException
 import java.io.InputStream
 import java.io.ObjectInputStream
@@ -156,6 +160,16 @@ object RPrefs {
             }
         }
 
+        // Check if seed color is available in current wallpaper color list
+        val seedColor = map[MONET_SEED_COLOR] as? Int
+        val wallpaperColors = prefs.all[WALLPAPER_COLOR_LIST] as? String
+        val colorAvailable = if (seedColor != null && wallpaperColors != null) {
+            Const.GSON.fromJson<ArrayList<Int?>?>(
+                wallpaperColors,
+                object : TypeToken<ArrayList<Int?>?>() {}.type
+            )?.contains(seedColor) ?: false
+        } else false
+
         editor.clear()
 
         // Restore excluded prefs
@@ -171,6 +185,9 @@ object RPrefs {
 
             putObject(key, value)
         }
+
+        // Set basic color if seed color is not listed in wallpaper colors
+        putObject(MONET_SEED_COLOR_ENABLED, !colorAvailable)
 
         editor.apply()
     }
