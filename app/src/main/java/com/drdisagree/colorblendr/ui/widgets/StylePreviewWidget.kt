@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.widgets
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -10,19 +9,15 @@ import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putString
 import com.drdisagree.colorblendr.ui.views.ColorPreview
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
@@ -46,7 +41,6 @@ class StylePreviewWidget : RelativeLayout {
     private var isSelected: Boolean = false
     private var onClickListener: OnClickListener? = null
     private var styleName: String? = null
-    private var monetStyle: MONET? = null
     private var colorPalette: ArrayList<ArrayList<Int>>? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
@@ -72,14 +66,14 @@ class StylePreviewWidget : RelativeLayout {
 
         initializeId()
 
-        val typedArray: TypedArray = appContext.obtainStyledAttributes(
+        context.obtainStyledAttributes(
             attrs,
             R.styleable.StylePreviewWidget
-        )
-        styleName = typedArray.getOriginalString(R.styleable.StylePreviewWidget_titleText)
-        setTitle(typedArray.getString(R.styleable.StylePreviewWidget_titleText))
-        setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText))
-        typedArray.recycle()
+        ).apply {
+            setTitle(getString(R.styleable.StylePreviewWidget_titleText))
+            setDescription(getString(R.styleable.StylePreviewWidget_descriptionText))
+            recycle()
+        }
 
         coroutineScope.launch {
             setColorPreview()
@@ -94,10 +88,12 @@ class StylePreviewWidget : RelativeLayout {
     }
 
     fun setTitle(titleResId: Int) {
+        styleName = titleResId.getOriginalString()
         titleTextView!!.setText(titleResId)
     }
 
     fun setTitle(title: String?) {
+        styleName = title
         titleTextView!!.text = title
     }
 
@@ -123,8 +119,6 @@ class StylePreviewWidget : RelativeLayout {
 
     fun applyColorScheme() {
         styleName?.let {
-            putString(MONET_STYLE, it)
-
             coroutineScope.launch {
                 applyFabricatedColors(context!!)
             }
@@ -134,12 +128,10 @@ class StylePreviewWidget : RelativeLayout {
     private suspend fun setColorPreview() {
         withContext(Dispatchers.IO) {
             try {
-                monetStyle = stringToEnumMonetStyle(
-                    styleName ?: R.string.monet_tonalspot.getOriginalString()
-                )
+                if (context == null || styleName == null) return@withContext
 
                 colorPalette = generateModifiedColors(
-                    monetStyle!!,
+                    stringToEnumMonetStyle(context!!, styleName!!),
                     getInt(MONET_ACCENT_SATURATION, 100),
                     getInt(MONET_BACKGROUND_SATURATION, 100),
                     getInt(MONET_BACKGROUND_LIGHTNESS, 100),
@@ -163,8 +155,8 @@ class StylePreviewWidget : RelativeLayout {
         }
     }
 
-    override fun setOnClickListener(l: OnClickListener?) {
-        onClickListener = l
+    override fun setOnClickListener(listener: OnClickListener?) {
+        onClickListener = listener
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view

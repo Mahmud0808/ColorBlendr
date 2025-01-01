@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -163,12 +162,6 @@ class AboutAppAdapter(
             e.printStackTrace()
         }
     }
-
-    private fun Context.toPx(dp: Int): Int = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp.toFloat(),
-        resources.displayMetrics
-    ).toInt()
 
     companion object {
         const val TYPE_ABOUT_APP = 0

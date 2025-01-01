@@ -26,9 +26,9 @@ import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.utils.ColorUtil
-import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
@@ -280,12 +280,10 @@ class ThemeFragment : Fragment() {
     ): ArrayList<ArrayList<Int>>? {
         try {
             return ColorUtil.generateModifiedColors(
-                stringToEnumMonetStyle(
-                    RPrefs.getString(
-                        MONET_STYLE,
-                        R.string.monet_tonalspot.getOriginalString()
-                    )!!
-                ),
+                RPrefs.getString(
+                    MONET_STYLE,
+                    ColorSchemeUtil.MONET.TONAL_SPOT.toString()
+                ).toEnumMonet(),
                 monetAccentSaturation,
                 monetBackgroundSaturation,
                 monetBackgroundLightness,
