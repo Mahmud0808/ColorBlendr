@@ -556,41 +556,41 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral87",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -4,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 4
+                    colorIndex = 3
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral92",
-                    lightnessAdjustment = -6,
+                    lightnessAdjustment = -4,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 3
+                    colorIndex = 2
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral94",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -2,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 3
+                    colorIndex = 2
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral96",
-                    lightnessAdjustment = -14,
+                    lightnessAdjustment = -4,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 2
+                    colorIndex = 1
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral98",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -2,
                     tonalPalette = TonalPalette.NEUTRAL,
-                    colorIndex = 2
+                    colorIndex = 1
                 )
             )
             add(
@@ -644,41 +644,41 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant87",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -4,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 4
+                    colorIndex = 3
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant92",
-                    lightnessAdjustment = -6,
+                    lightnessAdjustment = -4,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 3
+                    colorIndex = 2
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant94",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -2,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 3
+                    colorIndex = 2
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant96",
-                    lightnessAdjustment = -14,
+                    lightnessAdjustment = -4,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 2
+                    colorIndex = 1
                 )
             )
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant98",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -2,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                    colorIndex = 2
+                    colorIndex = 1
                 )
             )
         }
