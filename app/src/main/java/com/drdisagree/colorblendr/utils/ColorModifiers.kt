@@ -65,7 +65,7 @@ object ColorModifiers {
                 }
             }
         } else {
-            if (backgroundSaturation && style != MONET.MONOCHROMATIC) {
+            if (backgroundSaturation && style != MONET.MONOCHROMATIC && style != MONET.RAINBOW) {
                 // Set background saturation
                 palette.replaceAll { o: Int ->
                     ColorUtil.modifySaturation(
