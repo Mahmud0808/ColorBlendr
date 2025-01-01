@@ -6,7 +6,6 @@ import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
@@ -217,10 +216,7 @@ object ColorUtil {
     }
 
     fun getHue(color: Int): Float {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
-
-        return hsl[0]
+        return Cam.fromInt(color).hue
     }
 
     private val systemTintList: FloatArray
