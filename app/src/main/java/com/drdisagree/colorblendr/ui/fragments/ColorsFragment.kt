@@ -93,7 +93,8 @@ class ColorsFragment : Fragment() {
             }
 
         // Color codes
-        val wallpaperColorSelected = !getBoolean(MONET_SEED_COLOR_ENABLED, false)
+        val wallpaperColorSelected = !getBoolean(MONET_SEED_COLOR_ENABLED, false) &&
+                getWallpaperColors().contains(getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
         binding.colorsToggleGroup.check(
             if (wallpaperColorSelected) R.id.wallpaper_colors_button else R.id.basic_colors_button
         )
@@ -108,9 +109,11 @@ class ColorsFragment : Fragment() {
                 }
             }
         }
+
         // Inflate color containers
         addWallpaperColorItems()
         addBasicColorItems()
+
         if (wallpaperColorSelected) {
             binding.basicColorsContainer.visibility = View.GONE
             binding.wallpaperColorsContainer.visibility = View.VISIBLE
@@ -205,17 +208,7 @@ class ColorsFragment : Fragment() {
     }
 
     private fun addWallpaperColorItems() {
-        val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
-
-        val wallpaperColorList: ArrayList<Int> = if (wallpaperColors != null) {
-            Const.GSON.fromJson(
-                wallpaperColors,
-                object : TypeToken<ArrayList<Int?>?>() {
-                }.type
-            )
-        } else {
-            monetAccentColors
-        }
+        val wallpaperColorList: ArrayList<Int> = getWallpaperColors()
 
         addColorsToContainer(wallpaperColorList, true)
     }
@@ -240,30 +233,38 @@ class ColorsFragment : Fragment() {
             val size: Int = (48 * resources.displayMetrics.density).toInt()
             val margin: Int = (12 * resources.displayMetrics.density).toInt()
 
-            val colorPreview = WallColorPreview(requireContext())
-            val layoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(size, size)
-            layoutParams.setMargins(margin, margin, margin, margin)
-            colorPreview.setLayoutParams(layoutParams)
-            colorPreview.setMainColor(colorList[i])
-            colorPreview.tag = colorList[i]
-            colorPreview.isSelected = colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE)
+            val colorPreview = WallColorPreview(requireContext()).apply {
+                setLayoutParams(
+                    LinearLayout.LayoutParams(size, size).apply {
+                        setMargins(margin, margin, margin, margin)
+                    }
+                )
+                setMainColor(colorList[i])
+                tag = colorList[i]
+                isSelected = colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE) &&
+                        if (isWallpaperColors) {
+                            !getBoolean(MONET_SEED_COLOR_ENABLED, false)
+                        } else {
+                            true
+                        }
 
-            colorPreview.setOnClickListener {
-                putInt(MONET_SEED_COLOR, colorPreview.tag as Int)
-                putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
-                binding.seedColorPicker.previewColor = colorPreview.tag as Int
+                setOnClickListener {
+                    putInt(MONET_SEED_COLOR, tag as Int)
+                    putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
+                    binding.seedColorPicker.previewColor = tag as Int
 
-                updateColorPreviewSelection(colorPreview)
+                    updateColorPreviewSelection(this)
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    putLong(
-                        MONET_LAST_UPDATED,
-                        System.currentTimeMillis()
-                    )
-                    withContext(Dispatchers.IO) {
-                        try {
-                            applyFabricatedColors(requireContext())
-                        } catch (ignored: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        putLong(
+                            MONET_LAST_UPDATED,
+                            System.currentTimeMillis()
+                        )
+                        withContext(Dispatchers.IO) {
+                            try {
+                                applyFabricatedColors(requireContext())
+                            } catch (ignored: Exception) {
+                            }
                         }
                     }
                 }
@@ -284,6 +285,20 @@ class ColorsFragment : Fragment() {
                 val child = container.getChildAt(i) as WallColorPreview
                 child.isSelected = child == selectedColorPreview
             }
+        }
+    }
+
+    private fun getWallpaperColors(): ArrayList<Int> {
+        val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
+
+        return if (wallpaperColors != null) {
+            Const.GSON.fromJson(
+                wallpaperColors,
+                object : TypeToken<ArrayList<Int?>?>() {
+                }.type
+            )
+        } else {
+            monetAccentColors
         }
     }
 
