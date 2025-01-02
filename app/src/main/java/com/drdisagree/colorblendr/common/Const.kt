@@ -27,6 +27,7 @@ object Const {
     const val FIRST_RUN: String = "firstRun"
     const val THEMING_ENABLED: String = "themingEnabled"
     const val MONET_STYLE: String = "customMonetStyle"
+    const val CUSTOM_MONET_STYLE: String = "userGeneratedMonetStyle"
     const val MODE_SPECIFIC_THEMES: String = "modeSpecificThemes"
     const val SCREEN_OFF_UPDATE_COLORS: String = "screenOffUpdateColors"
     const val DARKER_LAUNCHER_ICONS: String = "darkerLauncherIcons"
@@ -75,6 +76,7 @@ object Const {
     const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES: String = "theme_customization_overlay_packages"
     const val SHIZUKU_THEMING_ENABLED: String = "shizukuThemingEnabled"
     const val APP_LIST_FILTER_METHOD: String = "appListFilterMethod"
+    const val SAVED_CUSTOM_MONET_STYLES: String = "savedCustomMonetStyles"
     val screenOrientation: AtomicInteger = AtomicInteger(-1)
 
     // Service preferences

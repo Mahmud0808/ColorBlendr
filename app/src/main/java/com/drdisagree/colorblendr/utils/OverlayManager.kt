@@ -26,11 +26,12 @@ import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.config.RPrefs.getString
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET.Companion.toEnumMonet
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
 import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
+import com.drdisagree.colorblendr.utils.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 @Suppress("unused")
@@ -220,10 +221,7 @@ object OverlayManager {
             return
         }
 
-        val style = getString(
-            MONET_STYLE,
-            ColorSchemeUtil.MONET.TONAL_SPOT.toString()
-        ).toEnumMonet()
+        val style = getCurrentMonetStyle()
         val monetAccentSaturation = getInt(MONET_ACCENT_SATURATION, 100)
         val monetBackgroundSaturation = getInt(MONET_BACKGROUND_SATURATION, 100)
         val monetBackgroundLightness = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
@@ -389,10 +387,7 @@ object OverlayManager {
 
         if (paletteTemp == null) {
             paletteTemp = generateModifiedColors(
-                getString(
-                    MONET_STYLE,
-                    ColorSchemeUtil.MONET.TONAL_SPOT.toString()
-                ).toEnumMonet(),
+                getCurrentMonetStyle(),
                 getInt(MONET_ACCENT_SATURATION, 100),
                 getInt(MONET_BACKGROUND_SATURATION, 100),
                 getInt(MONET_BACKGROUND_LIGHTNESS, 100),

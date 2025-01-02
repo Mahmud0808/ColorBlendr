@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/container_margin_horizontal"
-    android:layout_marginBottom="@dimen/container_margin_bottom"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorSurfaceContainer">
 

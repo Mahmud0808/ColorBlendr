@@ -18,12 +18,9 @@ import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.getString
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET.Companion.toEnumMonet
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.SystemUtil
@@ -224,10 +221,7 @@ class WallColorPreview : View {
             try {
                 colorPalette = withContext(Dispatchers.IO) {
                     generateModifiedColors(
-                        getString(
-                            MONET_STYLE,
-                            MONET.TONAL_SPOT.toString()
-                        ).toEnumMonet(),
+                        getCurrentMonetStyle(),
                         color,
                         getInt(MONET_ACCENT_SATURATION, 100),
                         getInt(MONET_BACKGROUND_SATURATION, 100),

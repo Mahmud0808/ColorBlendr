@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
 import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
@@ -54,8 +53,11 @@ object ColorModifiers {
         val backgroundSaturation = monetBackgroundSaturation != 100
         val backgroundLightness = monetBackgroundLightness != 100
 
+        val isMonochrome = style == MONET.MONOCHROMATIC
+        val isRainbow = style == MONET.RAINBOW
+
         if (accentPalette) {
-            if (accentSaturation && style != MONET.MONOCHROMATIC) {
+            if (accentSaturation && !isMonochrome) {
                 // Set accent saturation
                 palette.replaceAll { o: Int ->
                     ColorUtil.modifySaturation(
@@ -65,7 +67,7 @@ object ColorModifiers {
                 }
             }
         } else {
-            if (backgroundSaturation && style != MONET.MONOCHROMATIC && style != MONET.RAINBOW) {
+            if (backgroundSaturation && !isMonochrome && !isRainbow) {
                 // Set background saturation
                 palette.replaceAll { o: Int ->
                     ColorUtil.modifySaturation(
@@ -75,7 +77,7 @@ object ColorModifiers {
                 }
             }
 
-            if (backgroundLightness && style != MONET.MONOCHROMATIC) {
+            if (backgroundLightness && !isMonochrome) {
                 // Set background lightness
                 for (j in palette.indices) {
                     palette[j] =
@@ -89,7 +91,7 @@ object ColorModifiers {
             }
         }
 
-        if (style == MONET.MONOCHROMATIC) {
+        if (isMonochrome) {
             // Set monochrome lightness
             for (j in palette.indices) {
                 palette[j] = ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)

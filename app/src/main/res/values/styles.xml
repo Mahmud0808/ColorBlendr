@@ -29,4 +29,8 @@
         <item name="android:thumb">@null</item>
         <item name="android:progressDrawable">@drawable/seekbar_track</item>
     </style>
+
+    <style name="MyPopupMenu" parent="@style/Widget.Material3.PopupMenu">
+        <item name="android:dropDownHorizontalOffset">-16dp</item>
+    </style>
 </resources>

@@ -12,7 +12,6 @@ import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
 import com.drdisagree.colorblendr.utils.cam.CamUtils
@@ -54,7 +53,7 @@ object ColorUtil {
 
         return generateModifiedColors(
             style,
-            RPrefs.getInt(
+            getInt(
                 Const.MONET_SEED_COLOR,
                 wallpaperColorList[0]
             ),
