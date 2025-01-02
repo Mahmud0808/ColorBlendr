@@ -37,18 +37,37 @@ class WallColorPreview : View {
 
     private var context: Context? = null
     private var isDarkMode = false
-    private var tickPaint: Paint? = null
-    private var squarePaint: Paint? = null
-    private var centerCirclePaint: Paint? = null
-    private var centerClearCirclePaint: Paint? = null
-    private var secondQuarterCirclePaint: Paint? = null
-    private var firstQuarterCirclePaint: Paint? = null
-    private var halfCirclePaint: Paint? = null
-    private var squareRect: RectF? = null
-    private var circleRect: RectF? = null
-    private var tickPath: Path? = null
-    private var clearCircleRadius = 0f
-    private var circleRadius = 0f
+    private var tickPaint: Paint = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
+        strokeCap = Paint.Cap.ROUND
+    }
+    private var squarePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+    private var centerCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+    private var centerClearCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+    private var halfCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+        strokeCap = Paint.Cap.BUTT
+    }
+    private var firstQuarterCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+        strokeCap = Paint.Cap.BUTT
+    }
+    private var secondQuarterCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+        strokeCap = Paint.Cap.BUTT
+    }
+    private var squareRect: RectF = RectF()
+    private var circleRect: RectF = RectF()
+    private var tickPath: Path = Path()
+    private var circleRadius = 10 * resources.displayMetrics.density
+    private var clearCircleRadius = circleRadius + 0 * resources.displayMetrics.density
     private var isSelected = false
     private var colorPalette: ArrayList<ArrayList<Int>>? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
@@ -86,69 +105,44 @@ class WallColorPreview : View {
 
     private fun init(context: Context) {
         this.context = context
+
         isDarkMode =
             (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES
 
         circleRadius = 10 * resources.displayMetrics.density
         clearCircleRadius = circleRadius + 0 * resources.displayMetrics.density
 
-        squareRect = RectF()
-        circleRect = RectF()
-        tickPath = Path()
-
-        squarePaint = Paint()
-        squarePaint!!.color = ContextCompat.getColor(
+        squarePaint.color = ContextCompat.getColor(
             context,
-            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99
+            else com.google.android.material.R.color.material_dynamic_neutral10
         )
-        squarePaint!!.style = Paint.Style.FILL
-
-        halfCirclePaint = Paint()
-        halfCirclePaint!!.color = ContextCompat.getColor(
+        halfCirclePaint.color = ContextCompat.getColor(
             context,
             com.google.android.material.R.color.material_dynamic_primary90
         )
-        halfCirclePaint!!.style = Paint.Style.FILL
-        halfCirclePaint!!.strokeCap = Paint.Cap.BUTT
-
-        firstQuarterCirclePaint = Paint()
-        firstQuarterCirclePaint!!.color = ContextCompat.getColor(
+        firstQuarterCirclePaint.color = ContextCompat.getColor(
             context,
             com.google.android.material.R.color.material_dynamic_secondary90
         )
-        firstQuarterCirclePaint!!.style = Paint.Style.FILL
-        firstQuarterCirclePaint!!.strokeCap = Paint.Cap.BUTT
-
-        secondQuarterCirclePaint = Paint()
-        secondQuarterCirclePaint!!.color = ContextCompat.getColor(
+        secondQuarterCirclePaint.color = ContextCompat.getColor(
             context,
             com.google.android.material.R.color.material_dynamic_tertiary90
         )
-        secondQuarterCirclePaint!!.style = Paint.Style.FILL
-        secondQuarterCirclePaint!!.strokeCap = Paint.Cap.BUTT
-
-        centerCirclePaint = Paint()
-        centerCirclePaint!!.color = ContextCompat.getColor(
+        centerCirclePaint.color = ContextCompat.getColor(
             context,
             com.google.android.material.R.color.material_dynamic_primary70
         )
-        centerCirclePaint!!.style = Paint.Style.FILL
-
-        centerClearCirclePaint = Paint()
-        centerClearCirclePaint!!.color = ContextCompat.getColor(
+        centerClearCirclePaint.color = ContextCompat.getColor(
             context,
-            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99
+            else com.google.android.material.R.color.material_dynamic_neutral10
         )
-        centerClearCirclePaint!!.style = Paint.Style.FILL
-
-        tickPaint = Paint()
-        tickPaint!!.color = ContextCompat.getColor(
+        tickPaint.color = ContextCompat.getColor(
             context,
-            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+            if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99
+            else com.google.android.material.R.color.material_dynamic_neutral10
         )
-        tickPaint!!.style = Paint.Style.STROKE
-        tickPaint!!.strokeWidth = 4f
-        tickPaint!!.strokeCap = Paint.Cap.ROUND
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -158,63 +152,63 @@ class WallColorPreview : View {
         val height = height
 
         val cornerRadius = 12 * resources.displayMetrics.density
-        squareRect!![0f, 0f, width.toFloat()] = height.toFloat()
-        canvas.drawRoundRect(squareRect!!, cornerRadius, cornerRadius, squarePaint!!)
+        squareRect[0f, 0f, width.toFloat()] = height.toFloat()
+        canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint)
 
         val padding = 6 * resources.displayMetrics.density
         val margin = 0 * resources.displayMetrics.density
 
-        circleRect!![padding, padding, width - padding] = height - padding - margin
-        canvas.drawArc(circleRect!!, 180f, 180f, true, halfCirclePaint!!)
+        circleRect[padding, padding, width - padding] = height - padding - margin
+        canvas.drawArc(circleRect, 180f, 180f, true, halfCirclePaint)
 
-        circleRect!![padding, padding + margin, width - padding - margin] = height - padding
-        canvas.drawArc(circleRect!!, 90f, 90f, true, firstQuarterCirclePaint!!)
+        circleRect[padding, padding + margin, width - padding - margin] = height - padding
+        canvas.drawArc(circleRect, 90f, 90f, true, firstQuarterCirclePaint)
 
-        circleRect!![padding + margin, padding + margin, width - padding] = height - padding
-        canvas.drawArc(circleRect!!, 0f, 90f, true, secondQuarterCirclePaint!!)
+        circleRect[padding + margin, padding + margin, width - padding] = height - padding
+        canvas.drawArc(circleRect, 0f, 90f, true, secondQuarterCirclePaint)
 
-        circleRect!![width / 2f - clearCircleRadius, height / 2f - clearCircleRadius, width / 2f + clearCircleRadius] =
+        circleRect[width / 2f - clearCircleRadius, height / 2f - clearCircleRadius, width / 2f + clearCircleRadius] =
             height / 2f + clearCircleRadius
-        canvas.drawArc(circleRect!!, 0f, 360f, true, centerClearCirclePaint!!)
+        canvas.drawArc(circleRect, 0f, 360f, true, centerClearCirclePaint)
 
-        circleRect!![width / 2f - circleRadius, height / 2f - circleRadius, width / 2f + circleRadius] =
+        circleRect[width / 2f - circleRadius, height / 2f - circleRadius, width / 2f + circleRadius] =
             height / 2f + circleRadius
-        canvas.drawCircle(width / 2f, height / 2f, circleRadius, centerCirclePaint!!)
+        canvas.drawCircle(width / 2f, height / 2f, circleRadius, centerCirclePaint)
 
         if (isSelected) {
-            tickPath!!.moveTo(width / 2f - circleRadius / 2, height / 2f)
-            tickPath!!.lineTo(width / 2f - circleRadius / 6, height / 2f + circleRadius / 3)
-            tickPath!!.lineTo(width / 2f + circleRadius / 2, height / 2f - circleRadius / 3)
-            canvas.drawPath(tickPath!!, tickPaint!!)
+            tickPath.moveTo(width / 2f - circleRadius / 2, height / 2f)
+            tickPath.lineTo(width / 2f - circleRadius / 6, height / 2f + circleRadius / 3)
+            tickPath.lineTo(width / 2f + circleRadius / 2, height / 2f - circleRadius / 3)
+            canvas.drawPath(tickPath, tickPaint)
         }
     }
 
     private fun setSquareColor(@ColorInt color: Int) {
         squareColor = color
-        squarePaint!!.color = color
-        centerClearCirclePaint!!.color = color
+        squarePaint.color = color
+        centerClearCirclePaint.color = color
     }
 
     private fun setFirstQuarterCircleColor(@ColorInt color: Int) {
         firstQuarterCircleColor = color
-        firstQuarterCirclePaint!!.color = color
+        firstQuarterCirclePaint.color = color
     }
 
     private fun setSecondQuarterCircleColor(@ColorInt color: Int) {
         secondQuarterCircleColor = color
-        secondQuarterCirclePaint!!.color = color
+        secondQuarterCirclePaint.color = color
     }
 
     private fun setHalfCircleColor(@ColorInt color: Int) {
         halfCircleColor = color
-        halfCirclePaint!!.color = color
+        halfCirclePaint.color = color
     }
 
     private fun setCenterCircleColor(@ColorInt color: Int) {
         centerCircleColor = color
-        centerCirclePaint!!.color = color
+        centerCirclePaint.color = color
         @ColorInt val textColor = calculateTextColor(color)
-        tickPaint!!.color = if (colorPalette != null) {
+        tickPaint.color = if (colorPalette != null) {
             colorPalette!![4][if (textColor == Color.WHITE) 2 else 11]
         } else {
             textColor
@@ -232,7 +226,7 @@ class WallColorPreview : View {
                     generateModifiedColors(
                         getString(
                             MONET_STYLE,
-                            ColorSchemeUtil.MONET.TONAL_SPOT.toString()
+                            MONET.TONAL_SPOT.toString()
                         ).toEnumMonet(),
                         color,
                         getInt(MONET_ACCENT_SATURATION, 100),

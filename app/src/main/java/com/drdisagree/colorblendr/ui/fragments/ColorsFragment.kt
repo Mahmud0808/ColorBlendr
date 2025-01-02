@@ -54,9 +54,7 @@ class ColorsFragment : Fragment() {
 
     private val wallpaperChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (binding.colorsToggleGroup.checkedButtonId == R.id.wallpaper_colors_button) {
-                addWallpaperColorItems()
-            }
+            addWallpaperColorItems()
         }
     }
 
@@ -95,26 +93,30 @@ class ColorsFragment : Fragment() {
             }
 
         // Color codes
+        val wallpaperColorSelected = !getBoolean(MONET_SEED_COLOR_ENABLED, false)
         binding.colorsToggleGroup.check(
-            if (getBoolean(
-                    MONET_SEED_COLOR_ENABLED,
-                    false
-                )
-            ) R.id.basic_colors_button else R.id.wallpaper_colors_button
+            if (wallpaperColorSelected) R.id.wallpaper_colors_button else R.id.basic_colors_button
         )
         binding.colorsToggleGroup.addOnButtonCheckedListener { _: MaterialButtonToggleGroup?, checkedId: Int, isChecked: Boolean ->
             if (isChecked) {
                 if (checkedId == R.id.wallpaper_colors_button) {
-                    addWallpaperColorItems()
+                    binding.basicColorsContainer.visibility = View.GONE
+                    binding.wallpaperColorsContainer.visibility = View.VISIBLE
                 } else {
-                    addBasicColorItems()
+                    binding.wallpaperColorsContainer.visibility = View.GONE
+                    binding.basicColorsContainer.visibility = View.VISIBLE
                 }
             }
         }
-        if (getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-            addBasicColorItems()
+        // Inflate color containers
+        addWallpaperColorItems()
+        addBasicColorItems()
+        if (wallpaperColorSelected) {
+            binding.basicColorsContainer.visibility = View.GONE
+            binding.wallpaperColorsContainer.visibility = View.VISIBLE
         } else {
-            addWallpaperColorItems()
+            binding.wallpaperColorsContainer.visibility = View.GONE
+            binding.basicColorsContainer.visibility = View.VISIBLE
         }
 
         // Primary color
@@ -228,7 +230,11 @@ class ColorsFragment : Fragment() {
     }
 
     private fun addColorsToContainer(colorList: ArrayList<Int>, isWallpaperColors: Boolean) {
-        binding.colorsContainer.removeAllViews()
+        if (isWallpaperColors) {
+            binding.wallpaperColorsContainer
+        } else {
+            binding.basicColorsContainer
+        }.removeAllViews()
 
         for (i in colorList.indices) {
             val size: Int = (48 * resources.displayMetrics.density).toInt()
@@ -263,14 +269,21 @@ class ColorsFragment : Fragment() {
                 }
             }
 
-            binding.colorsContainer.addView(colorPreview)
+            if (isWallpaperColors) {
+                binding.wallpaperColorsContainer
+            } else {
+                binding.basicColorsContainer
+            }.addView(colorPreview)
         }
     }
 
     private fun updateColorPreviewSelection(selectedColorPreview: WallColorPreview) {
-        for (i in 0 until binding.colorsContainer.childCount) {
-            val child = binding.colorsContainer.getChildAt(i) as WallColorPreview
-            child.isSelected = child == selectedColorPreview
+        for (container in listOf(binding.wallpaperColorsContainer, binding.basicColorsContainer)) {
+            val childCount = container.childCount
+            for (i in 0 until childCount) {
+                val child = container.getChildAt(i) as WallColorPreview
+                child.isSelected = child == selectedColorPreview
+            }
         }
     }
 
