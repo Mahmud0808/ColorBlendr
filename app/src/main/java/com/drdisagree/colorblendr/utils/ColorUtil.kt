@@ -6,7 +6,6 @@ import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
@@ -15,6 +14,7 @@ import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
+import com.drdisagree.colorblendr.utils.cam.CamUtils
 import com.google.gson.reflect.TypeToken
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
@@ -142,16 +142,17 @@ object ColorUtil {
     fun modifySaturation(color: Int, saturation: Int): Int {
         val saturationFloat = (saturation - 100) / 100f
 
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
+        val cam = Cam.fromInt(color)
+        var chroma = cam.chroma
+        val lstar = CamUtils.lstarFromInt(color)
 
         if (saturationFloat > 0) {
-            hsl[1] += ((1 - hsl[1]) * saturationFloat)
+            chroma = 100f * (chroma / (chroma * saturationFloat + 100f) + saturationFloat)
         } else if (saturationFloat < 0) {
-            hsl[1] += (hsl[1] * saturationFloat)
+            chroma += (chroma * saturationFloat)
         }
 
-        return ColorUtils.HSLToColor(hsl)
+        return Cam.getInt(cam.hue, chroma, lstar)
     }
 
     fun modifyLightness(color: Int, lightness: Int, idx: Int): Int {
@@ -172,12 +173,10 @@ object ColorUtil {
             }
         }
 
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
+        val cam = Cam.fromInt(color)
+        val lstar = 100f * (shade + lightnessFloat)
 
-        hsl[2] = shade + lightnessFloat
-
-        return ColorUtils.HSLToColor(hsl)
+        return Cam.getInt(cam.hue, cam.chroma, lstar)
     }
 
     fun modifyBrightness(color: Int, brightnessPercentage: Int): Int {
@@ -216,10 +215,7 @@ object ColorUtil {
     }
 
     fun getHue(color: Int): Float {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
-
-        return hsl[0]
+        return Cam.fromInt(color).hue
     }
 
     private val systemTintList: FloatArray
