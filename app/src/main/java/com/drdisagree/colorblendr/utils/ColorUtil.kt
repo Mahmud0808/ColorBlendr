@@ -146,8 +146,12 @@ object ColorUtil {
         var chroma = cam.chroma
         val lstar = CamUtils.lstarFromInt(color)
 
+        // Get a color with maximum chroma (200f is from VIBRANT accent 1 palette)
+        val targetInt = Cam.getInt(cam.hue, 200f, lstar)
+        val target = Cam.fromInt(targetInt)
+
         if (saturationFloat > 0) {
-            chroma = 100f * (chroma / (chroma * saturationFloat + 100f) + saturationFloat)
+            chroma += ((target.chroma - chroma) * saturationFloat)
         } else if (saturationFloat < 0) {
             chroma += (chroma * saturationFloat)
         }
