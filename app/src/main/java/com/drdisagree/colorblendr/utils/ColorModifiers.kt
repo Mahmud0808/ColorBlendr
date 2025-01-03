@@ -67,6 +67,14 @@ object ColorModifiers {
                 }
             }
         } else {
+            if (backgroundLightness && !isMonochrome) {
+                // Set background lightness
+                for (j in palette.indices) {
+                    palette[j] =
+                        ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
+                }
+            }
+
             if (backgroundSaturation && !isMonochrome && !isRainbow) {
                 // Set background saturation
                 palette.replaceAll { o: Int ->
@@ -74,14 +82,6 @@ object ColorModifiers {
                         o,
                         monetBackgroundSaturation
                     )
-                }
-            }
-
-            if (backgroundLightness && !isMonochrome) {
-                // Set background lightness
-                for (j in palette.indices) {
-                    palette[j] =
-                        ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
                 }
             }
 
