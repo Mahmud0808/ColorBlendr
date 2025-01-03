@@ -1,9 +1,6 @@
 name: Fetch Contributors
 
 on:
-  pull_request: # This will run the workflow on pull request events
-    types:
-      - closed
   workflow_dispatch: # This will run the workflow on manual trigger
 
 permissions:
