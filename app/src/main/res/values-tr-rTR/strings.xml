@@ -56,6 +56,9 @@
     <string name="monet_fruitsalad_desc">Taze ve sulu meyvelerin canlı çeşitliliğini anımsatan renklerin eklektik karışımı.</string>
     <string name="monet_content">İçerik</string>
     <string name="monet_content_desc">Dengeli ve sakinleştirici palet, huzur ve memnuniyet duygusunu teşvik eder.</string>
+    <string name="save_current_style">Save current style</string>
+    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save">Save</string>
     <!-- Settings -->
     <string name="app_service_title">%s Hizmeti</string>
     <string name="app_service_desc_on">Temalandırma etkin</string>

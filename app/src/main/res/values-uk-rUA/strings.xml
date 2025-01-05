@@ -56,6 +56,9 @@
     <string name="monet_fruitsalad_desc">Еклектичне поєднання кольорів нагадує яскравий асортимент свіжих і соковитих фруктів.</string>
     <string name="monet_content">Вміст</string>
     <string name="monet_content_desc">Збалансована й заспокійлива палітра, що сприяє відчуттю спокою і задоволеності.</string>
+    <string name="save_current_style">Save current style</string>
+    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save">Save</string>
     <!-- Settings -->
     <string name="app_service_title">Служба %s</string>
     <string name="app_service_desc_on">Тематизація ввімкнена</string>
@@ -89,8 +92,8 @@
     <string name="custom_tertiary_color_title">Власний третинний колір</string>
     <string name="custom_tertiary_color_desc">Виберіть чисто білий колір, щоби вимкнути</string>
     <string name="mode_specific_theme_title">Тема для конкретного режиму</string>
-    <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
-    <string name="screen_off_update_title">Update colors on screen off</string>
+    <string name="screen_off_update_desc">Оновлює кольори через 15 секунд після вимкнення екрана; корисно для живих шпалер</string>
+    <string name="screen_off_update_title">Оновлення кольорів при вимкненому екрані</string>
     <string name="mode_specific_theme_desc">Застосовуйте різну насиченість і яскравість для світлих і темних режимів</string>
     <string name="darker_launcher_icons_title">Темніші значки лаунчера</string>
     <string name="darker_launcher_icons_desc">Застосувати темне тло на монохромні значки Pixel лаунчера</string>

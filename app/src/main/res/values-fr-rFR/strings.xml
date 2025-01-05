@@ -56,6 +56,9 @@
     <string name="monet_fruitsalad_desc">Mélange éclectique de couleurs rappelant un assortiment vibrant de fruits frais et juteux.</string>
     <string name="monet_content">Contenu</string>
     <string name="monet_content_desc">Palette équilibrée et apaisante, favorisant un sentiment de tranquillité et de détente.</string>
+    <string name="save_current_style">Save current style</string>
+    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save">Save</string>
     <!-- Settings -->
     <string name="app_service_title">Service %s</string>
     <string name="app_service_desc_on">Thème actif</string>

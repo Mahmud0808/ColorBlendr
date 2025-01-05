@@ -56,6 +56,9 @@
     <string name="monet_fruitsalad_desc">مزيج دينيكي من الألوان يذكرنا بمجموعة متنوعة من الفواكه الطازجة والعصرية.</string>
     <string name="monet_content">محتوى</string>
     <string name="monet_content_desc">لوح متوازن ومهدئ يعزز الإحساس بالهدوء والمحتوى.</string>
+    <string name="save_current_style">Save current style</string>
+    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save">Save</string>
     <!-- Settings -->
     <string name="app_service_title">خدمة %s</string>
     <string name="app_service_desc_on">السمة نشطة</string>

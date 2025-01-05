@@ -56,6 +56,9 @@
     <string name="monet_fruitsalad_desc">Eklektická směs barev připomínající pestrý sortiment čerstvého a šťavnatého ovoce.</string>
     <string name="monet_content">Obsah</string>
     <string name="monet_content_desc">Vyvážená a uklidňující paleta podporující pocit klidu a spokojenosti.</string>
+    <string name="save_current_style">Uložit aktuální styl</string>
+    <string name="title_and_desc_cant_be_empty">Název a popis nesmí být prázdný</string>
+    <string name="save">Uložit</string>
     <!-- Settings -->
     <string name="app_service_title">Služba %s</string>
     <string name="app_service_desc_on">Motiv je aktivní</string>
