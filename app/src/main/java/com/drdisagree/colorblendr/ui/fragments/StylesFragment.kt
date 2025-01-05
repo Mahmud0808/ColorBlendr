@@ -111,7 +111,7 @@ class StylesFragment : Fragment() {
         }
 
         val titleBinding = ViewTextFieldOutlinedBinding.inflate(layoutInflater).apply {
-            outlinedTextField.hint = "Title"
+            outlinedTextField.hint = getString(R.string.title)
             outlinedTextField.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
             outlinedTextField.editText?.gravity = Gravity.TOP or Gravity.START
             if (title.isNotEmpty()) {
@@ -129,7 +129,7 @@ class StylesFragment : Fragment() {
         }
 
         val descBinding = ViewTextFieldOutlinedBinding.inflate(layoutInflater).apply {
-            outlinedTextField.hint = "Description"
+            outlinedTextField.hint = getString(R.string.description)
             outlinedTextField.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
             outlinedTextField.editText?.gravity = Gravity.TOP or Gravity.START
             if (desc.isNotEmpty()) {
