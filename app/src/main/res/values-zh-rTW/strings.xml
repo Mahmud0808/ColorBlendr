@@ -56,6 +56,9 @@
     <string name="monet_fruitsalad_desc">如同充滿活力的新鮮多汁水果組合，呈現折衷且豐富的顏色混合。</string>
     <string name="monet_content">內容</string>
     <string name="monet_content_desc">平衡且令人平靜的調色板，營造出一種寧靜與滿足感。</string>
+    <string name="save_current_style">Save current style</string>
+    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save">Save</string>
     <!-- Settings -->
     <string name="app_service_title">%s 服務</string>
     <string name="app_service_desc_on">佈景主題已啟動</string>
