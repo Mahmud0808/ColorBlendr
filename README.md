@@ -6,7 +6,7 @@
 <p align="center">
   <a href="https://github.com/Mahmud0808/ColorBlendr"><img alt="Repo Size" src="https://img.shields.io/github/repo-size/Mahmud0808/ColorBlendr?style=for-the-badge"></a>
   <a href="https://github.com/Mahmud0808/ColorBlendr/releases"><img src="https://img.shields.io/github/downloads/Mahmud0808/ColorBlendr/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge" alt="Downloads"></a>
-  <a href="https://telegram.me/IconifyOfficial"><img src="https://img.shields.io/badge/Telegram-Join-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
+  <a href="https://t.me/DrDsProjects"><img src="https://img.shields.io/badge/Telegram-Join-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
 </p>
 <div align="center">
 
