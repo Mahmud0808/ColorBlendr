@@ -50,7 +50,10 @@ object WallpaperColorUtil {
         val mergedColors = mutableSetOf<Int>()
 
         val wallpaperManager = WallpaperManager.getInstance(context)
+        var isLiveWallpaper = false
+
         wallpaperManager.wallpaperInfo?.let {
+            isLiveWallpaper = true
             wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
                 ?.let { wallpaperColors ->
                     mergedColors.add(wallpaperColors.primaryColor.toArgb())
@@ -60,10 +63,12 @@ object WallpaperColorUtil {
         }
 
         return try {
-            withContext(Dispatchers.IO) {
-                WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
-            }?.let { bitmap ->
-                mergedColors.addAll(getWallpaperColors(bitmap))
+            if (!isLiveWallpaper || mergedColors.isEmpty()) {
+                withContext(Dispatchers.IO) {
+                    WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
+                }?.let { bitmap ->
+                    mergedColors.addAll(getWallpaperColors(bitmap))
+                }
             }
 
             if (mergedColors.isEmpty()) ColorUtil.monetAccentColors else ArrayList(mergedColors)
@@ -194,13 +199,13 @@ object WallpaperColorUtil {
         private val ioDispatcher = Dispatchers.IO
 
         suspend fun loadWallpaperAsync(
-            context: Context?,
+            context: Context,
             which: Int
         ): Bitmap? = withContext(ioDispatcher) {
             loadWallpaper(context, which)
         }
 
-        private fun loadWallpaper(context: Context?, which: Int): Bitmap? {
+        private fun loadWallpaper(context: Context, which: Int): Bitmap? {
             return try {
                 val wallpaperManager = WallpaperManager.getInstance(context)
 
