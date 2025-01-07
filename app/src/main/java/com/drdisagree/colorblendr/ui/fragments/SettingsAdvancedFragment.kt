@@ -108,6 +108,10 @@ class SettingsAdvancedFragment : Fragment() {
         binding.screenOffUpdate.isSwitchChecked = getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
         binding.screenOffUpdate.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(SCREEN_OFF_UPDATE_COLORS, isChecked)
+
+            if (!isChecked) {
+                applyFabricatedColors()
+            }
         }
 
         // Mode specific themes

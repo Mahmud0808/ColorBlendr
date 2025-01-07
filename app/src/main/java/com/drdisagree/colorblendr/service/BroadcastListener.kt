@@ -132,8 +132,6 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private suspend fun handleWallpaperChanged(context: Context, force: Boolean = false) {
-        var requiresUpdate = false
-
         if (permissionsGranted(context)) {
             val wallpaperColors = withContext(Dispatchers.IO) {
                 getWallpaperColors(context)
@@ -141,7 +139,10 @@ class BroadcastListener : BroadcastReceiver() {
 
             val previousWallpaperColors = getString(WALLPAPER_COLOR_LIST, null)
             val currentWallpaperColors = Const.GSON.toJson(wallpaperColors)
-            requiresUpdate = previousWallpaperColors != currentWallpaperColors
+
+            if (!requiresUpdate) {
+                requiresUpdate = previousWallpaperColors != currentWallpaperColors
+            }
 
             putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
 
@@ -151,6 +152,7 @@ class BroadcastListener : BroadcastReceiver() {
         }
 
         if (requiresUpdate || force) {
+            requiresUpdate = false
             validateRootAndUpdateColors(context) {
                 updateAllColors(context)
             }
@@ -228,6 +230,7 @@ class BroadcastListener : BroadcastReceiver() {
     companion object {
         private val TAG: String = BroadcastListener::class.java.simpleName
         var lastOrientation: Int = -1
+        var requiresUpdate = false
         private var cooldownTime: Long = 5000
     }
 }
