@@ -56,9 +56,11 @@
     <string name="monet_fruitsalad_desc">不拘一格的色彩混合让人联想到各种新鲜多汁的水果。</string>
     <string name="monet_content">内容</string>
     <string name="monet_content_desc">平衡和平静的调色板，促进宁静和满足感。</string>
-    <string name="save_current_style">Save current style</string>
-    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
-    <string name="save">Save</string>
+    <string name="save_current_style">保存当前样式</string>
+    <string name="title">标题</string>
+    <string name="description">描述</string>
+    <string name="save">保存</string>
+    <string name="title_and_desc_cant_be_empty">标题和描述不能为空</string>
     <!-- Settings -->
     <string name="app_service_title">%s 服务</string>
     <string name="app_service_desc_on">主题处于活跃状态</string>

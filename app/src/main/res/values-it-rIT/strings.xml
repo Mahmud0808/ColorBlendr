@@ -57,8 +57,10 @@
     <string name="monet_content">Contenuto</string>
     <string name="monet_content_desc">Tavolozza equilibrata e calmante, promuovendo un senso di tranquillità e soddisfazione.</string>
     <string name="save_current_style">Save current style</string>
-    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
     <string name="save">Save</string>
+    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
     <!-- Settings -->
     <string name="app_service_title">%s servizio</string>
     <string name="app_service_desc_on">Il tema è attivo</string>
