@@ -57,8 +57,10 @@
     <string name="monet_content">コンテンツ</string>
     <string name="monet_content_desc">バランスのとれた落ち着いたパレットで、平穏と満足感をもたらします。</string>
     <string name="save_current_style">現在のスタイルを保存</string>
-    <string name="title_and_desc_cant_be_empty">タイトルと説明は空欄にできません</string>
+    <string name="title">タイトル</string>
+    <string name="description">説明</string>
     <string name="save">保存</string>
+    <string name="title_and_desc_cant_be_empty">タイトルと説明は空欄にできません</string>
     <!-- Settings -->
     <string name="app_service_title">%s のサービス</string>
     <string name="app_service_desc_on">テーマはアクティブです</string>

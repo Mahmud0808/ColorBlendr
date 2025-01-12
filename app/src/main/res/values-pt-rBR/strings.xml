@@ -57,8 +57,10 @@
     <string name="monet_content">Contente</string>
     <string name="monet_content_desc">Paleta equilibrada e calmante, promovendo sensação de tranquilidade e contentamento.</string>
     <string name="save_current_style">Salvar estilo atual</string>
-    <string name="title_and_desc_cant_be_empty">Título e descrição não podem ficar vazios</string>
+    <string name="title">Título</string>
+    <string name="description">Descrição</string>
     <string name="save">Salvar</string>
+    <string name="title_and_desc_cant_be_empty">Título e descrição não podem ficar vazios</string>
     <!-- Settings -->
     <string name="app_service_title">Serviço %s</string>
     <string name="app_service_desc_on">O tema está ativo</string>
