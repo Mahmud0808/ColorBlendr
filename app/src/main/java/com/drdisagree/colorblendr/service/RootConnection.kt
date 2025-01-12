@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.IUserManager
 import android.os.Looper
 import android.os.Process
 import android.os.RemoteException
@@ -142,7 +143,33 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusive(packageName: String): Boolean {
-            return oMS!!.setEnabledExclusive(packageName, true, currentUserId)
+            var enabled = false
+
+            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userHandle = userInfo.userHandle
+                        val getIdentifierMethod =
+                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                        getIdentifierMethod.isAccessible = true
+                        val userId = getIdentifierMethod.invoke(userHandle) as Int
+
+                        enabled = if (userId == currentUserId) {
+                            oMS!!.setEnabledExclusive(packageName, true, userId)
+                        } else {
+                            enabled
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                    enabled = oMS!!.setEnabledExclusive(packageName, true, currentUserId)
+                }
+            } ?: run {
+                enabled = oMS!!.setEnabledExclusive(packageName, true, currentUserId)
+            }
+
+            return enabled
         }
 
         /**
@@ -151,7 +178,33 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusiveInCategory(packageName: String): Boolean {
-            return oMS!!.setEnabledExclusiveInCategory(packageName, currentUserId)
+            var enabled = false
+
+            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userHandle = userInfo.userHandle
+                        val getIdentifierMethod =
+                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                        getIdentifierMethod.isAccessible = true
+                        val userId = getIdentifierMethod.invoke(userHandle) as Int
+
+                        enabled = if (userId == currentUserId) {
+                            oMS!!.setEnabledExclusiveInCategory(packageName, userId)
+                        } else {
+                            enabled
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                    enabled = oMS!!.setEnabledExclusiveInCategory(packageName, currentUserId)
+                }
+            } ?: run {
+                enabled = oMS!!.setEnabledExclusiveInCategory(packageName, currentUserId)
+            }
+
+            return enabled
         }
 
         /**
@@ -301,10 +354,33 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setHighestPriority(packageName: String): Boolean {
-            return oMS!!.setHighestPriority(
-                packageName,
-                currentUserId
-            )
+            var isSet = false
+
+            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userHandle = userInfo.userHandle
+                        val getIdentifierMethod =
+                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                        getIdentifierMethod.isAccessible = true
+                        val userId = getIdentifierMethod.invoke(userHandle) as Int
+
+                        isSet = if (userId == currentUserId) {
+                            oMS!!.setHighestPriority(packageName, userId)
+                        } else {
+                            isSet
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                    isSet = oMS!!.setHighestPriority(packageName, currentUserId)
+                }
+            } ?: run {
+                isSet = oMS!!.setHighestPriority(packageName, currentUserId)
+            }
+
+            return isSet
         }
 
         /**
@@ -313,10 +389,33 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setLowestPriority(packageName: String): Boolean {
-            return oMS!!.setLowestPriority(
-                packageName,
-                currentUserId
-            )
+            var isSet = false
+
+            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userHandle = userInfo.userHandle
+                        val getIdentifierMethod =
+                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                        getIdentifierMethod.isAccessible = true
+                        val userId = getIdentifierMethod.invoke(userHandle) as Int
+
+                        isSet = if (userId == currentUserId) {
+                            oMS!!.setLowestPriority(packageName, userId)
+                        } else {
+                            isSet
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                    isSet = oMS!!.setLowestPriority(packageName, currentUserId)
+                }
+            } ?: run {
+                isSet = oMS!!.setLowestPriority(packageName, currentUserId)
+            }
+
+            return isSet
         }
 
         @Throws(RemoteException::class)
@@ -326,12 +425,46 @@ class RootConnection : RootService() {
 
         @Throws(RemoteException::class)
         override fun invalidateCachesForOverlay(packageName: String) {
-            oMS!!.invalidateCachesForOverlay(packageName, currentUserId)
+            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userHandle = userInfo.userHandle
+                        val getIdentifierMethod =
+                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                        getIdentifierMethod.isAccessible = true
+                        val userId = getIdentifierMethod.invoke(userHandle) as Int
+                        oMS!!.invalidateCachesForOverlay(packageName, userId)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                    oMS!!.invalidateCachesForOverlay(packageName, currentUserId)
+                }
+            } ?: run {
+                oMS!!.invalidateCachesForOverlay(packageName, currentUserId)
+            }
         }
 
         private fun switchOverlay(packageName: String, enable: Boolean) {
             try {
-                oMS!!.setEnabled(packageName, enable, currentUserId)
+                mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                    try {
+                        if (userInfo.isProfile) {
+                            val userHandle = userInfo.userHandle
+                            val getIdentifierMethod =
+                                UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                            getIdentifierMethod.isAccessible = true
+                            val userId = getIdentifierMethod.invoke(userHandle) as Int
+                            oMS!!.setEnabled(packageName, enable, userId)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+
+                        oMS!!.setEnabled(packageName, enable, currentUserId)
+                    }
+                } ?: run {
+                    oMS!!.setEnabled(packageName, enable, currentUserId)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -342,17 +475,46 @@ class RootConnection : RootService() {
             try {
                 val omtbInstance = omtbClass!!.newInstance()
 
-                omtbClass!!.getMethod(
+                val setEnabledMethod = omtbClass!!.getMethod(
                     "setEnabled",
                     oiClass,
                     Boolean::class.javaPrimitiveType,
                     Int::class.javaPrimitiveType
-                ).invoke(
-                    omtbInstance,
-                    identifier,
-                    enable,
-                    currentUserId
                 )
+
+                mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                    try {
+                        if (userInfo.isProfile) {
+                            val userHandle = userInfo.userHandle
+                            val getIdentifierMethod =
+                                UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                            getIdentifierMethod.isAccessible = true
+                            val userId = getIdentifierMethod.invoke(userHandle) as Int
+                            setEnabledMethod.invoke(
+                                omtbInstance,
+                                identifier,
+                                enable,
+                                userId
+                            )
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+
+                        setEnabledMethod.invoke(
+                            omtbInstance,
+                            identifier,
+                            enable,
+                            currentUserId
+                        )
+                    }
+                } ?: run {
+                    setEnabledMethod.invoke(
+                        omtbInstance,
+                        identifier,
+                        enable,
+                        currentUserId
+                    )
+                }
 
                 val omtInstance = omtbClass!!.getMethod(
                     "build"
@@ -397,6 +559,7 @@ class RootConnection : RootService() {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
             private val currentUser: UserHandle
             private val currentUserId: Int
+            private var mUserManager: IUserManager? = null
             private var mOMS: IOverlayManager? = null
             private var oiClass: Class<*>? = null
             private var foClass: Class<*>? = null
@@ -412,6 +575,11 @@ class RootConnection : RootService() {
             init {
                 currentUser = getCurrentUser()
                 currentUserId = getCurrentUserId()!!
+
+                if (mUserManager == null) {
+                    mUserManager =
+                        IUserManager.Stub.asInterface(SystemServiceHelper.getSystemService("user"))
+                }
 
                 if (mOMS == null) {
                     mOMS =
