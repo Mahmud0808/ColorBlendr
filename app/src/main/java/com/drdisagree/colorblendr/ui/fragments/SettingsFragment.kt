@@ -50,7 +50,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.config.RPrefs.restorePrefs
 import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.utils.ColorUtil
+import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
@@ -441,7 +441,7 @@ class SettingsFragment : Fragment() {
     private fun numColorsOverridden(): Int {
         var colorOverridden = 0
 
-        for (colorName: Array<String> in colorNames) {
+        for (colorName: Array<String> in systemPaletteNames) {
             for (resource: String in colorName) {
                 if (getInt(resource, Int.MIN_VALUE) != Int.MIN_VALUE) {
                     colorOverridden++
@@ -469,10 +469,9 @@ class SettingsFragment : Fragment() {
 
     companion object {
         private val TAG: String = SettingsFragment::class.java.simpleName
-        private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
         fun clearCustomColors() {
-            for (colorName: Array<String> in colorNames) {
+            for (colorName: Array<String> in systemPaletteNames) {
                 for (resource: String in colorName) {
                     clearPref(resource)
                 }

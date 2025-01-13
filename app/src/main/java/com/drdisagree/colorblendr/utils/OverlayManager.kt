@@ -18,20 +18,18 @@ import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.getString
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
+import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
-import com.drdisagree.colorblendr.utils.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 @Suppress("unused")
@@ -40,7 +38,6 @@ object OverlayManager {
     private val TAG: String = OverlayManager::class.java.simpleName
     private var mRootConnection = rootConnection
     private var mShizukuConnection = shizukuConnection
-    private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
     fun enableOverlay(packageName: String) {
         if (workingMethod != Const.WorkMethod.ROOT) {
@@ -259,10 +256,10 @@ object OverlayManager {
                     val isDarkMode = SystemUtil.isDarkMode
 
                     frameworkOverlay.apply {
-                        for (i in colorNames.indices) {
-                            for (j in colorNames[i].indices) {
+                        for (i in systemPaletteNames.indices) {
+                            for (j in systemPaletteNames[i].indices) {
                                 setColor(
-                                    colorNames[i][j],
+                                    systemPaletteNames[i][j],
                                     if (isDarkMode) paletteDark[i][j] else paletteLight[i][j]
                                 )
                             }
@@ -309,8 +306,8 @@ object OverlayManager {
                                 "system_surface_dim_dark",
                                 Color.BLACK
                             ) // A14 notification scrim color
-                            setColor(colorNames[3][11], Color.BLACK)
-                            setColor(colorNames[4][11], Color.BLACK)
+                            setColor(systemPaletteNames[3][11], Color.BLACK)
+                            setColor(systemPaletteNames[4][11], Color.BLACK)
                         }
 
                         if (!getBoolean(Const.TINT_TEXT_COLOR, true)) {

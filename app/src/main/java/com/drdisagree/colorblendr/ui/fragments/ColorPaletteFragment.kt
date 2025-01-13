@@ -37,6 +37,7 @@ import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
+import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
@@ -53,7 +54,6 @@ class ColorPaletteFragment : Fragment() {
     private lateinit var binding: FragmentColorPaletteBinding
     private lateinit var colorTableRows: Array<LinearLayout>
     private lateinit var sharedViewModel: SharedViewModel
-    private val colorNames: Array<Array<String>> = ColorUtil.colorNames
     private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,8 +153,8 @@ class ColorPaletteFragment : Fragment() {
                             childView.background.setTint(systemColors[i][j])
                             childView.tag = systemColors[i][j]
 
-                            if (getInt(colorNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
-                                childView.background.setTint(getInt(colorNames[i][j], 0))
+                            if (getInt(systemPaletteNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
+                                childView.background.setTint(getInt(systemPaletteNames[i][j], 0))
                             }
 
                             val textView = TextView(requireContext()).apply {
@@ -213,7 +213,7 @@ class ColorPaletteFragment : Fragment() {
                                     val clipboard: ClipboardManager =
                                         requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                     val clip: ClipData = ClipData.newPlainText(
-                                        ColorUtil.colorNames[finalI][finalJ],
+                                        ColorUtil.systemPaletteNames[finalI][finalJ],
                                         intToHexColor(v.tag as Int)
                                     )
                                     clipboard.setPrimaryClip(clip)
@@ -243,7 +243,7 @@ class ColorPaletteFragment : Fragment() {
                                             ((v as ViewGroup)
                                                 .getChildAt(0) as TextView)
                                                 .setTextColor(calculateTextColor(color))
-                                            putInt(colorNames[finalI][finalJ], color)
+                                            putInt(systemPaletteNames[finalI][finalJ], color)
 
                                             CoroutineScope(Dispatchers.Main).launch {
                                                 putLong(
@@ -274,7 +274,7 @@ class ColorPaletteFragment : Fragment() {
                             return@setOnLongClickListener true
                         }
 
-                        clearPref(colorNames[finalI][finalJ])
+                        clearPref(systemPaletteNames[finalI][finalJ])
 
                         CoroutineScope(Dispatchers.Main).launch {
                             putLong(

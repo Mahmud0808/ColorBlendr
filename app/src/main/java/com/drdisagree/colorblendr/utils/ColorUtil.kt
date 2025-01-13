@@ -164,17 +164,9 @@ object ColorUtil {
         val shade = systemTintList[idx]
 
         when (idx) {
-            0, 12 -> {
-                lightnessFloat = 0f
-            }
-
-            1 -> {
-                lightnessFloat /= 10f
-            }
-
-            2 -> {
-                lightnessFloat /= 2f
-            }
+            0, 12 -> lightnessFloat = 0f
+            1 -> lightnessFloat /= 10f
+            2 -> lightnessFloat /= 2f
         }
 
         val cam = Cam.fromInt(color)
@@ -222,8 +214,8 @@ object ColorUtil {
         return Cam.fromInt(color).hue
     }
 
-    private val systemTintList: FloatArray
-        get() = floatArrayOf(
+    private val systemTintList: FloatArray by lazy {
+        floatArrayOf(
             1.0f,
             0.99f,
             0.95f,
@@ -238,44 +230,44 @@ object ColorUtil {
             0.1f,
             0.0f
         )
+    }
 
-    val colorNames: Array<Array<String>>
-        get() {
-            val accentTypes = arrayOf(
-                "system_accent1",
-                "system_accent2",
-                "system_accent3",
-                "system_neutral1",
-                "system_neutral2"
-            )
-            val values = arrayOf(
-                "0",
-                "10",
-                "50",
-                "100",
-                "200",
-                "300",
-                "400",
-                "500",
-                "600",
-                "700",
-                "800",
-                "900",
-                "1000"
-            )
+    val systemPaletteNames: Array<Array<String>> by lazy {
+        val accentTypes = arrayOf(
+            "system_accent1",
+            "system_accent2",
+            "system_accent3",
+            "system_neutral1",
+            "system_neutral2"
+        )
+        val values = arrayOf(
+            "0",
+            "10",
+            "50",
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "600",
+            "700",
+            "800",
+            "900",
+            "1000"
+        )
 
-            val colorNames = Array(accentTypes.size) {
-                Array(values.size) { "" }
-            }
-
-            for (i in accentTypes.indices) {
-                for (j in values.indices) {
-                    colorNames[i][j] = accentTypes[i] + "_" + values[j]
-                }
-            }
-
-            return colorNames
+        val colorNames = Array(accentTypes.size) {
+            Array(values.size) { "" }
         }
+
+        for (i in accentTypes.indices) {
+            for (j in values.indices) {
+                colorNames[i][j] = accentTypes[i] + "_" + values[j]
+            }
+        }
+
+        colorNames
+    }
 
     fun getColorNamesM3(isDynamic: Boolean, prefixG: Boolean): Array<Array<String>> {
         val prefix = "m3_ref_palette_"
