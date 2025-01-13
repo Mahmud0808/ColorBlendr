@@ -3,7 +3,6 @@ package com.drdisagree.colorblendr.service
 import android.annotation.SuppressLint
 import android.app.IActivityManager
 import android.app.IProcessObserver
-import android.content.Context
 import android.content.Intent
 import android.content.om.IOverlayManager
 import android.content.om.OverlayIdentifier
@@ -51,11 +50,11 @@ class RootConnection : RootService() {
             }
 
             override fun onProcessDied(pid: Int, uid: Int) {
-                if (uid == getSystemUiUID()) {
+                if (uid == SystemUI_UID) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         try {
                             enableOverlayWithIdentifier(
-                                listOf<String>(
+                                listOf(
                                     FABRICATED_OVERLAY_NAME_SYSTEM
                                 )
                             )
@@ -77,7 +76,7 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setSystemUIRestartListener() {
-            aM!!.registerProcessObserver(processListener)
+            mActivityManager.registerProcessObserver(processListener)
         }
 
         /**
@@ -85,7 +84,7 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun isOverlayInstalled(packageName: String): Boolean {
-            return oMS!!.getOverlayInfo(packageName, currentUserId) != null
+            return mOverlayManager.getOverlayInfo(packageName, currentUserId) != null
         }
 
         /**
@@ -93,7 +92,7 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun isOverlayEnabled(packageName: String): Boolean {
-            val overlay = oMS!!.getOverlayInfoByIdentifier(
+            val overlay = mOverlayManager.getOverlayInfoByIdentifier(
                 generateOverlayIdentifier(packageName),
                 currentUserId
             )
@@ -121,7 +120,7 @@ class RootConnection : RootService() {
          * Request that an overlay package be enabled when possible to do so.
          */
         override fun enableOverlay(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 switchOverlay(p, true)
             }
         }
@@ -131,7 +130,7 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayWithIdentifier(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 val identifier = generateOverlayIdentifier(p)
                 switchOverlayWithIdentifier(identifier, true)
             }
@@ -145,17 +144,12 @@ class RootConnection : RootService() {
         override fun enableOverlayExclusive(packageName: String): Boolean {
             var enabled = false
 
-            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+            mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userHandle = userInfo.userHandle
-                        val getIdentifierMethod =
-                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                        getIdentifierMethod.isAccessible = true
-                        val userId = getIdentifierMethod.invoke(userHandle) as Int
-
+                        val userId = userInfo.userHandle.getIdentifier()
                         enabled = if (userId == currentUserId) {
-                            oMS!!.setEnabledExclusive(packageName, true, userId)
+                            mOverlayManager.setEnabledExclusive(packageName, true, userId)
                         } else {
                             enabled
                         }
@@ -163,10 +157,8 @@ class RootConnection : RootService() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    enabled = oMS!!.setEnabledExclusive(packageName, true, currentUserId)
+                    return mOverlayManager.setEnabledExclusive(packageName, true, currentUserId)
                 }
-            } ?: run {
-                enabled = oMS!!.setEnabledExclusive(packageName, true, currentUserId)
             }
 
             return enabled
@@ -180,17 +172,12 @@ class RootConnection : RootService() {
         override fun enableOverlayExclusiveInCategory(packageName: String): Boolean {
             var enabled = false
 
-            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+            mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userHandle = userInfo.userHandle
-                        val getIdentifierMethod =
-                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                        getIdentifierMethod.isAccessible = true
-                        val userId = getIdentifierMethod.invoke(userHandle) as Int
-
+                        val userId = userInfo.userHandle.getIdentifier()
                         enabled = if (userId == currentUserId) {
-                            oMS!!.setEnabledExclusiveInCategory(packageName, userId)
+                            mOverlayManager.setEnabledExclusiveInCategory(packageName, userId)
                         } else {
                             enabled
                         }
@@ -198,10 +185,8 @@ class RootConnection : RootService() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    enabled = oMS!!.setEnabledExclusiveInCategory(packageName, currentUserId)
+                    return mOverlayManager.setEnabledExclusiveInCategory(packageName, currentUserId)
                 }
-            } ?: run {
-                enabled = oMS!!.setEnabledExclusiveInCategory(packageName, currentUserId)
             }
 
             return enabled
@@ -212,7 +197,7 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun disableOverlay(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 switchOverlay(p, false)
             }
         }
@@ -222,7 +207,7 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun disableOverlayWithIdentifier(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 val identifier = generateOverlayIdentifier(p)
                 switchOverlayWithIdentifier(identifier, false)
             }
@@ -244,7 +229,7 @@ class RootConnection : RootService() {
         @Throws(RemoteException::class)
         override fun registerFabricatedOverlay(overlay: FabricatedOverlayResource) {
             try {
-                val fobInstance = fobClass!!.getConstructor(
+                val fobInstance = fobClass.getConstructor(
                     String::class.java,
                     String::class.java,
                     String::class.java
@@ -254,7 +239,7 @@ class RootConnection : RootService() {
                     overlay.targetPackage
                 )
 
-                val setResourceValueMethod = fobClass!!.getMethod(
+                val setResourceValueMethod = fobClass.getMethod(
                     "setResourceValue",
                     String::class.java,
                     Int::class.javaPrimitiveType,
@@ -265,7 +250,7 @@ class RootConnection : RootService() {
                 var setResourceValueMethodWithConfig: Method? = null
 
                 if (isA14orHigher) {
-                    setResourceValueMethodWithConfig = fobClass!!.getMethod(
+                    setResourceValueMethodWithConfig = fobClass.getMethod(
                         "setResourceValue",
                         String::class.java,
                         Int::class.javaPrimitiveType,
@@ -293,13 +278,13 @@ class RootConnection : RootService() {
                     }
                 }
 
-                val foInstance = fobClass!!.getMethod(
+                val foInstance = fobClass.getMethod(
                     "build"
                 ).invoke(fobInstance)
 
-                val omtbInstance = omtbClass!!.newInstance()
+                val omtbInstance = omtbClass.newInstance()
 
-                omtbClass!!.getMethod(
+                omtbClass.getMethod(
                     "registerFabricatedOverlay",
                     foClass
                 ).invoke(
@@ -307,7 +292,7 @@ class RootConnection : RootService() {
                     foInstance
                 )
 
-                val omtInstance = omtbClass!!.getMethod(
+                val omtInstance = omtbClass.getMethod(
                     "build"
                 ).invoke(omtbInstance)
 
@@ -328,9 +313,9 @@ class RootConnection : RootService() {
             try {
                 val overlay = generateOverlayIdentifier(packageName) ?: return
 
-                val omtbInstance = omtbClass!!.newInstance()
+                val omtbInstance = omtbClass.newInstance()
 
-                omtbClass!!.getMethod(
+                omtbClass.getMethod(
                     "unregisterFabricatedOverlay",
                     oiClass
                 ).invoke(
@@ -338,7 +323,7 @@ class RootConnection : RootService() {
                     overlay
                 )
 
-                val omtInstance = omtbClass!!.getMethod(
+                val omtInstance = omtbClass.getMethod(
                     "build"
                 ).invoke(omtbInstance)
 
@@ -356,17 +341,12 @@ class RootConnection : RootService() {
         override fun setHighestPriority(packageName: String): Boolean {
             var isSet = false
 
-            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+            mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userHandle = userInfo.userHandle
-                        val getIdentifierMethod =
-                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                        getIdentifierMethod.isAccessible = true
-                        val userId = getIdentifierMethod.invoke(userHandle) as Int
-
+                        val userId = userInfo.userHandle.getIdentifier()
                         isSet = if (userId == currentUserId) {
-                            oMS!!.setHighestPriority(packageName, userId)
+                            mOverlayManager.setHighestPriority(packageName, userId)
                         } else {
                             isSet
                         }
@@ -374,10 +354,8 @@ class RootConnection : RootService() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    isSet = oMS!!.setHighestPriority(packageName, currentUserId)
+                    return mOverlayManager.setHighestPriority(packageName, currentUserId)
                 }
-            } ?: run {
-                isSet = oMS!!.setHighestPriority(packageName, currentUserId)
             }
 
             return isSet
@@ -391,17 +369,12 @@ class RootConnection : RootService() {
         override fun setLowestPriority(packageName: String): Boolean {
             var isSet = false
 
-            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+            mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userHandle = userInfo.userHandle
-                        val getIdentifierMethod =
-                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                        getIdentifierMethod.isAccessible = true
-                        val userId = getIdentifierMethod.invoke(userHandle) as Int
-
+                        val userId = userInfo.userHandle.getIdentifier()
                         isSet = if (userId == currentUserId) {
-                            oMS!!.setLowestPriority(packageName, userId)
+                            mOverlayManager.setLowestPriority(packageName, userId)
                         } else {
                             isSet
                         }
@@ -409,10 +382,8 @@ class RootConnection : RootService() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    isSet = oMS!!.setLowestPriority(packageName, currentUserId)
+                    return mOverlayManager.setLowestPriority(packageName, currentUserId)
                 }
-            } ?: run {
-                isSet = oMS!!.setLowestPriority(packageName, currentUserId)
             }
 
             return isSet
@@ -425,76 +396,62 @@ class RootConnection : RootService() {
 
         @Throws(RemoteException::class)
         override fun invalidateCachesForOverlay(packageName: String) {
-            mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+            mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userHandle = userInfo.userHandle
-                        val getIdentifierMethod =
-                            UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                        getIdentifierMethod.isAccessible = true
-                        val userId = getIdentifierMethod.invoke(userHandle) as Int
-                        oMS!!.invalidateCachesForOverlay(packageName, userId)
+                        mOverlayManager.invalidateCachesForOverlay(
+                            packageName,
+                            userInfo.userHandle.getIdentifier()
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    oMS!!.invalidateCachesForOverlay(packageName, currentUserId)
+                    mOverlayManager.invalidateCachesForOverlay(packageName, currentUserId)
+                    return
                 }
-            } ?: run {
-                oMS!!.invalidateCachesForOverlay(packageName, currentUserId)
             }
         }
 
         private fun switchOverlay(packageName: String, enable: Boolean) {
-            try {
-                mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
-                    try {
-                        if (userInfo.isProfile) {
-                            val userHandle = userInfo.userHandle
-                            val getIdentifierMethod =
-                                UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                            getIdentifierMethod.isAccessible = true
-                            val userId = getIdentifierMethod.invoke(userHandle) as Int
-                            oMS!!.setEnabled(packageName, enable, userId)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-
-                        oMS!!.setEnabled(packageName, enable, currentUserId)
+            mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        mOverlayManager.setEnabled(
+                            packageName,
+                            enable,
+                            userInfo.userHandle.getIdentifier()
+                        )
                     }
-                } ?: run {
-                    oMS!!.setEnabled(packageName, enable, currentUserId)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                    mOverlayManager.setEnabled(packageName, enable, currentUserId)
+                    return
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
 
         @Suppress("DEPRECATION")
         private fun switchOverlayWithIdentifier(identifier: OverlayIdentifier?, enable: Boolean) {
             try {
-                val omtbInstance = omtbClass!!.newInstance()
+                val omtbInstance = omtbClass.newInstance()
 
-                val setEnabledMethod = omtbClass!!.getMethod(
+                val setEnabledMethod = omtbClass.getMethod(
                     "setEnabled",
                     oiClass,
                     Boolean::class.javaPrimitiveType,
                     Int::class.javaPrimitiveType
                 )
 
-                mUserManager?.getProfiles(currentUserId, true)?.forEach { userInfo ->
+                mUserManager.getProfiles(currentUserId, true).forEach forEach@{ userInfo ->
                     try {
                         if (userInfo.isProfile) {
-                            val userHandle = userInfo.userHandle
-                            val getIdentifierMethod =
-                                UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                            getIdentifierMethod.isAccessible = true
-                            val userId = getIdentifierMethod.invoke(userHandle) as Int
                             setEnabledMethod.invoke(
                                 omtbInstance,
                                 identifier,
                                 enable,
-                                userId
+                                userInfo.userHandle.getIdentifier()
                             )
                         }
                     } catch (e: Exception) {
@@ -506,17 +463,11 @@ class RootConnection : RootService() {
                             enable,
                             currentUserId
                         )
+                        return@forEach
                     }
-                } ?: run {
-                    setEnabledMethod.invoke(
-                        omtbInstance,
-                        identifier,
-                        enable,
-                        currentUserId
-                    )
                 }
 
-                val omtInstance = omtbClass!!.getMethod(
+                val omtInstance = omtbClass.getMethod(
                     "build"
                 ).invoke(omtbInstance)
 
@@ -551,128 +502,76 @@ class RootConnection : RootService() {
         @SuppressLint("NewApi")
         @Throws(Exception::class)
         private fun commit(transaction: Any?) {
-            oMS!!.commit(transaction as OverlayManagerTransaction?)
+            mOverlayManager.commit(transaction as OverlayManagerTransaction?)
         }
 
-        @SuppressLint("PrivateApi", "NewApi")
+        @SuppressLint("PrivateApi", "NewApi", "StaticFieldLeak", "RestrictedApi")
         companion object {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
-            private val currentUser: UserHandle
+
             private val currentUserId: Int
-            private var mUserManager: IUserManager? = null
-            private var mOMS: IOverlayManager? = null
-            private var oiClass: Class<*>? = null
-            private var foClass: Class<*>? = null
-            private var fobClass: Class<*>? = null
-            private var omtbClass: Class<*>? = null
-            private var SystemUI_UID = -1
-            private var mActivityManager: IActivityManager? = null
-            private val onSystemUiRestart: (() -> Unit)? = null
+                get() = Process.myUserHandle().getIdentifier()
 
-            @SuppressLint("StaticFieldLeak", "RestrictedApi")
-            private val context: Context = Utils.getContext()
-
-            init {
-                currentUser = getCurrentUser()
-                currentUserId = getCurrentUserId()!!
-
-                if (mUserManager == null) {
-                    mUserManager =
-                        IUserManager.Stub.asInterface(SystemServiceHelper.getSystemService("user"))
-                }
-
-                if (mOMS == null) {
-                    mOMS =
-                        IOverlayManager.Stub.asInterface(SystemServiceHelper.getSystemService("overlay"))
-                }
-
-                if (mActivityManager == null) {
-                    mActivityManager =
-                        IActivityManager.Stub.asInterface(SystemServiceHelper.getSystemService("activity"))
-                }
-
-                try {
-                    SystemUI_UID = context.packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
+            private val SystemUI_UID: Int
+                get() = try {
+                    Utils.getContext().packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
                 } catch (e: PackageManager.NameNotFoundException) {
-                    Log.e(TAG, "static: ", e)
+                    Log.e(TAG, "SystemUI_UID", e)
+                    -1
                 }
 
+            private val mUserManager: IUserManager by lazy {
+                IUserManager.Stub.asInterface(
+                    SystemServiceHelper.getSystemService("user")
+                )
+            }
+
+            private val mOverlayManager: IOverlayManager by lazy {
+                IOverlayManager.Stub.asInterface(
+                    SystemServiceHelper.getSystemService("overlay")
+                )
+            }
+
+            private val mActivityManager: IActivityManager by lazy {
+                IActivityManager.Stub.asInterface(
+                    SystemServiceHelper.getSystemService("activity")
+                )
+            }
+
+            private val oiClass: Class<*> by lazy {
                 try {
-                    if (oiClass == null) {
-                        oiClass = Class.forName("android.content.om.OverlayIdentifier")
-                    }
+                    Class.forName("android.content.om.OverlayIdentifier")
                 } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
-                }
-                try {
-                    if (foClass == null) {
-                        foClass = Class.forName("android.content.om.FabricatedOverlay")
-                    }
-                } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
-                }
-                try {
-                    if (fobClass == null) {
-                        fobClass = Class.forName("android.content.om.FabricatedOverlay\$Builder")
-                    }
-                } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
-                }
-                try {
-                    if (omtbClass == null) {
-                        omtbClass =
-                            Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
-                    }
-                } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
+                    Log.e(TAG, "OverlayIdentifier class not found", e)
+                    throw RuntimeException(e)
                 }
             }
 
-            private fun getCurrentUser(): UserHandle {
-                return Process.myUserHandle()
-            }
-
-            private fun getCurrentUserId(): Int? {
-                return try {
-                    UserHandle::class.java.getMethod("getIdentifier")
-                        .invoke(currentUser) as Int
-                } catch (exception: NoSuchMethodException) {
-                    0
-                } catch (exception: IllegalAccessException) {
-                    0
-                } catch (exception: InvocationTargetException) {
-                    0
+            private val foClass: Class<*> by lazy {
+                try {
+                    Class.forName("android.content.om.FabricatedOverlay")
+                } catch (e: ClassNotFoundException) {
+                    Log.e(TAG, "FabricatedOverlay class not found", e)
+                    throw RuntimeException(e)
                 }
             }
 
-            private val oMS: IOverlayManager?
-                get() {
-                    if (mOMS == null) {
-                        mOMS =
-                            IOverlayManager.Stub.asInterface(SystemServiceHelper.getSystemService("overlay"))
-                    }
-                    return mOMS
+            private val fobClass: Class<*> by lazy {
+                try {
+                    Class.forName("android.content.om.FabricatedOverlay\$Builder")
+                } catch (e: ClassNotFoundException) {
+                    Log.e(TAG, "FabricatedOverlay.Builder class not found", e)
+                    throw RuntimeException(e)
                 }
+            }
 
-            private val aM: IActivityManager?
-                get() {
-                    if (mActivityManager == null) {
-                        mActivityManager =
-                            IActivityManager.Stub.asInterface(SystemServiceHelper.getSystemService("activity"))
-                    }
-                    return mActivityManager
+            private val omtbClass: Class<*> by lazy {
+                try {
+                    Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
+                } catch (e: ClassNotFoundException) {
+                    Log.e(TAG, "OverlayManagerTransaction.Builder class not found", e)
+                    throw RuntimeException(e)
                 }
-
-            private fun getSystemUiUID(): Int {
-                if (SystemUI_UID == -1) {
-                    try {
-                        SystemUI_UID = context.packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
-                    } catch (e: PackageManager.NameNotFoundException) {
-                        // It's impossible to get here, but just in case
-                        Log.e(TAG, "getSystemUI_UID: ", e)
-                    }
-                }
-                return SystemUI_UID
             }
 
             @Suppress("SameParameterValue")
@@ -681,7 +580,7 @@ class RootConnection : RootService() {
                 sourcePackage: String
             ): OverlayIdentifier? {
                 try {
-                    return oiClass!!.getConstructor(
+                    return oiClass.getConstructor(
                         String::class.java,
                         String::class.java
                     ).newInstance(
@@ -692,6 +591,12 @@ class RootConnection : RootService() {
                     Log.e(TAG, "generateOverlayIdentifier: ", e)
                     return null
                 }
+            }
+
+            private fun UserHandle.getIdentifier(): Int {
+                val method = UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                method.isAccessible = true
+                return method.invoke(this) as Int
             }
         }
     }
