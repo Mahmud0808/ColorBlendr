@@ -125,7 +125,7 @@ object DynamicColors {
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 11,
                     lightModeLightnessAdjustment = -1,
-                    darkModeLightnessAdjustment = -18
+                    darkModeLightnessAdjustment = -25
                 )
             )
             add(
@@ -143,7 +143,7 @@ object DynamicColors {
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 11,
                     lightModeLightnessAdjustment = -1,
-                    darkModeLightnessAdjustment = -18
+                    darkModeLightnessAdjustment = -25
                 )
             )
             add(
@@ -160,8 +160,8 @@ object DynamicColors {
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
-                    lightModeLightnessAdjustment = 4,
-                    darkModeLightnessAdjustment = -42
+                    lightModeLightnessAdjustment = 3,
+                    darkModeLightnessAdjustment = -49
                 )
             )
             add(
@@ -171,7 +171,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = 1,
-                    darkModeLightnessAdjustment = -38
+                    darkModeLightnessAdjustment = -48
                 )
             )
             add(
@@ -181,7 +181,7 @@ object DynamicColors {
                     lightModeColorIndex = 2,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = -34
+                    darkModeLightnessAdjustment = -42
                 )
             )
             add(
@@ -199,8 +199,8 @@ object DynamicColors {
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 10,
-                    lightModeLightnessAdjustment = -6,
-                    darkModeLightnessAdjustment = 4
+                    lightModeLightnessAdjustment = -5,
+                    darkModeLightnessAdjustment = 3
                 )
             )
             add(
@@ -210,7 +210,7 @@ object DynamicColors {
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 10,
                     lightModeLightnessAdjustment = -2,
-                    darkModeLightnessAdjustment = 12
+                    darkModeLightnessAdjustment = 13
                 )
             )
             add(
@@ -219,8 +219,8 @@ object DynamicColors {
                     tonalPalette = TonalPalette.NEUTRAL,
                     lightModeColorIndex = 1,
                     darkModeColorIndex = 11,
-                    lightModeLightnessAdjustment = -10,
-                    darkModeLightnessAdjustment = 8
+                    lightModeLightnessAdjustment = -9,
+                    darkModeLightnessAdjustment = 7
                 )
             )
             add(
@@ -508,7 +508,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral4",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -26,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 11
                 )
@@ -516,7 +516,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral6",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -9,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 11
                 )
@@ -524,7 +524,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral12",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -26,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 10
                 )
@@ -532,7 +532,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral17",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -9,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 10
                 )
@@ -540,7 +540,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral22",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -26,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 9
                 )
@@ -548,7 +548,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral24",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -9,
                     tonalPalette = TonalPalette.NEUTRAL,
                     colorIndex = 9
                 )
@@ -596,7 +596,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant4",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -26,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 11
                 )
@@ -604,7 +604,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant6",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -9,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 11
                 )
@@ -612,7 +612,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant12",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -26,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 10
                 )
@@ -620,7 +620,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant17",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -9,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 10
                 )
@@ -628,7 +628,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant22",
-                    lightnessAdjustment = -20,
+                    lightnessAdjustment = -26,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 9
                 )
@@ -636,7 +636,7 @@ object DynamicColors {
             add(
                 ColorMapping(
                     resourceName = "m3_ref_palette_dynamic_neutral_variant24",
-                    lightnessAdjustment = -10,
+                    lightnessAdjustment = -9,
                     tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                     colorIndex = 9
                 )

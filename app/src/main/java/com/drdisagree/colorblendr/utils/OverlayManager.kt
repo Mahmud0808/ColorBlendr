@@ -25,8 +25,8 @@ import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
@@ -281,9 +281,9 @@ object OverlayManager {
                             ) {
                                 setColor(
                                     "system_surface_container_dark",
-                                    modifyBrightness(
+                                    adjustLightness(
                                         getColor("system_surface_container_dark"),
-                                        -48
+                                        -58
                                     )
                                 )
                             }

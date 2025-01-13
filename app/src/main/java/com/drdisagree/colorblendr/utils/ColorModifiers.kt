@@ -2,6 +2,8 @@ package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.utils.ColorUtil.adjustSaturation
+import com.drdisagree.colorblendr.utils.ColorUtil.shiftLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
@@ -59,7 +61,7 @@ object ColorModifiers {
             if (accentSaturation && !isMonochrome) {
                 // Set accent saturation
                 palette.replaceAll { o: Int ->
-                    ColorUtil.modifySaturation(
+                    adjustSaturation(
                         o,
                         monetAccentSaturation
                     )
@@ -69,15 +71,14 @@ object ColorModifiers {
             if (backgroundLightness && !isMonochrome) {
                 // Set background lightness
                 for (j in palette.indices) {
-                    palette[j] =
-                        ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
+                    palette[j] = shiftLightness(palette[j], monetBackgroundLightness, j + 1)
                 }
             }
 
             if (backgroundSaturation && !isMonochrome && !isRainbow) {
                 // Set background saturation
                 palette.replaceAll { o: Int ->
-                    ColorUtil.modifySaturation(
+                    adjustSaturation(
                         o,
                         monetBackgroundSaturation
                     )
@@ -93,7 +94,7 @@ object ColorModifiers {
         if (isMonochrome) {
             // Set monochrome lightness
             for (j in palette.indices) {
-                palette[j] = ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
+                palette[j] = shiftLightness(palette[j], monetBackgroundLightness, j + 1)
             }
         }
 

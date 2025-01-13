@@ -139,7 +139,7 @@ object ColorUtil {
         return typedValue.data
     }
 
-    fun modifySaturation(color: Int, saturation: Int): Int {
+    fun adjustSaturation(color: Int, saturation: Int): Int {
         val saturationFloat = (saturation - 100) / 100f
 
         val cam = Cam.fromInt(color)
@@ -159,7 +159,18 @@ object ColorUtil {
         return Cam.getInt(cam.hue, chroma, lstar)
     }
 
-    fun modifyLightness(color: Int, lightness: Int, idx: Int): Int {
+    fun adjustLightness(color: Int, brightnessPercentage: Int): Int {
+        val clampedPercentage = brightnessPercentage.coerceIn(-100, 100)
+
+        val cam = Cam.fromInt(color)
+        val lstar = CamUtils.lstarFromInt(color)
+
+        val adjustedLStar = (lstar + (lstar * (clampedPercentage / 100f))).coerceIn(0f, 100f)
+
+        return Cam.getInt(cam.hue, cam.chroma, adjustedLStar)
+    }
+
+    fun shiftLightness(color: Int, lightness: Int, idx: Int): Int {
         var lightnessFloat = (lightness - 100) / 1000f
         val shade = systemTintList[idx]
 
@@ -173,41 +184,6 @@ object ColorUtil {
         val lstar = 100f * (shade + lightnessFloat)
 
         return Cam.getInt(cam.hue, cam.chroma, lstar)
-    }
-
-    fun modifyBrightness(color: Int, brightnessPercentage: Int): Int {
-        // Ensure brightnessPercentage is within -100 to 100
-        val clampedPercentage = brightnessPercentage.coerceIn(-100, 100)
-
-        // Convert brightness percentage to a factor
-        val factor = 1.0f + (clampedPercentage / 100f)
-
-        // Extract RGB components
-        val r = (color shr 16 and 0xFF) / 255f
-        val g = (color shr 8 and 0xFF) / 255f
-        val b = (color and 0xFF) / 255f
-
-        // Calculate current brightness
-        val currentBrightness = 0.2126f * r + 0.7152f * g + 0.0722f * b
-
-        // Determine the adjustment factor to achieve the desired brightness
-        val adjustedFactor = if (currentBrightness == 0f) 0f else factor
-
-        // Adjust RGB components by the factor
-        val newR = (r * adjustedFactor).coerceIn(0f, 1f)
-        val newG = (g * adjustedFactor).coerceIn(0f, 1f)
-        val newB = (b * adjustedFactor).coerceIn(0f, 1f)
-
-        // Convert back to color integer
-        val newRInt = (newR * 255).toInt()
-        val newGInt = (newG * 255).toInt()
-        val newBInt = (newB * 255).toInt()
-
-        // Return the adjusted color, preserving the alpha channel
-        return (color and 0xFF000000.toInt()) or
-                (newRInt shl 16) or
-                (newGInt shl 8) or
-                newBInt
     }
 
     fun getHue(color: Int): Float {

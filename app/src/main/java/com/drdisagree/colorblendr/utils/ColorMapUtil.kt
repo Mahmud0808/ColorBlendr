@@ -1,7 +1,7 @@
 package com.drdisagree.colorblendr.utils
 
 import androidx.core.util.Pair
-import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
+import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
 
 data class ColorMapping(
     val resourceName: String,
@@ -51,11 +51,11 @@ fun ColorMapping.adjustColorBrightnessIfRequired(
     isDark: Boolean
 ): Int {
     return if (lightnessAdjustment != null) {
-        modifyBrightness(colorValue, lightnessAdjustment)
+        adjustLightness(colorValue, lightnessAdjustment)
     } else if (darkModeLightnessAdjustment != null && isDark) {
-        modifyBrightness(colorValue, darkModeLightnessAdjustment)
+        adjustLightness(colorValue, darkModeLightnessAdjustment)
     } else if (lightModeLightnessAdjustment != null && !isDark) {
-        modifyBrightness(colorValue, lightModeLightnessAdjustment)
+        adjustLightness(colorValue, lightModeLightnessAdjustment)
     } else {
         colorValue
     }
