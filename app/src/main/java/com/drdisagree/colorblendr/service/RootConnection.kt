@@ -142,26 +142,21 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusive(packageName: String): Boolean {
-            var enabled = false
-
             mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
-                        enabled = if (userId == currentUserId) {
-                            mOverlayManager.setEnabledExclusive(packageName, true, userId)
-                        } else {
-                            enabled
-                        }
+                        mOverlayManager.setEnabledExclusive(
+                            packageName,
+                            true,
+                            userInfo.userHandle.getIdentifier()
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    return mOverlayManager.setEnabledExclusive(packageName, true, currentUserId)
                 }
             }
 
-            return enabled
+            return mOverlayManager.setEnabledExclusive(packageName, true, currentUserId)
         }
 
         /**
@@ -170,26 +165,20 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusiveInCategory(packageName: String): Boolean {
-            var enabled = false
-
             mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
-                        enabled = if (userId == currentUserId) {
-                            mOverlayManager.setEnabledExclusiveInCategory(packageName, userId)
-                        } else {
-                            enabled
-                        }
+                        mOverlayManager.setEnabledExclusiveInCategory(
+                            packageName,
+                            userInfo.userHandle.getIdentifier()
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    return mOverlayManager.setEnabledExclusiveInCategory(packageName, currentUserId)
                 }
             }
 
-            return enabled
+            return mOverlayManager.setEnabledExclusiveInCategory(packageName, currentUserId)
         }
 
         /**
@@ -339,26 +328,20 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setHighestPriority(packageName: String): Boolean {
-            var isSet = false
-
             mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
-                        isSet = if (userId == currentUserId) {
-                            mOverlayManager.setHighestPriority(packageName, userId)
-                        } else {
-                            isSet
-                        }
+                        mOverlayManager.setHighestPriority(
+                            packageName,
+                            userInfo.userHandle.getIdentifier()
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    return mOverlayManager.setHighestPriority(packageName, currentUserId)
                 }
             }
 
-            return isSet
+            return mOverlayManager.setHighestPriority(packageName, currentUserId)
         }
 
         /**
@@ -367,26 +350,20 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setLowestPriority(packageName: String): Boolean {
-            var isSet = false
-
             mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
-                        isSet = if (userId == currentUserId) {
-                            mOverlayManager.setLowestPriority(packageName, userId)
-                        } else {
-                            isSet
-                        }
+                        mOverlayManager.setLowestPriority(
+                            packageName,
+                            userInfo.userHandle.getIdentifier()
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    return mOverlayManager.setLowestPriority(packageName, currentUserId)
                 }
             }
 
-            return isSet
+            return mOverlayManager.setLowestPriority(packageName, currentUserId)
         }
 
         @Throws(RemoteException::class)
@@ -406,11 +383,10 @@ class RootConnection : RootService() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    mOverlayManager.invalidateCachesForOverlay(packageName, currentUserId)
-                    return
                 }
             }
+
+            mOverlayManager.invalidateCachesForOverlay(packageName, currentUserId)
         }
 
         private fun switchOverlay(packageName: String, enable: Boolean) {
@@ -425,11 +401,10 @@ class RootConnection : RootService() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    mOverlayManager.setEnabled(packageName, enable, currentUserId)
-                    return
                 }
             }
+
+            mOverlayManager.setEnabled(packageName, enable, currentUserId)
         }
 
         @Suppress("DEPRECATION")
@@ -444,7 +419,7 @@ class RootConnection : RootService() {
                     Int::class.javaPrimitiveType
                 )
 
-                mUserManager.getProfiles(currentUserId, true).forEach forEach@{ userInfo ->
+                mUserManager.getProfiles(currentUserId, true).forEach { userInfo ->
                     try {
                         if (userInfo.isProfile) {
                             setEnabledMethod.invoke(
@@ -456,16 +431,15 @@ class RootConnection : RootService() {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
-
-                        setEnabledMethod.invoke(
-                            omtbInstance,
-                            identifier,
-                            enable,
-                            currentUserId
-                        )
-                        return@forEach
                     }
                 }
+
+                setEnabledMethod.invoke(
+                    omtbInstance,
+                    identifier,
+                    enable,
+                    currentUserId
+                )
 
                 val omtInstance = omtbClass.getMethod(
                     "build"
