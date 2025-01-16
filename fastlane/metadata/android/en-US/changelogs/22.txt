@@ -1,0 +1,5 @@
+Changelog:
+
+• Fix overridden color not resetting on long press. [Root]
+
+Translation credit goes to all the contributors on our Crowdin platform.
