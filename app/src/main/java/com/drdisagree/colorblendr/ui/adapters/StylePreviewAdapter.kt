@@ -154,6 +154,7 @@ class StylePreviewAdapter(
             coroutineScope.launch {
                 // call again because recyclerview recycles views and
                 // they don't get updated if we don't call this
+                resetCustomColors()
                 setColorPreview()
             }
 

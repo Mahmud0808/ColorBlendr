@@ -127,6 +127,11 @@ class StylePreviewWidget : RelativeLayout {
         }
     }
 
+    fun resetCustomColors() {
+        isCustomStyle = false
+        colorPalette = null
+    }
+
     override fun isSelected(): Boolean {
         return isSelected
     }
@@ -168,12 +173,14 @@ class StylePreviewWidget : RelativeLayout {
             }
 
             withContext(Dispatchers.Main) {
-                colorContainer?.apply {
-                    setHalfCircleColor(colorPalette!![0][4])
-                    setFirstQuarterCircleColor(colorPalette!![2][5])
-                    setSecondQuarterCircleColor(colorPalette!![1][6])
-                    setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
-                    invalidateColors()
+                if (colorPalette != null) {
+                    colorContainer?.apply {
+                        setHalfCircleColor(colorPalette!![0][4])
+                        setFirstQuarterCircleColor(colorPalette!![2][5])
+                        setSecondQuarterCircleColor(colorPalette!![1][6])
+                        setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
+                        invalidateColors()
+                    }
                 }
             }
         }
