@@ -247,6 +247,10 @@ class WallColorPreview : View {
         }
     }
 
+    override fun isSelected(): Boolean {
+        return isSelected
+    }
+
     override fun setSelected(selected: Boolean) {
         isSelected = selected
         invalidateColors()

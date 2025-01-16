@@ -33,6 +33,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
@@ -191,105 +192,109 @@ class ColorPaletteFragment : Fragment() {
                 val finalI: Int = i
                 val finalJ: Int = j
 
-                colorTableRows[i].getChildAt(j)
-                    .setOnClickListener { v: View ->
-                        val manualOverride: Boolean = getBoolean(MANUAL_OVERRIDE_COLORS, false)
-                        val snackbarButton: String = getString(
-                            if (manualOverride) {
-                                R.string.override
-                            } else {
-                                R.string.copy
-                            }
+                colorTableRows[i].getChildAt(j).setOnClickListener { v: View ->
+                    val manualOverride: Boolean = getBoolean(MANUAL_OVERRIDE_COLORS, false)
+                    val snackbarButton: String = getString(
+                        if (manualOverride) {
+                            R.string.override
+                        } else {
+                            R.string.copy
+                        }
+                    )
+
+                    Snackbar
+                        .make(
+                            requireView(),
+                            getString(R.string.color_code, intToHexColor((v.tag as Int))),
+                            Snackbar.LENGTH_INDEFINITE
                         )
+                        .setAction(snackbarButton) {
+                            if (!manualOverride || !notShizukuMode) {
+                                val clipboard: ClipboardManager =
+                                    requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip: ClipData = ClipData.newPlainText(
+                                    systemPaletteNames[finalI][finalJ],
+                                    intToHexColor(v.tag as Int)
+                                )
+                                clipboard.setPrimaryClip(clip)
+                                return@setAction
+                            }
 
-                        Snackbar
-                            .make(
-                                requireView(),
-                                getString(R.string.color_code, intToHexColor((v.tag as Int))),
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            .setAction(snackbarButton) {
-                                if (!manualOverride || !notShizukuMode) {
-                                    val clipboard: ClipboardManager =
-                                        requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                    val clip: ClipData = ClipData.newPlainText(
-                                        ColorUtil.systemPaletteNames[finalI][finalJ],
-                                        intToHexColor(v.tag as Int)
-                                    )
-                                    clipboard.setPrimaryClip(clip)
-                                    return@setAction
-                                }
+                            if (finalJ == 0 || finalJ == 12) {
+                                Snackbar.make(
+                                    requireView(),
+                                    getString(R.string.cannot_override_color),
+                                    Snackbar.LENGTH_SHORT
+                                )
+                                    .setAction(getString(R.string.dismiss)) { }
+                                    .show()
+                                return@setAction
+                            }
 
-                                if (finalJ == 0 || finalJ == 12) {
-                                    Snackbar.make(
-                                        requireView(),
-                                        getString(R.string.cannot_override_color),
-                                        Snackbar.LENGTH_SHORT
-                                    )
-                                        .setAction(getString(R.string.dismiss)) { }
-                                        .show()
-                                    return@setAction
-                                }
+                            ColorPickerDialog()
+                                .withCornerRadius(10f)
+                                .withColor(v.tag as Int)
+                                .withAlphaEnabled(false)
+                                .withPicker(ImagePickerView::class.java)
+                                .withListener { _: ColorPickerDialog?, color: Int ->
+                                    if (v.tag as Int != color) {
+                                        v.tag = color
+                                        v.background.setTint(color)
+                                        ((v as ViewGroup)
+                                            .getChildAt(0) as TextView)
+                                            .setTextColor(calculateTextColor(color))
 
-                                ColorPickerDialog()
-                                    .withCornerRadius(10f)
-                                    .withColor(v.tag as Int)
-                                    .withAlphaEnabled(false)
-                                    .withPicker(ImagePickerView::class.java)
-                                    .withListener { _: ColorPickerDialog?, color: Int ->
-                                        if (v.tag as Int != color) {
-                                            v.tag = color
-                                            v.background.setTint(color)
-                                            ((v as ViewGroup)
-                                                .getChildAt(0) as TextView)
-                                                .setTextColor(calculateTextColor(color))
-                                            putInt(systemPaletteNames[finalI][finalJ], color)
+                                        resetCustomStyleIfNotNull()
+                                        putInt(systemPaletteNames[finalI][finalJ], color)
 
-                                            CoroutineScope(Dispatchers.Main).launch {
-                                                putLong(
-                                                    MONET_LAST_UPDATED,
-                                                    System.currentTimeMillis()
-                                                )
-                                                delay(200)
-                                                withContext(Dispatchers.IO) {
-                                                    try {
-                                                        applyFabricatedColors(requireContext())
-                                                    } catch (ignored: Exception) {
-                                                    }
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            putLong(
+                                                MONET_LAST_UPDATED,
+                                                System.currentTimeMillis()
+                                            )
+                                            delay(200)
+                                            withContext(Dispatchers.IO) {
+                                                try {
+                                                    applyFabricatedColors(requireContext())
+                                                } catch (ignored: Exception) {
                                                 }
                                             }
                                         }
                                     }
-                                    .show(
-                                        getChildFragmentManager(),
-                                        "overrideColorPicker$finalI$finalJ"
-                                    )
-                            }
-                            .show()
-                    }
-
-                colorTableRows[i].getChildAt(j)
-                    .setOnLongClickListener {
-                        if (finalJ == 0 || finalJ == 12) {
-                            return@setOnLongClickListener true
-                        }
-
-                        clearPref(systemPaletteNames[finalI][finalJ])
-
-                        CoroutineScope(Dispatchers.Main).launch {
-                            putLong(
-                                MONET_LAST_UPDATED,
-                                System.currentTimeMillis()
-                            )
-                            withContext(Dispatchers.IO) {
-                                try {
-                                    applyFabricatedColors(requireContext())
-                                } catch (ignored: Exception) {
                                 }
+                                .show(
+                                    getChildFragmentManager(),
+                                    "overrideColorPicker$finalI$finalJ"
+                                )
+                        }
+                        .show()
+                }
+
+                colorTableRows[i].getChildAt(j).setOnLongClickListener {
+                    if (finalJ == 0 ||
+                        finalJ == 12 ||
+                        getInt(systemPaletteNames[finalI][finalJ], Int.MIN_VALUE) != Int.MIN_VALUE
+                    ) {
+                        return@setOnLongClickListener true
+                    }
+
+                    resetCustomStyleIfNotNull()
+                    clearPref(systemPaletteNames[finalI][finalJ])
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        putLong(
+                            MONET_LAST_UPDATED,
+                            System.currentTimeMillis()
+                        )
+                        withContext(Dispatchers.IO) {
+                            try {
+                                applyFabricatedColors(requireContext())
+                            } catch (ignored: Exception) {
                             }
                         }
-                        true
                     }
+                    true
+                }
             }
         }
     }

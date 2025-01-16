@@ -154,6 +154,12 @@ object ColorSchemeUtil {
         clearPref(CUSTOM_MONET_STYLE)
     }
 
+    fun resetCustomStyleIfNotNull() {
+        if (getCurrentCustomStyle() != null) {
+            clearPref(CUSTOM_MONET_STYLE)
+        }
+    }
+
     fun getCustomStyles(): ArrayList<CustomStyleModel> = Const.GSON.fromJson(
         getString(SAVED_CUSTOM_MONET_STYLES, null),
         object : TypeToken<ArrayList<CustomStyleModel>>() {}.type

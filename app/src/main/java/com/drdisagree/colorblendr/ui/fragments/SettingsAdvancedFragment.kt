@@ -31,6 +31,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putBoolean
 import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil
@@ -73,6 +74,8 @@ class SettingsAdvancedFragment : Fragment() {
                     if (monetSecondaryColor != color) {
                         monetSecondaryColor = color
                         binding.secondaryColorPicker.previewColor = color
+
+                        resetCustomStyleIfNotNull()
                         putInt(MONET_SECONDARY_COLOR, monetSecondaryColor)
 
                         applyFabricatedColors()
@@ -96,6 +99,8 @@ class SettingsAdvancedFragment : Fragment() {
                     if (monetTertiaryColor != color) {
                         monetTertiaryColor = color
                         binding.tertiaryColorPicker.previewColor = color
+
+                        resetCustomStyleIfNotNull()
                         putInt(MONET_TERTIARY_COLOR, monetTertiaryColor)
 
                         applyFabricatedColors()
@@ -118,6 +123,7 @@ class SettingsAdvancedFragment : Fragment() {
         binding.modeSpecificThemes.isEnabled = notShizukuMode
         binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
             putBoolean(MODE_SPECIFIC_THEMES, isChecked)
             applyFabricatedColors()
         }

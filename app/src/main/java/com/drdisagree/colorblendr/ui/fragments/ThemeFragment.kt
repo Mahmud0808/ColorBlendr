@@ -25,6 +25,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
@@ -80,6 +81,7 @@ class ThemeFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    resetCustomStyleIfNotNull()
                     monetAccentSaturation[0] = seekBar.progress
                     putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0])
                     applyFabricatedColors()
@@ -88,6 +90,7 @@ class ThemeFragment : Fragment() {
 
             // Long Click Reset
             accentSaturation.setResetClickListener {
+                resetCustomStyleIfNotNull()
                 monetAccentSaturation[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_ACCENT_SATURATION)
@@ -109,6 +112,7 @@ class ThemeFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    resetCustomStyleIfNotNull()
                     monetBackgroundSaturation[0] = seekBar.progress
                     putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0])
                     applyFabricatedColors()
@@ -117,6 +121,7 @@ class ThemeFragment : Fragment() {
 
             // Reset button
             backgroundSaturation.setResetClickListener {
+                resetCustomStyleIfNotNull()
                 monetBackgroundSaturation[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_BACKGROUND_SATURATION)
@@ -138,6 +143,7 @@ class ThemeFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    resetCustomStyleIfNotNull()
                     monetBackgroundLightness[0] = seekBar.progress
                     putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0])
                     applyFabricatedColors()
@@ -146,6 +152,7 @@ class ThemeFragment : Fragment() {
 
             // Long Click Reset
             backgroundLightness.setResetClickListener {
+                resetCustomStyleIfNotNull()
                 monetBackgroundLightness[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_BACKGROUND_LIGHTNESS)

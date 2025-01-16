@@ -50,6 +50,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.config.RPrefs.restorePrefs
 import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
@@ -146,6 +147,7 @@ class SettingsFragment : Fragment() {
         // Accurate shades
         binding.accurateShades.isSwitchChecked = getBoolean(MONET_ACCURATE_SHADES, true)
         binding.accurateShades.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
             putBoolean(MONET_ACCURATE_SHADES, isChecked)
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
             applyFabricatedColors()
@@ -155,6 +157,7 @@ class SettingsFragment : Fragment() {
         // Pitch black theme
         binding.pitchBlackTheme.isSwitchChecked = getBoolean(MONET_PITCH_BLACK_THEME, false)
         binding.pitchBlackTheme.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
             putBoolean(MONET_PITCH_BLACK_THEME, isChecked)
             applyFabricatedColors()
         }
@@ -163,6 +166,7 @@ class SettingsFragment : Fragment() {
         // Custom primary color
         binding.customPrimaryColor.isSwitchChecked = getBoolean(MONET_SEED_COLOR_ENABLED, false)
         binding.customPrimaryColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
             putBoolean(MONET_SEED_COLOR_ENABLED, isChecked)
             sharedViewModel!!.setVisibilityState(
                 MONET_SEED_COLOR_ENABLED,
@@ -183,6 +187,7 @@ class SettingsFragment : Fragment() {
         // Tint text color
         binding.tintTextColor.isSwitchChecked = getBoolean(TINT_TEXT_COLOR, true)
         binding.tintTextColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
             putBoolean(TINT_TEXT_COLOR, isChecked)
             applyFabricatedColors()
         }

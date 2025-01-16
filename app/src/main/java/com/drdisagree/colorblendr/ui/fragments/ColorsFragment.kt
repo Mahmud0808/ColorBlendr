@@ -29,6 +29,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.views.WallColorPreview
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
@@ -249,6 +250,10 @@ class ColorsFragment : Fragment() {
                         }
 
                 setOnClickListener {
+                    if (!isSelected) {
+                        resetCustomStyleIfNotNull()
+                    }
+
                     putInt(MONET_SEED_COLOR, tag as Int)
                     putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
                     binding.seedColorPicker.previewColor = tag as Int
