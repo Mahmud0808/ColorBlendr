@@ -1,24 +1,46 @@
 package com.drdisagree.colorblendr.ui.fragments
 
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
+import com.drdisagree.colorblendr.common.Const.EXCLUDED_PREFS_FROM_BACKUP
+import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
+import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.putLong
-import com.drdisagree.colorblendr.config.RPrefs.putString
+import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.config.RPrefs.toGsonString
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
+import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
+import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
+import com.drdisagree.colorblendr.ui.models.CustomStyleModel
+import com.drdisagree.colorblendr.ui.models.StyleModel
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCustomStyles
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.saveCustomStyles
+import com.drdisagree.colorblendr.utils.ColorUtil
+import com.drdisagree.colorblendr.utils.DividerItemDecoration
+import com.drdisagree.colorblendr.utils.MONET
+import com.drdisagree.colorblendr.utils.MiscUtil.getDialogPreferredPadding
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.MiscUtil.toPx
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 
 class StylesFragment : Fragment() {
 
@@ -28,6 +50,7 @@ class StylesFragment : Fragment() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     private val isAtleastA14 = notShizukuMode ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    private val styleAdapter = StylePreviewAdapter(this, getStyleList())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,119 +61,200 @@ class StylesFragment : Fragment() {
 
         setToolbarTitle(requireContext(), R.string.styles, true, binding.header.toolbar)
 
-        val selectedStyle = RPrefs.getString(MONET_STYLE, null)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                requireContext().resources.getDimensionPixelSize(R.dimen.container_margin_bottom)
+            )
+        )
+        binding.recyclerView.adapter = styleAdapter
 
-        binding.monetNeutral.isSelected = getString(R.string.monet_neutral) == selectedStyle
-        binding.monetNeutral.setOnClickListener {
-            binding.monetNeutral.isSelected = true
-            unSelectOthers(binding.monetNeutral)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_neutral))
-            binding.monetNeutral.applyColorScheme()
+        binding.addStyle.visibility = if (notShizukuMode) View.VISIBLE else View.GONE
+        binding.addStyle.setOnClickListener {
+            showNewStyleDialog(
+                callback = { title, desc ->
+                    addCustomStyle(title = title, description = desc)
+                }
+            )
         }
-        binding.monetNeutral.isEnabled = isAtleastA13
-
-        binding.monetMonochrome.isSelected = getString(R.string.monet_monochrome) == selectedStyle
-        binding.monetMonochrome.setOnClickListener {
-            binding.monetMonochrome.isSelected = true
-            unSelectOthers(binding.monetMonochrome)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_monochrome))
-            binding.monetMonochrome.applyColorScheme()
-        }
-        binding.monetMonochrome.isEnabled = isAtleastA14
-
-        binding.monetTonalspot.isSelected =
-            getString(R.string.monet_tonalspot) == selectedStyle || selectedStyle == null
-        binding.monetTonalspot.setOnClickListener {
-            binding.monetTonalspot.isSelected = true
-            unSelectOthers(binding.monetTonalspot)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_tonalspot))
-            binding.monetTonalspot.applyColorScheme()
-        }
-
-        binding.monetVibrant.isSelected = getString(R.string.monet_vibrant) == selectedStyle
-        binding.monetVibrant.setOnClickListener {
-            binding.monetVibrant.isSelected = true
-            unSelectOthers(binding.monetVibrant)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_vibrant))
-            binding.monetVibrant.applyColorScheme()
-        }
-        binding.monetVibrant.isEnabled = isAtleastA13
-
-        binding.monetRainbow.isSelected = getString(R.string.monet_rainbow) == selectedStyle
-        binding.monetRainbow.setOnClickListener {
-            binding.monetRainbow.isSelected = true
-            unSelectOthers(binding.monetRainbow)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_rainbow))
-            binding.monetRainbow.applyColorScheme()
-        }
-        binding.monetRainbow.isEnabled = isAtleastA13
-
-        binding.monetExpressive.isSelected = getString(R.string.monet_expressive) == selectedStyle
-        binding.monetExpressive.setOnClickListener {
-            binding.monetExpressive.isSelected = true
-            unSelectOthers(binding.monetExpressive)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_expressive))
-            binding.monetExpressive.applyColorScheme()
-        }
-        binding.monetExpressive.isEnabled = isAtleastA13
-
-        binding.monetFidelity.isSelected = getString(R.string.monet_fidelity) == selectedStyle
-        binding.monetFidelity.setOnClickListener {
-            binding.monetFidelity.isSelected = true
-            unSelectOthers(binding.monetFidelity)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fidelity))
-            binding.monetFidelity.applyColorScheme()
-        }
-        binding.monetFidelity.isEnabled = notShizukuMode
-
-        binding.monetContent.isSelected = getString(R.string.monet_content) == selectedStyle
-        binding.monetContent.setOnClickListener {
-            binding.monetContent.isSelected = true
-            unSelectOthers(binding.monetContent)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_content))
-            binding.monetContent.applyColorScheme()
-        }
-        binding.monetContent.isEnabled = notShizukuMode
-
-        binding.monetFruitsalad.isSelected = getString(R.string.monet_fruitsalad) == selectedStyle
-        binding.monetFruitsalad.setOnClickListener {
-            binding.monetFruitsalad.isSelected = true
-            unSelectOthers(binding.monetFruitsalad)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
-            putString(MONET_STYLE_ORIGINAL_NAME, getOriginalName(R.string.monet_fruitsalad))
-            binding.monetFruitsalad.applyColorScheme()
-        }
-        binding.monetFruitsalad.isEnabled = isAtleastA13
 
         return binding.root
     }
 
-    private fun unSelectOthers(viewGroup: ViewGroup) {
-        val viewGroups = arrayOf<ViewGroup>(
-            binding.monetNeutral,
-            binding.monetMonochrome,
-            binding.monetTonalspot,
-            binding.monetVibrant,
-            binding.monetRainbow,
-            binding.monetExpressive,
-            binding.monetFidelity,
-            binding.monetContent,
-            binding.monetFruitsalad
-        )
-
-        for (view in viewGroups) {
-            if (view !== viewGroup) {
-                view.isSelected = false
+    fun showNewStyleDialog(
+        title: String = "",
+        desc: String = "",
+        callback: (String, String) -> Unit
+    ) {
+        val dialogLayout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setPadding(
+                    context.getDialogPreferredPadding(),
+                    0,
+                    context.getDialogPreferredPadding(),
+                    0
+                )
             }
         }
+
+        View(requireContext()).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                context.toPx(16)
+            )
+            dialogLayout.addView(this)
+        }
+
+        val titleBinding = ViewTextFieldOutlinedBinding.inflate(layoutInflater).apply {
+            outlinedTextField.hint = getString(R.string.title)
+            outlinedTextField.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
+            outlinedTextField.editText?.gravity = Gravity.TOP or Gravity.START
+            if (title.isNotEmpty()) {
+                outlinedTextField.editText?.setText(title)
+            }
+            dialogLayout.addView(root)
+        }
+
+        View(requireContext()).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                context.toPx(8)
+            )
+            dialogLayout.addView(this)
+        }
+
+        val descBinding = ViewTextFieldOutlinedBinding.inflate(layoutInflater).apply {
+            outlinedTextField.hint = getString(R.string.description)
+            outlinedTextField.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
+            outlinedTextField.editText?.gravity = Gravity.TOP or Gravity.START
+            if (desc.isNotEmpty()) {
+                outlinedTextField.editText?.setText(desc)
+            }
+            dialogLayout.addView(root)
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.save_current_style)
+            .setView(dialogLayout)
+            .setPositiveButton(R.string.save) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+
+                callback.invoke(
+                    titleBinding.outlinedTextField.editText?.text.toString(),
+                    descBinding.outlinedTextField.editText?.text.toString()
+                )
+            }
+            .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun addCustomStyle(
+        title: String,
+        description: String
+    ) {
+        if (title.trim().isEmpty() || description.trim().isEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                R.string.title_and_desc_cant_be_empty,
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val allPrefs = RPrefs.getAllPrefs()
+        for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
+            allPrefs.remove(excludedPref)
+        }
+
+        saveCustomStyles(
+            getCustomStyles().apply {
+                val currentMonet = getCurrentMonetStyle()
+                val newStyle = CustomStyleModel(
+                    styleName = title.trim(),
+                    description = description.trim(),
+                    prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
+                    monet = currentMonet,
+                    palette = ColorUtil.generateModifiedColors(
+                        currentMonet,
+                        getInt(MONET_ACCENT_SATURATION, 100),
+                        getInt(MONET_BACKGROUND_SATURATION, 100),
+                        getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                        getBoolean(MONET_PITCH_BLACK_THEME, false),
+                        getBoolean(MONET_ACCURATE_SHADES, true)
+                    )
+                )
+                add(newStyle)
+                styleAdapter.addStyle(
+                    StyleModel(
+                        isEnabled = true,
+                        monetStyle = currentMonet,
+                        customStyle = newStyle
+                    )
+                )
+            }
+        )
+    }
+
+    fun editCustomStyle(
+        title: String,
+        description: String,
+        styleId: String
+    ) {
+        if (title.trim().isEmpty() || description.trim().isEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                R.string.title_and_desc_cant_be_empty,
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        saveCustomStyles(
+            getCustomStyles().apply {
+                val index = indexOfFirst { it.styleId == styleId }
+                if (index != -1) {
+                    val styleToEdit = this[index].copy(
+                        styleName = title.trim(),
+                        description = description.trim()
+                    )
+                    set(index, styleToEdit)
+                    styleAdapter.updateStyle(
+                        StyleModel(
+                            isEnabled = true,
+                            monetStyle = styleToEdit.monet,
+                            customStyle = styleToEdit
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    fun deleteCustomStyle(
+        styleId: String
+    ) {
+        saveCustomStyles(
+            getCustomStyles().apply {
+                val index = indexOfFirst { it.styleId == styleId }
+                if (index != -1) {
+                    styleAdapter.removeStyle(
+                        StyleModel(
+                            isEnabled = true,
+                            monetStyle = /* unused */ MONET.TONAL_SPOT,
+                            customStyle = this[index]
+                        )
+                    )
+                    removeAt(index)
+                }
+            }
+        )
     }
 
     @Suppress("DEPRECATION")
@@ -163,44 +267,73 @@ class StylesFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getOriginalName(@StringRes id: Int): String {
-        val name = getString(id)
+    private fun getStyleList(): ArrayList<StyleModel> {
+        return arrayListOf(
+            StyleModel(
+                titleResId = R.string.monet_neutral,
+                descriptionResId = R.string.monet_neutral_desc,
+                isEnabled = isAtleastA13,
+                monetStyle = MONET.SPRITZ
+            ),
+            StyleModel(
+                titleResId = R.string.monet_monochrome,
+                descriptionResId = R.string.monet_monochrome_desc,
+                isEnabled = isAtleastA14,
+                monetStyle = MONET.MONOCHROMATIC
+            ),
+            StyleModel(
+                titleResId = R.string.monet_tonalspot,
+                descriptionResId = R.string.monet_tonalspot_desc,
+                isEnabled = true,
+                monetStyle = MONET.TONAL_SPOT
+            ),
+            StyleModel(
+                titleResId = R.string.monet_vibrant,
+                descriptionResId = R.string.monet_vibrant_desc,
+                isEnabled = isAtleastA13,
+                monetStyle = MONET.VIBRANT
+            ),
+            StyleModel(
+                titleResId = R.string.monet_rainbow,
+                descriptionResId = R.string.monet_rainbow_desc,
+                isEnabled = isAtleastA13,
+                monetStyle = MONET.RAINBOW
+            ),
+            StyleModel(
+                titleResId = R.string.monet_expressive,
+                descriptionResId = R.string.monet_expressive_desc,
+                isEnabled = isAtleastA13,
+                monetStyle = MONET.EXPRESSIVE
+            ),
+            StyleModel(
+                titleResId = R.string.monet_fidelity,
+                descriptionResId = R.string.monet_fidelity_desc,
+                isEnabled = notShizukuMode,
+                monetStyle = MONET.FIDELITY
+            ),
+            StyleModel(
+                titleResId = R.string.monet_content,
+                descriptionResId = R.string.monet_content_desc,
+                isEnabled = notShizukuMode,
+                monetStyle = MONET.CONTENT
+            ),
+            StyleModel(
+                titleResId = R.string.monet_fruitsalad,
+                descriptionResId = R.string.monet_fruitsalad_desc,
+                isEnabled = isAtleastA13,
+                monetStyle = MONET.FRUIT_SALAD
+            )
+        ).apply {
+            if (!notShizukuMode) return@apply
 
-        return when (name) {
-            getString(R.string.monet_neutral) -> {
-                "SPRITZ"
-            }
-
-            getString(R.string.monet_vibrant) -> {
-                "VIBRANT"
-            }
-
-            getString(R.string.monet_expressive) -> {
-                "EXPRESSIVE"
-            }
-
-            getString(R.string.monet_rainbow) -> {
-                "RAINBOW"
-            }
-
-            getString(R.string.monet_fruitsalad) -> {
-                "FRUIT_SALAD"
-            }
-
-            getString(R.string.monet_content) -> {
-                "CONTENT"
-            }
-
-            getString(R.string.monet_monochrome) -> {
-                "MONOCHROMATIC"
-            }
-
-            getString(R.string.monet_fidelity) -> {
-                "FIDELITY"
-            }
-
-            else -> {
-                "TONAL_SPOT"
+            getCustomStyles().forEach { customStyle ->
+                add(
+                    StyleModel(
+                        isEnabled = true,
+                        monetStyle = customStyle.monet,
+                        customStyle = customStyle
+                    )
+                )
             }
         }
     }

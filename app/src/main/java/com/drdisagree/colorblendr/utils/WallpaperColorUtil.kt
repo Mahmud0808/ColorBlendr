@@ -11,8 +11,12 @@ import android.util.Log
 import android.util.Size
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.config.RPrefs.getString
+import com.drdisagree.colorblendr.service.BroadcastListener
 import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
 import kotlinx.coroutines.Dispatchers
@@ -31,9 +35,17 @@ object WallpaperColorUtil {
     suspend fun updateWallpaperColorList(context: Context) {
         if (AppUtil.permissionsGranted(context)) {
             val wallpaperColors = getWallpaperColors(context)
-            RPrefs.putString(Const.WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors))
-            if (!RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-                RPrefs.putInt(Const.MONET_SEED_COLOR, wallpaperColors[0])
+            val previousWallpaperColors = getString(WALLPAPER_COLOR_LIST, null)
+            val currentWallpaperColors = Const.GSON.toJson(wallpaperColors)
+            val customColorsEnabled = RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)
+
+            if (previousWallpaperColors != currentWallpaperColors) {
+                BroadcastListener.requiresUpdate = true
+                RPrefs.putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
+
+                if (!customColorsEnabled) {
+                    RPrefs.putInt(MONET_SEED_COLOR, wallpaperColors[0])
+                }
             }
         }
     }
@@ -50,7 +62,10 @@ object WallpaperColorUtil {
         val mergedColors = mutableSetOf<Int>()
 
         val wallpaperManager = WallpaperManager.getInstance(context)
+        var isLiveWallpaper = false
+
         wallpaperManager.wallpaperInfo?.let {
+            isLiveWallpaper = true
             wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
                 ?.let { wallpaperColors ->
                     mergedColors.add(wallpaperColors.primaryColor.toArgb())
@@ -60,10 +75,12 @@ object WallpaperColorUtil {
         }
 
         return try {
-            withContext(Dispatchers.IO) {
-                WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
-            }?.let { bitmap ->
-                mergedColors.addAll(getWallpaperColors(bitmap))
+            if (!isLiveWallpaper || mergedColors.isEmpty()) {
+                withContext(Dispatchers.IO) {
+                    WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
+                }?.let { bitmap ->
+                    mergedColors.addAll(getWallpaperColors(bitmap))
+                }
             }
 
             if (mergedColors.isEmpty()) ColorUtil.monetAccentColors else ArrayList(mergedColors)
@@ -194,13 +211,13 @@ object WallpaperColorUtil {
         private val ioDispatcher = Dispatchers.IO
 
         suspend fun loadWallpaperAsync(
-            context: Context?,
+            context: Context,
             which: Int
         ): Bitmap? = withContext(ioDispatcher) {
             loadWallpaper(context, which)
         }
 
-        private fun loadWallpaper(context: Context?, which: Int): Bitmap? {
+        private fun loadWallpaper(context: Context, which: Int): Bitmap? {
             return try {
                 val wallpaperManager = WallpaperManager.getInstance(context)
 

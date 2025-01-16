@@ -17,17 +17,17 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
 import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
+import com.drdisagree.colorblendr.utils.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
@@ -81,6 +81,7 @@ class ThemeFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    resetCustomStyleIfNotNull()
                     monetAccentSaturation[0] = seekBar.progress
                     putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0])
                     applyFabricatedColors()
@@ -89,6 +90,7 @@ class ThemeFragment : Fragment() {
 
             // Long Click Reset
             accentSaturation.setResetClickListener {
+                resetCustomStyleIfNotNull()
                 monetAccentSaturation[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_ACCENT_SATURATION)
@@ -110,6 +112,7 @@ class ThemeFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    resetCustomStyleIfNotNull()
                     monetBackgroundSaturation[0] = seekBar.progress
                     putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0])
                     applyFabricatedColors()
@@ -118,6 +121,7 @@ class ThemeFragment : Fragment() {
 
             // Reset button
             backgroundSaturation.setResetClickListener {
+                resetCustomStyleIfNotNull()
                 monetBackgroundSaturation[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_BACKGROUND_SATURATION)
@@ -139,6 +143,7 @@ class ThemeFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    resetCustomStyleIfNotNull()
                     monetBackgroundLightness[0] = seekBar.progress
                     putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0])
                     applyFabricatedColors()
@@ -147,6 +152,7 @@ class ThemeFragment : Fragment() {
 
             // Long Click Reset
             backgroundLightness.setResetClickListener {
+                resetCustomStyleIfNotNull()
                 monetBackgroundLightness[0] = 100
                 updatePreviewColors()
                 clearPref(MONET_BACKGROUND_LIGHTNESS)
@@ -213,6 +219,7 @@ class ThemeFragment : Fragment() {
 
     private fun updatePreviewColors() {
         val colorPalette: ArrayList<ArrayList<Int>>? = generateModifiedColors(
+            getCurrentMonetStyle(),
             monetAccentSaturation[0],
             monetBackgroundSaturation[0],
             monetBackgroundLightness[0],
@@ -271,6 +278,7 @@ class ThemeFragment : Fragment() {
     }
 
     private fun generateModifiedColors(
+        style: MONET,
         monetAccentSaturation: Int,
         monetBackgroundSaturation: Int,
         monetBackgroundLightness: Int,
@@ -279,10 +287,7 @@ class ThemeFragment : Fragment() {
     ): ArrayList<ArrayList<Int>>? {
         try {
             return ColorUtil.generateModifiedColors(
-                stringToEnumMonetStyle(
-                    requireContext(),
-                    RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))!!
-                ),
+                style,
                 monetAccentSaturation,
                 monetBackgroundSaturation,
                 monetBackgroundLightness,

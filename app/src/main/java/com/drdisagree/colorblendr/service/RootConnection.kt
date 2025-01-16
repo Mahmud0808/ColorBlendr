@@ -3,7 +3,6 @@ package com.drdisagree.colorblendr.service
 import android.annotation.SuppressLint
 import android.app.IActivityManager
 import android.app.IProcessObserver
-import android.content.Context
 import android.content.Intent
 import android.content.om.IOverlayManager
 import android.content.om.OverlayIdentifier
@@ -12,6 +11,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.IUserManager
 import android.os.Looper
 import android.os.Process
 import android.os.RemoteException
@@ -50,11 +50,11 @@ class RootConnection : RootService() {
             }
 
             override fun onProcessDied(pid: Int, uid: Int) {
-                if (uid == getSystemUiUID()) {
+                if (uid == SystemUI_UID) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         try {
                             enableOverlayWithIdentifier(
-                                listOf<String>(
+                                listOf(
                                     FABRICATED_OVERLAY_NAME_SYSTEM
                                 )
                             )
@@ -66,33 +66,61 @@ class RootConnection : RootService() {
             }
         }
 
+        /**
+         * Checks if the device is rooted.
+         *
+         * This method utilizes the `Shell.isAppGrantedRoot()` function to determine if the app has root access,
+         * which is an indication of a rooted device.
+         *
+         * @return `true` if the device is rooted, `false` otherwise.
+         * @throws RemoteException if there is an issue communicating with the remote service used for root detection.
+         */
         @Throws(RemoteException::class)
         override fun isRooted(): Boolean {
-            return Shell.isAppGrantedRoot()!!
+            return Shell.isAppGrantedRoot() ?: false
         }
 
         /**
-         * Listener to notify when SystemUI restarts.
+         * Registers a listener to be notified when SystemUI restarts.
+         *
+         * This function registers a process observer that monitors the SystemUI process.
+         * When the SystemUI process is restarted, the registered listener will be notified.
+         *
+         * @throws RemoteException if there is an error communicating with the ActivityManager service.
          */
         @Throws(RemoteException::class)
         override fun setSystemUIRestartListener() {
-            aM!!.registerProcessObserver(processListener)
+            mActivityManager.registerProcessObserver(processListener)
         }
 
         /**
-         * Return true if an overlay package is installed.
+         * Checks if an overlay package is currently installed for the current user.
+         *
+         * @param packageName The package name of the overlay to check.
+         * @return `true` if the overlay package is installed, `false` otherwise.
+         * @throws RemoteException if there is a communication error with the system service.
          */
         @Throws(RemoteException::class)
         override fun isOverlayInstalled(packageName: String): Boolean {
-            return oMS!!.getOverlayInfo(packageName, currentUserId) != null
+            return mOverlayManager.getOverlayInfo(packageName, currentUserId) != null
         }
 
         /**
-         * Return true if an overlay package is enabled.
+         * Checks if an overlay package is enabled for the current user.
+         *
+         * This method retrieves overlay information using the provided package name and
+         * checks its enabled status using reflection to access the `isEnabled` method
+         * of the overlay object.
+         *
+         * @param packageName The package name of the overlay to check.
+         * @return `true` if the overlay is enabled, `false` otherwise. This also returns `false`
+         * if the overlay is not found or if any reflection-related errors occur.
+         *
+         * @throws RemoteException if there is a communication error with the overlay manager service.
          */
         @Throws(RemoteException::class)
         override fun isOverlayEnabled(packageName: String): Boolean {
-            val overlay = oMS!!.getOverlayInfoByIdentifier(
+            val overlay = mOverlayManager.getOverlayInfoByIdentifier(
                 generateOverlayIdentifier(packageName),
                 currentUserId
             )
@@ -105,71 +133,174 @@ class RootConnection : RootService() {
                 val isEnabled = overlay.javaClass.getDeclaredMethod("isEnabled")
                 return isEnabled.invoke(overlay) as Boolean
             } catch (e: NoSuchMethodException) {
-                e.printStackTrace()
+                Log.e(TAG, "Failed to get isEnabled method", e)
                 return false
             } catch (e: InvocationTargetException) {
-                e.printStackTrace()
+                Log.e(TAG, "Failed to invoke isEnabled method", e)
                 return false
             } catch (e: IllegalAccessException) {
-                e.printStackTrace()
+                Log.e(TAG, "Failed to access isEnabled method", e)
                 return false
             }
         }
 
         /**
-         * Request that an overlay package be enabled when possible to do so.
+         * Enables the specified overlay packages.
+         *
+         * This function requests that the given overlay packages be enabled.
+         * The system will attempt to enable the overlays when it is safe and possible to do so.
+         *
+         * @param packages A list of package names representing the overlays to be enabled.
          */
         override fun enableOverlay(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 switchOverlay(p, true)
             }
         }
 
         /**
-         * Request that an overlay package be enabled when possible to do so.
+         * Enables one or more overlay packages by their package names.
+         *
+         * This function iterates through the provided list of package names,
+         * generates an identifier for each package, and then requests for the
+         * corresponding overlay to be enabled.
+         *
+         * @param packages A list of package names for the overlays to be enabled.
+         * @throws RemoteException If a remote exception occurs during the operation.
          */
         @Throws(RemoteException::class)
         override fun enableOverlayWithIdentifier(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 val identifier = generateOverlayIdentifier(p)
                 switchOverlayWithIdentifier(identifier, true)
             }
         }
 
         /**
-         * Request that an overlay package is enabled and any other overlay packages with the same
-         * target package are disabled.
+         * Enables an overlay package exclusively for all user profiles associated with the current user.
+         *
+         * This function requests that the specified overlay package is enabled and any other overlay
+         * packages with the same target package are disabled. The operation is performed for the
+         * current user's profile and all associated managed profiles.
+         *
+         * @param packageName The package name of the overlay to enable exclusively.
+         * @return `true` if the overlay was successfully enabled exclusively, `false` otherwise.
+         *
+         * @throws RemoteException if there is a communication error with the system service.
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusive(packageName: String): Boolean {
-            return oMS!!.setEnabledExclusive(packageName, true, currentUserId)
+            var result = false
+            var currentUserListed = false
+            val profiles = mUserManager.getProfiles(currentUserId, true)
+
+            profiles.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userId = userInfo.userHandle.getIdentifier()
+                        val tempResult = mOverlayManager.setEnabledExclusive(
+                            packageName,
+                            true,
+                            userId
+                        )
+                        if (userId == currentUserId) {
+                            currentUserListed = true
+                            result = tempResult
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error enabling overlay for user ${userInfo.userHandle}",
+                        e
+                    )
+                }
+            }
+
+            if (!currentUserListed) {
+                result = mOverlayManager.setEnabledExclusive(packageName, true, currentUserId)
+            }
+
+            return result
         }
 
         /**
-         * Request that an overlay package is enabled and any other overlay packages with the same
-         * target package and category are disabled.
+         * Enables an overlay package exclusively within its category.
+         *
+         * This function requests that the specified overlay package be enabled and any other overlay packages
+         * with the same target package and category be disabled. The operation is performed for the current user
+         * and all associated profiles.
+         *
+         * @param packageName The package name of the overlay to enable exclusively.
+         * @return `true` if the operation was successful, `false` otherwise.
+         *
+         * @throws RemoteException if a remote exception occurs during the operation.
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusiveInCategory(packageName: String): Boolean {
-            return oMS!!.setEnabledExclusiveInCategory(packageName, currentUserId)
+            var result = false
+            var currentUserListed = false
+            val profiles = mUserManager.getProfiles(currentUserId, true)
+
+            profiles.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userId = userInfo.userHandle.getIdentifier()
+                        val tempResult = mOverlayManager.setEnabledExclusiveInCategory(
+                            packageName,
+                            userInfo.userHandle.getIdentifier()
+                        )
+                        if (userId == currentUserId) {
+                            currentUserListed = true
+                            result = tempResult
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error enabling overlay for user ${userInfo.userHandle}",
+                        e
+                    )
+                }
+            }
+
+            if (!currentUserListed) {
+                result = mOverlayManager.setEnabledExclusiveInCategory(packageName, currentUserId)
+            }
+
+            return result
         }
 
         /**
-         * Request that an overlay package be disabled when possible to do so.
+         * Requests that the specified overlay packages be disabled when possible.
+         *
+         * This function iterates through the provided list of package names and attempts to disable each one.
+         * The disabling process may not be immediate and depends on the system's ability to handle overlay changes.
+         *
+         * @param packages A list of package names representing the overlays to be disabled.
+         *
+         * @throws RemoteException if there is an error communicating with the remote service responsible for managing overlays.
          */
         @Throws(RemoteException::class)
         override fun disableOverlay(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 switchOverlay(p, false)
             }
         }
 
         /**
-         * Request that an overlay package be disabled when possible to do so.
+         * Requests that the specified overlay packages be disabled when possible.
+         *
+         * This function iterates through the provided list of package names,
+         * generates an overlay identifier for each package, and then attempts to
+         * disable the overlay associated with that identifier.
+         *
+         * @param packages A list of package names representing the overlays to disable.
+         * @throws RemoteException If a remote exception occurs during the operation.
          */
         @Throws(RemoteException::class)
         override fun disableOverlayWithIdentifier(packages: List<String>) {
-            for (p in packages) {
+            packages.forEach { p ->
                 val identifier = generateOverlayIdentifier(p)
                 switchOverlayWithIdentifier(identifier, false)
             }
@@ -191,7 +322,7 @@ class RootConnection : RootService() {
         @Throws(RemoteException::class)
         override fun registerFabricatedOverlay(overlay: FabricatedOverlayResource) {
             try {
-                val fobInstance = fobClass!!.getConstructor(
+                val fobInstance = fobClass.getConstructor(
                     String::class.java,
                     String::class.java,
                     String::class.java
@@ -201,7 +332,7 @@ class RootConnection : RootService() {
                     overlay.targetPackage
                 )
 
-                val setResourceValueMethod = fobClass!!.getMethod(
+                val setResourceValueMethod = fobClass.getMethod(
                     "setResourceValue",
                     String::class.java,
                     Int::class.javaPrimitiveType,
@@ -212,7 +343,7 @@ class RootConnection : RootService() {
                 var setResourceValueMethodWithConfig: Method? = null
 
                 if (isA14orHigher) {
-                    setResourceValueMethodWithConfig = fobClass!!.getMethod(
+                    setResourceValueMethodWithConfig = fobClass.getMethod(
                         "setResourceValue",
                         String::class.java,
                         Int::class.javaPrimitiveType,
@@ -222,7 +353,10 @@ class RootConnection : RootService() {
                 }
 
                 for ((_, overlayEntry) in overlay.getEntries()) {
-                    if (isA14orHigher && overlayEntry.getConfiguration() != null && setResourceValueMethodWithConfig != null) {
+                    if (isA14orHigher &&
+                        overlayEntry.getConfiguration() != null &&
+                        setResourceValueMethodWithConfig != null
+                    ) {
                         setResourceValueMethodWithConfig.invoke(
                             fobInstance,
                             overlayEntry.resourceName,
@@ -240,13 +374,13 @@ class RootConnection : RootService() {
                     }
                 }
 
-                val foInstance = fobClass!!.getMethod(
+                val foInstance = fobClass.getMethod(
                     "build"
                 ).invoke(fobInstance)
 
-                val omtbInstance = omtbClass!!.newInstance()
+                val omtbInstance = omtbClass.newInstance()
 
-                omtbClass!!.getMethod(
+                omtbClass.getMethod(
                     "registerFabricatedOverlay",
                     foClass
                 ).invoke(
@@ -254,7 +388,7 @@ class RootConnection : RootService() {
                     foInstance
                 )
 
-                val omtInstance = omtbClass!!.getMethod(
+                val omtInstance = omtbClass.getMethod(
                     "build"
                 ).invoke(omtbInstance)
 
@@ -265,9 +399,19 @@ class RootConnection : RootService() {
         }
 
         /**
-         * Disables and removes the overlay from the overlay manager for all users.
+         * Disables and removes a fabricated overlay from the overlay manager for all users.
          *
-         * @param packageName the package name of the overlay to disable and remove
+         * This function unregisters a previously registered fabricated overlay, effectively disabling
+         * and removing it from the system. Fabricated overlays are created dynamically and are not
+         * part of the standard APK installation.
+         *
+         * The function first generates an overlay identifier based on the provided package name.
+         * It then uses reflection to access the hidden OverlayManager (OM) API to unregister
+         * the overlay. Finally, it commits the changes to the OM.
+         *
+         * @param packageName The package name used to identify the fabricated overlay to be unregistered.
+         *
+         * @throws RemoteException If there is an error communicating with the OverlayManagerService.
          */
         @Suppress("DEPRECATION")
         @Throws(RemoteException::class)
@@ -275,9 +419,9 @@ class RootConnection : RootService() {
             try {
                 val overlay = generateOverlayIdentifier(packageName) ?: return
 
-                val omtbInstance = omtbClass!!.newInstance()
+                val omtbInstance = omtbClass.newInstance()
 
-                omtbClass!!.getMethod(
+                omtbClass.getMethod(
                     "unregisterFabricatedOverlay",
                     oiClass
                 ).invoke(
@@ -285,7 +429,7 @@ class RootConnection : RootService() {
                     overlay
                 )
 
-                val omtInstance = omtbClass!!.getMethod(
+                val omtInstance = omtbClass.getMethod(
                     "build"
                 ).invoke(omtbInstance)
 
@@ -296,65 +440,237 @@ class RootConnection : RootService() {
         }
 
         /**
-         * Change the priority of the given overlay to the highest priority relative to
-         * the other overlays with the same target and user.
+         * Changes the priority of the given overlay to the highest priority relative to
+         * other overlays targeting the same resources and belonging to the same user.
+         *
+         * This method iterates through all user profiles, including managed profiles,
+         * and attempts to set the overlay as the highest priority for each profile.
+         * It then sets the overlay as the highest priority for the current user.
+         *
+         * @param packageName The package name of the overlay.
+         * @return `true` if the priority was successfully changed, `false` otherwise.
+         * @throws RemoteException if a remote exception occurs during the operation.
          */
         @Throws(RemoteException::class)
         override fun setHighestPriority(packageName: String): Boolean {
-            return oMS!!.setHighestPriority(
-                packageName,
-                currentUserId
-            )
+            var result = false
+            var currentUserListed = false
+            val profiles = mUserManager.getProfiles(currentUserId, true)
+
+            profiles.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userId = userInfo.userHandle.getIdentifier()
+                        val tempResult = mOverlayManager.setHighestPriority(
+                            packageName,
+                            userId
+                        )
+                        if (userId == currentUserId) {
+                            currentUserListed = true
+                            result = tempResult
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error setting overlay priority for user ${userInfo.userHandle}",
+                        e
+                    )
+                }
+            }
+
+            if (!currentUserListed) {
+                result = mOverlayManager.setHighestPriority(packageName, currentUserId)
+            }
+
+            return result
         }
 
         /**
-         * Change the priority of the given overlay to the lowest priority relative to
-         * the other overlays with the same target and user.
+         * Changes the priority of the given overlay to the lowest priority relative to
+         * other overlays targeting the same resources and belonging to the same user.
+         *
+         * This method iterates through all user profiles, including managed profiles,
+         * and attempts to set the lowest priority for the given overlay package within each profile.
+         * If an exception occurs during the process for a specific profile, it is caught and printed to the stack trace,
+         * but the execution continues for other profiles.
+         *
+         * @param packageName The package name of the overlay to modify.
+         * @return `true` if the priority was successfully changed for the current user, `false` otherwise.
+         *
+         * @throws RemoteException If a remote communication error occurs.
          */
         @Throws(RemoteException::class)
         override fun setLowestPriority(packageName: String): Boolean {
-            return oMS!!.setLowestPriority(
-                packageName,
-                currentUserId
-            )
+            var result = false
+            var currentUserListed = false
+            val profiles = mUserManager.getProfiles(currentUserId, true)
+
+            profiles.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userId = userInfo.userHandle.getIdentifier()
+                        val tempResult = mOverlayManager.setLowestPriority(
+                            packageName,
+                            userId
+                        )
+                        if (userId == currentUserId) {
+                            currentUserListed = true
+                            result = tempResult
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error setting overlay priority for user ${userInfo.userHandle}",
+                        e
+                    )
+                }
+            }
+
+            if (!currentUserListed) {
+                result = mOverlayManager.setLowestPriority(packageName, currentUserId)
+            }
+
+            return result
         }
 
+        /**
+         * Generates an OverlayIdentifier for the given package name.
+         *
+         * This method generates an OverlayIdentifier for the specified package name, using the
+         * default fabricated overlay source package.
+         *
+         * @param packageName The package name for which to generate the OverlayIdentifier.
+         * @return An OverlayIdentifier for the specified package name, or null if an error occurs.
+         * @throws RemoteException If a remote exception occurs during the operation.
+         */
         @Throws(RemoteException::class)
         override fun generateOverlayIdentifier(packageName: String): OverlayIdentifier? {
             return generateOverlayIdentifier(packageName, FABRICATED_OVERLAY_SOURCE_PACKAGE)
         }
 
+        /**
+         * Invalidates the caches for an overlay package for all user profiles associated with the current user.
+         *
+         * This method iterates through all user profiles, including the main user and any managed profiles,
+         * and calls [IOverlayManager.invalidateCachesForOverlay] for each profile to invalidate the caches
+         * for the specified overlay package.
+         *
+         * @param packageName The package name of the overlay for which to invalidate caches.
+         *
+         * @throws RemoteException if there is a communication error with the system service.
+         */
         @Throws(RemoteException::class)
         override fun invalidateCachesForOverlay(packageName: String) {
-            oMS!!.invalidateCachesForOverlay(packageName, currentUserId)
+            var currentUserListed = false
+            val profiles = mUserManager.getProfiles(currentUserId, true)
+
+            profiles.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userId = userInfo.userHandle.getIdentifier()
+                        mOverlayManager.invalidateCachesForOverlay(
+                            packageName,
+                            userId
+                        )
+                        if (userId == currentUserId) {
+                            currentUserListed = true
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error invalidating overlay caches for user ${userInfo.userHandle}",
+                        e
+                    )
+                }
+            }
+
+            if (!currentUserListed) {
+                mOverlayManager.invalidateCachesForOverlay(packageName, currentUserId)
+            }
         }
 
         private fun switchOverlay(packageName: String, enable: Boolean) {
-            try {
-                oMS!!.setEnabled(packageName, enable, currentUserId)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            var currentUserListed = false
+            val profiles = mUserManager.getProfiles(currentUserId, true)
+
+            profiles.forEach { userInfo ->
+                try {
+                    if (userInfo.isProfile) {
+                        val userId = userInfo.userHandle.getIdentifier()
+                        mOverlayManager.setEnabled(
+                            packageName,
+                            enable,
+                            userId
+                        )
+                        if (userId == currentUserId) {
+                            currentUserListed = true
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error setting overlay ${if (enable) "enabled" else "disabled"} for user ${userInfo.userHandle}",
+                        e
+                    )
+                }
+            }
+
+            if (!currentUserListed) {
+                mOverlayManager.setEnabled(packageName, enable, currentUserId)
             }
         }
 
         @Suppress("DEPRECATION")
         private fun switchOverlayWithIdentifier(identifier: OverlayIdentifier?, enable: Boolean) {
             try {
-                val omtbInstance = omtbClass!!.newInstance()
+                val omtbInstance = omtbClass.newInstance()
 
-                omtbClass!!.getMethod(
+                val setEnabledMethod = omtbClass.getMethod(
                     "setEnabled",
                     oiClass,
                     Boolean::class.javaPrimitiveType,
                     Int::class.javaPrimitiveType
-                ).invoke(
-                    omtbInstance,
-                    identifier,
-                    enable,
-                    currentUserId
                 )
 
-                val omtInstance = omtbClass!!.getMethod(
+                var currentUserListed = false
+                val profiles = mUserManager.getProfiles(currentUserId, true)
+
+                profiles.forEach { userInfo ->
+                    try {
+                        if (userInfo.isProfile) {
+                            val userId = userInfo.userHandle.getIdentifier()
+                            setEnabledMethod.invoke(
+                                omtbInstance,
+                                identifier,
+                                enable,
+                                userId
+                            )
+                            if (userId == currentUserId) {
+                                currentUserListed = true
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(
+                            TAG,
+                            "Error setting overlay ${if (enable) "enabled" else "disabled"} for user ${userInfo.userHandle}",
+                            e
+                        )
+                    }
+                }
+
+                if (!currentUserListed) {
+                    setEnabledMethod.invoke(
+                        omtbInstance,
+                        identifier,
+                        enable,
+                        currentUserId
+                    )
+                }
+
+                val omtInstance = omtbClass.getMethod(
                     "build"
                 ).invoke(omtbInstance)
 
@@ -365,14 +681,26 @@ class RootConnection : RootService() {
         }
 
         /**
-         * Uninstall any overlay updates for the given package name.
+         * Uninstalls any overlay updates for the given package name.
+         *
+         * This function executes the `pm uninstall` command to remove any updates applied
+         * to the overlay package specified by `packageName`. This effectively reverts
+         * the overlay to its original state.
+         *
+         * @param packageName The name of the package for which to uninstall overlay updates.
          */
         override fun uninstallOverlayUpdates(packageName: String) {
             runCommand(listOf("pm uninstall $packageName"))
         }
 
         /**
-         * Restart systemui immediately.
+         * Restarts the System UI (SystemUI) process immediately.
+         *
+         * This function executes a command to kill the SystemUI process, which will
+         * cause Android to automatically restart it. This can be useful for applying
+         * changes to SystemUI without requiring a full device reboot.
+         *
+         * @throws RemoteException if there is an error communicating with the remote service.
          */
         @Throws(RemoteException::class)
         override fun restartSystemUI() {
@@ -380,7 +708,13 @@ class RootConnection : RootService() {
         }
 
         /**
-         * Run list of commands as root.
+         * Executes a list of commands with root privileges.
+         *
+         * This function utilizes the `Shell` utility to execute the provided commands as root.
+         * The output of the command execution is captured and returned as an array of strings.
+         *
+         * @param command A list of strings representing the command and its arguments.
+         * @return An array of strings containing the output of the command execution.
          */
         override fun runCommand(command: List<String>): Array<String> {
             return Shell.cmd(*command.toTypedArray<String>()).exec().out.toTypedArray<String>()
@@ -389,122 +723,76 @@ class RootConnection : RootService() {
         @SuppressLint("NewApi")
         @Throws(Exception::class)
         private fun commit(transaction: Any?) {
-            oMS!!.commit(transaction as OverlayManagerTransaction?)
+            mOverlayManager.commit(transaction as OverlayManagerTransaction?)
         }
 
-        @SuppressLint("PrivateApi", "NewApi")
+        @SuppressLint("PrivateApi", "NewApi", "StaticFieldLeak", "RestrictedApi")
         companion object {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
-            private val currentUser: UserHandle
+
             private val currentUserId: Int
-            private var mOMS: IOverlayManager? = null
-            private var oiClass: Class<*>? = null
-            private var foClass: Class<*>? = null
-            private var fobClass: Class<*>? = null
-            private var omtbClass: Class<*>? = null
-            private var SystemUI_UID = -1
-            private var mActivityManager: IActivityManager? = null
-            private val onSystemUiRestart: (() -> Unit)? = null
+                get() = Process.myUserHandle().getIdentifier()
 
-            @SuppressLint("StaticFieldLeak", "RestrictedApi")
-            private val context: Context = Utils.getContext()
-
-            init {
-                currentUser = getCurrentUser()
-                currentUserId = getCurrentUserId()!!
-
-                if (mOMS == null) {
-                    mOMS =
-                        IOverlayManager.Stub.asInterface(SystemServiceHelper.getSystemService("overlay"))
-                }
-
-                if (mActivityManager == null) {
-                    mActivityManager =
-                        IActivityManager.Stub.asInterface(SystemServiceHelper.getSystemService("activity"))
-                }
-
-                try {
-                    SystemUI_UID = context.packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
+            private val SystemUI_UID: Int
+                get() = try {
+                    Utils.getContext().packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
                 } catch (e: PackageManager.NameNotFoundException) {
-                    Log.e(TAG, "static: ", e)
+                    Log.e(TAG, "SystemUI_UID", e)
+                    -1
                 }
 
+            private val mUserManager: IUserManager by lazy {
+                IUserManager.Stub.asInterface(
+                    SystemServiceHelper.getSystemService("user")
+                )
+            }
+
+            private val mOverlayManager: IOverlayManager by lazy {
+                IOverlayManager.Stub.asInterface(
+                    SystemServiceHelper.getSystemService("overlay")
+                )
+            }
+
+            private val mActivityManager: IActivityManager by lazy {
+                IActivityManager.Stub.asInterface(
+                    SystemServiceHelper.getSystemService("activity")
+                )
+            }
+
+            private val oiClass: Class<*> by lazy {
                 try {
-                    if (oiClass == null) {
-                        oiClass = Class.forName("android.content.om.OverlayIdentifier")
-                    }
+                    Class.forName("android.content.om.OverlayIdentifier")
                 } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
-                }
-                try {
-                    if (foClass == null) {
-                        foClass = Class.forName("android.content.om.FabricatedOverlay")
-                    }
-                } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
-                }
-                try {
-                    if (fobClass == null) {
-                        fobClass = Class.forName("android.content.om.FabricatedOverlay\$Builder")
-                    }
-                } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
-                }
-                try {
-                    if (omtbClass == null) {
-                        omtbClass =
-                            Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
-                    }
-                } catch (e: ClassNotFoundException) {
-                    Log.e(TAG, "static: ", e)
+                    Log.e(TAG, "OverlayIdentifier class not found", e)
+                    throw RuntimeException(e)
                 }
             }
 
-            private fun getCurrentUser(): UserHandle {
-                return Process.myUserHandle()
-            }
-
-            private fun getCurrentUserId(): Int? {
-                return try {
-                    UserHandle::class.java.getMethod("getIdentifier")
-                        .invoke(currentUser) as Int
-                } catch (exception: NoSuchMethodException) {
-                    0
-                } catch (exception: IllegalAccessException) {
-                    0
-                } catch (exception: InvocationTargetException) {
-                    0
+            private val foClass: Class<*> by lazy {
+                try {
+                    Class.forName("android.content.om.FabricatedOverlay")
+                } catch (e: ClassNotFoundException) {
+                    Log.e(TAG, "FabricatedOverlay class not found", e)
+                    throw RuntimeException(e)
                 }
             }
 
-            private val oMS: IOverlayManager?
-                get() {
-                    if (mOMS == null) {
-                        mOMS =
-                            IOverlayManager.Stub.asInterface(SystemServiceHelper.getSystemService("overlay"))
-                    }
-                    return mOMS
+            private val fobClass: Class<*> by lazy {
+                try {
+                    Class.forName("android.content.om.FabricatedOverlay\$Builder")
+                } catch (e: ClassNotFoundException) {
+                    Log.e(TAG, "FabricatedOverlay.Builder class not found", e)
+                    throw RuntimeException(e)
                 }
+            }
 
-            private val aM: IActivityManager?
-                get() {
-                    if (mActivityManager == null) {
-                        mActivityManager =
-                            IActivityManager.Stub.asInterface(SystemServiceHelper.getSystemService("activity"))
-                    }
-                    return mActivityManager
+            private val omtbClass: Class<*> by lazy {
+                try {
+                    Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
+                } catch (e: ClassNotFoundException) {
+                    Log.e(TAG, "OverlayManagerTransaction.Builder class not found", e)
+                    throw RuntimeException(e)
                 }
-
-            private fun getSystemUiUID(): Int {
-                if (SystemUI_UID == -1) {
-                    try {
-                        SystemUI_UID = context.packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
-                    } catch (e: PackageManager.NameNotFoundException) {
-                        // It's impossible to get here, but just in case
-                        Log.e(TAG, "getSystemUI_UID: ", e)
-                    }
-                }
-                return SystemUI_UID
             }
 
             @Suppress("SameParameterValue")
@@ -513,7 +801,7 @@ class RootConnection : RootService() {
                 sourcePackage: String
             ): OverlayIdentifier? {
                 try {
-                    return oiClass!!.getConstructor(
+                    return oiClass.getConstructor(
                         String::class.java,
                         String::class.java
                     ).newInstance(
@@ -524,6 +812,12 @@ class RootConnection : RootService() {
                     Log.e(TAG, "generateOverlayIdentifier: ", e)
                     return null
                 }
+            }
+
+            private fun UserHandle.getIdentifier(): Int {
+                val method = UserHandle::class.java.getDeclaredMethod("getIdentifier")
+                method.isAccessible = true
+                return method.invoke(this) as Int
             }
         }
     }

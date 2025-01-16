@@ -6,16 +6,15 @@ import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.common.Const
 import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
+import com.drdisagree.colorblendr.utils.cam.CamUtils
 import com.google.gson.reflect.TypeToken
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
@@ -54,7 +53,7 @@ object ColorUtil {
 
         return generateModifiedColors(
             style,
-            RPrefs.getInt(
+            getInt(
                 Const.MONET_SEED_COLOR,
                 wallpaperColorList[0]
             ),
@@ -140,91 +139,59 @@ object ColorUtil {
         return typedValue.data
     }
 
-    fun modifySaturation(color: Int, saturation: Int): Int {
+    fun adjustSaturation(color: Int, saturation: Int): Int {
         val saturationFloat = (saturation - 100) / 100f
 
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
+        val cam = Cam.fromInt(color)
+        var chroma = cam.chroma
+        val lstar = CamUtils.lstarFromInt(color)
+
+        // Get a color with maximum chroma (200f is from VIBRANT accent 1 palette)
+        val targetInt = Cam.getInt(cam.hue, 200f, lstar)
+        val target = Cam.fromInt(targetInt)
 
         if (saturationFloat > 0) {
-            hsl[1] += ((1 - hsl[1]) * saturationFloat)
+            chroma += ((target.chroma - chroma) * saturationFloat)
         } else if (saturationFloat < 0) {
-            hsl[1] += (hsl[1] * saturationFloat)
+            chroma += (chroma * saturationFloat)
         }
 
-        return ColorUtils.HSLToColor(hsl)
+        return Cam.getInt(cam.hue, chroma, lstar)
     }
 
-    fun modifyLightness(color: Int, lightness: Int, idx: Int): Int {
+    fun adjustLightness(color: Int, brightnessPercentage: Int): Int {
+        val clampedPercentage = brightnessPercentage.coerceIn(-100, 100)
+
+        val cam = Cam.fromInt(color)
+        val lstar = CamUtils.lstarFromInt(color)
+
+        val adjustedLStar = (lstar + (lstar * (clampedPercentage / 100f))).coerceIn(0f, 100f)
+
+        return Cam.getInt(cam.hue, cam.chroma, adjustedLStar)
+    }
+
+    fun shiftLightness(color: Int, lightness: Int, idx: Int): Int {
         var lightnessFloat = (lightness - 100) / 1000f
         val shade = systemTintList[idx]
 
         when (idx) {
-            0, 12 -> {
-                lightnessFloat = 0f
-            }
-
-            1 -> {
-                lightnessFloat /= 10f
-            }
-
-            2 -> {
-                lightnessFloat /= 2f
-            }
+            0, 12 -> lightnessFloat = 0f
+            1 -> lightnessFloat /= 10f
+            2 -> lightnessFloat /= 2f
         }
 
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
+        val cam = Cam.fromInt(color)
+        val lstar = 100f * (shade + lightnessFloat)
 
-        hsl[2] = shade + lightnessFloat
-
-        return ColorUtils.HSLToColor(hsl)
-    }
-
-    fun modifyBrightness(color: Int, brightnessPercentage: Int): Int {
-        // Ensure brightnessPercentage is within -100 to 100
-        val clampedPercentage = brightnessPercentage.coerceIn(-100, 100)
-
-        // Convert brightness percentage to a factor
-        val factor = 1.0f + (clampedPercentage / 100f)
-
-        // Extract RGB components
-        val r = (color shr 16 and 0xFF) / 255f
-        val g = (color shr 8 and 0xFF) / 255f
-        val b = (color and 0xFF) / 255f
-
-        // Calculate current brightness
-        val currentBrightness = 0.2126f * r + 0.7152f * g + 0.0722f * b
-
-        // Determine the adjustment factor to achieve the desired brightness
-        val adjustedFactor = if (currentBrightness == 0f) 0f else factor
-
-        // Adjust RGB components by the factor
-        val newR = (r * adjustedFactor).coerceIn(0f, 1f)
-        val newG = (g * adjustedFactor).coerceIn(0f, 1f)
-        val newB = (b * adjustedFactor).coerceIn(0f, 1f)
-
-        // Convert back to color integer
-        val newRInt = (newR * 255).toInt()
-        val newGInt = (newG * 255).toInt()
-        val newBInt = (newB * 255).toInt()
-
-        // Return the adjusted color, preserving the alpha channel
-        return (color and 0xFF000000.toInt()) or
-                (newRInt shl 16) or
-                (newGInt shl 8) or
-                newBInt
+        return Cam.getInt(cam.hue, cam.chroma, lstar)
     }
 
     fun getHue(color: Int): Float {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
-
-        return hsl[0]
+        return Cam.fromInt(color).hue
     }
 
-    private val systemTintList: FloatArray
-        get() = floatArrayOf(
+    private val systemTintList: FloatArray by lazy {
+        floatArrayOf(
             1.0f,
             0.99f,
             0.95f,
@@ -239,44 +206,44 @@ object ColorUtil {
             0.1f,
             0.0f
         )
+    }
 
-    val colorNames: Array<Array<String>>
-        get() {
-            val accentTypes = arrayOf(
-                "system_accent1",
-                "system_accent2",
-                "system_accent3",
-                "system_neutral1",
-                "system_neutral2"
-            )
-            val values = arrayOf(
-                "0",
-                "10",
-                "50",
-                "100",
-                "200",
-                "300",
-                "400",
-                "500",
-                "600",
-                "700",
-                "800",
-                "900",
-                "1000"
-            )
+    val systemPaletteNames: Array<Array<String>> by lazy {
+        val accentTypes = arrayOf(
+            "system_accent1",
+            "system_accent2",
+            "system_accent3",
+            "system_neutral1",
+            "system_neutral2"
+        )
+        val values = arrayOf(
+            "0",
+            "10",
+            "50",
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "600",
+            "700",
+            "800",
+            "900",
+            "1000"
+        )
 
-            val colorNames = Array(accentTypes.size) {
-                Array(values.size) { "" }
-            }
-
-            for (i in accentTypes.indices) {
-                for (j in values.indices) {
-                    colorNames[i][j] = accentTypes[i] + "_" + values[j]
-                }
-            }
-
-            return colorNames
+        val colorNames = Array(accentTypes.size) {
+            Array(values.size) { "" }
         }
+
+        for (i in accentTypes.indices) {
+            for (j in values.indices) {
+                colorNames[i][j] = accentTypes[i] + "_" + values[j]
+            }
+        }
+
+        colorNames
+    }
 
     fun getColorNamesM3(isDynamic: Boolean, prefixG: Boolean): Array<Array<String>> {
         val prefix = "m3_ref_palette_"
@@ -306,9 +273,9 @@ object ColorUtil {
         return String.format("%06X", (0xFFFFFF and colorInt))
     }
 
-    fun getSystemColors(context: Context): Array<IntArray> {
-        return arrayOf(
-            intArrayOf(
+    fun getSystemColors(context: Context = appContext): ArrayList<ArrayList<Int>> {
+        return arrayListOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_primary100,
                     context.theme
@@ -363,7 +330,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_secondary100,
                     context.theme
@@ -418,7 +385,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_tertiary100,
                     context.theme
@@ -473,7 +440,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_neutral100,
                     context.theme
@@ -528,7 +495,7 @@ object ColorUtil {
                 )
             ),
 
-            intArrayOf(
+            arrayListOf(
                 context.resources.getColor(
                     com.google.android.material.R.color.material_dynamic_neutral_variant100,
                     context.theme

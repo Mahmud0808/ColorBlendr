@@ -12,13 +12,21 @@ import androidx.core.content.ContextCompat
 
 class ColorPreview : View {
 
-    private var squarePaint: Paint? = null
-    private var secondQuarterCirclePaint: Paint? = null
-    private var firstQuarterCirclePaint: Paint? = null
-    private var halfCirclePaint: Paint? = null
-    private var squareRect: RectF? = null
-    private var circleRect: RectF? = null
-    private var padding: Float = 0f
+    private var padding: Float = 10 * resources.displayMetrics.density
+    private var squareRect: RectF = RectF()
+    private var circleRect: RectF = RectF()
+    private var squarePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+    private var secondQuarterCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+    private var firstQuarterCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+    private var halfCirclePaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -40,81 +48,68 @@ class ColorPreview : View {
         val isDarkMode: Boolean =
             (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES
 
-        padding = 10 * resources.displayMetrics.density
+        padding = 10 * context.resources.displayMetrics.density
 
-        squareRect = RectF()
-        circleRect = RectF()
-
-        squarePaint = Paint()
-        squarePaint!!.setColor(
+        squarePaint.setColor(
             ContextCompat.getColor(
                 context,
-                if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99 else com.google.android.material.R.color.material_dynamic_neutral10
+                if (!isDarkMode) com.google.android.material.R.color.material_dynamic_neutral99
+                else com.google.android.material.R.color.material_dynamic_neutral10
             )
         )
-        squarePaint!!.style = Paint.Style.FILL
-
-        halfCirclePaint = Paint()
-        halfCirclePaint!!.setColor(
+        halfCirclePaint.setColor(
             ContextCompat.getColor(
                 context,
                 com.google.android.material.R.color.material_dynamic_primary90
             )
         )
-        halfCirclePaint!!.style = Paint.Style.FILL
-
-        firstQuarterCirclePaint = Paint()
-        firstQuarterCirclePaint!!.setColor(
+        firstQuarterCirclePaint.setColor(
             ContextCompat.getColor(
                 context,
                 com.google.android.material.R.color.material_dynamic_secondary90
             )
         )
-        firstQuarterCirclePaint!!.style = Paint.Style.FILL
-
-        secondQuarterCirclePaint = Paint()
-        secondQuarterCirclePaint!!.setColor(
+        secondQuarterCirclePaint.setColor(
             ContextCompat.getColor(
                 context,
                 com.google.android.material.R.color.material_dynamic_tertiary90
             )
         )
-        secondQuarterCirclePaint!!.style = Paint.Style.FILL
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         val cornerRadius: Float = 12 * resources.displayMetrics.density
-        squareRect!!.set(0f, 0f, width.toFloat(), height.toFloat())
-        canvas.drawRoundRect(squareRect!!, cornerRadius, cornerRadius, squarePaint!!)
+        squareRect.set(0f, 0f, width.toFloat(), height.toFloat())
+        canvas.drawRoundRect(squareRect, cornerRadius, cornerRadius, squarePaint)
 
         val margin: Float = 0 * resources.displayMetrics.density
 
-        circleRect!!.set(padding, padding, width - padding, height - padding - margin)
-        canvas.drawArc(circleRect!!, 180f, 180f, true, halfCirclePaint!!)
+        circleRect.set(padding, padding, width - padding, height - padding - margin)
+        canvas.drawArc(circleRect, 180f, 180f, true, halfCirclePaint)
 
-        circleRect!!.set(padding, padding + margin, width - padding - margin, height - padding)
-        canvas.drawArc(circleRect!!, 90f, 90f, true, firstQuarterCirclePaint!!)
+        circleRect.set(padding, padding + margin, width - padding - margin, height - padding)
+        canvas.drawArc(circleRect, 90f, 90f, true, firstQuarterCirclePaint)
 
-        circleRect!!.set(padding + margin, padding + margin, width - padding, height - padding)
-        canvas.drawArc(circleRect!!, 0f, 90f, true, secondQuarterCirclePaint!!)
+        circleRect.set(padding + margin, padding + margin, width - padding, height - padding)
+        canvas.drawArc(circleRect, 0f, 90f, true, secondQuarterCirclePaint)
     }
 
     fun setSquareColor(@ColorInt color: Int) {
-        squarePaint!!.setColor(color)
+        squarePaint.color = color
     }
 
     fun setFirstQuarterCircleColor(@ColorInt color: Int) {
-        firstQuarterCirclePaint!!.setColor(color)
+        firstQuarterCirclePaint.color = color
     }
 
     fun setSecondQuarterCircleColor(@ColorInt color: Int) {
-        secondQuarterCirclePaint!!.setColor(color)
+        secondQuarterCirclePaint.color = color
     }
 
     fun setHalfCircleColor(@ColorInt color: Int) {
-        halfCirclePaint!!.setColor(color)
+        halfCirclePaint.color = color
     }
 
     fun invalidateColors() {

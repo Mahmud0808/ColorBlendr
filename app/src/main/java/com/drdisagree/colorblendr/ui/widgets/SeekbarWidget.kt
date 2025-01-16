@@ -108,6 +108,7 @@ class SeekbarWidget : RelativeLayout {
                 valueFormat
             )
         }
+        handleResetVisibility()
     }
 
     var seekbarProgress: Int
@@ -178,9 +179,13 @@ class SeekbarWidget : RelativeLayout {
 
     private fun handleResetVisibility() {
         if (defaultValue != Int.MAX_VALUE && seekBar!!.progress != defaultValue) {
-            resetIcon!!.visibility = VISIBLE
+            if (resetIcon?.visibility != VISIBLE) {
+                resetIcon?.visibility = VISIBLE
+            }
         } else {
-            resetIcon!!.visibility = GONE
+            if (resetIcon?.visibility != GONE) {
+                resetIcon?.visibility = GONE
+            }
         }
     }
 

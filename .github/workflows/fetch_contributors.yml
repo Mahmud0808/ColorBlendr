@@ -1,9 +1,6 @@
 name: Fetch Contributors
 
 on:
-  pull_request: # This will run the workflow on pull request events
-    types:
-      - closed
   workflow_dispatch: # This will run the workflow on manual trigger
 
 permissions:
@@ -30,7 +27,7 @@ jobs:
           committer_email: "crazymahmud08@gmail.com"
           pr_title_on_protected: "Update contributors list"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Save contributors in assets
         if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
@@ -40,7 +37,7 @@ jobs:
       - name: Commit changes and push
         uses: github-actions-x/commit@v2.9
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           push-branch: 'master'
           commit-message: 'ci: update contributors.json'
           force-add: 'true'

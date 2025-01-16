@@ -2,7 +2,18 @@ package com.drdisagree.colorblendr.utils
 
 import android.content.Context
 import androidx.annotation.ColorInt
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.common.Const.CUSTOM_MONET_STYLE
+import com.drdisagree.colorblendr.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.common.Const.SAVED_CUSTOM_MONET_STYLES
+import com.drdisagree.colorblendr.config.RPrefs.clearPref
+import com.drdisagree.colorblendr.config.RPrefs.getString
+import com.drdisagree.colorblendr.config.RPrefs.putString
+import com.drdisagree.colorblendr.ui.models.CustomStyleModel
+import com.drdisagree.colorblendr.utils.MONET.Companion.toEnumMonet
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
 import com.drdisagree.colorblendr.utils.monet.hct.Hct
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette
@@ -15,6 +26,7 @@ import com.drdisagree.colorblendr.utils.monet.scheme.SchemeNeutral
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeRainbow
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeTonalSpot
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeVibrant
+import com.google.gson.reflect.TypeToken
 
 object ColorSchemeUtil {
     private val tones: IntArray = intArrayOf(100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0)
@@ -71,59 +83,88 @@ object ColorSchemeUtil {
         return toneList
     }
 
-    fun stringToEnumMonetStyle(context: Context, enumString: String): MONET {
-        return when (enumString) {
-            context.getString(R.string.monet_neutral) -> {
-                MONET.SPRITZ
-            }
-
-            context.getString(R.string.monet_monochrome) -> {
-                MONET.MONOCHROMATIC
-            }
-
-            context.getString(R.string.monet_tonalspot) -> {
-                MONET.TONAL_SPOT
-            }
-
-            context.getString(R.string.monet_vibrant) -> {
-                MONET.VIBRANT
-            }
-
-            context.getString(R.string.monet_rainbow) -> {
-                MONET.RAINBOW
-            }
-
-            context.getString(R.string.monet_expressive) -> {
-                MONET.EXPRESSIVE
-            }
-
-            context.getString(R.string.monet_fidelity) -> {
-                MONET.FIDELITY
-            }
-
-            context.getString(R.string.monet_content) -> {
-                MONET.CONTENT
-            }
-
-            context.getString(R.string.monet_fruitsalad) -> {
-                MONET.FRUIT_SALAD
-            }
-
-            else -> {
-                MONET.TONAL_SPOT
-            }
+    fun Int.getStyleNameForRootless(): String {
+        return when (this.getOriginalString()) {
+            R.string.monet_neutral.getOriginalString() -> "SPRITZ"
+            R.string.monet_vibrant.getOriginalString() -> "VIBRANT"
+            R.string.monet_expressive.getOriginalString() -> "EXPRESSIVE"
+            R.string.monet_rainbow.getOriginalString() -> "RAINBOW"
+            R.string.monet_fruitsalad.getOriginalString() -> "FRUIT_SALAD"
+            R.string.monet_content.getOriginalString() -> "CONTENT"
+            R.string.monet_monochrome.getOriginalString() -> "MONOCHROMATIC"
+            R.string.monet_fidelity.getOriginalString() -> "FIDELITY"
+            else -> "TONAL_SPOT"
         }
     }
 
-    enum class MONET {
-        SPRITZ,
-        MONOCHROMATIC,
-        TONAL_SPOT,
-        VIBRANT,
-        RAINBOW,
-        EXPRESSIVE,
-        FIDELITY,
-        CONTENT,
-        FRUIT_SALAD
+    fun stringToEnumMonetStyle(
+        context: Context = appContext,
+        enumString: String
+    ): MONET {
+        // compare both original string and localized string
+        return when (enumString) {
+            R.string.monet_neutral.getOriginalString(),
+            context.getString(R.string.monet_neutral) -> MONET.SPRITZ
+
+            R.string.monet_monochrome.getOriginalString(),
+            context.getString(R.string.monet_monochrome) -> MONET.MONOCHROMATIC
+
+            R.string.monet_tonalspot.getOriginalString(),
+            context.getString(R.string.monet_tonalspot) -> MONET.TONAL_SPOT
+
+            R.string.monet_vibrant.getOriginalString(),
+            context.getString(R.string.monet_vibrant) -> MONET.VIBRANT
+
+            R.string.monet_rainbow.getOriginalString(),
+            context.getString(R.string.monet_rainbow) -> MONET.RAINBOW
+
+            R.string.monet_expressive.getOriginalString(),
+            context.getString(R.string.monet_expressive) -> MONET.EXPRESSIVE
+
+            R.string.monet_fidelity.getOriginalString(),
+            context.getString(R.string.monet_fidelity) -> MONET.FIDELITY
+
+            R.string.monet_content.getOriginalString(),
+            context.getString(R.string.monet_content) -> MONET.CONTENT
+
+            R.string.monet_fruitsalad.getOriginalString(),
+            context.getString(R.string.monet_fruitsalad) -> MONET.FRUIT_SALAD
+
+            else -> MONET.TONAL_SPOT
+        }
     }
+
+    fun getCurrentMonetStyle(): MONET {
+        return getString(MONET_STYLE, null).toEnumMonet()
+    }
+
+    fun saveCurrentMonetStyle(monet: MONET) {
+        putString(MONET_STYLE, monet.toString())
+    }
+
+    fun getCurrentCustomStyle(): String? {
+        return getString(CUSTOM_MONET_STYLE, null)
+    }
+
+    fun saveCurrentCustomStyle(styleId: String) {
+        putString(CUSTOM_MONET_STYLE, styleId)
+    }
+
+    fun resetCustomStyle() {
+        clearPref(CUSTOM_MONET_STYLE)
+    }
+
+    fun resetCustomStyleIfNotNull() {
+        if (getCurrentCustomStyle() != null) {
+            clearPref(CUSTOM_MONET_STYLE)
+        }
+    }
+
+    fun getCustomStyles(): ArrayList<CustomStyleModel> = Const.GSON.fromJson(
+        getString(SAVED_CUSTOM_MONET_STYLES, null),
+        object : TypeToken<ArrayList<CustomStyleModel>>() {}.type
+    ) ?: ArrayList()
+
+    fun saveCustomStyles(styles: ArrayList<CustomStyleModel>) =
+        putString(SAVED_CUSTOM_MONET_STYLES, Const.GSON.toJson(styles))
 }

@@ -29,6 +29,7 @@ import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.views.WallColorPreview
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
@@ -54,9 +55,7 @@ class ColorsFragment : Fragment() {
 
     private val wallpaperChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (binding.colorsToggleGroup.checkedButtonId == R.id.wallpaper_colors_button) {
-                addWallpaperColorItems()
-            }
+            addWallpaperColorItems()
         }
     }
 
@@ -95,26 +94,33 @@ class ColorsFragment : Fragment() {
             }
 
         // Color codes
+        val wallpaperColorSelected = !getBoolean(MONET_SEED_COLOR_ENABLED, false) &&
+                getWallpaperColors().contains(getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
         binding.colorsToggleGroup.check(
-            if (getBoolean(
-                    MONET_SEED_COLOR_ENABLED,
-                    false
-                )
-            ) R.id.basic_colors_button else R.id.wallpaper_colors_button
+            if (wallpaperColorSelected) R.id.wallpaper_colors_button else R.id.basic_colors_button
         )
         binding.colorsToggleGroup.addOnButtonCheckedListener { _: MaterialButtonToggleGroup?, checkedId: Int, isChecked: Boolean ->
             if (isChecked) {
                 if (checkedId == R.id.wallpaper_colors_button) {
-                    addWallpaperColorItems()
+                    binding.basicColorsContainer.visibility = View.GONE
+                    binding.wallpaperColorsContainer.visibility = View.VISIBLE
                 } else {
-                    addBasicColorItems()
+                    binding.wallpaperColorsContainer.visibility = View.GONE
+                    binding.basicColorsContainer.visibility = View.VISIBLE
                 }
             }
         }
-        if (getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-            addBasicColorItems()
+
+        // Inflate color containers
+        addWallpaperColorItems()
+        addBasicColorItems()
+
+        if (wallpaperColorSelected) {
+            binding.basicColorsContainer.visibility = View.GONE
+            binding.wallpaperColorsContainer.visibility = View.VISIBLE
         } else {
-            addWallpaperColorItems()
+            binding.wallpaperColorsContainer.visibility = View.GONE
+            binding.basicColorsContainer.visibility = View.VISIBLE
         }
 
         // Primary color
@@ -203,17 +209,7 @@ class ColorsFragment : Fragment() {
     }
 
     private fun addWallpaperColorItems() {
-        val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
-
-        val wallpaperColorList: ArrayList<Int> = if (wallpaperColors != null) {
-            Const.GSON.fromJson(
-                wallpaperColors,
-                object : TypeToken<ArrayList<Int?>?>() {
-                }.type
-            )
-        } else {
-            monetAccentColors
-        }
+        val wallpaperColorList: ArrayList<Int> = getWallpaperColors()
 
         addColorsToContainer(wallpaperColorList, true)
     }
@@ -228,40 +224,86 @@ class ColorsFragment : Fragment() {
     }
 
     private fun addColorsToContainer(colorList: ArrayList<Int>, isWallpaperColors: Boolean) {
-        binding.colorsContainer.removeAllViews()
+        if (isWallpaperColors) {
+            binding.wallpaperColorsContainer
+        } else {
+            binding.basicColorsContainer
+        }.removeAllViews()
 
         for (i in colorList.indices) {
             val size: Int = (48 * resources.displayMetrics.density).toInt()
             val margin: Int = (12 * resources.displayMetrics.density).toInt()
 
-            val colorPreview = WallColorPreview(requireContext())
-            val layoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(size, size)
-            layoutParams.setMargins(margin, margin, margin, margin)
-            colorPreview.setLayoutParams(layoutParams)
-            colorPreview.setMainColor(colorList[i])
-            colorPreview.tag = colorList[i]
-            colorPreview.setSelected(colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
+            val colorPreview = WallColorPreview(requireContext()).apply {
+                setLayoutParams(
+                    LinearLayout.LayoutParams(size, size).apply {
+                        setMargins(margin, margin, margin, margin)
+                    }
+                )
+                setMainColor(colorList[i])
+                tag = colorList[i]
+                isSelected = colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE) &&
+                        if (isWallpaperColors) {
+                            !getBoolean(MONET_SEED_COLOR_ENABLED, false)
+                        } else {
+                            true
+                        }
 
-            colorPreview.setOnClickListener {
-                putInt(MONET_SEED_COLOR, colorPreview.tag as Int)
-                putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
-                binding.seedColorPicker.previewColor = colorPreview.tag as Int
+                setOnClickListener {
+                    if (!isSelected) {
+                        resetCustomStyleIfNotNull()
+                    }
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    putLong(
-                        MONET_LAST_UPDATED,
-                        System.currentTimeMillis()
-                    )
-                    withContext(Dispatchers.IO) {
-                        try {
-                            applyFabricatedColors(requireContext())
-                        } catch (ignored: Exception) {
+                    putInt(MONET_SEED_COLOR, tag as Int)
+                    putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
+                    binding.seedColorPicker.previewColor = tag as Int
+
+                    updateColorPreviewSelection(this)
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        putLong(
+                            MONET_LAST_UPDATED,
+                            System.currentTimeMillis()
+                        )
+                        withContext(Dispatchers.IO) {
+                            try {
+                                applyFabricatedColors(requireContext())
+                            } catch (ignored: Exception) {
+                            }
                         }
                     }
                 }
             }
 
-            binding.colorsContainer.addView(colorPreview)
+            if (isWallpaperColors) {
+                binding.wallpaperColorsContainer
+            } else {
+                binding.basicColorsContainer
+            }.addView(colorPreview)
+        }
+    }
+
+    private fun updateColorPreviewSelection(selectedColorPreview: WallColorPreview) {
+        for (container in listOf(binding.wallpaperColorsContainer, binding.basicColorsContainer)) {
+            val childCount = container.childCount
+            for (i in 0 until childCount) {
+                val child = container.getChildAt(i) as WallColorPreview
+                child.isSelected = child == selectedColorPreview
+            }
+        }
+    }
+
+    private fun getWallpaperColors(): ArrayList<Int> {
+        val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
+
+        return if (wallpaperColors != null) {
+            Const.GSON.fromJson(
+                wallpaperColors,
+                object : TypeToken<ArrayList<Int?>?>() {
+                }.type
+            )
+        } else {
+            monetAccentColors
         }
     }
 

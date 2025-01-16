@@ -21,6 +21,7 @@ import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getLong
+import com.drdisagree.colorblendr.config.RPrefs.getString
 import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.config.RPrefs.putString
@@ -63,7 +64,7 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_WALLPAPER_CHANGED -> {
-                    handleWallpaperChanged(context)
+                    handleWallpaperChanged(context, true)
                 }
 
                 Intent.ACTION_SCREEN_OFF -> {
@@ -130,20 +131,31 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleWallpaperChanged(context: Context) {
+    private suspend fun handleWallpaperChanged(context: Context, force: Boolean = false) {
         if (permissionsGranted(context)) {
             val wallpaperColors = withContext(Dispatchers.IO) {
                 getWallpaperColors(context)
             }
-            putString(WALLPAPER_COLOR_LIST, Const.GSON.toJson(wallpaperColors))
+
+            val previousWallpaperColors = getString(WALLPAPER_COLOR_LIST, null)
+            val currentWallpaperColors = Const.GSON.toJson(wallpaperColors)
+
+            if (!requiresUpdate) {
+                requiresUpdate = previousWallpaperColors != currentWallpaperColors
+            }
+
+            putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
 
             if (!getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
                 putInt(MONET_SEED_COLOR, wallpaperColors[0])
             }
         }
 
-        validateRootAndUpdateColors(context) {
-            updateAllColors(context)
+        if (requiresUpdate || force) {
+            requiresUpdate = false
+            validateRootAndUpdateColors(context) {
+                updateAllColors(context)
+            }
         }
     }
 
@@ -173,7 +185,7 @@ class BroadcastListener : BroadcastReceiver() {
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
                 validateRootAndUpdateColors(context) {
-                    applyFabricatedColorsPerApp(context, packageName, null)
+                    applyFabricatedColorsPerApp(packageName, null)
                 }
             }
         }
@@ -218,6 +230,7 @@ class BroadcastListener : BroadcastReceiver() {
     companion object {
         private val TAG: String = BroadcastListener::class.java.simpleName
         var lastOrientation: Int = -1
+        var requiresUpdate = false
         private var cooldownTime: Long = 5000
     }
 }

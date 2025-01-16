@@ -2,13 +2,13 @@ package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
 import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
+import com.drdisagree.colorblendr.utils.ColorUtil.adjustSaturation
+import com.drdisagree.colorblendr.utils.ColorUtil.shiftLightness
+import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 object ColorModifiers {
-
-    private val colorNames: Array<Array<String>> = ColorUtil.colorNames
 
     fun generateShades(hue: Float, chroma: Float): ArrayList<Int> {
         val shadeList = ArrayList(List(12) { 0 })
@@ -54,32 +54,34 @@ object ColorModifiers {
         val backgroundSaturation = monetBackgroundSaturation != 100
         val backgroundLightness = monetBackgroundLightness != 100
 
+        val isMonochrome = style == MONET.MONOCHROMATIC
+        val isRainbow = style == MONET.RAINBOW
+
         if (accentPalette) {
-            if (accentSaturation && style != MONET.MONOCHROMATIC) {
+            if (accentSaturation && !isMonochrome) {
                 // Set accent saturation
                 palette.replaceAll { o: Int ->
-                    ColorUtil.modifySaturation(
+                    adjustSaturation(
                         o,
                         monetAccentSaturation
                     )
                 }
             }
         } else {
-            if (backgroundSaturation && style != MONET.MONOCHROMATIC) {
-                // Set background saturation
-                palette.replaceAll { o: Int ->
-                    ColorUtil.modifySaturation(
-                        o,
-                        monetBackgroundSaturation
-                    )
+            if (backgroundLightness && !isMonochrome) {
+                // Set background lightness
+                for (j in palette.indices) {
+                    palette[j] = shiftLightness(palette[j], monetBackgroundLightness, j + 1)
                 }
             }
 
-            if (backgroundLightness && style != MONET.MONOCHROMATIC) {
-                // Set background lightness
-                for (j in palette.indices) {
-                    palette[j] =
-                        ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
+            if (backgroundSaturation && !isMonochrome && !isRainbow) {
+                // Set background saturation
+                palette.replaceAll { o: Int ->
+                    adjustSaturation(
+                        o,
+                        monetBackgroundSaturation
+                    )
                 }
             }
 
@@ -89,10 +91,10 @@ object ColorModifiers {
             }
         }
 
-        if (style == MONET.MONOCHROMATIC) {
+        if (isMonochrome) {
             // Set monochrome lightness
             for (j in palette.indices) {
-                palette[j] = ColorUtil.modifyLightness(palette[j], monetBackgroundLightness, j + 1)
+                palette[j] = shiftLightness(palette[j], monetBackgroundLightness, j + 1)
             }
         }
 
@@ -100,7 +102,7 @@ object ColorModifiers {
             for (j in 0 until palette.size - 1) {
                 val i = counter.get() - 1
 
-                val overriddenColor = RPrefs.getInt(colorNames[i][j + 1], Int.MIN_VALUE)
+                val overriddenColor = RPrefs.getInt(systemPaletteNames[i][j + 1], Int.MIN_VALUE)
 
                 if (overriddenColor != Int.MIN_VALUE) {
                     palette[j] = overriddenColor

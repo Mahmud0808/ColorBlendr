@@ -15,8 +15,8 @@ import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
 import com.drdisagree.colorblendr.common.Const.workingMethod
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.getColorNamesM3
-import com.drdisagree.colorblendr.utils.ColorUtil.modifyBrightness
 import com.drdisagree.colorblendr.utils.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.DynamicColors.FIXED_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.DynamicColors.M3_REF_PALETTE
@@ -187,35 +187,35 @@ object FabricatedUtil {
 
             "m3_ref_palette_dynamic_neutral_variant12",
             "gm3_ref_palette_dynamic_neutral_variant12" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -40)
+                adjustLightness(color = colorValue, brightnessPercentage = -56)
             }
 
             "m3_ref_palette_dynamic_neutral_variant17",
             "gm3_ref_palette_dynamic_neutral_variant17",
             "gm3_system_bar_color_night" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -60)
+                adjustLightness(color = colorValue, brightnessPercentage = -74)
             }
 
             "system_surface_container_lowest_dark" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -44)
+                adjustLightness(color = colorValue, brightnessPercentage = -54)
             }
 
             "system_surface_container_low_dark" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -36)
+                adjustLightness(color = colorValue, brightnessPercentage = -45)
             }
 
             "system_surface_container_dark" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -28)
+                adjustLightness(color = colorValue, brightnessPercentage = -36)
             }
 
             "system_surface_container_high_dark",
             "system_surface_dim_dark" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -20)
+                adjustLightness(color = colorValue, brightnessPercentage = -25)
             }
 
             "system_surface_container_highest_dark",
             "system_surface_bright_dark" -> {
-                modifyBrightness(color = colorValue, brightnessPercentage = -12)
+                adjustLightness(color = colorValue, brightnessPercentage = -16)
             }
 
             else -> {

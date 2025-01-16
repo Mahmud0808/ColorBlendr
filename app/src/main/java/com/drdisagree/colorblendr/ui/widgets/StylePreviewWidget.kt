@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.widgets
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -15,15 +14,15 @@ import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
+import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putString
+import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.ui.views.ColorPreview
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
@@ -43,9 +42,10 @@ class StylePreviewWidget : RelativeLayout {
     private var colorContainer: ColorPreview? = null
     private var isSelected: Boolean = false
     private var onClickListener: OnClickListener? = null
+    private var onLongClickListener: OnLongClickListener? = null
     private var styleName: String? = null
-    private var monetStyle: MONET? = null
     private var colorPalette: ArrayList<ArrayList<Int>>? = null
+    private var isCustomStyle: Boolean = false
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
     constructor(context: Context) : super(context) {
@@ -70,12 +70,14 @@ class StylePreviewWidget : RelativeLayout {
 
         initializeId()
 
-        val typedArray: TypedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.StylePreviewWidget)
-        styleName = typedArray.getString(R.styleable.StylePreviewWidget_titleText)
-        setTitle(styleName)
-        setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText))
-        typedArray.recycle()
+        context.obtainStyledAttributes(
+            attrs,
+            R.styleable.StylePreviewWidget
+        ).apply {
+            setTitle(getString(R.styleable.StylePreviewWidget_titleText))
+            setDescription(getString(R.styleable.StylePreviewWidget_descriptionText))
+            recycle()
+        }
 
         coroutineScope.launch {
             setColorPreview()
@@ -87,13 +89,23 @@ class StylePreviewWidget : RelativeLayout {
                 onClickListener!!.onClick(v)
             }
         }
+
+        container!!.setOnLongClickListener { v: View? ->
+            if (onLongClickListener != null) {
+                onLongClickListener!!.onLongClick(v)
+                return@setOnLongClickListener true
+            }
+            return@setOnLongClickListener false
+        }
     }
 
     fun setTitle(titleResId: Int) {
+        styleName = titleResId.getOriginalString()
         titleTextView!!.setText(titleResId)
     }
 
     fun setTitle(title: String?) {
+        styleName = title
         titleTextView!!.text = title
     }
 
@@ -103,6 +115,21 @@ class StylePreviewWidget : RelativeLayout {
 
     fun setDescription(summary: String?) {
         descriptionTextView!!.text = summary
+    }
+
+    // call after setting title
+    fun setCustomColors(palette: ArrayList<ArrayList<Int>>) {
+        isCustomStyle = true
+        colorPalette = palette
+
+        coroutineScope.launch {
+            setColorPreview()
+        }
+    }
+
+    fun resetCustomColors() {
+        isCustomStyle = false
+        colorPalette = null
     }
 
     override fun isSelected(): Boolean {
@@ -118,54 +145,53 @@ class StylePreviewWidget : RelativeLayout {
     }
 
     fun applyColorScheme() {
-        styleName?.let {
-            putString(MONET_STYLE, it)
+        putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
 
-            coroutineScope.launch {
-                applyFabricatedColors(context!!)
-            }
+        coroutineScope.launch {
+            applyFabricatedColors(context!!)
         }
     }
 
-    private suspend fun setColorPreview() {
+    suspend fun setColorPreview() {
         withContext(Dispatchers.IO) {
-            try {
-                if (styleName == null) {
-                    styleName = context!!.getString(R.string.monet_tonalspot)
+            if (!isCustomStyle || colorPalette == null) {
+                try {
+                    if (context == null || styleName == null) return@withContext
+
+                    colorPalette = generateModifiedColors(
+                        stringToEnumMonetStyle(context!!, styleName!!),
+                        getInt(MONET_ACCENT_SATURATION, 100),
+                        getInt(MONET_BACKGROUND_SATURATION, 100),
+                        getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                        getBoolean(MONET_PITCH_BLACK_THEME, false),
+                        getBoolean(MONET_ACCURATE_SHADES, true)
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error generating color palette", e)
+                    return@withContext
                 }
-
-                monetStyle = stringToEnumMonetStyle(
-                    context!!,
-                    styleName!!
-                )
-
-                colorPalette = generateModifiedColors(
-                    monetStyle!!,
-                    getInt(MONET_ACCENT_SATURATION, 100),
-                    getInt(MONET_BACKGROUND_SATURATION, 100),
-                    getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                    getBoolean(MONET_PITCH_BLACK_THEME, false),
-                    getBoolean(MONET_ACCURATE_SHADES, true)
-                )
-            } catch (e: Exception) {
-                Log.e(TAG, "Error generating color palette", e)
-                return@withContext
             }
 
             withContext(Dispatchers.Main) {
-                colorContainer?.apply {
-                    setHalfCircleColor(colorPalette!![0][4])
-                    setFirstQuarterCircleColor(colorPalette!![2][5])
-                    setSecondQuarterCircleColor(colorPalette!![1][6])
-                    setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
-                    invalidateColors()
+                if (colorPalette != null) {
+                    colorContainer?.apply {
+                        setHalfCircleColor(colorPalette!![0][4])
+                        setFirstQuarterCircleColor(colorPalette!![2][5])
+                        setSecondQuarterCircleColor(colorPalette!![1][6])
+                        setSquareColor(colorPalette!![4][if (!isDarkMode) 2 else 9])
+                        invalidateColors()
+                    }
                 }
             }
         }
     }
 
-    override fun setOnClickListener(l: OnClickListener?) {
-        onClickListener = l
+    override fun setOnClickListener(listener: OnClickListener?) {
+        onClickListener = listener
+    }
+
+    override fun setOnLongClickListener(listener: OnLongClickListener?) {
+        onLongClickListener = listener
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view

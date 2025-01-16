@@ -24,9 +24,7 @@ import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
 import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.config.RPrefs.clearPref
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.config.RPrefs.getInt
@@ -34,12 +32,13 @@ import com.drdisagree.colorblendr.config.RPrefs.putInt
 import com.drdisagree.colorblendr.config.RPrefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
-import com.drdisagree.colorblendr.utils.MiscUtil.convertListToIntArray
+import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
@@ -56,7 +55,6 @@ class ColorPaletteFragment : Fragment() {
     private lateinit var binding: FragmentColorPaletteBinding
     private lateinit var colorTableRows: Array<LinearLayout>
     private lateinit var sharedViewModel: SharedViewModel
-    private val colorNames: Array<Array<String>> = ColorUtil.colorNames
     private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -147,12 +145,7 @@ class ColorPaletteFragment : Fragment() {
     private fun initColorTablePreview(colorTableRows: Array<LinearLayout>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val palette: ArrayList<ArrayList<Int>>? = generateModifiedColors()
-                val systemColors: Array<IntArray> = if (palette == null) {
-                    getSystemColors(requireContext())
-                } else {
-                    convertListToIntArray(palette)
-                }
+                val systemColors = generateModifiedColors() ?: getSystemColors()
 
                 withContext(Dispatchers.Main) {
                     for (i in colorTableRows.indices) {
@@ -161,8 +154,8 @@ class ColorPaletteFragment : Fragment() {
                             childView.background.setTint(systemColors[i][j])
                             childView.tag = systemColors[i][j]
 
-                            if (getInt(colorNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
-                                childView.background.setTint(getInt(colorNames[i][j], 0))
+                            if (getInt(systemPaletteNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
+                                childView.background.setTint(getInt(systemPaletteNames[i][j], 0))
                             }
 
                             val textView = TextView(requireContext()).apply {
@@ -185,11 +178,9 @@ class ColorPaletteFragment : Fragment() {
                         }
                     }
 
-                    // Enable click listeners on the main thread
                     enablePaletteOnClickListener(colorTableRows)
                 }
             } catch (e: Exception) {
-                // Handle any exceptions (e.g., logging)
                 Log.e(TAG, "Error initializing color table preview", e)
             }
         }
@@ -201,105 +192,109 @@ class ColorPaletteFragment : Fragment() {
                 val finalI: Int = i
                 val finalJ: Int = j
 
-                colorTableRows[i].getChildAt(j)
-                    .setOnClickListener { v: View ->
-                        val manualOverride: Boolean = getBoolean(MANUAL_OVERRIDE_COLORS, false)
-                        val snackbarButton: String = getString(
-                            if (manualOverride) {
-                                R.string.override
-                            } else {
-                                R.string.copy
-                            }
+                colorTableRows[i].getChildAt(j).setOnClickListener { v: View ->
+                    val manualOverride: Boolean = getBoolean(MANUAL_OVERRIDE_COLORS, false)
+                    val snackbarButton: String = getString(
+                        if (manualOverride) {
+                            R.string.override
+                        } else {
+                            R.string.copy
+                        }
+                    )
+
+                    Snackbar
+                        .make(
+                            requireView(),
+                            getString(R.string.color_code, intToHexColor((v.tag as Int))),
+                            Snackbar.LENGTH_INDEFINITE
                         )
+                        .setAction(snackbarButton) {
+                            if (!manualOverride || !notShizukuMode) {
+                                val clipboard: ClipboardManager =
+                                    requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip: ClipData = ClipData.newPlainText(
+                                    systemPaletteNames[finalI][finalJ],
+                                    intToHexColor(v.tag as Int)
+                                )
+                                clipboard.setPrimaryClip(clip)
+                                return@setAction
+                            }
 
-                        Snackbar
-                            .make(
-                                requireView(),
-                                getString(R.string.color_code, intToHexColor((v.tag as Int))),
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            .setAction(snackbarButton) {
-                                if (!manualOverride || !notShizukuMode) {
-                                    val clipboard: ClipboardManager =
-                                        requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                    val clip: ClipData = ClipData.newPlainText(
-                                        ColorUtil.colorNames[finalI][finalJ],
-                                        intToHexColor(v.tag as Int)
-                                    )
-                                    clipboard.setPrimaryClip(clip)
-                                    return@setAction
-                                }
+                            if (finalJ == 0 || finalJ == 12) {
+                                Snackbar.make(
+                                    requireView(),
+                                    getString(R.string.cannot_override_color),
+                                    Snackbar.LENGTH_SHORT
+                                )
+                                    .setAction(getString(R.string.dismiss)) { }
+                                    .show()
+                                return@setAction
+                            }
 
-                                if (finalJ == 0 || finalJ == 12) {
-                                    Snackbar.make(
-                                        requireView(),
-                                        getString(R.string.cannot_override_color),
-                                        Snackbar.LENGTH_SHORT
-                                    )
-                                        .setAction(getString(R.string.dismiss)) { }
-                                        .show()
-                                    return@setAction
-                                }
+                            ColorPickerDialog()
+                                .withCornerRadius(10f)
+                                .withColor(v.tag as Int)
+                                .withAlphaEnabled(false)
+                                .withPicker(ImagePickerView::class.java)
+                                .withListener { _: ColorPickerDialog?, color: Int ->
+                                    if (v.tag as Int != color) {
+                                        v.tag = color
+                                        v.background.setTint(color)
+                                        ((v as ViewGroup)
+                                            .getChildAt(0) as TextView)
+                                            .setTextColor(calculateTextColor(color))
 
-                                ColorPickerDialog()
-                                    .withCornerRadius(10f)
-                                    .withColor(v.tag as Int)
-                                    .withAlphaEnabled(false)
-                                    .withPicker(ImagePickerView::class.java)
-                                    .withListener { _: ColorPickerDialog?, color: Int ->
-                                        if (v.tag as Int != color) {
-                                            v.tag = color
-                                            v.background.setTint(color)
-                                            ((v as ViewGroup)
-                                                .getChildAt(0) as TextView)
-                                                .setTextColor(calculateTextColor(color))
-                                            putInt(colorNames[finalI][finalJ], color)
+                                        resetCustomStyleIfNotNull()
+                                        putInt(systemPaletteNames[finalI][finalJ], color)
 
-                                            CoroutineScope(Dispatchers.Main).launch {
-                                                putLong(
-                                                    MONET_LAST_UPDATED,
-                                                    System.currentTimeMillis()
-                                                )
-                                                delay(200)
-                                                withContext(Dispatchers.IO) {
-                                                    try {
-                                                        applyFabricatedColors(requireContext())
-                                                    } catch (ignored: Exception) {
-                                                    }
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            putLong(
+                                                MONET_LAST_UPDATED,
+                                                System.currentTimeMillis()
+                                            )
+                                            delay(200)
+                                            withContext(Dispatchers.IO) {
+                                                try {
+                                                    applyFabricatedColors(requireContext())
+                                                } catch (ignored: Exception) {
                                                 }
                                             }
                                         }
                                     }
-                                    .show(
-                                        getChildFragmentManager(),
-                                        "overrideColorPicker$finalI$finalJ"
-                                    )
-                            }
-                            .show()
-                    }
-
-                colorTableRows[i].getChildAt(j)
-                    .setOnLongClickListener {
-                        if (finalJ == 0 || finalJ == 12) {
-                            return@setOnLongClickListener true
-                        }
-
-                        clearPref(colorNames[finalI][finalJ])
-
-                        CoroutineScope(Dispatchers.Main).launch {
-                            putLong(
-                                MONET_LAST_UPDATED,
-                                System.currentTimeMillis()
-                            )
-                            withContext(Dispatchers.IO) {
-                                try {
-                                    applyFabricatedColors(requireContext())
-                                } catch (ignored: Exception) {
                                 }
+                                .show(
+                                    getChildFragmentManager(),
+                                    "overrideColorPicker$finalI$finalJ"
+                                )
+                        }
+                        .show()
+                }
+
+                colorTableRows[i].getChildAt(j).setOnLongClickListener {
+                    if (finalJ == 0 ||
+                        finalJ == 12 ||
+                        getInt(systemPaletteNames[finalI][finalJ], Int.MIN_VALUE) != Int.MIN_VALUE
+                    ) {
+                        return@setOnLongClickListener true
+                    }
+
+                    resetCustomStyleIfNotNull()
+                    clearPref(systemPaletteNames[finalI][finalJ])
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        putLong(
+                            MONET_LAST_UPDATED,
+                            System.currentTimeMillis()
+                        )
+                        withContext(Dispatchers.IO) {
+                            try {
+                                applyFabricatedColors(requireContext())
+                            } catch (ignored: Exception) {
                             }
                         }
-                        true
                     }
+                    true
+                }
             }
         }
     }
@@ -307,10 +302,7 @@ class ColorPaletteFragment : Fragment() {
     private fun generateModifiedColors(): ArrayList<ArrayList<Int>>? {
         try {
             return ColorUtil.generateModifiedColors(
-                stringToEnumMonetStyle(
-                    requireContext(),
-                    RPrefs.getString(MONET_STYLE, getString(R.string.monet_tonalspot))!!
-                ),
+                getCurrentMonetStyle(),
                 getInt(MONET_ACCENT_SATURATION, 100),
                 getInt(MONET_BACKGROUND_SATURATION, 100),
                 getInt(MONET_BACKGROUND_LIGHTNESS, 100),

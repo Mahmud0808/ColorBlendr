@@ -13,7 +13,7 @@ import com.drdisagree.colorblendr.common.Const.SETTINGS_SEARCH
 import com.drdisagree.colorblendr.common.Const.SYSTEMUI_CLOCKS
 import com.drdisagree.colorblendr.config.RPrefs.getBoolean
 import com.drdisagree.colorblendr.utils.ColorUtil.applyAlphaToColor
-import com.drdisagree.colorblendr.utils.ColorUtil.colorNames
+import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
@@ -35,9 +35,9 @@ fun FabricatedOverlayResource.replaceColorsPerPackageName(
 }
 
 private fun FabricatedOverlayResource.applyClockColors(palette: ArrayList<ArrayList<Int>>) {
-    for (i in colorNames.indices) {
-        for (j in colorNames[i].indices) {
-            setColor(colorNames[i][j], palette[i][j])
+    for (i in systemPaletteNames.indices) {
+        for (j in systemPaletteNames[i].indices) {
+            setColor(systemPaletteNames[i][j], palette[i][j])
         }
     }
 }
