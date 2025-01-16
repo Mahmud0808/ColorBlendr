@@ -273,9 +273,9 @@ class ColorPaletteFragment : Fragment() {
                 colorTableRows[i].getChildAt(j).setOnLongClickListener {
                     if (finalJ == 0 ||
                         finalJ == 12 ||
-                        getInt(systemPaletteNames[finalI][finalJ], Int.MIN_VALUE) != Int.MIN_VALUE
+                        getInt(systemPaletteNames[finalI][finalJ], Int.MIN_VALUE) == Int.MIN_VALUE
                     ) {
-                        return@setOnLongClickListener true
+                        return@setOnLongClickListener false
                     }
 
                     resetCustomStyleIfNotNull()
