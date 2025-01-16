@@ -1,0 +1,12 @@
+Changelog:
+
+• Added option to save your current setup.
+• Applied themes to cloned apps and private spaces.
+• Switched to HCT-based color modification for better accuracy.
+• Removed thumbnail colors from live wallpaper color extraction.
+• Fixed colors resetting with screen-off updates enabled.
+• Retained background saturation for rainbow style.
+• Improved performance of color palette loading.
+• Updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
