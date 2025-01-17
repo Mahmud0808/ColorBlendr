@@ -1,0 +1,6 @@
+Changelog:
+
+• Fix F-Droid build issue.
+• Bump dependencies.
+
+Translation credit goes to all the contributors on our Crowdin platform.
