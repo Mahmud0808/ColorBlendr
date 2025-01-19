@@ -227,9 +227,9 @@ Thanks to these translators and proofreaders, this project exists:
     </tr>
     <tr>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/Shiitake"><img alt="logo" style="width: 32px" src="https://crowdin-static.downloads.crowdin.com/avatar/15310478/medium/b09db54d6f14dfd837fc8aff05b92908.png" />
+        <a href="https://crowdin.com/profile/Shiitake79"><img alt="logo" style="width: 32px" src="https://crowdin-static.downloads.crowdin.com/avatar/15310478/medium/b09db54d6f14dfd837fc8aff05b92908.png" />
           <br />
-          <sub><b>しいたけ (Shiitake)</b></sub></a>
+          <sub><b>しいたけ (Shiitake79)</b></sub></a>
         <br />
         <sub><b>68 words</b></sub>
       </td>
@@ -319,7 +319,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>Mahmudul Hasan (DrDisagree)</b></sub></a>
         <br />
-        <sub><b>11609 words</b></sub>
+        <sub><b>11633 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/arefin.mostafa2004"><img alt="logo" style="width: 32px" src="https://crowdin-static.downloads.crowdin.com/avatar/16657829/medium/65c3fb7155313ba1ed817768a156de4f.jpeg" />
