@@ -7,7 +7,7 @@
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <!-- Navigation bar color. -->
         <item name="android:navigationBarColor">@color/transparent</item>
