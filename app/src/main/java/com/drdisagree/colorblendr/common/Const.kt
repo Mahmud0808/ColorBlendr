@@ -5,34 +5,34 @@ import com.drdisagree.colorblendr.config.RPrefs
 import com.drdisagree.colorblendr.utils.SystemUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.util.concurrent.atomic.AtomicInteger
 
 object Const {
     // Preferences file
-    const val SHARED_PREFS: String = BuildConfig.APPLICATION_ID + "_preferences"
+    private const val OWN_PACKAGE_NAME = BuildConfig.APPLICATION_ID
+    const val SHARED_PREFS = "${OWN_PACKAGE_NAME}_preferences"
 
     // Package names
-    const val FRAMEWORK_PACKAGE: String = "android"
-    const val SYSTEMUI_PACKAGE: String = "com.android.systemui"
-    const val SHELL_PACKAGE: String = "com.android.shell"
-    const val SYSTEMUI_CLOCKS: String = "com.android.systemui.clocks."
-    const val GOOGLE_FEEDS: String = "com.google.android.googlequicksearchbox"
-    const val GOOGLE_NEWS: String = "com.google.android.apps.magazines"
-    const val PLAY_GAMES: String = "com.google.android.play.games"
-    const val SETTINGS: String = "com.android.settings"
-    const val SETTINGS_SEARCH: String = "com.google.android.settings.intelligence"
-    const val PIXEL_LAUNCHER: String = "com.google.android.apps.nexuslauncher"
+    const val FRAMEWORK_PACKAGE = "android"
+    const val SYSTEMUI_PACKAGE = "com.android.systemui"
+    const val SHELL_PACKAGE = "com.android.shell"
+    const val SYSTEMUI_CLOCKS = "com.android.systemui.clocks."
+    const val GOOGLE_FEEDS = "com.google.android.googlequicksearchbox"
+    const val GOOGLE_NEWS = "com.google.android.apps.magazines"
+    const val PLAY_GAMES = "com.google.android.play.games"
+    const val SETTINGS = "com.android.settings"
+    const val SETTINGS_SEARCH = "com.google.android.settings.intelligence"
+    const val PIXEL_LAUNCHER = "com.google.android.apps.nexuslauncher"
 
     // General preferences
-    const val FIRST_RUN: String = "firstRun"
-    const val THEMING_ENABLED: String = "themingEnabled"
-    const val MONET_STYLE: String = "customMonetStyle"
-    const val CUSTOM_MONET_STYLE: String = "userGeneratedMonetStyle"
-    const val MODE_SPECIFIC_THEMES: String = "modeSpecificThemes"
-    const val SCREEN_OFF_UPDATE_COLORS: String = "screenOffUpdateColors"
-    const val DARKER_LAUNCHER_ICONS: String = "darkerLauncherIcons"
-    const val SEMI_TRANSPARENT_LAUNCHER_ICONS: String = "semiTransparentLauncherIcons"
-    const val FORCE_PITCH_BLACK_SETTINGS: String = "forcePitchBlackSettings"
+    const val FIRST_RUN = "firstRun"
+    const val THEMING_ENABLED = "themingEnabled"
+    const val MONET_STYLE = "customMonetStyle"
+    const val CUSTOM_MONET_STYLE = "userGeneratedMonetStyle"
+    const val MODE_SPECIFIC_THEMES = "modeSpecificThemes"
+    const val SCREEN_OFF_UPDATE_COLORS = "screenOffUpdateColors"
+    const val DARKER_LAUNCHER_ICONS = "darkerLauncherIcons"
+    const val SEMI_TRANSPARENT_LAUNCHER_ICONS = "semiTransparentLauncherIcons"
+    const val FORCE_PITCH_BLACK_SETTINGS = "forcePitchBlackSettings"
     private val modeSpecificThemes: Boolean
         get() = RPrefs.getBoolean(MODE_SPECIFIC_THEMES, false)
     val MONET_ACCENT_SATURATION: String
@@ -53,35 +53,32 @@ object Const {
         } else {
             if (SystemUtil.isDarkMode) "monetBackgroundLightnessValue" else "monetBackgroundLightnessValueLight"
         }
-    const val MONET_ACCURATE_SHADES: String = "monetAccurateShades"
-    const val MONET_PITCH_BLACK_THEME: String = "monetPitchBlackTheme"
-    const val MONET_SEED_COLOR_ENABLED: String = "monetSeedColorEnabled"
-    const val MONET_SEED_COLOR: String = "monetSeedColor"
-    const val MONET_SECONDARY_COLOR: String = "monetSecondaryColor"
-    const val MONET_TERTIARY_COLOR: String = "monetTertiaryColor"
-    const val MANUAL_OVERRIDE_COLORS: String = "manualOverrideColors"
-    const val MONET_LAST_UPDATED: String = "monetLastUpdated"
-    const val MONET_STYLE_ORIGINAL_NAME: String = "monetStyleOriginalName"
-    const val FABRICATED_OVERLAY_SOURCE_PACKAGE: String = FRAMEWORK_PACKAGE
-    const val FABRICATED_OVERLAY_NAME_SYSTEM: String = "${BuildConfig.APPLICATION_ID}_dynamic_theme"
-    const val FABRICATED_OVERLAY_NAME_SYSTEMUI: String =
-        "${BuildConfig.APPLICATION_ID}_dynamic_theme_system"
-    const val FABRICATED_OVERLAY_NAME_APPS: String =
-        "${BuildConfig.APPLICATION_ID}.%s_dynamic_theme"
-    const val WALLPAPER_COLOR_LIST: String = "wallpaperColorList"
-    private const val FABRICATED_OVERLAY_FOR_APPS_STATE: String = "fabricatedOverlayForAppsState"
-    const val SHOW_PER_APP_THEME_WARN: String = "showPerAppThemeWarn"
-    const val TINT_TEXT_COLOR: String = "tintTextColor"
-    const val SHIZUKU_PERMISSION_REQUEST_ID: Int = 100
-    const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES: String = "theme_customization_overlay_packages"
-    const val SHIZUKU_THEMING_ENABLED: String = "shizukuThemingEnabled"
-    const val APP_LIST_FILTER_METHOD: String = "appListFilterMethod"
-    const val SAVED_CUSTOM_MONET_STYLES: String = "savedCustomMonetStyles"
-    val screenOrientation: AtomicInteger = AtomicInteger(-1)
+    const val MONET_ACCURATE_SHADES = "monetAccurateShades"
+    const val MONET_PITCH_BLACK_THEME = "monetPitchBlackTheme"
+    const val MONET_SEED_COLOR_ENABLED = "monetSeedColorEnabled"
+    const val MONET_SEED_COLOR = "monetSeedColor"
+    const val MONET_SECONDARY_COLOR = "monetSecondaryColor"
+    const val MONET_TERTIARY_COLOR = "monetTertiaryColor"
+    const val MANUAL_OVERRIDE_COLORS = "manualOverrideColors"
+    const val MONET_LAST_UPDATED = "monetLastUpdated"
+    const val MONET_STYLE_ORIGINAL_NAME = "monetStyleOriginalName"
+    const val FABRICATED_OVERLAY_SOURCE_PACKAGE = FRAMEWORK_PACKAGE
+    const val FABRICATED_OVERLAY_NAME_SYSTEM = "${OWN_PACKAGE_NAME}_dynamic_theme"
+    const val FABRICATED_OVERLAY_NAME_SYSTEMUI = "${OWN_PACKAGE_NAME}_dynamic_theme_system"
+    const val FABRICATED_OVERLAY_NAME_APPS = "$OWN_PACKAGE_NAME.%s_dynamic_theme"
+    const val WALLPAPER_COLOR_LIST = "wallpaperColorList"
+    private const val FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState"
+    const val SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn"
+    const val TINT_TEXT_COLOR = "tintTextColor"
+    const val SHIZUKU_PERMISSION_REQUEST_ID = 100
+    const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages"
+    const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
+    const val APP_LIST_FILTER_METHOD = "appListFilterMethod"
+    const val SAVED_CUSTOM_MONET_STYLES = "savedCustomMonetStyles"
 
     // Service preferences
     val GSON: Gson = Gson()
-    private const val PREF_WORKING_METHOD: String = "workingMethod"
+    private const val PREF_WORKING_METHOD = "workingMethod"
 
     var EXCLUDED_PREFS_FROM_BACKUP: Set<String> = HashSet(
         listOf(

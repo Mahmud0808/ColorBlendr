@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -30,7 +31,6 @@ import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
 import com.drdisagree.colorblendr.utils.OverlayManager.unregisterFabricatedOverlay
-import com.drdisagree.colorblendr.utils.SystemUtil.getScreenRotation
 import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getWallpaperColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,11 +49,10 @@ class BroadcastListener : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Received intent: " + intent.action)
 
-        if (lastOrientation == -1) {
-            lastOrientation = getScreenRotation(context)
+        if (isLastConfigInitialized.not()) {
+            lastConfig = Configuration(context.resources.configuration)
         }
 
-        val currentOrientation = getScreenRotation(context)
         val screenOffUpdate = getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -86,13 +85,18 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
-                    if (lastOrientation == currentOrientation) {
+                    val newConfig = Configuration(context.resources.configuration)
+                    val lastUiMode = lastConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                    val newUiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+                    if (lastUiMode != newUiMode) {
+                        delay(1000)
                         validateRootAndUpdateColors(context) {
                             updateAllColors(context)
                         }
                     }
 
-                    lastOrientation = currentOrientation
+                    lastConfig = newConfig
                 }
 
                 Intent.ACTION_PACKAGE_REMOVED -> {
@@ -211,13 +215,7 @@ class BroadcastListener : BroadcastReceiver() {
             workingMethod == Const.WorkMethod.NULL
         ) return
 
-        if (abs(
-                (getLong(
-                    MONET_LAST_UPDATED,
-                    0
-                ) - System.currentTimeMillis()).toDouble()
-            ) >= cooldownTime
-        ) {
+        if (abs(System.currentTimeMillis() - getLong(MONET_LAST_UPDATED, 0)) >= cooldownTime) {
             putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -229,8 +227,10 @@ class BroadcastListener : BroadcastReceiver() {
 
     companion object {
         private val TAG: String = BroadcastListener::class.java.simpleName
-        var lastOrientation: Int = -1
         var requiresUpdate = false
         private var cooldownTime: Long = 5000
+        lateinit var lastConfig: Configuration
+        val isLastConfigInitialized: Boolean
+            get() = ::lastConfig.isInitialized
     }
 }
