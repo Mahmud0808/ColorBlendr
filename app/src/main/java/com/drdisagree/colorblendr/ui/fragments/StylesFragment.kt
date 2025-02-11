@@ -11,28 +11,28 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.EXCLUDED_PREFS_FROM_BACKUP
-import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.toGsonString
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.EXCLUDED_PREFS_FROM_BACKUP
+import com.drdisagree.colorblendr.data.common.Const.MONET_ACCENT_SATURATION
+import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_LIGHTNESS
+import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_SATURATION
+import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.data.common.Const.customStyleRepository
+import com.drdisagree.colorblendr.data.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.getInt
+import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
+import com.drdisagree.colorblendr.data.models.CustomStyleModel
+import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
 import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
 import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
-import com.drdisagree.colorblendr.ui.models.CustomStyleModel
-import com.drdisagree.colorblendr.ui.models.StyleModel
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCustomStyles
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.saveCustomStyles
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.DividerItemDecoration
 import com.drdisagree.colorblendr.utils.MONET
@@ -41,6 +41,7 @@ import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.MiscUtil.toPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 
 class StylesFragment : Fragment() {
 
@@ -50,7 +51,7 @@ class StylesFragment : Fragment() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     private val isAtleastA14 = notShizukuMode ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-    private val styleAdapter = StylePreviewAdapter(this, getStyleList())
+    private var styleAdapter: StylePreviewAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,13 +69,20 @@ class StylesFragment : Fragment() {
                 requireContext().resources.getDimensionPixelSize(R.dimen.container_margin_bottom)
             )
         )
-        binding.recyclerView.adapter = styleAdapter
+
+        lifecycleScope.launch {
+            val styles = getStyleList()
+            styleAdapter = StylePreviewAdapter(this@StylesFragment, styles)
+            binding.recyclerView.adapter = styleAdapter
+        }
 
         binding.addStyle.visibility = if (notShizukuMode) View.VISIBLE else View.GONE
         binding.addStyle.setOnClickListener {
             showNewStyleDialog(
                 callback = { title, desc ->
-                    addCustomStyle(title = title, description = desc)
+                    lifecycleScope.launch {
+                        addCustomStyle(title = title, description = desc)
+                    }
                 }
             )
         }
@@ -155,7 +163,7 @@ class StylesFragment : Fragment() {
             .show()
     }
 
-    private fun addCustomStyle(
+    private suspend fun addCustomStyle(
         title: String,
         description: String
     ) {
@@ -168,41 +176,39 @@ class StylesFragment : Fragment() {
             return
         }
 
-        val allPrefs = RPrefs.getAllPrefs()
+        val allPrefs = Prefs.getAllPrefs()
         for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
             allPrefs.remove(excludedPref)
         }
 
-        saveCustomStyles(
-            getCustomStyles().apply {
-                val currentMonet = getCurrentMonetStyle()
-                val newStyle = CustomStyleModel(
-                    styleName = title.trim(),
-                    description = description.trim(),
-                    prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
-                    monet = currentMonet,
-                    palette = ColorUtil.generateModifiedColors(
-                        currentMonet,
-                        getInt(MONET_ACCENT_SATURATION, 100),
-                        getInt(MONET_BACKGROUND_SATURATION, 100),
-                        getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                        getBoolean(MONET_PITCH_BLACK_THEME, false),
-                        getBoolean(MONET_ACCURATE_SHADES, true)
-                    )
-                )
-                add(newStyle)
-                styleAdapter.addStyle(
-                    StyleModel(
-                        isEnabled = true,
-                        monetStyle = currentMonet,
-                        customStyle = newStyle
-                    )
-                )
-            }
+        val currentMonet = getCurrentMonetStyle()
+        val newStyle = CustomStyleModel(
+            styleName = title.trim(),
+            description = description.trim(),
+            prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
+            monet = currentMonet,
+            palette = ColorUtil.generateModifiedColors(
+                currentMonet,
+                getInt(MONET_ACCENT_SATURATION, 100),
+                getInt(MONET_BACKGROUND_SATURATION, 100),
+                getInt(MONET_BACKGROUND_LIGHTNESS, 100),
+                getBoolean(MONET_PITCH_BLACK_THEME, false),
+                getBoolean(MONET_ACCURATE_SHADES, true)
+            )
+        )
+
+        customStyleRepository.saveCustomStyle(newStyle)
+
+        styleAdapter?.addStyle(
+            StyleModel(
+                isEnabled = true,
+                monetStyle = currentMonet,
+                customStyle = newStyle
+            )
         )
     }
 
-    fun editCustomStyle(
+    suspend fun editCustomStyle(
         title: String,
         description: String,
         styleId: String
@@ -216,45 +222,40 @@ class StylesFragment : Fragment() {
             return
         }
 
-        saveCustomStyles(
-            getCustomStyles().apply {
-                val index = indexOfFirst { it.styleId == styleId }
-                if (index != -1) {
-                    val styleToEdit = this[index].copy(
-                        styleName = title.trim(),
-                        description = description.trim()
-                    )
-                    set(index, styleToEdit)
-                    styleAdapter.updateStyle(
-                        StyleModel(
-                            isEnabled = true,
-                            monetStyle = styleToEdit.monet,
-                            customStyle = styleToEdit
-                        )
-                    )
-                }
-            }
-        )
+        val customStyle = customStyleRepository.getCustomStyleById(styleId)
+        if (customStyle != null) {
+            val updatedStyle = customStyle.copy(
+                styleName = title.trim(),
+                description = description.trim()
+            )
+
+            customStyleRepository.updateCustomStyle(updatedStyle)
+
+            styleAdapter?.updateStyle(
+                StyleModel(
+                    isEnabled = true,
+                    monetStyle = updatedStyle.monet,
+                    customStyle = updatedStyle
+                )
+            )
+        }
     }
 
-    fun deleteCustomStyle(
+    suspend fun deleteCustomStyle(
         styleId: String
     ) {
-        saveCustomStyles(
-            getCustomStyles().apply {
-                val index = indexOfFirst { it.styleId == styleId }
-                if (index != -1) {
-                    styleAdapter.removeStyle(
-                        StyleModel(
-                            isEnabled = true,
-                            monetStyle = /* unused */ MONET.TONAL_SPOT,
-                            customStyle = this[index]
-                        )
-                    )
-                    removeAt(index)
-                }
-            }
-        )
+        val customStyle = customStyleRepository.getCustomStyleById(styleId)
+        if (customStyle != null) {
+            customStyleRepository.deleteCustomStyle(customStyle)
+
+            styleAdapter?.removeStyle(
+                StyleModel(
+                    isEnabled = true,
+                    monetStyle = /* placeholder */ MONET.TONAL_SPOT,
+                    customStyle = customStyle
+                )
+            )
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -267,7 +268,7 @@ class StylesFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getStyleList(): ArrayList<StyleModel> {
+    private suspend fun getStyleList(): ArrayList<StyleModel> {
         return arrayListOf(
             StyleModel(
                 titleResId = R.string.monet_neutral,
@@ -326,7 +327,7 @@ class StylesFragment : Fragment() {
         ).apply {
             if (!notShizukuMode) return@apply
 
-            getCustomStyles().forEach { customStyle ->
+            customStyleRepository.getCustomStyles().forEach { customStyle ->
                 add(
                     StyleModel(
                         isEnabled = true,

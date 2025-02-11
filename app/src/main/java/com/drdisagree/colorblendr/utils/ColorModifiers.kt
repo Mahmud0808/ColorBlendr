@@ -1,7 +1,7 @@
 package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
-import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.utils.ColorUtil.adjustSaturation
 import com.drdisagree.colorblendr.utils.ColorUtil.shiftLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
@@ -102,7 +102,7 @@ object ColorModifiers {
             for (j in 0 until palette.size - 1) {
                 val i = counter.get() - 1
 
-                val overriddenColor = RPrefs.getInt(systemPaletteNames[i][j + 1], Int.MIN_VALUE)
+                val overriddenColor = Prefs.getInt(systemPaletteNames[i][j + 1], Int.MIN_VALUE)
 
                 if (overriddenColor != Int.MIN_VALUE) {
                     palette[j] = overriddenColor

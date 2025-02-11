@@ -10,12 +10,12 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.util.Size
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.getString
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.config.Prefs.getString
 import com.drdisagree.colorblendr.service.BroadcastListener
 import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
@@ -37,14 +37,14 @@ object WallpaperColorUtil {
             val wallpaperColors = getWallpaperColors(context)
             val previousWallpaperColors = getString(WALLPAPER_COLOR_LIST, null)
             val currentWallpaperColors = Const.GSON.toJson(wallpaperColors)
-            val customColorsEnabled = RPrefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)
+            val customColorsEnabled = Prefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)
 
             if (previousWallpaperColors != currentWallpaperColors) {
                 BroadcastListener.requiresUpdate = true
-                RPrefs.putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
+                Prefs.putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
 
                 if (!customColorsEnabled) {
-                    RPrefs.putInt(MONET_SEED_COLOR, wallpaperColors[0])
+                    Prefs.putInt(MONET_SEED_COLOR, wallpaperColors[0])
                 }
             }
         }

@@ -3,10 +3,10 @@ package com.drdisagree.colorblendr.extension
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.getString
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.data.common.Const.MONET_STYLE_ORIGINAL_NAME
+import com.drdisagree.colorblendr.data.config.Prefs.getInt
+import com.drdisagree.colorblendr.data.config.Prefs.getString
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColorNoHash
 import org.json.JSONObject
 

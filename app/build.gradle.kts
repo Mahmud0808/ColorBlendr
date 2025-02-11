@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -104,5 +105,10 @@ dependencies {
     implementation(libs.recyclerview.selection)
     implementation(libs.blurView)
     implementation(libs.lifecycle.common.jvm)
-    annotationProcessor(libs.glide.compiler)
+    ksp(libs.glide.compiler)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.zip4j)
+    implementation(libs.process.phoenix)
 }

@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.models
+package com.drdisagree.colorblendr.data.models
 
 import android.graphics.drawable.Drawable
 

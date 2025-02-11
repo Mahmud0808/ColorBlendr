@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.clearPrefs
-import com.drdisagree.colorblendr.config.RPrefs.putString
-import com.drdisagree.colorblendr.config.RPrefs.toPrefs
+import com.drdisagree.colorblendr.data.common.Const.MONET_STYLE_ORIGINAL_NAME
+import com.drdisagree.colorblendr.data.config.Prefs.clearPrefs
+import com.drdisagree.colorblendr.data.config.Prefs.putString
+import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
+import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
-import com.drdisagree.colorblendr.ui.models.StyleModel
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
+import com.drdisagree.colorblendr.utils.BackupRestore
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentCustomStyle
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getStyleNameForRootless
@@ -27,7 +27,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class StylePreviewAdapter(
     private val fragment: StylesFragment,
@@ -202,9 +201,7 @@ class StylePreviewAdapter(
 
                 coroutineScope.launch {
                     // restore theme preferences
-                    withContext(Dispatchers.IO) {
-                        RPrefs.restorePrefsMap(prefsMap, true)
-                    }
+                    BackupRestore.restorePrefsMap(prefsMap)
 
                     // update preferences and apply colors
                     saveCurrentCustomStyle(customStyle.styleId)
@@ -215,6 +212,7 @@ class StylePreviewAdapter(
 
             val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.MyPopupMenu).apply {
                 menuInflater.inflate(R.menu.custom_style_menu, menu)
+
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.edit -> {
@@ -224,18 +222,23 @@ class StylePreviewAdapter(
                                 callback = { title, desc ->
                                     customStyle.styleName = title
                                     customStyle.description = desc
-                                    fragment.editCustomStyle(
-                                        title = title,
-                                        description = desc,
-                                        styleId = customStyle.styleId
-                                    )
+
+                                    coroutineScope.launch {
+                                        fragment.editCustomStyle(
+                                            title = title,
+                                            description = desc,
+                                            styleId = customStyle.styleId
+                                        )
+                                    }
                                 }
                             )
                             true
                         }
 
                         R.id.delete -> {
-                            fragment.deleteCustomStyle(styleId = customStyle.styleId)
+                            coroutineScope.launch {
+                                fragment.deleteCustomStyle(styleId = customStyle.styleId)
+                            }
                             true
                         }
 

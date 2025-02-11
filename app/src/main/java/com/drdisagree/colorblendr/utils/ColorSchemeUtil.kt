@@ -4,14 +4,11 @@ import android.content.Context
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.CUSTOM_MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.common.Const.SAVED_CUSTOM_MONET_STYLES
-import com.drdisagree.colorblendr.config.RPrefs.clearPref
-import com.drdisagree.colorblendr.config.RPrefs.getString
-import com.drdisagree.colorblendr.config.RPrefs.putString
-import com.drdisagree.colorblendr.ui.models.CustomStyleModel
+import com.drdisagree.colorblendr.data.common.Const.CUSTOM_MONET_STYLE
+import com.drdisagree.colorblendr.data.common.Const.MONET_STYLE
+import com.drdisagree.colorblendr.data.config.Prefs.clearPref
+import com.drdisagree.colorblendr.data.config.Prefs.getString
+import com.drdisagree.colorblendr.data.config.Prefs.putString
 import com.drdisagree.colorblendr.utils.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
@@ -26,7 +23,6 @@ import com.drdisagree.colorblendr.utils.monet.scheme.SchemeNeutral
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeRainbow
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeTonalSpot
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeVibrant
-import com.google.gson.reflect.TypeToken
 
 object ColorSchemeUtil {
     private val tones: IntArray = intArrayOf(100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0)
@@ -156,15 +152,7 @@ object ColorSchemeUtil {
 
     fun resetCustomStyleIfNotNull() {
         if (getCurrentCustomStyle() != null) {
-            clearPref(CUSTOM_MONET_STYLE)
+            resetCustomStyle()
         }
     }
-
-    fun getCustomStyles(): ArrayList<CustomStyleModel> = Const.GSON.fromJson(
-        getString(SAVED_CUSTOM_MONET_STYLES, null),
-        object : TypeToken<ArrayList<CustomStyleModel>>() {}.type
-    ) ?: ArrayList()
-
-    fun saveCustomStyles(styles: ArrayList<CustomStyleModel>) =
-        putString(SAVED_CUSTOM_MONET_STYLES, Const.GSON.toJson(styles))
 }

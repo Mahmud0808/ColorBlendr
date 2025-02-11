@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.utils.fabricated
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.TypedValue
-import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.data.common.Const
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayEntry
 
 open class FabricatedOverlayResource : Parcelable {

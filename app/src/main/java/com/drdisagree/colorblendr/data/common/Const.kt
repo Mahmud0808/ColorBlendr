@@ -1,7 +1,9 @@
-package com.drdisagree.colorblendr.common
+package com.drdisagree.colorblendr.data.common
 
 import com.drdisagree.colorblendr.BuildConfig
-import com.drdisagree.colorblendr.config.RPrefs
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.database.appDatabase
+import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.utils.SystemUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -10,6 +12,10 @@ object Const {
     // Preferences file
     private const val OWN_PACKAGE_NAME = BuildConfig.APPLICATION_ID
     const val SHARED_PREFS = "${OWN_PACKAGE_NAME}_preferences"
+
+    // Database
+    const val DATABASE_NAME = "colorblendr_database"
+    const val CUSTOM_STYLE_TABLE = "custom_style_table"
 
     // Package names
     const val FRAMEWORK_PACKAGE = "android"
@@ -34,7 +40,7 @@ object Const {
     const val SEMI_TRANSPARENT_LAUNCHER_ICONS = "semiTransparentLauncherIcons"
     const val FORCE_PITCH_BLACK_SETTINGS = "forcePitchBlackSettings"
     private val modeSpecificThemes: Boolean
-        get() = RPrefs.getBoolean(MODE_SPECIFIC_THEMES, false)
+        get() = Prefs.getBoolean(MODE_SPECIFIC_THEMES, false)
     val MONET_ACCENT_SATURATION: String
         get() = if (!modeSpecificThemes) {
             "monetAccentSaturationValue"
@@ -74,7 +80,11 @@ object Const {
     const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages"
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
     const val APP_LIST_FILTER_METHOD = "appListFilterMethod"
+
+    @Deprecated("Use of shared preferences for saving custom styles is deprecated, use room database instead")
     const val SAVED_CUSTOM_MONET_STYLES = "savedCustomMonetStyles"
+
+    val customStyleRepository = CustomStyleRepository(appDatabase.customStyleDao())
 
     // Service preferences
     val GSON: Gson = Gson()
@@ -92,12 +102,12 @@ object Const {
     )
 
     fun saveSelectedFabricatedApps(selectedApps: HashMap<String, Boolean>) {
-        RPrefs.putString(FABRICATED_OVERLAY_FOR_APPS_STATE, GSON.toJson(selectedApps))
+        Prefs.putString(FABRICATED_OVERLAY_FOR_APPS_STATE, GSON.toJson(selectedApps))
     }
 
     val selectedFabricatedApps: HashMap<String, Boolean>
         get() {
-            val selectedApps = RPrefs.getString(
+            val selectedApps = Prefs.getString(
                 FABRICATED_OVERLAY_FOR_APPS_STATE,
                 null
             )
@@ -117,14 +127,14 @@ object Const {
 
     val workingMethod: WorkMethod
         get() = WorkMethod.fromString(
-            RPrefs.getString(
+            Prefs.getString(
                 PREF_WORKING_METHOD,
                 WorkMethod.NULL.toString()
             )
         )
 
     fun saveWorkingMethod(workMethod: WorkMethod) {
-        RPrefs.putString(PREF_WORKING_METHOD, workMethod.toString())
+        Prefs.putString(PREF_WORKING_METHOD, workMethod.toString())
     }
 
     // Working method of app

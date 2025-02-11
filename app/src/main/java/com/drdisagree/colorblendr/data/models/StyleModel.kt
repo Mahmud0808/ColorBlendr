@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.models
+package com.drdisagree.colorblendr.data.models
 
 import com.drdisagree.colorblendr.utils.MONET
 

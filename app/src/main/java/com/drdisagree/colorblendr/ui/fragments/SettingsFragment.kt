@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -24,30 +23,29 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS
-import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
-import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
-import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
-import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
-import com.drdisagree.colorblendr.config.RPrefs.clearPref
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putBoolean
-import com.drdisagree.colorblendr.config.RPrefs.putInt
-import com.drdisagree.colorblendr.config.RPrefs.putLong
-import com.drdisagree.colorblendr.config.RPrefs.restorePrefs
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
+import com.drdisagree.colorblendr.data.common.Const.MANUAL_OVERRIDE_COLORS
+import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
+import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Const.SHIZUKU_THEMING_ENABLED
+import com.drdisagree.colorblendr.data.common.Const.THEMING_ENABLED
+import com.drdisagree.colorblendr.data.common.Const.TINT_TEXT_COLOR
+import com.drdisagree.colorblendr.data.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.data.common.Const.workingMethod
+import com.drdisagree.colorblendr.utils.BackupRestore.backupDatabaseAndPrefs
+import com.drdisagree.colorblendr.utils.BackupRestore.restoreDatabaseAndPrefs
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.config.Prefs.clearPref
+import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.getInt
+import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.putInt
+import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
@@ -65,7 +63,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
 
 class SettingsFragment : Fragment() {
 
@@ -173,7 +170,7 @@ class SettingsFragment : Fragment() {
                 if (isChecked) View.VISIBLE else View.GONE
             )
             if (!isChecked) {
-                val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
+                val wallpaperColors: String? = Prefs.getString(WALLPAPER_COLOR_LIST, null)
                 val wallpaperColorList: ArrayList<Int> = Const.GSON.fromJson(
                     wallpaperColors,
                     object : TypeToken<ArrayList<Int?>?>() {
@@ -322,6 +319,7 @@ class SettingsFragment : Fragment() {
             type = "*/*"
             putExtra(Intent.EXTRA_TITLE, "theme_config" + ".colorblendr")
         }
+
         if (isBackingUp) {
             startBackupActivityIntent.launch(fileIntent)
         } else {
@@ -333,35 +331,33 @@ class SettingsFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
-                if (data?.data == null) return@registerForActivityResult
+                val uri: Uri = data?.data ?: return@registerForActivityResult
 
-                Executors.newSingleThreadExecutor().execute {
-                    try {
-                        backupPrefs(
-                            appContext
-                                .contentResolver
-                                .openOutputStream(data.data!!)!!
-                        )
+                CoroutineScope(Dispatchers.IO).launch {
+                    val success = uri.backupDatabaseAndPrefs()
 
-                        Snackbar
-                            .make(
-                                binding.getRoot(),
-                                getString(R.string.backup_success),
-                                Snackbar.LENGTH_LONG
-                            )
-                            .setAction(getString(R.string.dismiss)) { }
-                            .show()
-                    } catch (exception: Exception) {
-                        Snackbar
-                            .make(
-                                binding.getRoot(),
-                                getString(R.string.backup_fail),
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            .setAction(getString(R.string.retry)) { backupRestoreSettings(true) }
-                            .show()
-
-                        Log.e(TAG, "startBackupActivityIntent: ", exception)
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            Snackbar
+                                .make(
+                                    binding.getRoot(),
+                                    getString(R.string.backup_success),
+                                    Snackbar.LENGTH_LONG
+                                )
+                                .setAction(getString(R.string.dismiss)) { }
+                                .show()
+                        } else {
+                            Snackbar
+                                .make(
+                                    binding.getRoot(),
+                                    getString(R.string.backup_fail),
+                                    Snackbar.LENGTH_INDEFINITE
+                                )
+                                .setAction(getString(R.string.retry)) {
+                                    backupRestoreSettings(true)
+                                }
+                                .show()
+                        }
                     }
                 }
             }
@@ -387,21 +383,15 @@ class SettingsFragment : Fragment() {
                 dialog.dismiss()
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        restorePrefs(
-                            appContext
-                                .contentResolver
-                                .openInputStream(uri)!!
-                        )
+                    val success = uri.restoreDatabaseAndPrefs()
 
-                        withContext(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
+                        if (success) {
                             try {
                                 applyFabricatedColors(requireContext())
                             } catch (ignored: Exception) {
                             }
-                        }
-                    } catch (exception: Exception) {
-                        withContext(Dispatchers.Main) {
+                        } else {
                             Snackbar
                                 .make(
                                     binding.getRoot(),
@@ -409,15 +399,11 @@ class SettingsFragment : Fragment() {
                                     Snackbar.LENGTH_INDEFINITE
                                 )
                                 .setAction(getString(R.string.retry)) {
-                                    backupRestoreSettings(
-                                        false
-                                    )
+                                    backupRestoreSettings(false)
                                 }
                                 .show()
-
-                            Log.e(TAG, "startBackupActivityIntent: ", exception)
                         }
-                    } finally {
+
                         arguments?.remove("data")
                     }
                 }

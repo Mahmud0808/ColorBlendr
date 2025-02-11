@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.models
+package com.drdisagree.colorblendr.data.models
 
 import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter.Companion.TYPE_ABOUT_APP
 import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter.Companion.TYPE_CREDITS_HEADER

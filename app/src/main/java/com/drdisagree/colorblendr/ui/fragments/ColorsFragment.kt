@@ -14,18 +14,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putBoolean
-import com.drdisagree.colorblendr.config.RPrefs.putInt
-import com.drdisagree.colorblendr.config.RPrefs.putLong
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
+import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Const.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.data.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.getInt
+import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.putInt
+import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.views.WallColorPreview
@@ -186,7 +186,7 @@ class ColorsFragment : Fragment() {
         if (seedColorVisibility != null && binding.seedColorPicker.visibility != seedColorVisibility) {
             binding.seedColorPicker.visibility = seedColorVisibility
 
-            val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
+            val wallpaperColors: String? = Prefs.getString(WALLPAPER_COLOR_LIST, null)
             val wallpaperColorList: ArrayList<Int> = Const.GSON.fromJson(
                 wallpaperColors,
                 object : TypeToken<ArrayList<Int?>?>() {
@@ -294,7 +294,7 @@ class ColorsFragment : Fragment() {
     }
 
     private fun getWallpaperColors(): ArrayList<Int> {
-        val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
+        val wallpaperColors: String? = Prefs.getString(WALLPAPER_COLOR_LIST, null)
 
         return if (wallpaperColors != null) {
             Const.GSON.fromJson(

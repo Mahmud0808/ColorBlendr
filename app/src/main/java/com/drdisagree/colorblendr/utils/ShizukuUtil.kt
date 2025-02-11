@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.drdisagree.colorblendr.BuildConfig
-import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.data.common.Const
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 import rikka.shizuku.Shizuku.UserServiceArgs

@@ -13,10 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.FIRST_RUN
-import com.drdisagree.colorblendr.common.Const.saveWorkingMethod
-import com.drdisagree.colorblendr.config.RPrefs.putBoolean
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.FIRST_RUN
+import com.drdisagree.colorblendr.data.common.Const.saveWorkingMethod
+import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider

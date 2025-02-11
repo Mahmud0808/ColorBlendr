@@ -13,23 +13,28 @@ glide = "4.16.0"
 gson = "2.11.0"
 hiddenapibypassVersion = "4.3"
 kapt = "2.1.0"
+ksp = "2.1.0-1.0.29"
 kotlin = "2.0.21"
 libsuVersion = "6.0.0"
 material = "1.12.0"
 palette = "1.0.0"
 preferenceKtx = "1.2.1"
+processPhoenix = "3.0.0"
 recyclerview = "1.4.0"
 recyclerviewSelection = "1.1.0"
 remotepreferences = "0.8"
+roomVersion = "2.6.1"
 shizuku = "12.1.0"
 workRuntime = "2.10.0"
 lifecycleCommonJvm = "2.8.7"
+zip4j = "2.11.5"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
 androidUtils = { module = "me.jfenn:AndroidUtils", version.ref = "androidUtils" }
@@ -38,7 +43,7 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 blurView = { module = "com.github.Dimezis:BlurView", version.ref = "blurView" }
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+glide-compiler = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
@@ -50,10 +55,15 @@ lsposed-hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypas
 material = { module = "com.google.android.material:material", version.ref = "material" }
 palette = { module = "androidx.palette:palette", version.ref = "palette" }
 preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+process-phoenix = { module = "com.jakewharton:process-phoenix", version.ref = "processPhoenix" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
 remotepreferences = { module = "com.crossbowffs.remotepreferences:remotepreferences", version.ref = "remotepreferences" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }
+zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }

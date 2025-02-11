@@ -9,8 +9,8 @@ import android.util.Log
 import android.widget.Toast
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.workingMethod
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.RootConnection
 import com.topjohnwu.superuser.ipc.RootService

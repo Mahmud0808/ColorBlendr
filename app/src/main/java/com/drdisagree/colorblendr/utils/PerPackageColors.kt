@@ -2,16 +2,16 @@ package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
 import android.os.Build
-import com.drdisagree.colorblendr.common.Const.DARKER_LAUNCHER_ICONS
-import com.drdisagree.colorblendr.common.Const.GOOGLE_FEEDS
-import com.drdisagree.colorblendr.common.Const.GOOGLE_NEWS
-import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
-import com.drdisagree.colorblendr.common.Const.PLAY_GAMES
-import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
-import com.drdisagree.colorblendr.common.Const.SETTINGS
-import com.drdisagree.colorblendr.common.Const.SETTINGS_SEARCH
-import com.drdisagree.colorblendr.common.Const.SYSTEMUI_CLOCKS
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
+import com.drdisagree.colorblendr.data.common.Const.DARKER_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.data.common.Const.GOOGLE_FEEDS
+import com.drdisagree.colorblendr.data.common.Const.GOOGLE_NEWS
+import com.drdisagree.colorblendr.data.common.Const.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.data.common.Const.PLAY_GAMES
+import com.drdisagree.colorblendr.data.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.data.common.Const.SETTINGS
+import com.drdisagree.colorblendr.data.common.Const.SETTINGS_SEARCH
+import com.drdisagree.colorblendr.data.common.Const.SYSTEMUI_CLOCKS
+import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
 import com.drdisagree.colorblendr.utils.ColorUtil.applyAlphaToColor
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode

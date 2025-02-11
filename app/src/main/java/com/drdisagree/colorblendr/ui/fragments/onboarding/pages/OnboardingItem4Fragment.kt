@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.drdisagree.colorblendr.common.Const
+import com.drdisagree.colorblendr.data.common.Const
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingItem4Binding
 
 class OnboardingItem4Fragment : Fragment() {

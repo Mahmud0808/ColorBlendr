@@ -7,11 +7,11 @@ import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.ContextCompat
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.getInt
+import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Const.MONET_SECONDARY_COLOR
+import com.drdisagree.colorblendr.data.common.Const.MONET_TERTIARY_COLOR
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
 import com.drdisagree.colorblendr.utils.cam.CamUtils
@@ -40,7 +40,7 @@ object ColorUtil {
         isDark: Boolean = SystemUtil.isDarkMode
     ): ArrayList<ArrayList<Int>> {
         val wallpaperColorList: ArrayList<Int>? =
-            RPrefs.getString(Const.WALLPAPER_COLOR_LIST, null)?.let {
+            Prefs.getString(Const.WALLPAPER_COLOR_LIST, null)?.let {
                 Const.GSON.fromJson(
                     it,
                     object : TypeToken<ArrayList<Int>>() {}.type

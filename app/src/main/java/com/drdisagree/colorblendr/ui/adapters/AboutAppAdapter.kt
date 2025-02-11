@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.ui.models.AboutAppModel
+import com.drdisagree.colorblendr.data.models.AboutAppModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 
