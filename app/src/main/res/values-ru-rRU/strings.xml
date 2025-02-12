@@ -56,11 +56,11 @@
     <string name="monet_fruitsalad_desc">Эклектичное сочетание цветов, напоминает яркий ассортимент свежих и сочных фруктов.</string>
     <string name="monet_content">Содержательный</string>
     <string name="monet_content_desc">Сбалансированная и успокаивающая палитра, способствующая ощущению спокойствия и удовлетворенности.</string>
-    <string name="save_current_style">Save current style</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
-    <string name="save">Save</string>
-    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save_current_style">Сохранить текущий стиль</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="save">Сохранить</string>
+    <string name="title_and_desc_cant_be_empty">Название и описание не могут быть пустыми</string>
     <!-- Settings -->
     <string name="app_service_title">Служба %s</string>
     <string name="app_service_desc_on">Тематизация активна</string>
@@ -88,20 +88,20 @@
     <string name="about_this_app_title">Об этом приложении</string>
     <string name="about_this_app_desc">Информация об этом приложении и его разработчике</string>
     <!-- Advanced settings -->
-    <string name="advanced_settings">Advanced</string>
-    <string name="custom_secondary_color_desc">Custom secondary color</string>
-    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
-    <string name="custom_tertiary_color_title">Custom tertiary color</string>
-    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
-    <string name="mode_specific_theme_title">Mode-specific theme</string>
-    <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
-    <string name="screen_off_update_title">Update colors on screen off</string>
-    <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
+    <string name="advanced_settings">Расширенный</string>
+    <string name="custom_secondary_color_desc">Пользовательский дополнительный цвет</string>
+    <string name="custom_secondary_color_summary">Выберите чистый белый цвет, чтобы отключить</string>
+    <string name="custom_tertiary_color_title">Пользовательский основной цвет</string>
+    <string name="custom_tertiary_color_desc">Выберите чистый белый цвет, чтобы отключить</string>
+    <string name="mode_specific_theme_title">Конкретная тема режима</string>
+    <string name="screen_off_update_desc">Обновляет цвета после 15-ти секунд отключения экрана; полезно для живых обоев</string>
+    <string name="screen_off_update_title">Обновить цвета при выключенном экране</string>
+    <string name="mode_specific_theme_desc">Применить различную насыщенность и яркость для светлых и темных режимов</string>
     <string name="darker_launcher_icons_title">Значки Darker launcher</string>
     <string name="darker_launcher_icons_desc">Применить более темный фон к одноцветным иконкам лаунчера пикселей</string>
     <string name="semitransparent_launcher_title">Полупрозрачный лаунчер</string>
-    <string name="semitransparent_launcher_desc">Применить полупрозрачный стиль к пикселу лаунчера</string>
-    <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
+    <string name="semitransparent_launcher_desc">Применить полупрозрачный стиль к Pixel Launcher</string>
+    <string name="pitch_black_settings_workaround_title">Настройки черного цвета</string>
     <string name="pitch_black_settings_workaround_desc">Затемнить фоновый цвет параметров; побочные эффекты</string>
     <!-- About -->
     <string name="news">Новости</string>
@@ -111,9 +111,9 @@
     <string name="dev_bio">Учащийся | Разработчик | Дизайнер</string>
     <string name="buymeacoffee_title">Понравилось приложение?</string>
     <string name="buymeacoffee_desc">Подумайте о том, чтобы купить мне кофе</string>
-    <string name="contributors">Contributors behind the scene</string>
-    <string name="total_contributions">Contributions: %d</string>
-    <string name="translators">Translators bridging languages</string>
+    <string name="contributors">Неупомянутые участники</string>
+    <string name="total_contributions">Участники: %d</string>
+    <string name="translators">Переводчики</string>
     <!-- General -->
     <string name="icon">Иконка</string>
     <string name="reset">Сброс</string>
