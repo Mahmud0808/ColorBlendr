@@ -86,7 +86,7 @@ object BackupRestore {
                 tempZipFile.delete()
 
                 true
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Error during backup", e)
                 false
             }
@@ -161,7 +161,7 @@ object BackupRestore {
                 }
 
                 true
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Error during restore", e)
                 false
             }
