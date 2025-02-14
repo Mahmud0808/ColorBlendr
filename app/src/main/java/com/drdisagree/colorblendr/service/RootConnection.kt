@@ -20,6 +20,7 @@ import android.util.Log
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_SOURCE_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.utils.ColorUtil.isSystemMonetEnabled
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.Utils
@@ -29,11 +30,22 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 class RootConnection : RootService() {
+
     override fun onBind(intent: Intent): IBinder {
         return RootConnectionImpl()
     }
 
     class RootConnectionImpl : IRootConnection.Stub() {
+
+        /**
+         *  This listener observes changes in processes, specifically focusing on the SystemUI process.
+         *  It's used to detect when the SystemUI process dies and automatically re-enable a specific overlay.
+         *
+         *  - `onForegroundActivitiesChanged`: Called when foreground activities change for a process. Currently does nothing.
+         *  - `onForegroundServicesChanged`: Called when foreground services change for a process. Currently does nothing.
+         *  - `onProcessDied`: Called when a process dies. If the dead process is SystemUI and system monet is enabled,
+         *    it attempts to re-enable a specific overlay after a 3-second delay.
+         */
         private val processListener: IProcessObserver.Stub = object : IProcessObserver.Stub() {
             @Throws(RemoteException::class)
             override fun onForegroundActivitiesChanged(
@@ -50,14 +62,11 @@ class RootConnection : RootService() {
             }
 
             override fun onProcessDied(pid: Int, uid: Int) {
-                if (uid == SystemUI_UID) {
+                if (uid == SystemUI_UID && isSystemMonetEnabled()) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         try {
-                            enableOverlayWithIdentifier(
-                                listOf(
-                                    FABRICATED_OVERLAY_NAME_SYSTEM
-                                )
-                            )
+                            enableOverlayWithIdentifier(listOf(FABRICATED_OVERLAY_NAME_SYSTEM))
+                            Log.d(TAG, "SystemUI restarted, re-enabling overlay")
                         } catch (ignored: RemoteException) {
                             // Overlay was never registered
                         }

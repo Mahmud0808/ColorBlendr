@@ -1,12 +1,17 @@
 package com.drdisagree.colorblendr.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.annotation.StyleableRes
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
+import com.drdisagree.colorblendr.data.common.Constant.MONET_FLAG
+import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
@@ -23,6 +28,20 @@ import kotlin.math.min
 import kotlin.math.pow
 
 object ColorUtil {
+
+    @SuppressLint("DiscouragedApi")
+    fun isSystemMonetEnabled(): Boolean {
+        try {
+            val pm = appContext.packageManager
+            val res = pm.getResourcesForApplication(SYSTEMUI_PACKAGE)
+            val resId = res.getIdentifier(MONET_FLAG, "bool", SYSTEMUI_PACKAGE)
+            return if (resId != 0X0) res.getBoolean(resId)
+            else true
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.e("ColorUtil", "Couldn't read monet flag", e)
+            return true
+        }
+    }
 
     @ColorInt
     fun getColorFromAttribute(context: Context, attr: Int): Int {

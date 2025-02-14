@@ -18,6 +18,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isRootOrShizukuUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
@@ -25,6 +26,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
+import com.drdisagree.colorblendr.utils.ColorUtil.isSystemMonetEnabled
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
 import com.drdisagree.colorblendr.utils.OverlayManager.unregisterFabricatedOverlay
@@ -84,10 +86,10 @@ class BroadcastListener : BroadcastReceiver() {
                     val lastUiMode = lastConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
                     val newUiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-                    if (lastUiMode != newUiMode) {
+                    if (lastUiMode != newUiMode && (isSystemMonetEnabled() || modeSpecificThemesEnabled())) {
                         delay(1000)
                         validateRootAndUpdateColors(context) {
-                            updateAllColors(context)
+                            updateAllColors()
                         }
                     }
 
@@ -126,7 +128,7 @@ class BroadcastListener : BroadcastReceiver() {
                 delay(10000)
                 cooldownTime = 5000
             }
-            updateAllColors(context)
+            updateAllColors()
         }
     }
 
@@ -153,7 +155,7 @@ class BroadcastListener : BroadcastReceiver() {
         if (requiresUpdate || force) {
             requiresUpdate = false
             validateRootAndUpdateColors(context) {
-                updateAllColors(context)
+                updateAllColors()
             }
         }
     }
@@ -205,7 +207,7 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private fun updateAllColors(context: Context) {
+    private fun updateAllColors() {
         if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isRootOrShizukuUnknown()) return
 
         if (abs(System.currentTimeMillis() - getLastColorAppliedTimestamp()) >= cooldownTime) {

@@ -37,6 +37,7 @@ object Constant {
     const val FABRICATED_OVERLAY_NAME_SYSTEMUI = "${OWN_PACKAGE_NAME}_dynamic_theme_system"
     const val FABRICATED_OVERLAY_NAME_APPS = "$OWN_PACKAGE_NAME.%s_dynamic_theme"
     const val THEME_CUSTOMIZATION_OVERLAY_PACKAGES = "theme_customization_overlay_packages"
+    const val MONET_FLAG = "flag_monet"
 
     // General preferences
     const val FIRST_RUN = "firstRun"

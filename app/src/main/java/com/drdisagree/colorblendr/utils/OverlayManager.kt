@@ -10,6 +10,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_A
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
 import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
+import com.drdisagree.colorblendr.data.common.Constant.MONET_FLAG
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
@@ -321,7 +322,7 @@ object OverlayManager {
                     FABRICATED_OVERLAY_NAME_SYSTEMUI,
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
-                    systemuiOverlay.setBoolean("flag_monet", false)
+                    systemuiOverlay.setBoolean(MONET_FLAG, false)
                 }
             )
 
