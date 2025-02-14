@@ -13,10 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.FIRST_RUN
-import com.drdisagree.colorblendr.data.common.Const.saveWorkingMethod
-import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
+import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
+import com.drdisagree.colorblendr.data.common.Utilities.setFirstRunCompleted
+import com.drdisagree.colorblendr.data.common.Utilities.setWorkingMethod
+import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingBinding
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
@@ -84,8 +84,8 @@ class OnboardingFragment : Fragment() {
                     return@setOnClickListener
                 }
 
-                when (Const.WORKING_METHOD) {
-                    Const.WorkMethod.NULL -> {
+                when (WORKING_METHOD) {
+                    WorkMethod.NULL -> {
                         Toast.makeText(
                             requireContext(),
                             R.string.select_method,
@@ -93,11 +93,11 @@ class OnboardingFragment : Fragment() {
                         ).show()
                     }
 
-                    Const.WorkMethod.ROOT -> {
+                    WorkMethod.ROOT -> {
                         checkRootConnection()
                     }
 
-                    Const.WorkMethod.SHIZUKU -> {
+                    WorkMethod.SHIZUKU -> {
                         checkShizukuConnection()
                     }
                 }
@@ -157,8 +157,10 @@ class OnboardingFragment : Fragment() {
             try {
                 updateWallpaperColorList(requireContext())
                 updateFabricatedAppList(requireContext())
-                putBoolean(FIRST_RUN, false)
-                saveWorkingMethod(Const.WORKING_METHOD)
+
+                setFirstRunCompleted()
+                setWorkingMethod(WORKING_METHOD)
+
                 MainActivity.replaceFragment(
                     HomeFragment().apply {
                         arguments = Bundle().apply {

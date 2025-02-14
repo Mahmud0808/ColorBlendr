@@ -10,24 +10,24 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
-import com.drdisagree.colorblendr.data.config.Prefs.clearPref
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
-import com.drdisagree.colorblendr.data.config.Prefs.putInt
-import com.drdisagree.colorblendr.data.config.Prefs.putLong
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.resetAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.setAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
-import com.drdisagree.colorblendr.utils.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
@@ -40,17 +40,10 @@ import kotlinx.coroutines.withContext
 class ThemeFragment : Fragment() {
 
     private lateinit var binding: FragmentThemeBinding
-    private val monetAccentSaturation: IntArray = intArrayOf(
-        getInt(MONET_ACCENT_SATURATION, 100)
-    )
-    private val monetBackgroundSaturation: IntArray = intArrayOf(
-        getInt(MONET_BACKGROUND_SATURATION, 100)
-    )
-    private val monetBackgroundLightness: IntArray = intArrayOf(
-        getInt(MONET_BACKGROUND_LIGHTNESS, 100)
-    )
+    private var monetAccentSaturation = getAccentSaturation()
+    private var monetBackgroundSaturation = getBackgroundSaturation()
+    private var monetBackgroundLightness = getBackgroundLightness()
     private var wasDarkMode: Boolean = isDarkMode
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,11 +63,11 @@ class ThemeFragment : Fragment() {
             colorNeutral2.title.setText(R.string.neutral_2)
 
             // Monet primary accent saturation
-            accentSaturation.seekbarProgress = getInt(MONET_ACCENT_SATURATION, 100)
+            accentSaturation.seekbarProgress = monetAccentSaturation
             accentSaturation.setOnSeekbarChangeListener(object : OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     accentSaturation.setSelectedProgress()
-                    monetAccentSaturation[0] = progress
+                    monetAccentSaturation = progress
                     updatePreviewColors()
                 }
 
@@ -82,8 +75,8 @@ class ThemeFragment : Fragment() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     resetCustomStyleIfNotNull()
-                    monetAccentSaturation[0] = seekBar.progress
-                    putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0])
+                    monetAccentSaturation = seekBar.progress
+                    setAccentSaturation(monetAccentSaturation)
                     applyFabricatedColors()
                 }
             })
@@ -91,21 +84,21 @@ class ThemeFragment : Fragment() {
             // Long Click Reset
             accentSaturation.setResetClickListener {
                 resetCustomStyleIfNotNull()
-                monetAccentSaturation[0] = 100
+                monetAccentSaturation = 100
                 updatePreviewColors()
-                clearPref(MONET_ACCENT_SATURATION)
+                resetAccentSaturation()
                 applyFabricatedColors()
                 true
             }
-            accentSaturation.setEnabled(notShizukuMode)
+            accentSaturation.setEnabled(isRootMode())
 
             // Monet background saturation
-            backgroundSaturation.seekbarProgress = getInt(MONET_BACKGROUND_SATURATION, 100)
+            backgroundSaturation.seekbarProgress = monetBackgroundSaturation
             backgroundSaturation.setOnSeekbarChangeListener(object :
                 OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     backgroundSaturation.setSelectedProgress()
-                    monetBackgroundSaturation[0] = progress
+                    monetBackgroundSaturation = progress
                     updatePreviewColors()
                 }
 
@@ -113,8 +106,8 @@ class ThemeFragment : Fragment() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     resetCustomStyleIfNotNull()
-                    monetBackgroundSaturation[0] = seekBar.progress
-                    putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0])
+                    monetBackgroundSaturation = seekBar.progress
+                    setBackgroundSaturation(monetBackgroundSaturation)
                     applyFabricatedColors()
                 }
             })
@@ -122,21 +115,21 @@ class ThemeFragment : Fragment() {
             // Reset button
             backgroundSaturation.setResetClickListener {
                 resetCustomStyleIfNotNull()
-                monetBackgroundSaturation[0] = 100
+                monetBackgroundSaturation = 100
                 updatePreviewColors()
-                clearPref(MONET_BACKGROUND_SATURATION)
+                resetBackgroundSaturation()
                 applyFabricatedColors()
                 true
             }
-            backgroundSaturation.setEnabled(notShizukuMode)
+            backgroundSaturation.setEnabled(isRootMode())
 
             // Monet background lightness
-            backgroundLightness.seekbarProgress = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+            backgroundLightness.seekbarProgress = monetBackgroundLightness
             backgroundLightness.setOnSeekbarChangeListener(object :
                 OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     backgroundLightness.setSelectedProgress()
-                    monetBackgroundLightness[0] = progress
+                    monetBackgroundLightness = progress
                     updatePreviewColors()
                 }
 
@@ -144,8 +137,8 @@ class ThemeFragment : Fragment() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     resetCustomStyleIfNotNull()
-                    monetBackgroundLightness[0] = seekBar.progress
-                    putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0])
+                    monetBackgroundLightness = seekBar.progress
+                    setBackgroundLightness(monetBackgroundLightness)
                     applyFabricatedColors()
                 }
             })
@@ -153,13 +146,13 @@ class ThemeFragment : Fragment() {
             // Long Click Reset
             backgroundLightness.setResetClickListener {
                 resetCustomStyleIfNotNull()
-                monetBackgroundLightness[0] = 100
+                monetBackgroundLightness = 100
                 updatePreviewColors()
-                clearPref(MONET_BACKGROUND_LIGHTNESS)
+                resetBackgroundLightness()
                 applyFabricatedColors()
                 true
             }
-            backgroundLightness.setEnabled(notShizukuMode)
+            backgroundLightness.setEnabled(isRootMode())
         }
 
         return binding.getRoot()
@@ -185,28 +178,25 @@ class ThemeFragment : Fragment() {
 
     private fun updateProgressBars() {
         binding.apply {
-            monetAccentSaturation[0] = getInt(MONET_ACCENT_SATURATION, 100)
-            monetBackgroundSaturation[0] = getInt(MONET_BACKGROUND_SATURATION, 100)
-            monetBackgroundLightness[0] = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+            monetAccentSaturation = getAccentSaturation()
+            monetBackgroundSaturation = getBackgroundSaturation()
+            monetBackgroundLightness = getBackgroundLightness()
 
             accentSaturation.post {
-                accentSaturation.seekbarProgress = monetAccentSaturation[0]
+                accentSaturation.seekbarProgress = monetAccentSaturation
             }
             backgroundSaturation.post {
-                backgroundSaturation.seekbarProgress = monetBackgroundSaturation[0]
+                backgroundSaturation.seekbarProgress = monetBackgroundSaturation
             }
             backgroundLightness.post {
-                backgroundLightness.seekbarProgress = monetBackgroundLightness[0]
+                backgroundLightness.seekbarProgress = monetBackgroundLightness
             }
         }
     }
 
     private fun applyFabricatedColors() {
         CoroutineScope(Dispatchers.Main).launch {
-            putLong(
-                MONET_LAST_UPDATED,
-                System.currentTimeMillis()
-            )
+            updateColorAppliedTimestamp()
             delay(200)
             withContext(Dispatchers.IO) {
                 try {
@@ -220,11 +210,11 @@ class ThemeFragment : Fragment() {
     private fun updatePreviewColors() {
         val colorPalette: ArrayList<ArrayList<Int>>? = generateModifiedColors(
             getCurrentMonetStyle(),
-            monetAccentSaturation[0],
-            monetBackgroundSaturation[0],
-            monetBackgroundLightness[0],
-            getBoolean(MONET_PITCH_BLACK_THEME, false),
-            getBoolean(MONET_ACCURATE_SHADES, true)
+            monetAccentSaturation,
+            monetBackgroundSaturation,
+            monetBackgroundLightness,
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled()
         )
 
         if (colorPalette != null) {

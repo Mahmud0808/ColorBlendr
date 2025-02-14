@@ -10,12 +10,11 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.util.Size
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.data.config.Prefs.getString
+import com.drdisagree.colorblendr.data.common.Constant
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorJson
+import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.service.BroadcastListener
 import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
@@ -35,16 +34,14 @@ object WallpaperColorUtil {
     suspend fun updateWallpaperColorList(context: Context) {
         if (AppUtil.permissionsGranted(context)) {
             val wallpaperColors = getWallpaperColors(context)
-            val previousWallpaperColors = getString(WALLPAPER_COLOR_LIST, null)
-            val currentWallpaperColors = Const.GSON.toJson(wallpaperColors)
-            val customColorsEnabled = Prefs.getBoolean(MONET_SEED_COLOR_ENABLED, false)
+            val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
 
-            if (previousWallpaperColors != currentWallpaperColors) {
+            if (getWallpaperColorJson() != currentWallpaperColors) {
                 BroadcastListener.requiresUpdate = true
-                Prefs.putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
+                setWallpaperColorJson(currentWallpaperColors)
 
-                if (!customColorsEnabled) {
-                    Prefs.putInt(MONET_SEED_COLOR, wallpaperColors[0])
+                if (!customColorEnabled()) {
+                    setSeedColorValue(wallpaperColors[0])
                 }
             }
         }

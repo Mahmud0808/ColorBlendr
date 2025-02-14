@@ -2,16 +2,15 @@ package com.drdisagree.colorblendr.utils
 
 import android.graphics.Color
 import android.os.Build
-import com.drdisagree.colorblendr.data.common.Const.DARKER_LAUNCHER_ICONS
-import com.drdisagree.colorblendr.data.common.Const.GOOGLE_FEEDS
-import com.drdisagree.colorblendr.data.common.Const.GOOGLE_NEWS
-import com.drdisagree.colorblendr.data.common.Const.PIXEL_LAUNCHER
-import com.drdisagree.colorblendr.data.common.Const.PLAY_GAMES
-import com.drdisagree.colorblendr.data.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
-import com.drdisagree.colorblendr.data.common.Const.SETTINGS
-import com.drdisagree.colorblendr.data.common.Const.SETTINGS_SEARCH
-import com.drdisagree.colorblendr.data.common.Const.SYSTEMUI_CLOCKS
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.common.Constant.GOOGLE_FEEDS
+import com.drdisagree.colorblendr.data.common.Constant.GOOGLE_NEWS
+import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.data.common.Constant.PLAY_GAMES
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
+import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_CLOCKS
+import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.utils.ColorUtil.applyAlphaToColor
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
@@ -147,10 +146,10 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
      * folder_background_dark/light = expanded folder background color
      */
 
-    val isSemiTransparent = getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
+    val isSemiTransparent = semiTransparentLauncherIconsEnabled()
 
     if (isDarkMode) {
-        val darkerIcon = getBoolean(DARKER_LAUNCHER_ICONS, false)
+        val darkerIcon = darkerLauncherIconsEnabled()
 
         setColor("qsb_icon_tint_quaternary_mono", palette[0][5])
         setColor("themed_icon_color", palette[0][5])

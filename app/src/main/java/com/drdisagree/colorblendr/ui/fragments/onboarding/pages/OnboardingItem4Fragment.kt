@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
+import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingItem4Binding
 
 class OnboardingItem4Fragment : Fragment() {
@@ -20,12 +21,12 @@ class OnboardingItem4Fragment : Fragment() {
         binding = FragmentOnboardingItem4Binding.inflate(inflater, container, false)
 
         binding.root.setOnClickListener {
-            Const.WORKING_METHOD = Const.WorkMethod.ROOT
+            WORKING_METHOD = WorkMethod.ROOT
             binding.shizuku.isSelected = false
         }
 
         binding.shizuku.setOnClickListener {
-            Const.WORKING_METHOD = Const.WorkMethod.SHIZUKU
+            WORKING_METHOD = WorkMethod.SHIZUKU
             binding.root.isSelected = false
         }
 

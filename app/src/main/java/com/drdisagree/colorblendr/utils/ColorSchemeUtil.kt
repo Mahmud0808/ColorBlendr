@@ -4,12 +4,7 @@ import android.content.Context
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const.CUSTOM_MONET_STYLE
-import com.drdisagree.colorblendr.data.common.Const.MONET_STYLE
-import com.drdisagree.colorblendr.data.config.Prefs.clearPref
-import com.drdisagree.colorblendr.data.config.Prefs.getString
-import com.drdisagree.colorblendr.data.config.Prefs.putString
-import com.drdisagree.colorblendr.utils.MONET.Companion.toEnumMonet
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
 import com.drdisagree.colorblendr.utils.monet.hct.Hct
@@ -127,32 +122,6 @@ object ColorSchemeUtil {
             context.getString(R.string.monet_fruitsalad) -> MONET.FRUIT_SALAD
 
             else -> MONET.TONAL_SPOT
-        }
-    }
-
-    fun getCurrentMonetStyle(): MONET {
-        return getString(MONET_STYLE, null).toEnumMonet()
-    }
-
-    fun saveCurrentMonetStyle(monet: MONET) {
-        putString(MONET_STYLE, monet.toString())
-    }
-
-    fun getCurrentCustomStyle(): String? {
-        return getString(CUSTOM_MONET_STYLE, null)
-    }
-
-    fun saveCurrentCustomStyle(styleId: String) {
-        putString(CUSTOM_MONET_STYLE, styleId)
-    }
-
-    fun resetCustomStyle() {
-        clearPref(CUSTOM_MONET_STYLE)
-    }
-
-    fun resetCustomStyleIfNotNull() {
-        if (getCurrentCustomStyle() != null) {
-            resetCustomStyle()
         }
     }
 }

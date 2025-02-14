@@ -3,10 +3,8 @@ package com.drdisagree.colorblendr.extension
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.data.common.Const.MONET_STYLE_ORIGINAL_NAME
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
-import com.drdisagree.colorblendr.data.config.Prefs.getString
+import com.drdisagree.colorblendr.data.common.Utilities.getOriginalStyleName
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColorNoHash
 import org.json.JSONObject
 
@@ -30,29 +28,16 @@ object ThemeOverlayPackage {
                     )
                     putOpt(
                         THEME_STYLE,
-                        getString(
-                            MONET_STYLE_ORIGINAL_NAME,
-                            "TONAL_SPOT"
-                        )
+                        getOriginalStyleName()
                     )
                     putOpt(
                         SYSTEM_PALETTE,
-                        intToHexColorNoHash(
-                            getInt(
-                                MONET_SEED_COLOR,
-                                Color.BLUE
-                            )
-                        )
+                        intToHexColorNoHash(getSeedColorValue(Color.BLUE))
                     )
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
                         putOpt(
                             ACCENT_COLOR,
-                            intToHexColorNoHash(
-                                getInt(
-                                    MONET_SEED_COLOR,
-                                    Color.BLUE
-                                )
-                            )
+                            intToHexColorNoHash(getSeedColorValue(Color.BLUE))
                         )
                     }
                     putOpt(

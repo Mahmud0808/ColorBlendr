@@ -14,27 +14,24 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
-import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
-import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.putInt
-import com.drdisagree.colorblendr.data.config.Prefs.putLong
+import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.views.WallColorPreview
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -51,7 +48,6 @@ class ColorsFragment : Fragment() {
     private lateinit var binding: FragmentColorsBinding
     private lateinit var monetSeedColor: IntArray
     private lateinit var sharedViewModel: SharedViewModel
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     private val wallpaperChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -64,8 +60,8 @@ class ColorsFragment : Fragment() {
 
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
-        if (!notShizukuMode) {
-            SettingsFragment.clearCustomColors()
+        if (isShizukuMode()) {
+            clearAllOverriddenColors()
         }
     }
 
@@ -78,7 +74,7 @@ class ColorsFragment : Fragment() {
 
         setToolbarTitle(requireContext(), R.string.app_name, false, binding.header.toolbar)
 
-        monetSeedColor = intArrayOf(getInt(MONET_SEED_COLOR, 0))
+        monetSeedColor = intArrayOf(getSeedColorValue(0))
 
         return binding.root
     }
@@ -94,8 +90,8 @@ class ColorsFragment : Fragment() {
             }
 
         // Color codes
-        val wallpaperColorSelected = !getBoolean(MONET_SEED_COLOR_ENABLED, false) &&
-                getWallpaperColors().contains(getInt(MONET_SEED_COLOR, Int.MIN_VALUE))
+        val wallpaperColorSelected =
+            !customColorEnabled() && getWallpaperColors().contains(getSeedColorValue())
         binding.colorsToggleGroup.check(
             if (wallpaperColorSelected) R.id.wallpaper_colors_button else R.id.basic_colors_button
         )
@@ -124,10 +120,7 @@ class ColorsFragment : Fragment() {
         }
 
         // Primary color
-        binding.seedColorPicker.previewColor = getInt(
-            MONET_SEED_COLOR,
-            monetSeedColor[0]
-        )
+        binding.seedColorPicker.previewColor = getSeedColorValue(monetSeedColor[0])
 
         binding.seedColorPicker.setOnClickListener {
             ColorPickerDialog()
@@ -139,13 +132,10 @@ class ColorsFragment : Fragment() {
                     if (monetSeedColor[0] != color) {
                         monetSeedColor[0] = color
                         binding.seedColorPicker.previewColor = color
-                        putInt(MONET_SEED_COLOR, monetSeedColor[0])
+                        setSeedColorValue(monetSeedColor[0])
 
                         CoroutineScope(Dispatchers.Main).launch {
-                            putLong(
-                                MONET_LAST_UPDATED,
-                                System.currentTimeMillis()
-                            )
+                            updateColorAppliedTimestamp()
                             delay(300)
                             withContext(Dispatchers.IO) {
                                 try {
@@ -158,7 +148,7 @@ class ColorsFragment : Fragment() {
                 }
                 .show(getChildFragmentManager(), "seedColorPicker")
         }
-        binding.seedColorPicker.visibility = if (getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
+        binding.seedColorPicker.visibility = if (customColorEnabled()) {
             View.VISIBLE
         } else {
             View.GONE
@@ -177,7 +167,7 @@ class ColorsFragment : Fragment() {
                 PerAppThemeFragment()
             )
         }
-        binding.perAppTheme.setEnabled(notShizukuMode)
+        binding.perAppTheme.setEnabled(isRootMode())
     }
 
     private fun updateViewVisibility(visibilityStates: Map<String, Int>) {
@@ -186,23 +176,15 @@ class ColorsFragment : Fragment() {
         if (seedColorVisibility != null && binding.seedColorPicker.visibility != seedColorVisibility) {
             binding.seedColorPicker.visibility = seedColorVisibility
 
-            val wallpaperColors: String? = Prefs.getString(WALLPAPER_COLOR_LIST, null)
-            val wallpaperColorList: ArrayList<Int> = Const.GSON.fromJson(
-                wallpaperColors,
-                object : TypeToken<ArrayList<Int?>?>() {
-                }.type
-            )
+            val wallpaperColorList = getWallpaperColorList()
+            val wallpaperColor = if (wallpaperColorList.isNotEmpty()) wallpaperColorList[0]
+            else Color.BLUE
 
             if (seedColorVisibility == View.GONE) {
-                monetSeedColor = intArrayOf(wallpaperColorList[0])
+                monetSeedColor = intArrayOf(wallpaperColor)
                 binding.seedColorPicker.previewColor = monetSeedColor[0]
             } else {
-                monetSeedColor = intArrayOf(
-                    getInt(
-                        MONET_SEED_COLOR,
-                        wallpaperColorList[0]
-                    )
-                )
+                monetSeedColor = intArrayOf(getSeedColorValue(wallpaperColor))
                 binding.seedColorPicker.previewColor = monetSeedColor[0]
             }
         }
@@ -242,29 +224,23 @@ class ColorsFragment : Fragment() {
                 )
                 setMainColor(colorList[i])
                 tag = colorList[i]
-                isSelected = colorList[i] == getInt(MONET_SEED_COLOR, Int.MIN_VALUE) &&
-                        if (isWallpaperColors) {
-                            !getBoolean(MONET_SEED_COLOR_ENABLED, false)
-                        } else {
-                            true
-                        }
+                isSelected = colorList[i] == getSeedColorValue() &&
+                        if (isWallpaperColors) !customColorEnabled()
+                        else true
 
                 setOnClickListener {
                     if (!isSelected) {
                         resetCustomStyleIfNotNull()
                     }
 
-                    putInt(MONET_SEED_COLOR, tag as Int)
-                    putBoolean(MONET_SEED_COLOR_ENABLED, !isWallpaperColors)
+                    setSeedColorValue(tag as Int)
+                    setCustomColorEnabled(!isWallpaperColors)
                     binding.seedColorPicker.previewColor = tag as Int
 
                     updateColorPreviewSelection(this)
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        putLong(
-                            MONET_LAST_UPDATED,
-                            System.currentTimeMillis()
-                        )
+                        updateColorAppliedTimestamp()
                         withContext(Dispatchers.IO) {
                             try {
                                 applyFabricatedColors(requireContext())
@@ -294,17 +270,7 @@ class ColorsFragment : Fragment() {
     }
 
     private fun getWallpaperColors(): ArrayList<Int> {
-        val wallpaperColors: String? = Prefs.getString(WALLPAPER_COLOR_LIST, null)
-
-        return if (wallpaperColors != null) {
-            Const.GSON.fromJson(
-                wallpaperColors,
-                object : TypeToken<ArrayList<Int?>?>() {
-                }.type
-            )
-        } else {
-            monetAccentColors
-        }
+        return getWallpaperColorList().ifEmpty { monetAccentColors }
     }
 
     override fun onResume() {

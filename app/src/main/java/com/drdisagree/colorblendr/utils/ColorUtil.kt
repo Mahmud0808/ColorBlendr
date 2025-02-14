@@ -5,17 +5,19 @@ import android.graphics.Color
 import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
-import androidx.core.content.ContextCompat
+import androidx.annotation.StyleableRes
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.MONET_SECONDARY_COLOR
-import com.drdisagree.colorblendr.data.common.Const.MONET_TERTIARY_COLOR
-import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
+import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
+import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.tertiaryColorEnabled
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
 import com.drdisagree.colorblendr.utils.cam.Cam
 import com.drdisagree.colorblendr.utils.cam.CamUtils
-import com.google.gson.reflect.TypeToken
+import com.google.android.material.color.DynamicColors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 import kotlin.math.pow
@@ -39,24 +41,15 @@ object ColorUtil {
         modifyPitchBlack: Boolean = true,
         isDark: Boolean = SystemUtil.isDarkMode
     ): ArrayList<ArrayList<Int>> {
-        val wallpaperColorList: ArrayList<Int>? =
-            Prefs.getString(Const.WALLPAPER_COLOR_LIST, null)?.let {
-                Const.GSON.fromJson(
-                    it,
-                    object : TypeToken<ArrayList<Int>>() {}.type
-                )
-            }
+        val wallpaperColorList = getWallpaperColorList()
 
-        if (wallpaperColorList == null) {
+        if (wallpaperColorList.isEmpty()) {
             throw Exception("No wallpaper color list found")
         }
 
         return generateModifiedColors(
             style,
-            getInt(
-                Const.MONET_SEED_COLOR,
-                wallpaperColorList[0]
-            ),
+            getSeedColorValue(wallpaperColorList[0]),
             accentSaturation,
             backgroundSaturation,
             backgroundLightness,
@@ -87,21 +80,19 @@ object ColorUtil {
         )
 
         // Set custom secondary accent color
-        val secondaryAccent = getInt(MONET_SECONDARY_COLOR, Color.WHITE)
-        if (secondaryAccent != Color.WHITE) {
+        if (secondaryColorEnabled()) {
             palette[1] = generateColorPalette(
                 style,
-                secondaryAccent,
+                getSecondaryColorValue(),
                 isDark
             )[0]
         }
 
         // Set custom tertiary accent color
-        val tertiaryAccent = getInt(MONET_TERTIARY_COLOR, Color.WHITE)
-        if (tertiaryAccent != Color.WHITE) {
+        if (tertiaryColorEnabled()) {
             palette[2] = generateColorPalette(
                 style,
-                tertiaryAccent,
+                getTertiaryColorValue(),
                 isDark
             )[0]
         }
@@ -627,26 +618,26 @@ object ColorUtil {
 
     val monetAccentColors: ArrayList<Int>
         get() {
-            val colors = ArrayList<Int>()
-            colors.add(
-                ContextCompat.getColor(
-                    appContext,
-                    android.R.color.system_accent1_400
-                )
+            val dynamicColorContext = DynamicColors.wrapContextIfAvailable(
+                appContext,
+                com.google.android.material.R.style.ThemeOverlay_Material3_DynamicColors_DayNight
             )
-            colors.add(
-                ContextCompat.getColor(
-                    appContext,
-                    android.R.color.system_accent2_400
-                )
+            val attrsToResolve = intArrayOf(
+                com.google.android.material.R.attr.colorPrimary,
+                com.google.android.material.R.attr.colorSecondary,
+                com.google.android.material.R.attr.colorTertiary
             )
-            colors.add(
-                ContextCompat.getColor(
-                    appContext,
-                    android.R.color.system_accent3_400
-                )
-            )
-            return colors
+            @StyleableRes var index = 0
+            val materialAccentColors = ArrayList<Int>()
+
+            dynamicColorContext.obtainStyledAttributes(attrsToResolve).apply {
+                materialAccentColors.add(getColor(index++, 0))
+                materialAccentColors.add(getColor(index++, 0))
+                materialAccentColors.add(getColor(index, 0))
+                recycle()
+            }
+
+            return materialAccentColors
         }
 
     fun Int.applyAlphaToColor(percentage: Int): Int {

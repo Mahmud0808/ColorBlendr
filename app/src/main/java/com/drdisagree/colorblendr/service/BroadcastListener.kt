@@ -8,24 +8,21 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_NAME_APPS
-import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.data.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.data.common.Const.SHIZUKU_THEMING_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.THEMING_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.data.common.Const.saveSelectedFabricatedApps
-import com.drdisagree.colorblendr.data.common.Const.selectedFabricatedApps
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getLong
-import com.drdisagree.colorblendr.data.config.Prefs.getString
-import com.drdisagree.colorblendr.data.config.Prefs.putInt
-import com.drdisagree.colorblendr.data.config.Prefs.putLong
-import com.drdisagree.colorblendr.data.config.Prefs.putString
+import com.drdisagree.colorblendr.data.common.Constant
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getLastColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorJson
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isRootOrShizukuUnknown
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
@@ -53,8 +50,6 @@ class BroadcastListener : BroadcastReceiver() {
             lastConfig = Configuration(context.resources.configuration)
         }
 
-        val screenOffUpdate = getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
-
         CoroutineScope(Dispatchers.Main).launch {
             when (intent.action) {
                 Intent.ACTION_BOOT_COMPLETED,
@@ -67,7 +62,7 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_SCREEN_OFF -> {
-                    if (screenOffUpdate) {
+                    if (screenOffColorUpdateEnabled()) {
                         sleepRunnable = Runnable {
                             coroutineScope.launch {
                                 handleWallpaperChanged(context)
@@ -141,17 +136,17 @@ class BroadcastListener : BroadcastReceiver() {
                 getWallpaperColors(context)
             }
 
-            val previousWallpaperColors = getString(WALLPAPER_COLOR_LIST, null)
-            val currentWallpaperColors = Const.GSON.toJson(wallpaperColors)
+            val previousWallpaperColors = getWallpaperColorJson()
+            val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
 
             if (!requiresUpdate) {
                 requiresUpdate = previousWallpaperColors != currentWallpaperColors
             }
 
-            putString(WALLPAPER_COLOR_LIST, currentWallpaperColors)
+            setWallpaperColorJson(currentWallpaperColors)
 
-            if (!getBoolean(MONET_SEED_COLOR_ENABLED, false)) {
-                putInt(MONET_SEED_COLOR, wallpaperColors[0])
+            if (!customColorEnabled()) {
+                setSeedColorValue(wallpaperColors[0])
             }
         }
 
@@ -165,11 +160,11 @@ class BroadcastListener : BroadcastReceiver() {
 
     private suspend fun handlePackageRemoved(context: Context, intent: Intent) {
         intent.data?.schemeSpecificPart?.let { packageName ->
-            val selectedApps: HashMap<String, Boolean> = selectedFabricatedApps
+            val selectedApps: HashMap<String, Boolean> = getSelectedFabricatedApps()
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
                 selectedApps.remove(packageName)
-                saveSelectedFabricatedApps(selectedApps)
+                setSelectedFabricatedApps(selectedApps)
 
                 validateRootAndUpdateColors(context) {
                     unregisterFabricatedOverlay(
@@ -185,7 +180,7 @@ class BroadcastListener : BroadcastReceiver() {
 
     private suspend fun handlePackageReplaced(context: Context, intent: Intent) {
         intent.data?.schemeSpecificPart?.let { packageName ->
-            val selectedApps = selectedFabricatedApps
+            val selectedApps: HashMap<String, Boolean> = getSelectedFabricatedApps()
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
                 validateRootAndUpdateColors(context) {
@@ -196,7 +191,7 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private suspend fun validateRootAndUpdateColors(context: Context, method: suspend () -> Unit) {
-        if (workingMethod == Const.WorkMethod.ROOT && RootConnectionProvider.isNotConnected) {
+        if (isRootMode() && RootConnectionProvider.isNotConnected) {
             RootConnectionProvider
                 .builder(context)
                 .onSuccess {
@@ -211,12 +206,10 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private fun updateAllColors(context: Context) {
-        if ((!getBoolean(THEMING_ENABLED, true) && !getBoolean(SHIZUKU_THEMING_ENABLED, true)) ||
-            workingMethod == Const.WorkMethod.NULL
-        ) return
+        if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isRootOrShizukuUnknown()) return
 
-        if (abs(System.currentTimeMillis() - getLong(MONET_LAST_UPDATED, 0)) >= cooldownTime) {
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+        if (abs(System.currentTimeMillis() - getLastColorAppliedTimestamp()) >= cooldownTime) {
+            updateColorAppliedTimestamp()
 
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)

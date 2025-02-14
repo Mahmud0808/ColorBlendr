@@ -17,9 +17,9 @@ import android.os.Process
 import android.os.RemoteException
 import android.os.UserHandle
 import android.util.Log
-import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
-import com.drdisagree.colorblendr.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_SOURCE_PACKAGE
+import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.Utils

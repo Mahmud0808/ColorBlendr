@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.FIRST_RUN
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isRootOrShizukuUnknown
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.provider.RootConnectionProvider.Companion.builder
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
@@ -62,10 +62,8 @@ class SplashActivity : AppCompatActivity() {
         success: AtomicBoolean,
         countDownLatch: CountDownLatch
     ) {
-        if (!getBoolean(FIRST_RUN, true) &&
-            workingMethod != Const.WorkMethod.NULL
-        ) {
-            if (workingMethod == Const.WorkMethod.ROOT) {
+        if (!isFirstRun() && !isRootOrShizukuUnknown()) {
+            if (isRootMode()) {
                 builder(appContext)
                     .onSuccess {
                         CoroutineScope(Dispatchers.IO).launch {
@@ -82,7 +80,7 @@ class SplashActivity : AppCompatActivity() {
                         countDownLatch.countDown()
                     }
                     .run()
-            } else if (workingMethod == Const.WorkMethod.SHIZUKU) {
+            } else if (isShizukuMode()) {
                 if (isShizukuAvailable && hasShizukuPermission(this)) {
                     bindUserService(
                         getUserServiceArgs(ShizukuConnection::class.java),

@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.data.common.Const.DATABASE_NAME
+import com.drdisagree.colorblendr.data.common.Constant.DATABASE_NAME
 import com.drdisagree.colorblendr.data.dao.CustomStyleDao
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 

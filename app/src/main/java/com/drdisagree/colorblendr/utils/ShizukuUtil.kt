@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.drdisagree.colorblendr.BuildConfig
-import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Constant
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 import rikka.shizuku.Shizuku.UserServiceArgs
@@ -37,7 +37,7 @@ object ShizukuUtil {
                     callback.onPermissionResult(grantResult == PackageManager.PERMISSION_GRANTED)
                 }
             })
-            Shizuku.requestPermission(Const.SHIZUKU_PERMISSION_REQUEST_ID)
+            Shizuku.requestPermission(Constant.SHIZUKU_PERMISSION_REQUEST_ID)
         } else {
             val permCallback = activity.registerForActivityResult(
                 ActivityResultContracts.RequestPermission()

@@ -10,15 +10,12 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
-import com.drdisagree.colorblendr.data.config.Prefs.putLong
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.ui.views.ColorPreview
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
@@ -145,7 +142,7 @@ class StylePreviewWidget : RelativeLayout {
     }
 
     fun applyColorScheme() {
-        putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+        updateColorAppliedTimestamp()
 
         coroutineScope.launch {
             applyFabricatedColors(context!!)
@@ -160,11 +157,11 @@ class StylePreviewWidget : RelativeLayout {
 
                     colorPalette = generateModifiedColors(
                         stringToEnumMonetStyle(context!!, styleName!!),
-                        getInt(MONET_ACCENT_SATURATION, 100),
-                        getInt(MONET_BACKGROUND_SATURATION, 100),
-                        getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                        getBoolean(MONET_PITCH_BLACK_THEME, false),
-                        getBoolean(MONET_ACCURATE_SHADES, true)
+                        getAccentSaturation(),
+                        getBackgroundSaturation(),
+                        getBackgroundLightness(),
+                        pitchBlackThemeEnabled(),
+                        accurateShadesEnabled()
                     )
                 } catch (e: Exception) {
                     Log.e(TAG, "Error generating color palette", e)

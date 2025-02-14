@@ -11,11 +11,10 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_NAME_APPS
-import com.drdisagree.colorblendr.data.common.Const.SHIZUKU_THEMING_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.THEMING_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.saveSelectedFabricatedApps
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.utils.ColorUtil.getColorFromAttribute
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
@@ -32,16 +31,13 @@ class AppListAdapter(private val appList: List<AppInfoModel>) :
     private val selectedApps: HashMap<String, Boolean> = HashMap()
 
     init {
-        if (getBoolean(THEMING_ENABLED, false) ||
-            getBoolean(SHIZUKU_THEMING_ENABLED, false)
-        ) {
-            for (appInfo: AppInfoModel in appList) {
-                if (appInfo.isSelected) {
-                    selectedApps[appInfo.packageName] = true
-                }
-            }
+        if (isThemingEnabled(false) || isShizukuThemingEnabled(false)) {
+            appList
+                .asSequence()
+                .filter { it.isSelected }
+                .forEach { selectedApps[it.packageName] = true }
 
-            saveSelectedFabricatedApps(selectedApps)
+            setSelectedFabricatedApps(selectedApps)
         }
     }
 
@@ -64,7 +60,7 @@ class AppListAdapter(private val appList: List<AppInfoModel>) :
             appInfo.isSelected = !isSelected
 
             selectedApps[appInfo.packageName] = !isSelected
-            saveSelectedFabricatedApps(selectedApps)
+            setSelectedFabricatedApps(selectedApps)
 
             CoroutineScope(Dispatchers.Main).launch {
                 if (isSelected) {

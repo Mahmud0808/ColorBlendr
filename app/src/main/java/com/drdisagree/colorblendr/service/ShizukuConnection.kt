@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.Keep
-import com.drdisagree.colorblendr.data.common.Const.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
+import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.topjohnwu.superuser.Shell
 import org.json.JSONException

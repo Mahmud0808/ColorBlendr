@@ -7,14 +7,12 @@ import android.os.Build
 import androidx.annotation.ColorInt
 import androidx.core.util.component1
 import androidx.core.util.component2
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_NAME_APPS
-import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.data.common.Const.THEMING_ENABLED
-import com.drdisagree.colorblendr.data.common.Const.TINT_TEXT_COLOR
-import com.drdisagree.colorblendr.data.common.Const.saveSelectedFabricatedApps
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.getColorNamesM3
 import com.drdisagree.colorblendr.utils.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
@@ -45,7 +43,7 @@ object FabricatedUtil {
         palette: ArrayList<ArrayList<Int>>
     ) {
         val suffix = if (isDark) "dark" else "light"
-        val isPitchBlackTheme = getBoolean(MONET_PITCH_BLACK_THEME, false)
+        val isPitchBlackTheme = pitchBlackThemeEnabled()
         val prefixSuffix = arrayOf(
             "system_" to "_${suffix}",
             "m3_sys_color_${suffix}_" to "",
@@ -92,8 +90,8 @@ object FabricatedUtil {
     fun FabricatedOverlayResource.assignPerAppColorsToOverlay(
         palette: ArrayList<ArrayList<Int>>
     ) {
-        val isPitchBlackTheme = getBoolean(MONET_PITCH_BLACK_THEME, false)
-        val tintTextColor = getBoolean(TINT_TEXT_COLOR, true)
+        val isPitchBlackTheme = pitchBlackThemeEnabled()
+        val tintTextColor = tintedTextEnabled()
 
         M3_REF_PALETTE.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
@@ -128,9 +126,7 @@ object FabricatedUtil {
     }
 
     fun updateFabricatedAppList(context: Context) {
-        if (workingMethod != Const.WorkMethod.ROOT ||
-            !getBoolean(THEMING_ENABLED, true)
-        ) return
+        if (!isRootMode() || !isThemingEnabled()) return
 
         val packageManager = context.packageManager
         val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
@@ -150,7 +146,7 @@ object FabricatedUtil {
 
         //        selectedApps.put(BuildConfig.APPLICATION_ID, true);
 
-        saveSelectedFabricatedApps(selectedApps)
+        setSelectedFabricatedApps(selectedApps)
     }
 
     private fun applyColorAdjustments(
@@ -287,7 +283,7 @@ object FabricatedUtil {
                         )
                     }
 
-                    Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                    else -> {
                         setColor(
                             "settingslib_materialColorOnSurface",
                             Color.WHITE,

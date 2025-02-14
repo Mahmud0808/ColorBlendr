@@ -2,8 +2,8 @@ package com.drdisagree.colorblendr.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.drdisagree.colorblendr.data.common.Const.CUSTOM_STYLE_TABLE
-import com.drdisagree.colorblendr.utils.MONET
+import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_STYLE_TABLE
+import com.drdisagree.colorblendr.data.enums.MONET
 import java.util.UUID
 
 @Entity(tableName = CUSTOM_STYLE_TABLE)

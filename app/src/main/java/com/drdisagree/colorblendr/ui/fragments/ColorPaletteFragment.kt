@@ -16,24 +16,23 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.MANUAL_OVERRIDE_COLORS
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
-import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
@@ -55,7 +54,6 @@ class ColorPaletteFragment : Fragment() {
     private lateinit var binding: FragmentColorPaletteBinding
     private lateinit var colorTableRows: Array<LinearLayout>
     private lateinit var sharedViewModel: SharedViewModel
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,8 +84,7 @@ class ColorPaletteFragment : Fragment() {
         )
 
         // Warning message
-        val isOverrideAvailable: Boolean = notShizukuMode &&
-                getBoolean(MANUAL_OVERRIDE_COLORS, false)
+        val isOverrideAvailable = isRootMode() && manualColorOverrideEnabled()
 
         binding.warn.warningText.setText(
             if (isOverrideAvailable) R.string.color_palette_root_warn else R.string.color_palette_rootless_warn
@@ -193,7 +190,7 @@ class ColorPaletteFragment : Fragment() {
                 val finalJ: Int = j
 
                 colorTableRows[i].getChildAt(j).setOnClickListener { v: View ->
-                    val manualOverride: Boolean = getBoolean(MANUAL_OVERRIDE_COLORS, false)
+                    val manualOverride: Boolean = manualColorOverrideEnabled()
                     val snackbarButton: String = getString(
                         if (manualOverride) {
                             R.string.override
@@ -209,7 +206,7 @@ class ColorPaletteFragment : Fragment() {
                             Snackbar.LENGTH_INDEFINITE
                         )
                         .setAction(snackbarButton) {
-                            if (!manualOverride || !notShizukuMode) {
+                            if (!manualOverride || isShizukuMode()) {
                                 val clipboard: ClipboardManager =
                                     requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                 val clip: ClipData = ClipData.newPlainText(
@@ -248,10 +245,7 @@ class ColorPaletteFragment : Fragment() {
                                         putInt(systemPaletteNames[finalI][finalJ], color)
 
                                         CoroutineScope(Dispatchers.Main).launch {
-                                            putLong(
-                                                MONET_LAST_UPDATED,
-                                                System.currentTimeMillis()
-                                            )
+                                            updateColorAppliedTimestamp()
                                             delay(200)
                                             withContext(Dispatchers.IO) {
                                                 try {
@@ -282,10 +276,7 @@ class ColorPaletteFragment : Fragment() {
                     clearPref(systemPaletteNames[finalI][finalJ])
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        putLong(
-                            MONET_LAST_UPDATED,
-                            System.currentTimeMillis()
-                        )
+                        updateColorAppliedTimestamp()
                         withContext(Dispatchers.IO) {
                             try {
                                 applyFabricatedColors(requireContext())
@@ -303,11 +294,11 @@ class ColorPaletteFragment : Fragment() {
         try {
             return ColorUtil.generateModifiedColors(
                 getCurrentMonetStyle(),
-                getInt(MONET_ACCENT_SATURATION, 100),
-                getInt(MONET_BACKGROUND_SATURATION, 100),
-                getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                getBoolean(MONET_PITCH_BLACK_THEME, false),
-                getBoolean(MONET_ACCURATE_SHADES, true)
+                getAccentSaturation(),
+                getBackgroundSaturation(),
+                getBackgroundLightness(),
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
             )
         } catch (e: Exception) {
             Log.e(TAG, "Error generating modified colors", e)

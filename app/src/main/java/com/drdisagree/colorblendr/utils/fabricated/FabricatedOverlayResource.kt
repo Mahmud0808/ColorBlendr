@@ -3,8 +3,7 @@ package com.drdisagree.colorblendr.utils.fabricated
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.TypedValue
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayEntry
+import com.drdisagree.colorblendr.data.common.Constant
 
 open class FabricatedOverlayResource : Parcelable {
     val overlayName: String
@@ -15,7 +14,7 @@ open class FabricatedOverlayResource : Parcelable {
     constructor(
         overlayName: String,
         targetPackage: String,
-        sourcePackage: String = Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
+        sourcePackage: String = Constant.FABRICATED_OVERLAY_SOURCE_PACKAGE
     ) {
         this.overlayName = overlayName
         this.targetPackage = targetPackage

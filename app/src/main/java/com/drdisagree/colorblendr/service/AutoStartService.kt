@@ -19,8 +19,8 @@ import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.utils.ColorUtil.getAccentColor
@@ -164,13 +164,11 @@ class AutoStartService : Service() {
     }
 
     private fun setupSystemUIRestartListener() {
-        if (workingMethod == Const.WorkMethod.ROOT &&
-            RootConnectionProvider.isNotConnected
-        ) {
+        if (isRootMode() && RootConnectionProvider.isNotConnected) {
             RootConnectionProvider.builder(appContext)
                 .onSuccess { initSystemUIRestartListener() }
                 .run()
-        } else if (workingMethod == Const.WorkMethod.SHIZUKU &&
+        } else if (isShizukuMode() &&
             ShizukuConnectionProvider.isNotConnected &&
             isShizukuAvailable &&
             hasShizukuPermission(appContext)
@@ -179,7 +177,7 @@ class AutoStartService : Service() {
                 getUserServiceArgs(ShizukuConnection::class.java),
                 ShizukuConnectionProvider.serviceConnection
             )
-        } else if (workingMethod == Const.WorkMethod.ROOT) {
+        } else if (isRootMode()) {
             initSystemUIRestartListener()
         }
     }

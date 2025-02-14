@@ -14,28 +14,25 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const
-import com.drdisagree.colorblendr.data.common.Const.EXCLUDED_PREFS_FROM_BACKUP
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.data.common.Const.customStyleRepository
-import com.drdisagree.colorblendr.data.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getCustomStyleRepository
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
 import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
 import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.DividerItemDecoration
-import com.drdisagree.colorblendr.utils.MONET
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.getDialogPreferredPadding
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.MiscUtil.toPx
@@ -46,12 +43,12 @@ import kotlinx.coroutines.launch
 class StylesFragment : Fragment() {
 
     private lateinit var binding: FragmentStylesBinding
-    private val notShizukuMode = workingMethod != Const.WorkMethod.SHIZUKU
-    private val isAtleastA13 = notShizukuMode ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    private val isAtleastA14 = notShizukuMode ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     private var styleAdapter: StylePreviewAdapter? = null
+    private val customStyleRepository = getCustomStyleRepository()
+    private val isAtleastA13 = isRootMode() ||
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    private val isAtleastA14 = isRootMode() ||
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,7 +73,7 @@ class StylesFragment : Fragment() {
             binding.recyclerView.adapter = styleAdapter
         }
 
-        binding.addStyle.visibility = if (notShizukuMode) View.VISIBLE else View.GONE
+        binding.addStyle.visibility = if (isRootMode()) View.VISIBLE else View.GONE
         binding.addStyle.setOnClickListener {
             showNewStyleDialog(
                 callback = { title, desc ->
@@ -189,11 +186,11 @@ class StylesFragment : Fragment() {
             monet = currentMonet,
             palette = ColorUtil.generateModifiedColors(
                 currentMonet,
-                getInt(MONET_ACCENT_SATURATION, 100),
-                getInt(MONET_BACKGROUND_SATURATION, 100),
-                getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                getBoolean(MONET_PITCH_BLACK_THEME, false),
-                getBoolean(MONET_ACCURATE_SHADES, true)
+                getAccentSaturation(),
+                getBackgroundSaturation(),
+                getBackgroundLightness(),
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
             )
         )
 
@@ -309,13 +306,13 @@ class StylesFragment : Fragment() {
             StyleModel(
                 titleResId = R.string.monet_fidelity,
                 descriptionResId = R.string.monet_fidelity_desc,
-                isEnabled = notShizukuMode,
+                isEnabled = isRootMode(),
                 monetStyle = MONET.FIDELITY
             ),
             StyleModel(
                 titleResId = R.string.monet_content,
                 descriptionResId = R.string.monet_content_desc,
-                isEnabled = notShizukuMode,
+                isEnabled = isRootMode(),
                 monetStyle = MONET.CONTENT
             ),
             StyleModel(
@@ -325,7 +322,7 @@ class StylesFragment : Fragment() {
                 monetStyle = MONET.FRUIT_SALAD
             )
         ).apply {
-            if (!notShizukuMode) return@apply
+            if (!isRootMode()) return@apply
 
             customStyleRepository.getCustomStyles().forEach { customStyle ->
                 add(

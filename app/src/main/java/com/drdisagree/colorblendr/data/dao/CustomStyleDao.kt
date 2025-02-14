@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.drdisagree.colorblendr.data.common.Const.CUSTOM_STYLE_TABLE
+import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_STYLE_TABLE
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 
 @Dao

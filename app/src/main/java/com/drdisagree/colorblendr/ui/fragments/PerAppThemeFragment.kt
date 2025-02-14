@@ -21,17 +21,15 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const.APP_LIST_FILTER_METHOD
-import com.drdisagree.colorblendr.data.common.Const.AppType
-import com.drdisagree.colorblendr.data.common.Const.FABRICATED_OVERLAY_NAME_APPS
-import com.drdisagree.colorblendr.data.common.Const.SHOW_PER_APP_THEME_WARN
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
-import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.putInt
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Utilities.getAppListFilteringMethod
+import com.drdisagree.colorblendr.data.common.Utilities.setAppListFilteringMethod
+import com.drdisagree.colorblendr.data.common.Utilities.setShowPerAppThemeWarning
+import com.drdisagree.colorblendr.data.common.Utilities.showPerAppThemeWarning
+import com.drdisagree.colorblendr.data.enums.AppType
+import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding
 import com.drdisagree.colorblendr.ui.adapters.AppListAdapter
-import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.utils.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
@@ -52,12 +50,7 @@ class PerAppThemeFragment : Fragment() {
 
     private val packageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val appType = AppType.entries[getInt(
-                APP_LIST_FILTER_METHOD,
-                AppType.ALL.ordinal
-            )]
-
-            initAppList(appType)
+            initAppList(AppType.entries[getAppListFilteringMethod()])
         }
     }
     private val textWatcher: TextWatcher = object : TextWatcher {
@@ -88,13 +81,13 @@ class PerAppThemeFragment : Fragment() {
         setToolbarTitle(requireContext(), R.string.per_app_theme, true, binding.header.toolbar)
 
         // Warning
-        if (!getBoolean(SHOW_PER_APP_THEME_WARN, true)) {
+        if (!showPerAppThemeWarning()) {
             binding.warn.container.visibility = View.GONE
         }
         binding.warn.close.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(50)
-                putBoolean(SHOW_PER_APP_THEME_WARN, false)
+                setShowPerAppThemeWarning(false)
                 binding.warn.container.animate()
                     .translationX(binding.warn.container.width * 2f).alpha(0f).withEndAction {
                         binding.warn.container.visibility = View.GONE
@@ -112,9 +105,7 @@ class PerAppThemeFragment : Fragment() {
 
         binding.searchBox.filter.setOnClickListener { showFilterDialog() }
 
-        val appType = AppType.entries[getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal)]
-
-        initAppList(appType)
+        initAppList(AppType.entries[getAppListFilteringMethod()])
         blurSearchView()
     }
 
@@ -213,18 +204,14 @@ class PerAppThemeFragment : Fragment() {
             getString(R.string.filter_all)
         )
 
-        val selectedFilterIndex = getInt(APP_LIST_FILTER_METHOD, AppType.ALL.ordinal)
-
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.filter_app_category))
             .setSingleChoiceItems(
                 items,
-                selectedFilterIndex
+                getAppListFilteringMethod()
             ) { dialog: DialogInterface, which: Int ->
-                putInt(APP_LIST_FILTER_METHOD, which)
-                val appType = AppType.entries[which]
-
-                initAppList(appType)
+                setAppListFilteringMethod(which)
+                initAppList(AppType.entries[which])
                 dialog.dismiss()
             }
             .setCancelable(true)

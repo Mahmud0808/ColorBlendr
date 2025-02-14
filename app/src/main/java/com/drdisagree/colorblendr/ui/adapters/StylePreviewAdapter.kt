@@ -7,21 +7,20 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Const.MONET_STYLE_ORIGINAL_NAME
-import com.drdisagree.colorblendr.data.config.Prefs.clearPrefs
-import com.drdisagree.colorblendr.data.config.Prefs.putString
+import com.drdisagree.colorblendr.data.common.Utilities.clearOriginalStyleName
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentCustomStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setCurrentCustomStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setOriginalStyleName
 import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
 import com.drdisagree.colorblendr.utils.BackupRestore
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentCustomStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getStyleNameForRootless
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.saveCurrentCustomStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.saveCurrentMonetStyle
-import com.drdisagree.colorblendr.utils.MONET
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.toPx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +75,7 @@ class StylePreviewAdapter(
         styleList.add(newStyle)
         notifyItemInserted(styleList.size - 1)
 
-        saveCurrentCustomStyle(newStyle.customStyle.styleId)
+        setCurrentCustomStyle(newStyle.customStyle.styleId)
     }
 
     fun updateStyle(style: StyleModel) {
@@ -165,12 +164,9 @@ class StylePreviewAdapter(
 
                 coroutineScope.launch {
                     // update preferences and apply colors
-                    saveCurrentMonetStyle(styleData.monetStyle)
+                    setCurrentMonetStyle(styleData.monetStyle)
                     resetCustomStyle()
-                    putString(
-                        MONET_STYLE_ORIGINAL_NAME,
-                        styleData.titleResId.getStyleNameForRootless()
-                    )
+                    setOriginalStyleName(styleData.titleResId.getStyleNameForRootless())
                     applyColorScheme()
                 }
             }
@@ -204,8 +200,8 @@ class StylePreviewAdapter(
                     BackupRestore.restorePrefsMap(prefsMap)
 
                     // update preferences and apply colors
-                    saveCurrentCustomStyle(customStyle.styleId)
-                    clearPrefs(MONET_STYLE_ORIGINAL_NAME)
+                    setCurrentCustomStyle(customStyle.styleId)
+                    clearOriginalStyleName()
                     applyColorScheme()
                 }
             }

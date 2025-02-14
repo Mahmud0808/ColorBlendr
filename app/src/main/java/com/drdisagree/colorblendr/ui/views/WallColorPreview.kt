@@ -13,14 +13,12 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
-import com.drdisagree.colorblendr.data.config.Prefs.getInt
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.SystemUtil
@@ -223,11 +221,11 @@ class WallColorPreview : View {
                     generateModifiedColors(
                         getCurrentMonetStyle(),
                         color,
-                        getInt(MONET_ACCENT_SATURATION, 100),
-                        getInt(MONET_BACKGROUND_SATURATION, 100),
-                        getInt(MONET_BACKGROUND_LIGHTNESS, 100),
-                        getBoolean(MONET_PITCH_BLACK_THEME, false),
-                        getBoolean(MONET_ACCURATE_SHADES, true),
+                        getAccentSaturation(),
+                        getBackgroundSaturation(),
+                        getBackgroundLightness(),
+                        pitchBlackThemeEnabled(),
+                        accurateShadesEnabled(),
                         false,
                         SystemUtil.isDarkMode,
                         false

@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.data.config
 import android.content.Context
 import android.content.SharedPreferences
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.data.common.Const
+import com.drdisagree.colorblendr.data.common.Constant
 import com.google.gson.reflect.TypeToken
 
 @Suppress("unused")
@@ -12,7 +12,7 @@ object Prefs {
 
     private var prefs: SharedPreferences = appContext
         .createDeviceProtectedStorageContext()
-        .getSharedPreferences(Const.SHARED_PREFS, Context.MODE_PRIVATE)
+        .getSharedPreferences(Constant.SHARED_PREFS, Context.MODE_PRIVATE)
 
     private var editor = prefs.edit()
 
@@ -51,12 +51,12 @@ object Prefs {
 
     fun getAllPrefs(): MutableMap<String, *> = prefs.all
 
-    fun getAllPrefsAsGson(): String = Const.GSON.toJson(getAllPrefs() as Map<String, *>)
+    fun getAllPrefsAsGson(): String = Constant.GSON.toJson(getAllPrefs() as Map<String, *>)
 
-    fun Map<String, Any>.toGsonString(): String = Const.GSON.toJson(this)
+    fun Map<String, Any>.toGsonString(): String = Constant.GSON.toJson(this)
 
     fun String.toPrefs(): Map<String, Any> =
-        Const.GSON.fromJson(this, object : TypeToken<Map<String, Any>>() {}.type)
+        Constant.GSON.fromJson(this, object : TypeToken<Map<String, Any>>() {}.type)
 
     fun clearPref(key: String) = editor.remove(key).apply()
 

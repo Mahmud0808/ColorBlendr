@@ -1,7 +1,7 @@
 package com.drdisagree.colorblendr.data.database
 
 import androidx.room.TypeConverter
-import com.drdisagree.colorblendr.data.common.Const.GSON
+import com.drdisagree.colorblendr.data.common.Constant.GSON
 import com.google.gson.reflect.TypeToken
 
 class Converters {
