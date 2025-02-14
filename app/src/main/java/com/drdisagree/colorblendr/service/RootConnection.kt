@@ -29,11 +29,20 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 class RootConnection : RootService() {
+
     override fun onBind(intent: Intent): IBinder {
         return RootConnectionImpl()
     }
 
     class RootConnectionImpl : IRootConnection.Stub() {
+
+        /**
+         * A listener that observes process lifecycle events, specifically used to detect when
+         * the System UI process dies.
+         *
+         * This listener implements the [IProcessObserver] interface and is registered with
+         * the Activity Manager to receive notifications about process state changes.
+         */
         private val processListener: IProcessObserver.Stub = object : IProcessObserver.Stub() {
             @Throws(RemoteException::class)
             override fun onForegroundActivitiesChanged(
@@ -53,11 +62,8 @@ class RootConnection : RootService() {
                 if (uid == SystemUI_UID) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         try {
-                            enableOverlayWithIdentifier(
-                                listOf(
-                                    FABRICATED_OVERLAY_NAME_SYSTEM
-                                )
-                            )
+                            enableOverlayWithIdentifier(listOf(FABRICATED_OVERLAY_NAME_SYSTEM))
+                            Log.d(TAG, "SystemUI restarted, re-enabling overlay")
                         } catch (ignored: RemoteException) {
                             // Overlay was never registered
                         }
