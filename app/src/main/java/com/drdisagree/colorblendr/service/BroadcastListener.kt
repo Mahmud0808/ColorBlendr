@@ -213,7 +213,7 @@ class BroadcastListener : BroadcastReceiver() {
 
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                applyFabricatedColors(context)
+                applyFabricatedColors()
             }
         }
     }

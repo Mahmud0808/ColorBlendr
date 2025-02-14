@@ -81,7 +81,7 @@ class SplashActivity : AppCompatActivity() {
                     }
                     .run()
             } else if (isShizukuMode()) {
-                if (isShizukuAvailable && hasShizukuPermission(this)) {
+                if (isShizukuAvailable && hasShizukuPermission()) {
                     bindUserService(
                         getUserServiceArgs(ShizukuConnection::class.java),
                         ShizukuConnectionProvider.serviceConnection

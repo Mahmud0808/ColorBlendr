@@ -145,7 +145,7 @@ class StylePreviewWidget : RelativeLayout {
         updateColorAppliedTimestamp()
 
         coroutineScope.launch {
-            applyFabricatedColors(context!!)
+            applyFabricatedColors()
         }
     }
 

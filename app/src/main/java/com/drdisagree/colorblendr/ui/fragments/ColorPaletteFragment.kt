@@ -249,7 +249,7 @@ class ColorPaletteFragment : Fragment() {
                                             delay(200)
                                             withContext(Dispatchers.IO) {
                                                 try {
-                                                    applyFabricatedColors(requireContext())
+                                                    applyFabricatedColors()
                                                 } catch (ignored: Exception) {
                                                 }
                                             }
@@ -279,7 +279,7 @@ class ColorPaletteFragment : Fragment() {
                         updateColorAppliedTimestamp()
                         withContext(Dispatchers.IO) {
                             try {
-                                applyFabricatedColors(requireContext())
+                                applyFabricatedColors()
                             } catch (ignored: Exception) {
                             }
                         }
@@ -290,20 +290,15 @@ class ColorPaletteFragment : Fragment() {
         }
     }
 
-    private fun generateModifiedColors(): ArrayList<ArrayList<Int>>? {
-        try {
-            return ColorUtil.generateModifiedColors(
-                getCurrentMonetStyle(),
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error generating modified colors", e)
-            return null
-        }
+    private fun generateModifiedColors(): ArrayList<ArrayList<Int>> {
+        return ColorUtil.generateModifiedColors(
+            getCurrentMonetStyle(),
+            getAccentSaturation(),
+            getBackgroundSaturation(),
+            getBackgroundLightness(),
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled()
+        )
     }
 
     companion object {

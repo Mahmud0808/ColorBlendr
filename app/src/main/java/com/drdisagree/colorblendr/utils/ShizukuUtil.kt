@@ -1,12 +1,12 @@
 package com.drdisagree.colorblendr.utils
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.drdisagree.colorblendr.BuildConfig
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
@@ -17,7 +17,7 @@ object ShizukuUtil {
     val isShizukuAvailable: Boolean
         get() = Shizuku.pingBinder()
 
-    fun hasShizukuPermission(context: Context): Boolean {
+    fun hasShizukuPermission(): Boolean {
         if (!isShizukuAvailable) {
             return false
         }
@@ -25,7 +25,7 @@ object ShizukuUtil {
         return if (Shizuku.getVersion() >= 11 && !Shizuku.isPreV11()) {
             Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
         } else {
-            context.checkCallingOrSelfPermission(ShizukuProvider.PERMISSION) == PackageManager.PERMISSION_GRANTED
+            appContext.checkCallingOrSelfPermission(ShizukuProvider.PERMISSION) == PackageManager.PERMISSION_GRANTED
         }
     }
 

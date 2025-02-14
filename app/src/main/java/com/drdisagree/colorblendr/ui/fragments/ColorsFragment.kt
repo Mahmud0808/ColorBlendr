@@ -139,7 +139,7 @@ class ColorsFragment : Fragment() {
                             delay(300)
                             withContext(Dispatchers.IO) {
                                 try {
-                                    applyFabricatedColors(requireContext())
+                                    applyFabricatedColors()
                                 } catch (ignored: Exception) {
                                 }
                             }
@@ -243,7 +243,7 @@ class ColorsFragment : Fragment() {
                         updateColorAppliedTimestamp()
                         withContext(Dispatchers.IO) {
                             try {
-                                applyFabricatedColors(requireContext())
+                                applyFabricatedColors()
                             } catch (ignored: Exception) {
                             }
                         }
@@ -293,9 +293,5 @@ class ColorsFragment : Fragment() {
             // Receiver was not registered
         }
         super.onDestroy()
-    }
-
-    companion object {
-        private val TAG: String = ColorsFragment::class.java.getSimpleName()
     }
 }

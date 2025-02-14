@@ -75,7 +75,7 @@ class SettingsAdvancedFragment : Fragment() {
                         resetCustomStyleIfNotNull()
                         setSecondaryColorValue(monetSecondaryColor)
 
-                        applyFabricatedColors()
+                        updateColors()
                     }
                 }
                 .show(getChildFragmentManager(), "secondaryColorPicker")
@@ -99,7 +99,7 @@ class SettingsAdvancedFragment : Fragment() {
                         resetCustomStyleIfNotNull()
                         setTertiaryColorValue(monetTertiaryColor)
 
-                        applyFabricatedColors()
+                        updateColors()
                     }
                 }
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
@@ -111,7 +111,7 @@ class SettingsAdvancedFragment : Fragment() {
             setScreenOffColorUpdateEnabled(isChecked)
 
             if (!isChecked) {
-                applyFabricatedColors()
+                updateColors()
             }
         }
 
@@ -121,7 +121,7 @@ class SettingsAdvancedFragment : Fragment() {
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
             setModeSpecificThemesEnabled(isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
 
         // Darker launcher icons
@@ -132,7 +132,7 @@ class SettingsAdvancedFragment : Fragment() {
                 savePixelLauncherInPerAppTheme()
             }
             setDarkerLauncherIconsEnabled(isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
 
         // Semi-transparent launcher icons
@@ -143,7 +143,7 @@ class SettingsAdvancedFragment : Fragment() {
                 savePixelLauncherInPerAppTheme()
             }
             setSemiTransparentLauncherIconsEnabled(isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
 
         // Semi-transparent launcher icons
@@ -153,7 +153,7 @@ class SettingsAdvancedFragment : Fragment() {
         binding.pitchBlackSettingsWorkaround.isSwitchChecked = forcePitchBlackSettingsEnabled()
         binding.pitchBlackSettingsWorkaround.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             setForcePitchBlackSettingsEnabled(isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
 
         return binding.getRoot()
@@ -179,20 +179,13 @@ class SettingsAdvancedFragment : Fragment() {
         setSelectedFabricatedApps(selectedApps)
     }
 
-    private fun applyFabricatedColors() {
+    private fun updateColors() {
         CoroutineScope(Dispatchers.Main).launch {
             updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
+                applyFabricatedColors()
             }
         }
-    }
-
-    companion object {
-        private val TAG: String = SettingsAdvancedFragment::class.java.simpleName
     }
 }

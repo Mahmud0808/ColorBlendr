@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.utils
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.RemoteException
@@ -208,12 +207,12 @@ object OverlayManager {
         }
     }
 
-    fun applyFabricatedColors(context: Context) {
+    fun applyFabricatedColors() {
         if (!isThemingEnabled() && !isShizukuThemingEnabled()) {
             return
         }
 
-        if (applyFabricatedColorsNonRoot(context)) {
+        if (applyFabricatedColorsNonRoot()) {
             return
         }
 
@@ -351,8 +350,8 @@ object OverlayManager {
         )
     }
 
-    fun removeFabricatedColors(context: Context) {
-        if (removeFabricatedColorsNonRoot(context)) {
+    fun removeFabricatedColors() {
+        if (removeFabricatedColorsNonRoot()) {
             return
         }
 
@@ -399,12 +398,12 @@ object OverlayManager {
         }
     }
 
-    private fun applyFabricatedColorsNonRoot(context: Context): Boolean {
+    private fun applyFabricatedColorsNonRoot(): Boolean {
         if (!isShizukuMode()) {
             return false
         }
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(context)) {
+        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
             Log.w(TAG, "Shizuku permission not available")
             return true
         }
@@ -434,12 +433,12 @@ object OverlayManager {
         return true
     }
 
-    private fun removeFabricatedColorsNonRoot(context: Context): Boolean {
+    private fun removeFabricatedColorsNonRoot(): Boolean {
         if (!isShizukuMode()) {
             return false
         }
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission(context)) {
+        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
             Log.w(TAG, "Shizuku permission not available")
             return true
         }

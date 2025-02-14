@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.ui.fragments
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,7 +76,7 @@ class ThemeFragment : Fragment() {
                     resetCustomStyleIfNotNull()
                     monetAccentSaturation = seekBar.progress
                     setAccentSaturation(monetAccentSaturation)
-                    applyFabricatedColors()
+                    updateColors()
                 }
             })
 
@@ -87,7 +86,7 @@ class ThemeFragment : Fragment() {
                 monetAccentSaturation = 100
                 updatePreviewColors()
                 resetAccentSaturation()
-                applyFabricatedColors()
+                updateColors()
                 true
             }
             accentSaturation.setEnabled(isRootMode())
@@ -108,7 +107,7 @@ class ThemeFragment : Fragment() {
                     resetCustomStyleIfNotNull()
                     monetBackgroundSaturation = seekBar.progress
                     setBackgroundSaturation(monetBackgroundSaturation)
-                    applyFabricatedColors()
+                    updateColors()
                 }
             })
 
@@ -118,7 +117,7 @@ class ThemeFragment : Fragment() {
                 monetBackgroundSaturation = 100
                 updatePreviewColors()
                 resetBackgroundSaturation()
-                applyFabricatedColors()
+                updateColors()
                 true
             }
             backgroundSaturation.setEnabled(isRootMode())
@@ -139,7 +138,7 @@ class ThemeFragment : Fragment() {
                     resetCustomStyleIfNotNull()
                     monetBackgroundLightness = seekBar.progress
                     setBackgroundLightness(monetBackgroundLightness)
-                    applyFabricatedColors()
+                    updateColors()
                 }
             })
 
@@ -149,7 +148,7 @@ class ThemeFragment : Fragment() {
                 monetBackgroundLightness = 100
                 updatePreviewColors()
                 resetBackgroundLightness()
-                applyFabricatedColors()
+                updateColors()
                 true
             }
             backgroundLightness.setEnabled(isRootMode())
@@ -194,21 +193,8 @@ class ThemeFragment : Fragment() {
         }
     }
 
-    private fun applyFabricatedColors() {
-        CoroutineScope(Dispatchers.Main).launch {
-            updateColorAppliedTimestamp()
-            delay(200)
-            withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
-            }
-        }
-    }
-
     private fun updatePreviewColors() {
-        val colorPalette: ArrayList<ArrayList<Int>>? = generateModifiedColors(
+        val colorPalette: ArrayList<ArrayList<Int>> = generateModifiedColors(
             getCurrentMonetStyle(),
             monetAccentSaturation,
             monetBackgroundSaturation,
@@ -217,53 +203,51 @@ class ThemeFragment : Fragment() {
             accurateShadesEnabled()
         )
 
-        if (colorPalette != null) {
-            val isDarkMode: Boolean = isDarkMode
+        val isDarkMode: Boolean = isDarkMode
 
-            binding.colorAccent1.colorContainer.apply {
-                setHalfCircleColor(colorPalette[0][4])
-                setFirstQuarterCircleColor(colorPalette[0][5])
-                setSecondQuarterCircleColor(colorPalette[0][6])
-                setSquareColor(colorPalette[0][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorAccent1.colorContainer.apply {
+            setHalfCircleColor(colorPalette[0][4])
+            setFirstQuarterCircleColor(colorPalette[0][5])
+            setSecondQuarterCircleColor(colorPalette[0][6])
+            setSquareColor(colorPalette[0][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorAccent2.colorContainer.apply {
-                setHalfCircleColor(colorPalette[1][4])
-                setFirstQuarterCircleColor(colorPalette[1][5])
-                setSecondQuarterCircleColor(colorPalette[1][6])
-                setSquareColor(colorPalette[1][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorAccent2.colorContainer.apply {
+            setHalfCircleColor(colorPalette[1][4])
+            setFirstQuarterCircleColor(colorPalette[1][5])
+            setSecondQuarterCircleColor(colorPalette[1][6])
+            setSquareColor(colorPalette[1][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorAccent3.colorContainer.apply {
-                setHalfCircleColor(colorPalette[2][4])
-                setFirstQuarterCircleColor(colorPalette[2][5])
-                setSecondQuarterCircleColor(colorPalette[2][6])
-                setSquareColor(colorPalette[2][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorAccent3.colorContainer.apply {
+            setHalfCircleColor(colorPalette[2][4])
+            setFirstQuarterCircleColor(colorPalette[2][5])
+            setSecondQuarterCircleColor(colorPalette[2][6])
+            setSquareColor(colorPalette[2][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorNeutral1.colorContainer.apply {
-                setHalfCircleColor(colorPalette[3][4])
-                setFirstQuarterCircleColor(colorPalette[3][5])
-                setSecondQuarterCircleColor(colorPalette[3][6])
-                setSquareColor(colorPalette[3][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorNeutral1.colorContainer.apply {
+            setHalfCircleColor(colorPalette[3][4])
+            setFirstQuarterCircleColor(colorPalette[3][5])
+            setSecondQuarterCircleColor(colorPalette[3][6])
+            setSquareColor(colorPalette[3][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorNeutral2.colorContainer.apply {
-                setHalfCircleColor(colorPalette[4][4])
-                setFirstQuarterCircleColor(colorPalette[4][5])
-                setSecondQuarterCircleColor(colorPalette[4][6])
-                setSquareColor(colorPalette[4][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorNeutral2.colorContainer.apply {
+            setHalfCircleColor(colorPalette[4][4])
+            setFirstQuarterCircleColor(colorPalette[4][5])
+            setSecondQuarterCircleColor(colorPalette[4][6])
+            setSquareColor(colorPalette[4][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
         }
     }
 
@@ -274,23 +258,24 @@ class ThemeFragment : Fragment() {
         monetBackgroundLightness: Int,
         pitchBlackTheme: Boolean,
         accurateShades: Boolean
-    ): ArrayList<ArrayList<Int>>? {
-        try {
-            return ColorUtil.generateModifiedColors(
-                style,
-                monetAccentSaturation,
-                monetBackgroundSaturation,
-                monetBackgroundLightness,
-                pitchBlackTheme,
-                accurateShades
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error generating modified colors", e)
-            return null
-        }
+    ): ArrayList<ArrayList<Int>> {
+        return ColorUtil.generateModifiedColors(
+            style,
+            monetAccentSaturation,
+            monetBackgroundSaturation,
+            monetBackgroundLightness,
+            pitchBlackTheme,
+            accurateShades
+        )
     }
 
-    companion object {
-        private val TAG: String = ThemeFragment::class.java.simpleName
+    private fun updateColors() {
+        CoroutineScope(Dispatchers.Main).launch {
+            updateColorAppliedTimestamp()
+            delay(200)
+            withContext(Dispatchers.IO) {
+                applyFabricatedColors()
+            }
+        }
     }
 }

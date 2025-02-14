@@ -2,9 +2,7 @@ package com.drdisagree.colorblendr.utils
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Constant.DATABASE_NAME
 import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
@@ -13,16 +11,13 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SAVED_CUSTOM_MONET_STYLES
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.config.Prefs.getAllPrefs
 import com.drdisagree.colorblendr.data.config.Prefs.preferenceEditor
 import com.drdisagree.colorblendr.data.database.appDatabase
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.google.gson.reflect.TypeToken
-import com.jakewharton.processphoenix.ProcessPhoenix
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.ZipParameters
@@ -152,21 +147,6 @@ object BackupRestore {
                 }
 
                 tempDir.deleteRecursively()
-
-                // Restart app with delay to load new database,
-                // otherwise user might think that app crashed
-                if (isRootMode()) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            appContext,
-                            R.string.restarting_app,
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        delay(3000)
-                        ProcessPhoenix.triggerRebirth(appContext)
-                    }
-                }
 
                 true
             } catch (e: Exception) {

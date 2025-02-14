@@ -171,7 +171,7 @@ class AutoStartService : Service() {
         } else if (isShizukuMode() &&
             ShizukuConnectionProvider.isNotConnected &&
             isShizukuAvailable &&
-            hasShizukuPermission(appContext)
+            hasShizukuPermission()
         ) {
             bindUserService(
                 getUserServiceArgs(ShizukuConnection::class.java),

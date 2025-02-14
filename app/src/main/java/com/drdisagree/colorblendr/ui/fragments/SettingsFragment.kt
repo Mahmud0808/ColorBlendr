@@ -24,6 +24,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
@@ -61,6 +62,7 @@ import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
 import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.processphoenix.ProcessPhoenix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -90,9 +92,9 @@ class SettingsFragment : Fragment() {
 
                     withContext(Dispatchers.IO) {
                         if (isChecked) {
-                            applyFabricatedColors(requireContext())
+                            updateColors()
                         } else {
-                            removeFabricatedColors(requireContext())
+                            removeFabricatedColors()
                         }
                     }
 
@@ -148,7 +150,7 @@ class SettingsFragment : Fragment() {
             resetCustomStyleIfNotNull()
             setAccurateShadesEnabled(isChecked)
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
         binding.accurateShades.setEnabled(isRootMode())
 
@@ -157,7 +159,7 @@ class SettingsFragment : Fragment() {
         binding.pitchBlackTheme.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
             setPitchBlackThemeEnabled(isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
         binding.pitchBlackTheme.setEnabled(isRootMode())
 
@@ -176,7 +178,7 @@ class SettingsFragment : Fragment() {
                     if (wallpaperColorList.isNotEmpty()) wallpaperColorList[0]
                     else Color.BLUE
                 )
-                applyFabricatedColors()
+                updateColors()
             }
         }
 
@@ -185,7 +187,7 @@ class SettingsFragment : Fragment() {
         binding.tintTextColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
             setTintedTextEnabled(isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
         binding.tintTextColor.setEnabled(isRootMode())
 
@@ -204,7 +206,7 @@ class SettingsFragment : Fragment() {
                             setManualColorOverrideEnabled(false)
                             if (numColorsOverridden() != 0) {
                                 clearAllOverriddenColors()
-                                applyFabricatedColors()
+                                updateColors()
                             }
                         }
                         .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
@@ -216,7 +218,7 @@ class SettingsFragment : Fragment() {
                     setManualColorOverrideEnabled(false)
                     if (numColorsOverridden() != 0) {
                         clearAllOverriddenColors()
-                        applyFabricatedColors()
+                        updateColors()
                     }
                 }
             }
@@ -386,9 +388,19 @@ class SettingsFragment : Fragment() {
 
                     withContext(Dispatchers.Main) {
                         if (success) {
-                            try {
-                                applyFabricatedColors(requireContext())
-                            } catch (ignored: Exception) {
+                            // Restart app with delay to load new database,
+                            // otherwise user might think that app crashed
+                            if (isRootMode()) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    R.string.restarting_app,
+                                    Toast.LENGTH_LONG
+                                ).show()
+
+                                delay(2000)
+                                updateColors {
+                                    ProcessPhoenix.triggerRebirth(appContext)
+                                }
                             }
                         } else {
                             Snackbar
@@ -441,20 +453,17 @@ class SettingsFragment : Fragment() {
         return colorOverridden
     }
 
-    private fun applyFabricatedColors() {
+    private fun updateColors(onComplete: (() -> Unit)? = null) {
         CoroutineScope(Dispatchers.Main).launch {
             updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
+                applyFabricatedColors()
+            }
+            onComplete?.let {
+                delay(1000)
+                it.invoke()
             }
         }
-    }
-
-    companion object {
-        private val TAG: String = SettingsFragment::class.java.simpleName
     }
 }
