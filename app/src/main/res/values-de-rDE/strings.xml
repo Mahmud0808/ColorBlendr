@@ -133,6 +133,7 @@
     <string name="start">Starten</string>
     <string name="btn_continue">Fortsetzen</string>
     <string name="color_picker_preview">Vorschau der Farbauswahl</string>
+    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Hintergrunddienst</string>
     <string name="background_service_notification_text">Nutzlose Benachrichtigung. Zum Deaktivieren antippen.</string>

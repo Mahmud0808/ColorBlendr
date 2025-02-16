@@ -133,6 +133,7 @@
     <string name="start">Начать</string>
     <string name="btn_continue">Продолжить</string>
     <string name="color_picker_preview">Предпросмотр палитры цветов</string>
+    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Работа в фоне</string>
     <string name="background_service_notification_text">Бесполезное уведомление. Нажмите, чтобы отключить.</string>

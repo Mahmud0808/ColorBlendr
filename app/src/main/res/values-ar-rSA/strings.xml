@@ -133,6 +133,7 @@
     <string name="start">إبدأ</string>
     <string name="btn_continue">استمر</string>
     <string name="color_picker_preview">معاينة اختيار الألوان</string>
+    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">خدمة الخلفية</string>
     <string name="background_service_notification_text">إشعار عديم الفائدة. انقر لتعطيله.</string>

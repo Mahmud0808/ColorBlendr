@@ -133,6 +133,7 @@
     <string name="start">Start</string>
     <string name="btn_continue">Continue</string>
     <string name="color_picker_preview">Color picker preview</string>
+    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Background service</string>
     <string name="background_service_notification_text">Useless notification. Tap to disable.</string>

@@ -133,6 +133,7 @@
     <string name="start">শুরু করুন</string>
     <string name="btn_continue">চালিয়ে যান</string>
     <string name="color_picker_preview">রঙ চয়নকারীর প্রিভিউ</string>
+    <string name="restarting_app">অ্যাপটি পুনরায় চালু করা হচ্ছে…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">ব্যাকগ্রাউন্ড সার্ভিস</string>
     <string name="background_service_notification_text">অপ্রয়োজনীয় বিজ্ঞপ্তি। নিষ্ক্রিয় করতে চাপুন।</string>
