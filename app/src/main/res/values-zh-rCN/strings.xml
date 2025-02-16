@@ -133,6 +133,7 @@
     <string name="start">开始</string>
     <string name="btn_continue">继续</string>
     <string name="color_picker_preview">拾色器预览</string>
+    <string name="restarting_app">重新启动应用程序…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">后台服务</string>
     <string name="background_service_notification_text">没有用的通知。点击以禁用。</string>

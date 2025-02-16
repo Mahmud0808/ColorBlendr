@@ -133,6 +133,7 @@
     <string name="start">Začít</string>
     <string name="btn_continue">Pokračovat</string>
     <string name="color_picker_preview">Náhled výběru barvy</string>
+    <string name="restarting_app">Restartuji aplikaci…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Služba na pozadí</string>
     <string name="background_service_notification_text">Zbytečné oznámíní. Klepnutím jej vypnete.</string>
