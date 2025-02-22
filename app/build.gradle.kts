@@ -3,7 +3,6 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.ksp)
 }
 
@@ -56,7 +55,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-        dataBinding = true
         buildConfig = true
         aidl = true
     }

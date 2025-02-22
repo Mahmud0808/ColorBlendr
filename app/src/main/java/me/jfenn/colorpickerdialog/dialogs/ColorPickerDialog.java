@@ -24,6 +24,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import me.jfenn.colorpickerdialog.adapters.ColorPickerPagerAdapter;
 import me.jfenn.colorpickerdialog.utils.ArrayUtils;
@@ -43,10 +44,9 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
 
     private SmoothColorView colorView;
     private AppCompatEditText colorHex;
-    private TabLayout tabLayout;
-    private ViewPager slidersPager;
     private ColorPickerPagerAdapter slidersAdapter;
 
+    @SuppressWarnings("rawtypes")
     private DelayedInstantiation[] pickers;
 
     private boolean isAlphaEnabled = true;
@@ -66,6 +66,7 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
@@ -83,14 +84,14 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
                         Constructor constructor = tClass.getConstructor(Context.class);
                         constructor.setAccessible(true);
 
-                        pickers[i] = DelayedInstantiation.from(tClass, Context.class)
+                        pickers[i] = Objects.requireNonNull(DelayedInstantiation.from(tClass, Context.class))
                                 .withInstantiator(new DelayedInstantiation.ConstructionInstantiator<PickerView>(constructor) {
-                                    @Nullable
                                     @Override
                                     public PickerView instantiate(Object... args) {
                                         PickerView view = super.instantiate(args);
 
                                         try {
+                                            assert view != null;
                                             Method method = view.getClass().getDeclaredMethod("onRestoreInstanceState", Parcelable.class);
                                             method.setAccessible(true);
                                             method.invoke(view, new Object[]{null});
@@ -147,14 +148,9 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
 
         DelayedInstantiation<PresetPickerView> presetPicker = getPicker(PresetPickerView.class);
         if (presetPicker == null) {
-            pickers = ArrayUtils.push(pickers, DelayedInstantiation.from(PresetPickerView.class, Context.class)
-                    .withInstantiator(new DelayedInstantiation.Instantiator<PresetPickerView>() {
-                        @Override
-                        public PresetPickerView instantiate(Object... args) {
-                            return new PresetPickerView((Context) args[0])
-                                    .withPresets(ColorPickerDialog.this.presets);
-                        }
-                    }));
+            pickers = ArrayUtils.push(pickers, Objects.requireNonNull(DelayedInstantiation.from(PresetPickerView.class, Context.class))
+                    .withInstantiator(args -> new PresetPickerView((Context) args[0])
+                            .withPresets(ColorPickerDialog.this.presets)));
         }
 
         return this;
@@ -171,6 +167,7 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
      * @param pickerClass The class of the picker view to add.
      * @return "This" dialog instance, for method chaining.
      */
+    @SuppressWarnings("rawtypes")
     public <T extends PickerView> ColorPickerDialog withPicker(Class<T> pickerClass) {
         DelayedInstantiation<T> picker = getPicker(pickerClass);
         if (picker == null) {
@@ -194,12 +191,13 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
      * @return The view, if it is enabled; null if not.
      */
     @Nullable
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <T extends PickerView> DelayedInstantiation<T> getPicker(Class<T> pickerClass) {
-        for (DelayedInstantiation picker : pickers) {
-            if (picker.getClass().equals(pickerClass))
+        for (DelayedInstantiation<?> picker : pickers) {
+            if (pickerClass.isAssignableFrom(picker.getClass())) {
                 return (DelayedInstantiation<T>) picker;
+            }
         }
-
         return null;
     }
 
@@ -210,6 +208,7 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
      * @param pickers The picker views to use.
      * @return "This" dialog instance, for method chaining.
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public ColorPickerDialog withPickers(Class... pickers) {
         if (pickers.length == 0) {
             this.pickers = new DelayedInstantiation[]{
@@ -241,21 +240,22 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
 
     @Nullable
     @Override
+    @SuppressWarnings("rawtypes")
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.colorpicker_dialog_color_picker, container, false);
 
         colorView = v.findViewById(R.id.color);
         colorHex = v.findViewById(R.id.colorHex);
-        tabLayout = v.findViewById(R.id.tabLayout);
-        slidersPager = v.findViewById(R.id.slidersPager);
+        TabLayout tabLayout = v.findViewById(R.id.tabLayout);
+        ViewPager slidersPager = v.findViewById(R.id.slidersPager);
 
         Context context = new ContextThemeWrapper(getContext(), getTheme());
         PickerView[] pickers = new PickerView[this.pickers.length];
 
         for (int i = 0; i < pickers.length; i++) {
             pickers[i] = (PickerView) this.pickers[i].instantiate(context);
-            if (!pickers[i].hasActivityRequestHandler())
+            if (pickers[i] != null && !pickers[i].hasActivityRequestHandler())
                 pickers[i].withActivityRequestHandler(this);
         }
 
@@ -303,6 +303,7 @@ public class ColorPickerDialog extends PickerDialog<ColorPickerDialog> {
     }
 
     @Override
+    @SuppressWarnings("all")
     public void onColorPicked(@Nullable PickerView pickerView, @ColorInt int color) {
         super.onColorPicked(pickerView, color);
         colorView.setColor(color, pickerView != null && !pickerView.isTrackingTouch());

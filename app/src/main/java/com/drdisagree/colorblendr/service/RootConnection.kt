@@ -203,7 +203,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setEnabledExclusive(
                             packageName,
                             true,
@@ -251,10 +251,10 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setEnabledExclusiveInCategory(
                             packageName,
-                            userInfo.userHandle.getIdentifier()
+                            userInfo.userHandle.getUserIdentifier()
                         )
                         if (userId == currentUserId) {
                             currentUserListed = true
@@ -466,7 +466,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setHighestPriority(
                             packageName,
                             userId
@@ -515,7 +515,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setLowestPriority(
                             packageName,
                             userId
@@ -575,7 +575,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         mOverlayManager.invalidateCachesForOverlay(
                             packageName,
                             userId
@@ -605,7 +605,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         mOverlayManager.setEnabled(
                             packageName,
                             enable,
@@ -647,7 +647,7 @@ class RootConnection : RootService() {
                 profiles.forEach { userInfo ->
                     try {
                         if (userInfo.isProfile) {
-                            val userId = userInfo.userHandle.getIdentifier()
+                            val userId = userInfo.userHandle.getUserIdentifier()
                             setEnabledMethod.invoke(
                                 omtbInstance,
                                 identifier,
@@ -737,7 +737,7 @@ class RootConnection : RootService() {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
 
             private val currentUserId: Int
-                get() = Process.myUserHandle().getIdentifier()
+                get() = Process.myUserHandle().getUserIdentifier()
 
             private val SystemUI_UID: Int
                 get() = try {
@@ -820,7 +820,7 @@ class RootConnection : RootService() {
                 }
             }
 
-            private fun UserHandle.getIdentifier(): Int {
+            private fun UserHandle.getUserIdentifier(): Int {
                 val method = UserHandle::class.java.getDeclaredMethod("getIdentifier")
                 method.isAccessible = true
                 return method.invoke(this) as Int
