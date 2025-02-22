@@ -11,11 +11,11 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SAVED_CUSTOM_MONET_STYLES
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.config.Prefs.getAllPrefs
 import com.drdisagree.colorblendr.data.config.Prefs.preferenceEditor
-import com.drdisagree.colorblendr.data.database.appDatabase
+import com.drdisagree.colorblendr.data.database.AppDatabase
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
-import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -146,6 +146,9 @@ object BackupRestore {
                     }
                 }
 
+                // Reload database
+                AppDatabase.reloadInstance()
+
                 tempDir.deleteRecursively()
 
                 true
@@ -236,7 +239,7 @@ object BackupRestore {
                 )
 
                 if (customStyles.isNotEmpty()) {
-                    val customStyleRepository = CustomStyleRepository(appDatabase.customStyleDao())
+                    val customStyleRepository = Utilities.getCustomStyleRepository()
 
                     // Clear currently saved custom styles
                     customStyleRepository.getCustomStyles().forEach {

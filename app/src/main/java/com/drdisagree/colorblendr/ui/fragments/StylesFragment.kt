@@ -15,16 +15,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
-import com.drdisagree.colorblendr.data.common.Utilities.getCustomStyleRepository
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
@@ -32,7 +33,6 @@ import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
 import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.DividerItemDecoration
-import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.getDialogPreferredPadding
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.MiscUtil.toPx
@@ -44,7 +44,7 @@ class StylesFragment : Fragment() {
 
     private lateinit var binding: FragmentStylesBinding
     private var styleAdapter: StylePreviewAdapter? = null
-    private val customStyleRepository = getCustomStyleRepository()
+    private val customStyleRepository = Utilities.getCustomStyleRepository()
     private val isAtleastA13 = isRootMode() ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     private val isAtleastA14 = isRootMode() ||

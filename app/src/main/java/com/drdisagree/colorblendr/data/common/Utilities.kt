@@ -40,7 +40,7 @@ import com.drdisagree.colorblendr.data.config.Prefs.putBoolean
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
 import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.data.config.Prefs.putString
-import com.drdisagree.colorblendr.data.database.appDatabase
+import com.drdisagree.colorblendr.data.database.AppDatabase
 import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
@@ -369,6 +369,6 @@ object Utilities {
     }
 
     fun getCustomStyleRepository(): CustomStyleRepository {
-        return CustomStyleRepository(appDatabase.customStyleDao())
+        return CustomStyleRepository(AppDatabase.getInstance().customStyleDao())
     }
 }

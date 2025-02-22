@@ -24,7 +24,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
@@ -62,7 +61,6 @@ import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
 import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.jakewharton.processphoenix.ProcessPhoenix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -388,20 +386,7 @@ class SettingsFragment : Fragment() {
 
                     withContext(Dispatchers.Main) {
                         if (success) {
-                            // Restart app with delay to load new database,
-                            // otherwise user might think that app crashed
-                            if (isRootMode()) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    R.string.restarting_app,
-                                    Toast.LENGTH_LONG
-                                ).show()
-
-                                delay(2000)
-                                updateColors {
-                                    ProcessPhoenix.triggerRebirth(appContext)
-                                }
-                            }
+                            updateColors()
                         } else {
                             Snackbar
                                 .make(
@@ -453,16 +438,12 @@ class SettingsFragment : Fragment() {
         return colorOverridden
     }
 
-    private fun updateColors(onComplete: (() -> Unit)? = null) {
+    private fun updateColors() {
         CoroutineScope(Dispatchers.Main).launch {
             updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
                 applyFabricatedColors()
-            }
-            onComplete?.let {
-                delay(1000)
-                it.invoke()
             }
         }
     }
