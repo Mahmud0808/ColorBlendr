@@ -56,11 +56,11 @@
     <string name="monet_fruitsalad_desc">Еклектичне поєднання кольорів нагадує яскравий асортимент свіжих і соковитих фруктів.</string>
     <string name="monet_content">Вміст</string>
     <string name="monet_content_desc">Збалансована й заспокійлива палітра, що сприяє відчуттю спокою і задоволеності.</string>
-    <string name="save_current_style">Save current style</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
-    <string name="save">Save</string>
-    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save_current_style">Зберегти поточний стиль</string>
+    <string name="title">Назва</string>
+    <string name="description">Опис</string>
+    <string name="save">Зберегти</string>
+    <string name="title_and_desc_cant_be_empty">Назва та опис не можуть бути порожніми</string>
     <!-- Settings -->
     <string name="app_service_title">Служба %s</string>
     <string name="app_service_desc_on">Тематизація ввімкнена</string>
@@ -118,7 +118,6 @@
     <string name="icon">Піктограма</string>
     <string name="reset">Скинути</string>
     <string name="opt_selected1">Вибрано: %s</string>
-    <string name="opt_selected2">Вибрано: %s%s</string>
     <string name="dismiss">Відхилити</string>
     <string name="retry">Повторити спробу</string>
     <string name="grant">Надати</string>
@@ -133,7 +132,6 @@
     <string name="start">Почати</string>
     <string name="btn_continue">Продовжити</string>
     <string name="color_picker_preview">Попередній перегляд палітри кольорів</string>
-    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Робота у фоні</string>
     <string name="background_service_notification_text">Непотрібне сповіщення. Натисніть, щоби вимкнути.</string>

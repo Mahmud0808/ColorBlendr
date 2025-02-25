@@ -118,7 +118,6 @@
     <string name="icon">Ikona</string>
     <string name="reset">Zresetuj</string>
     <string name="opt_selected1">Wybrano: %s</string>
-    <string name="opt_selected2">Wybrano: %s%s</string>
     <string name="dismiss">Odrzuć</string>
     <string name="retry">Ponów</string>
     <string name="grant">Przyznaj</string>
@@ -133,7 +132,6 @@
     <string name="start">Start</string>
     <string name="btn_continue">Kontynuuj</string>
     <string name="color_picker_preview">Podgląd wyboru kolorów</string>
-    <string name="restarting_app">Restartowanie aplikacji…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Usługa w tle</string>
     <string name="background_service_notification_text">Bezużyteczne powiadomienie. Dotknij, aby wyłączyć.</string>

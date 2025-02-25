@@ -118,7 +118,6 @@
     <string name="icon">Иконка</string>
     <string name="reset">Сброс</string>
     <string name="opt_selected1">Выбрано: %s</string>
-    <string name="opt_selected2">Выбрано: %s%s</string>
     <string name="dismiss">Отменить</string>
     <string name="retry">Повторить попытку</string>
     <string name="grant">Предоставить</string>
@@ -133,7 +132,6 @@
     <string name="start">Начать</string>
     <string name="btn_continue">Продолжить</string>
     <string name="color_picker_preview">Предпросмотр палитры цветов</string>
-    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Работа в фоне</string>
     <string name="background_service_notification_text">Бесполезное уведомление. Нажмите, чтобы отключить.</string>

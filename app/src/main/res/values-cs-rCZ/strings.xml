@@ -118,7 +118,6 @@
     <string name="icon">Ikona</string>
     <string name="reset">Resetovat</string>
     <string name="opt_selected1">Vybráno: %s</string>
-    <string name="opt_selected2">Vybráno: %s%s</string>
     <string name="dismiss">Zrušit</string>
     <string name="retry">Opakovat</string>
     <string name="grant">Udělit</string>
@@ -133,7 +132,6 @@
     <string name="start">Začít</string>
     <string name="btn_continue">Pokračovat</string>
     <string name="color_picker_preview">Náhled výběru barvy</string>
-    <string name="restarting_app">Restartuji aplikaci…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Služba na pozadí</string>
     <string name="background_service_notification_text">Zbytečné oznámíní. Klepnutím jej vypnete.</string>
