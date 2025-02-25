@@ -118,7 +118,6 @@
     <string name="icon">Ikon</string>
     <string name="reset">Visszaállítás</string>
     <string name="opt_selected1">Kijelölt: %s</string>
-    <string name="opt_selected2">Kijelölt: %s%s</string>
     <string name="dismiss">Elvetés</string>
     <string name="retry">Ismét</string>
     <string name="grant">Engedélyezés</string>
@@ -133,7 +132,6 @@
     <string name="start">Kezdés</string>
     <string name="btn_continue">Folytatás</string>
     <string name="color_picker_preview">Színválasztó előnézet</string>
-    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Háttérszolgáltatás</string>
     <string name="background_service_notification_text">Haszontalan értesítés. Koppints a letiltáshoz.</string>

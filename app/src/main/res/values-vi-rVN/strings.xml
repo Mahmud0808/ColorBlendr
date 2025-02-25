@@ -118,7 +118,6 @@
     <string name="icon">Biểu tượng</string>
     <string name="reset">Đặt lại</string>
     <string name="opt_selected1">Đã chọn: %s</string>
-    <string name="opt_selected2">Đã chọn: %s%s</string>
     <string name="dismiss">Đóng</string>
     <string name="retry">Thử lại</string>
     <string name="grant">Cấp quyền</string>
@@ -133,7 +132,6 @@
     <string name="start">Bắt đầu</string>
     <string name="btn_continue">Tiếp tục</string>
     <string name="color_picker_preview">Xem trước bộ chọn màu</string>
-    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Dịch vụ nền</string>
     <string name="background_service_notification_text">Thông báo vô dụng. Chạm để tắt đi.</string>

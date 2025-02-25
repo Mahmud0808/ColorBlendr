@@ -118,7 +118,6 @@
     <string name="icon">Symbol</string>
     <string name="reset">Zurücksetzen</string>
     <string name="opt_selected1">Ausgewählt: %s</string>
-    <string name="opt_selected2">Ausgewählt: %s%s</string>
     <string name="dismiss">Zurückweisen</string>
     <string name="retry">Wiederholen</string>
     <string name="grant">Erteilen</string>
@@ -133,7 +132,6 @@
     <string name="start">Starten</string>
     <string name="btn_continue">Fortsetzen</string>
     <string name="color_picker_preview">Vorschau der Farbauswahl</string>
-    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Hintergrunddienst</string>
     <string name="background_service_notification_text">Nutzlose Benachrichtigung. Zum Deaktivieren antippen.</string>

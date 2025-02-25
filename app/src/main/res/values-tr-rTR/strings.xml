@@ -118,7 +118,6 @@
     <string name="icon">Simge</string>
     <string name="reset">Sıfırla</string>
     <string name="opt_selected1">Seçilen: %s</string>
-    <string name="opt_selected2">Seçilen: %s%s</string>
     <string name="dismiss">Kapat</string>
     <string name="retry">Tekrar Dene</string>
     <string name="grant">İzin Ver</string>
@@ -133,7 +132,6 @@
     <string name="start">Başlat</string>
     <string name="btn_continue">Devam et</string>
     <string name="color_picker_preview">Renk Seçici Önizlemesi</string>
-    <string name="restarting_app">Uygulama yeniden başlatılıyor…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Arka Plan Hizmeti</string>
     <string name="background_service_notification_text">Yararsız bildirim. Devre dışı bırakmak için dokunun.</string>

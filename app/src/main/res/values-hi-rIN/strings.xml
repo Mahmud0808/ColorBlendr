@@ -118,7 +118,6 @@
     <string name="icon">Icon</string>
     <string name="reset">Reset</string>
     <string name="opt_selected1">Selected: %s</string>
-    <string name="opt_selected2">Selected: %s%s</string>
     <string name="dismiss">Dismiss</string>
     <string name="retry">Retry</string>
     <string name="grant">Grant</string>
@@ -133,7 +132,6 @@
     <string name="start">Start</string>
     <string name="btn_continue">Continue</string>
     <string name="color_picker_preview">Color picker preview</string>
-    <string name="restarting_app">Restarting app…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">Background service</string>
     <string name="background_service_notification_text">Useless notification. Tap to disable.</string>

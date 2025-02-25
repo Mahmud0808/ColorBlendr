@@ -118,7 +118,6 @@
     <string name="icon">图标</string>
     <string name="reset">重置</string>
     <string name="opt_selected1">选择：%s</string>
-    <string name="opt_selected2">选择：%s%s</string>
     <string name="dismiss">舍弃</string>
     <string name="retry">重试</string>
     <string name="grant">授予</string>
@@ -133,7 +132,6 @@
     <string name="start">开始</string>
     <string name="btn_continue">继续</string>
     <string name="color_picker_preview">拾色器预览</string>
-    <string name="restarting_app">重新启动应用程序…</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">后台服务</string>
     <string name="background_service_notification_text">没有用的通知。点击以禁用。</string>
