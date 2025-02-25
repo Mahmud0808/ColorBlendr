@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.databinding.FragmentAboutBinding
 import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter
-import com.drdisagree.colorblendr.ui.models.AboutAppModel
+import com.drdisagree.colorblendr.data.models.AboutAppModel
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.parseContributors
 import com.drdisagree.colorblendr.utils.parseTranslators

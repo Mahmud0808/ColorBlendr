@@ -130,7 +130,7 @@
     <string name="icon">Icon</string>
     <string name="reset">Reset</string>
     <string name="opt_selected1">Selected: %s</string>
-    <string name="opt_selected2">Selected: %s%s</string>
+    <string name="opt_selected2" translatable="false">%1$s%2$s</string>
     <string name="dismiss">Dismiss</string>
     <string name="retry">Retry</string>
     <string name="grant">Grant</string>

@@ -7,27 +7,25 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const.MONET_STYLE_ORIGINAL_NAME
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.clearPrefs
-import com.drdisagree.colorblendr.config.RPrefs.putString
-import com.drdisagree.colorblendr.config.RPrefs.toPrefs
+import com.drdisagree.colorblendr.data.common.Utilities.clearOriginalStyleName
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentCustomStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setCurrentCustomStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setOriginalStyleName
+import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
+import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
-import com.drdisagree.colorblendr.ui.models.StyleModel
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentCustomStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
+import com.drdisagree.colorblendr.utils.BackupRestore
 import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getStyleNameForRootless
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.saveCurrentCustomStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.saveCurrentMonetStyle
-import com.drdisagree.colorblendr.utils.MONET
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.toPx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class StylePreviewAdapter(
     private val fragment: StylesFragment,
@@ -77,7 +75,7 @@ class StylePreviewAdapter(
         styleList.add(newStyle)
         notifyItemInserted(styleList.size - 1)
 
-        saveCurrentCustomStyle(newStyle.customStyle.styleId)
+        setCurrentCustomStyle(newStyle.customStyle.styleId)
     }
 
     fun updateStyle(style: StyleModel) {
@@ -166,12 +164,9 @@ class StylePreviewAdapter(
 
                 coroutineScope.launch {
                     // update preferences and apply colors
-                    saveCurrentMonetStyle(styleData.monetStyle)
+                    setCurrentMonetStyle(styleData.monetStyle)
                     resetCustomStyle()
-                    putString(
-                        MONET_STYLE_ORIGINAL_NAME,
-                        styleData.titleResId.getStyleNameForRootless()
-                    )
+                    setOriginalStyleName(styleData.titleResId.getStyleNameForRootless())
                     applyColorScheme()
                 }
             }
@@ -202,19 +197,18 @@ class StylePreviewAdapter(
 
                 coroutineScope.launch {
                     // restore theme preferences
-                    withContext(Dispatchers.IO) {
-                        RPrefs.restorePrefsMap(prefsMap, true)
-                    }
+                    BackupRestore.restorePrefsMap(prefsMap)
 
                     // update preferences and apply colors
-                    saveCurrentCustomStyle(customStyle.styleId)
-                    clearPrefs(MONET_STYLE_ORIGINAL_NAME)
+                    setCurrentCustomStyle(customStyle.styleId)
+                    clearOriginalStyleName()
                     applyColorScheme()
                 }
             }
 
             val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.MyPopupMenu).apply {
                 menuInflater.inflate(R.menu.custom_style_menu, menu)
+
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.edit -> {
@@ -224,18 +218,23 @@ class StylePreviewAdapter(
                                 callback = { title, desc ->
                                     customStyle.styleName = title
                                     customStyle.description = desc
-                                    fragment.editCustomStyle(
-                                        title = title,
-                                        description = desc,
-                                        styleId = customStyle.styleId
-                                    )
+
+                                    coroutineScope.launch {
+                                        fragment.editCustomStyle(
+                                            title = title,
+                                            description = desc,
+                                            styleId = customStyle.styleId
+                                        )
+                                    }
                                 }
                             )
                             true
                         }
 
                         R.id.delete -> {
-                            fragment.deleteCustomStyle(styleId = customStyle.styleId)
+                            coroutineScope.launch {
+                                fragment.deleteCustomStyle(styleId = customStyle.styleId)
+                            }
                             true
                         }
 

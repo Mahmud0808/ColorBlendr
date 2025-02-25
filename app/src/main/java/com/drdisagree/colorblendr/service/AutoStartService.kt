@@ -7,8 +7,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.hardware.Sensor
-import android.hardware.SensorManager
+import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.IBinder
 import android.os.RemoteException
@@ -20,8 +19,8 @@ import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.workingMethod
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.utils.ColorUtil.getAccentColor
@@ -29,8 +28,6 @@ import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.ShizukuUtil.isShizukuAvailable
-import com.drdisagree.colorblendr.utils.SystemUtil.getScreenRotation
-import com.drdisagree.colorblendr.utils.SystemUtil.sensorEventListener
 import com.drdisagree.colorblendr.utils.annotations.Test
 import java.util.Timer
 import java.util.TimerTask
@@ -52,10 +49,8 @@ class AutoStartService : Service() {
         showNotification()
         registerReceivers()
 
-        if (BroadcastListener.lastOrientation == -1) {
-            BroadcastListener.lastOrientation = getScreenRotation(
-                this
-            )
+        if (BroadcastListener.isLastConfigInitialized.not()) {
+            BroadcastListener.lastConfig = Configuration(resources.configuration)
         }
     }
 
@@ -99,18 +94,6 @@ class AutoStartService : Service() {
     private fun registerSystemServices() {
         if (notificationManager == null) {
             notificationManager = getSystemService(NotificationManager::class.java)
-        }
-
-        if (sensorManager == null) {
-            sensorManager = getSystemService(SensorManager::class.java)
-
-            if (sensorManager != null) {
-                sensorManager!!.registerListener(
-                    sensorEventListener,
-                    sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                    SensorManager.SENSOR_DELAY_UI
-                )
-            }
         }
     }
 
@@ -181,22 +164,20 @@ class AutoStartService : Service() {
     }
 
     private fun setupSystemUIRestartListener() {
-        if (workingMethod == Const.WorkMethod.ROOT &&
-            RootConnectionProvider.isNotConnected
-        ) {
+        if (isRootMode() && RootConnectionProvider.isNotConnected) {
             RootConnectionProvider.builder(appContext)
                 .onSuccess { initSystemUIRestartListener() }
                 .run()
-        } else if (workingMethod == Const.WorkMethod.SHIZUKU &&
+        } else if (isShizukuMode() &&
             ShizukuConnectionProvider.isNotConnected &&
             isShizukuAvailable &&
-            hasShizukuPermission(appContext)
+            hasShizukuPermission()
         ) {
             bindUserService(
                 getUserServiceArgs(ShizukuConnection::class.java),
                 ShizukuConnectionProvider.serviceConnection
             )
-        } else if (workingMethod == Const.WorkMethod.ROOT) {
+        } else if (isRootMode()) {
             initSystemUIRestartListener()
         }
     }
@@ -251,7 +232,6 @@ class AutoStartService : Service() {
         private const val NOTIFICATION_ID = 1
         private const val NOTIFICATION_CHANNEL_ID = "Background Service"
         private lateinit var myReceiver: BroadcastListener
-        private var sensorManager: SensorManager? = null
         val isServiceNotRunning: Boolean
             get() = !isRunning
 

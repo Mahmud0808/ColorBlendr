@@ -5,9 +5,9 @@ import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -24,33 +24,35 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.common.Const.MANUAL_OVERRIDE_COLORS
-import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.common.Const.SHIZUKU_THEMING_ENABLED
-import com.drdisagree.colorblendr.common.Const.THEMING_ENABLED
-import com.drdisagree.colorblendr.common.Const.TINT_TEXT_COLOR
-import com.drdisagree.colorblendr.common.Const.WALLPAPER_COLOR_LIST
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs
-import com.drdisagree.colorblendr.config.RPrefs.backupPrefs
-import com.drdisagree.colorblendr.config.RPrefs.clearPref
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putBoolean
-import com.drdisagree.colorblendr.config.RPrefs.putInt
-import com.drdisagree.colorblendr.config.RPrefs.putLong
-import com.drdisagree.colorblendr.config.RPrefs.restorePrefs
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
+import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.setAccurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setManualColorOverrideEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setPitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.setShizukuThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.utils.BackupRestore.backupDatabaseAndPrefs
+import com.drdisagree.colorblendr.utils.BackupRestore.restoreDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
@@ -59,20 +61,17 @@ import com.drdisagree.colorblendr.utils.OverlayManager.removeFabricatedColors
 import com.drdisagree.colorblendr.utils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
 
 class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
     private var sharedViewModel: SharedViewModel? = null
     private var isMasterSwitchEnabled: Boolean = true
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     private val masterSwitch: CompoundButton.OnCheckedChangeListener =
         CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
@@ -81,9 +80,9 @@ class SettingsFragment : Fragment() {
                 return@OnCheckedChangeListener
             }
 
-            putBoolean(THEMING_ENABLED, isChecked)
-            putBoolean(SHIZUKU_THEMING_ENABLED, isChecked)
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            setThemingEnabled(isChecked)
+            setShizukuThemingEnabled(isChecked)
+            updateColorAppliedTimestamp()
 
             CoroutineScope(Dispatchers.Main).launch {
                 try {
@@ -91,16 +90,15 @@ class SettingsFragment : Fragment() {
 
                     withContext(Dispatchers.IO) {
                         if (isChecked) {
-                            applyFabricatedColors(requireContext())
+                            updateColors()
                         } else {
-                            removeFabricatedColors(requireContext())
+                            removeFabricatedColors()
                         }
                     }
 
                     isMasterSwitchEnabled = false
-                    val isOverlayEnabled: Boolean =
-                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) ||
-                                getBoolean(SHIZUKU_THEMING_ENABLED, true)
+                    val isOverlayEnabled =
+                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) || isShizukuThemingEnabled()
                     buttonView.isChecked = isOverlayEnabled
                     isMasterSwitchEnabled = true
 
@@ -138,66 +136,64 @@ class SettingsFragment : Fragment() {
                 getString(R.string.app_name)
             )
         )
-        binding.themingEnabled.isSwitchChecked = (getBoolean(THEMING_ENABLED, true) &&
+        binding.themingEnabled.isSwitchChecked = (isThemingEnabled() &&
                 isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) ||
-                getBoolean(SHIZUKU_THEMING_ENABLED, true)
+                isShizukuThemingEnabled()
 
         binding.themingEnabled.setSwitchChangeListener(masterSwitch)
 
         // Accurate shades
-        binding.accurateShades.isSwitchChecked = getBoolean(MONET_ACCURATE_SHADES, true)
+        binding.accurateShades.isSwitchChecked = accurateShadesEnabled()
         binding.accurateShades.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
-            putBoolean(MONET_ACCURATE_SHADES, isChecked)
+            setAccurateShadesEnabled(isChecked)
             sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
-            applyFabricatedColors()
+            updateColors()
         }
-        binding.accurateShades.setEnabled(notShizukuMode)
+        binding.accurateShades.setEnabled(isRootMode())
 
         // Pitch black theme
-        binding.pitchBlackTheme.isSwitchChecked = getBoolean(MONET_PITCH_BLACK_THEME, false)
+        binding.pitchBlackTheme.isSwitchChecked = pitchBlackThemeEnabled()
         binding.pitchBlackTheme.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
-            putBoolean(MONET_PITCH_BLACK_THEME, isChecked)
-            applyFabricatedColors()
+            setPitchBlackThemeEnabled(isChecked)
+            updateColors()
         }
-        binding.pitchBlackTheme.setEnabled(notShizukuMode)
+        binding.pitchBlackTheme.setEnabled(isRootMode())
 
         // Custom primary color
-        binding.customPrimaryColor.isSwitchChecked = getBoolean(MONET_SEED_COLOR_ENABLED, false)
+        binding.customPrimaryColor.isSwitchChecked = customColorEnabled()
         binding.customPrimaryColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
-            putBoolean(MONET_SEED_COLOR_ENABLED, isChecked)
+            setCustomColorEnabled(isChecked)
             sharedViewModel!!.setVisibilityState(
                 MONET_SEED_COLOR_ENABLED,
                 if (isChecked) View.VISIBLE else View.GONE
             )
             if (!isChecked) {
-                val wallpaperColors: String? = RPrefs.getString(WALLPAPER_COLOR_LIST, null)
-                val wallpaperColorList: ArrayList<Int> = Const.GSON.fromJson(
-                    wallpaperColors,
-                    object : TypeToken<ArrayList<Int?>?>() {
-                    }.type
+                val wallpaperColorList = getWallpaperColorList()
+                setSeedColorValue(
+                    if (wallpaperColorList.isNotEmpty()) wallpaperColorList[0]
+                    else Color.BLUE
                 )
-                putInt(MONET_SEED_COLOR, wallpaperColorList[0])
-                applyFabricatedColors()
+                updateColors()
             }
         }
 
         // Tint text color
-        binding.tintTextColor.isSwitchChecked = getBoolean(TINT_TEXT_COLOR, true)
+        binding.tintTextColor.isSwitchChecked = tintedTextEnabled()
         binding.tintTextColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
-            putBoolean(TINT_TEXT_COLOR, isChecked)
-            applyFabricatedColors()
+            setTintedTextEnabled(isChecked)
+            updateColors()
         }
-        binding.tintTextColor.setEnabled(notShizukuMode)
+        binding.tintTextColor.setEnabled(isRootMode())
 
         // Override colors manually
-        binding.overrideColorsManually.isSwitchChecked = getBoolean(MANUAL_OVERRIDE_COLORS, false)
+        binding.overrideColorsManually.isSwitchChecked = manualColorOverrideEnabled()
         binding.overrideColorsManually.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
-                putBoolean(MANUAL_OVERRIDE_COLORS, true)
+                setManualColorOverrideEnabled(true)
             } else {
                 if (shouldConfirmBeforeClearing()) {
                     MaterialAlertDialogBuilder(requireContext())
@@ -205,10 +201,10 @@ class SettingsFragment : Fragment() {
                         .setMessage(getString(R.string.this_cannot_be_undone))
                         .setPositiveButton(getString(android.R.string.ok)) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
-                            putBoolean(MANUAL_OVERRIDE_COLORS, false)
+                            setManualColorOverrideEnabled(false)
                             if (numColorsOverridden() != 0) {
-                                clearCustomColors()
-                                applyFabricatedColors()
+                                clearAllOverriddenColors()
+                                updateColors()
                             }
                         }
                         .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
@@ -217,15 +213,15 @@ class SettingsFragment : Fragment() {
                         }
                         .show()
                 } else {
-                    putBoolean(MANUAL_OVERRIDE_COLORS, false)
+                    setManualColorOverrideEnabled(false)
                     if (numColorsOverridden() != 0) {
-                        clearCustomColors()
-                        applyFabricatedColors()
+                        clearAllOverriddenColors()
+                        updateColors()
                     }
                 }
             }
         }
-        binding.overrideColorsManually.setEnabled(notShizukuMode)
+        binding.overrideColorsManually.setEnabled(isRootMode())
 
         binding.backupRestore.container.setOnClickListener {
             crossfade(
@@ -322,6 +318,7 @@ class SettingsFragment : Fragment() {
             type = "*/*"
             putExtra(Intent.EXTRA_TITLE, "theme_config" + ".colorblendr")
         }
+
         if (isBackingUp) {
             startBackupActivityIntent.launch(fileIntent)
         } else {
@@ -333,35 +330,33 @@ class SettingsFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
-                if (data?.data == null) return@registerForActivityResult
+                val uri: Uri = data?.data ?: return@registerForActivityResult
 
-                Executors.newSingleThreadExecutor().execute {
-                    try {
-                        backupPrefs(
-                            appContext
-                                .contentResolver
-                                .openOutputStream(data.data!!)!!
-                        )
+                CoroutineScope(Dispatchers.IO).launch {
+                    val success = uri.backupDatabaseAndPrefs()
 
-                        Snackbar
-                            .make(
-                                binding.getRoot(),
-                                getString(R.string.backup_success),
-                                Snackbar.LENGTH_LONG
-                            )
-                            .setAction(getString(R.string.dismiss)) { }
-                            .show()
-                    } catch (exception: Exception) {
-                        Snackbar
-                            .make(
-                                binding.getRoot(),
-                                getString(R.string.backup_fail),
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            .setAction(getString(R.string.retry)) { backupRestoreSettings(true) }
-                            .show()
-
-                        Log.e(TAG, "startBackupActivityIntent: ", exception)
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            Snackbar
+                                .make(
+                                    binding.getRoot(),
+                                    getString(R.string.backup_success),
+                                    Snackbar.LENGTH_LONG
+                                )
+                                .setAction(getString(R.string.dismiss)) { }
+                                .show()
+                        } else {
+                            Snackbar
+                                .make(
+                                    binding.getRoot(),
+                                    getString(R.string.backup_fail),
+                                    Snackbar.LENGTH_INDEFINITE
+                                )
+                                .setAction(getString(R.string.retry)) {
+                                    backupRestoreSettings(true)
+                                }
+                                .show()
+                        }
                     }
                 }
             }
@@ -387,21 +382,12 @@ class SettingsFragment : Fragment() {
                 dialog.dismiss()
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        restorePrefs(
-                            appContext
-                                .contentResolver
-                                .openInputStream(uri)!!
-                        )
+                    val success = uri.restoreDatabaseAndPrefs()
 
-                        withContext(Dispatchers.Main) {
-                            try {
-                                applyFabricatedColors(requireContext())
-                            } catch (ignored: Exception) {
-                            }
-                        }
-                    } catch (exception: Exception) {
-                        withContext(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            updateColors()
+                        } else {
                             Snackbar
                                 .make(
                                     binding.getRoot(),
@@ -409,15 +395,11 @@ class SettingsFragment : Fragment() {
                                     Snackbar.LENGTH_INDEFINITE
                                 )
                                 .setAction(getString(R.string.retry)) {
-                                    backupRestoreSettings(
-                                        false
-                                    )
+                                    backupRestoreSettings(false)
                                 }
                                 .show()
-
-                            Log.e(TAG, "startBackupActivityIntent: ", exception)
                         }
-                    } finally {
+
                         arguments?.remove("data")
                     }
                 }
@@ -446,40 +428,22 @@ class SettingsFragment : Fragment() {
     private fun numColorsOverridden(): Int {
         var colorOverridden = 0
 
-        for (colorName: Array<String> in systemPaletteNames) {
-            for (resource: String in colorName) {
-                if (getInt(resource, Int.MIN_VALUE) != Int.MIN_VALUE) {
-                    colorOverridden++
-                }
-            }
+        systemPaletteNames.forEach { palettes ->
+            palettes
+                .asSequence()
+                .filter { isColorOverriddenFor(it) }
+                .forEach { _ -> colorOverridden++ }
         }
+
         return colorOverridden
     }
 
-    private fun applyFabricatedColors() {
+    private fun updateColors() {
         CoroutineScope(Dispatchers.Main).launch {
-            putLong(
-                MONET_LAST_UPDATED,
-                System.currentTimeMillis()
-            )
+            updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
-            }
-        }
-    }
-
-    companion object {
-        private val TAG: String = SettingsFragment::class.java.simpleName
-
-        fun clearCustomColors() {
-            for (colorName: Array<String> in systemPaletteNames) {
-                for (resource: String in colorName) {
-                    clearPref(resource)
-                }
+                applyFabricatedColors()
             }
         }
     }

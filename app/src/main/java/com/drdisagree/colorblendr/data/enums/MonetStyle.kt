@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.data.enums
 
 enum class MONET {
     SPRITZ,

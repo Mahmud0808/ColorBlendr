@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.fragments
 
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,28 +9,29 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.DARKER_LAUNCHER_ICONS
-import com.drdisagree.colorblendr.common.Const.FORCE_PITCH_BLACK_SETTINGS
-import com.drdisagree.colorblendr.common.Const.MODE_SPECIFIC_THEMES
-import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.MONET_SECONDARY_COLOR
-import com.drdisagree.colorblendr.common.Const.MONET_SEED_COLOR_ENABLED
-import com.drdisagree.colorblendr.common.Const.MONET_TERTIARY_COLOR
-import com.drdisagree.colorblendr.common.Const.PIXEL_LAUNCHER
-import com.drdisagree.colorblendr.common.Const.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.common.Const.SEMI_TRANSPARENT_LAUNCHER_ICONS
-import com.drdisagree.colorblendr.common.Const.saveSelectedFabricatedApps
-import com.drdisagree.colorblendr.common.Const.selectedFabricatedApps
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putBoolean
-import com.drdisagree.colorblendr.config.RPrefs.putInt
-import com.drdisagree.colorblendr.config.RPrefs.putLong
+import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setScreenOffColorUpdateEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSecondaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil
@@ -46,7 +46,6 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 class SettingsAdvancedFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsAdvancedBinding
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
     private val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
 
     override fun onCreateView(
@@ -59,11 +58,9 @@ class SettingsAdvancedFragment : Fragment() {
         setToolbarTitle(requireContext(), R.string.advanced_settings, true, binding.header.toolbar)
 
         // Secondary color
-        var monetSecondaryColor = getInt(MONET_SECONDARY_COLOR, Color.WHITE)
-        binding.secondaryColorPicker.isEnabled =
-            getBoolean(MONET_SEED_COLOR_ENABLED, false) && notShizukuMode
-        binding.secondaryColorPicker.previewColor =
-            getInt(MONET_SECONDARY_COLOR, monetSecondaryColor)
+        var monetSecondaryColor = getSecondaryColorValue()
+        binding.secondaryColorPicker.isEnabled = customColorEnabled() && isRootMode()
+        binding.secondaryColorPicker.previewColor = monetSecondaryColor
         binding.secondaryColorPicker.setOnClickListener {
             ColorPickerDialog()
                 .withCornerRadius(10f)
@@ -76,18 +73,17 @@ class SettingsAdvancedFragment : Fragment() {
                         binding.secondaryColorPicker.previewColor = color
 
                         resetCustomStyleIfNotNull()
-                        putInt(MONET_SECONDARY_COLOR, monetSecondaryColor)
+                        setSecondaryColorValue(monetSecondaryColor)
 
-                        applyFabricatedColors()
+                        updateColors()
                     }
                 }
                 .show(getChildFragmentManager(), "secondaryColorPicker")
         }
 
         // Tertiary color
-        var monetTertiaryColor = getInt(MONET_TERTIARY_COLOR, Color.WHITE)
-        binding.tertiaryColorPicker.isEnabled =
-            getBoolean(MONET_SEED_COLOR_ENABLED, false) && notShizukuMode
+        var monetTertiaryColor = getTertiaryColorValue()
+        binding.tertiaryColorPicker.isEnabled = customColorEnabled() && isRootMode()
         binding.tertiaryColorPicker.previewColor = monetTertiaryColor
         binding.tertiaryColorPicker.setOnClickListener {
             ColorPickerDialog()
@@ -101,66 +97,63 @@ class SettingsAdvancedFragment : Fragment() {
                         binding.tertiaryColorPicker.previewColor = color
 
                         resetCustomStyleIfNotNull()
-                        putInt(MONET_TERTIARY_COLOR, monetTertiaryColor)
+                        setTertiaryColorValue(monetTertiaryColor)
 
-                        applyFabricatedColors()
+                        updateColors()
                     }
                 }
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
         }
 
         // Update colors on screen off
-        binding.screenOffUpdate.isSwitchChecked = getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
+        binding.screenOffUpdate.isSwitchChecked = screenOffColorUpdateEnabled()
         binding.screenOffUpdate.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            putBoolean(SCREEN_OFF_UPDATE_COLORS, isChecked)
+            setScreenOffColorUpdateEnabled(isChecked)
 
             if (!isChecked) {
-                applyFabricatedColors()
+                updateColors()
             }
         }
 
         // Mode specific themes
-        binding.modeSpecificThemes.isEnabled = notShizukuMode
-        binding.modeSpecificThemes.isSwitchChecked = getBoolean(MODE_SPECIFIC_THEMES, false)
+        binding.modeSpecificThemes.isEnabled = isRootMode()
+        binding.modeSpecificThemes.isSwitchChecked = modeSpecificThemesEnabled()
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
-            putBoolean(MODE_SPECIFIC_THEMES, isChecked)
-            applyFabricatedColors()
+            setModeSpecificThemesEnabled(isChecked)
+            updateColors()
         }
 
         // Darker launcher icons
-        binding.darkerLauncherIcons.isEnabled = notShizukuMode && hasPixelLauncher
-        binding.darkerLauncherIcons.isSwitchChecked = getBoolean(DARKER_LAUNCHER_ICONS, false)
+        binding.darkerLauncherIcons.isEnabled = isRootMode() && hasPixelLauncher
+        binding.darkerLauncherIcons.isSwitchChecked = darkerLauncherIconsEnabled()
         binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
                 savePixelLauncherInPerAppTheme()
             }
-            putBoolean(DARKER_LAUNCHER_ICONS, isChecked)
-            applyFabricatedColors()
+            setDarkerLauncherIconsEnabled(isChecked)
+            updateColors()
         }
 
         // Semi-transparent launcher icons
-        binding.semitransparentLauncher.isEnabled = notShizukuMode && hasPixelLauncher
-        binding.semitransparentLauncher.isSwitchChecked =
-            getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
+        binding.semitransparentLauncher.isEnabled = isRootMode() && hasPixelLauncher
+        binding.semitransparentLauncher.isSwitchChecked = semiTransparentLauncherIconsEnabled()
         binding.semitransparentLauncher.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
                 savePixelLauncherInPerAppTheme()
             }
-            putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, isChecked)
-            applyFabricatedColors()
+            setSemiTransparentLauncherIconsEnabled(isChecked)
+            updateColors()
         }
 
         // Semi-transparent launcher icons
-        binding.pitchBlackSettingsWorkaround.isEnabled =
-            notShizukuMode && getBoolean(MONET_PITCH_BLACK_THEME, false)
+        binding.pitchBlackSettingsWorkaround.isEnabled = isRootMode() && pitchBlackThemeEnabled()
         binding.pitchBlackSettingsWorkaround.visibility =
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) View.VISIBLE else View.GONE
-        binding.pitchBlackSettingsWorkaround.isSwitchChecked =
-            getBoolean(FORCE_PITCH_BLACK_SETTINGS, false)
+        binding.pitchBlackSettingsWorkaround.isSwitchChecked = forcePitchBlackSettingsEnabled()
         binding.pitchBlackSettingsWorkaround.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            putBoolean(FORCE_PITCH_BLACK_SETTINGS, isChecked)
-            applyFabricatedColors()
+            setForcePitchBlackSettingsEnabled(isChecked)
+            updateColors()
         }
 
         return binding.getRoot()
@@ -177,29 +170,22 @@ class SettingsAdvancedFragment : Fragment() {
     }
 
     private fun savePixelLauncherInPerAppTheme() {
-        if (!hasPixelLauncher || !notShizukuMode) {
+        if (!hasPixelLauncher || !isRootMode()) {
             return
         }
 
-        val selectedApps = selectedFabricatedApps
+        val selectedApps = getSelectedFabricatedApps()
         selectedApps[PIXEL_LAUNCHER] = true
-        saveSelectedFabricatedApps(selectedApps)
+        setSelectedFabricatedApps(selectedApps)
     }
 
-    private fun applyFabricatedColors() {
+    private fun updateColors() {
         CoroutineScope(Dispatchers.Main).launch {
-            putLong(MONET_LAST_UPDATED, System.currentTimeMillis())
+            updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
+                applyFabricatedColors()
             }
         }
-    }
-
-    companion object {
-        private val TAG: String = SettingsAdvancedFragment::class.java.simpleName
     }
 }

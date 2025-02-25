@@ -3,7 +3,7 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -13,14 +13,18 @@ android {
     defaultConfig {
         minSdk = 31
         targetSdk = 35
-        versionCode = 23
-        versionName = "v1.11.2"
+        versionCode = 24
+        versionName = "v1.11.3"
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
         debug {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -51,7 +55,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-        dataBinding = true
         buildConfig = true
         aidl = true
     }
@@ -104,5 +107,9 @@ dependencies {
     implementation(libs.recyclerview.selection)
     implementation(libs.blurView)
     implementation(libs.lifecycle.common.jvm)
-    annotationProcessor(libs.glide.compiler)
+    ksp(libs.glide.compiler)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.zip4j)
 }

@@ -118,7 +118,6 @@
     <string name="icon">Ícone</string>
     <string name="reset">Redefinir</string>
     <string name="opt_selected1">Selecionado: %s</string>
-    <string name="opt_selected2">Selecionado: %s%s</string>
     <string name="dismiss">Descartar</string>
     <string name="retry">Tentar novamente</string>
     <string name="grant">Conceder</string>

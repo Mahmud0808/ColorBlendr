@@ -27,7 +27,8 @@ public class ImageColorPickerDialog extends PickerDialog<ImageColorPickerDialog>
 
     private ImageColorPickerView pickerView;
 
-    private SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>() {
+    @SuppressWarnings("deprecation")
+    private final SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>() {
         @Override
         public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
             withBitmap(bitmap);

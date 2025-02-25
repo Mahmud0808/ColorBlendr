@@ -118,7 +118,6 @@
     <string name="icon">圖示</string>
     <string name="reset">重設</string>
     <string name="opt_selected1">已選擇：%s</string>
-    <string name="opt_selected2">已選擇：%s%s</string>
     <string name="dismiss">關閉</string>
     <string name="retry">重試</string>
     <string name="grant">授予</string>

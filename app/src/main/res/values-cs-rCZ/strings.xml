@@ -3,7 +3,7 @@
     <string name="app_moto">Vyjádřete se barvami</string>
     <!-- Tabs -->
     <string name="colors">Barvy</string>
-    <string name="theme">Vzhled</string>
+    <string name="theme">Motiv</string>
     <string name="styles">Styly</string>
     <string name="settings">Nastavení</string>
     <!-- Colors -->
@@ -118,7 +118,6 @@
     <string name="icon">Ikona</string>
     <string name="reset">Resetovat</string>
     <string name="opt_selected1">Vybráno: %s</string>
-    <string name="opt_selected2">Vybráno: %s%s</string>
     <string name="dismiss">Zrušit</string>
     <string name="retry">Opakovat</string>
     <string name="grant">Udělit</string>

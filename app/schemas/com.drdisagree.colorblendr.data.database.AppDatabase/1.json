@@ -1,0 +1,64 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "ebcb729a0a5962f2d0018caf4b5c79c6",
+    "entities": [
+      {
+        "tableName": "custom_style_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`styleId` TEXT NOT NULL, `styleName` TEXT NOT NULL, `description` TEXT NOT NULL, `prefsGson` TEXT NOT NULL, `monet` TEXT NOT NULL, `palette` TEXT NOT NULL, PRIMARY KEY(`styleId`))",
+        "fields": [
+          {
+            "fieldPath": "styleId",
+            "columnName": "styleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "styleName",
+            "columnName": "styleName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prefsGson",
+            "columnName": "prefsGson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monet",
+            "columnName": "monet",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "palette",
+            "columnName": "palette",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "styleId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ebcb729a0a5962f2d0018caf4b5c79c6')"
+    ]
+  }
+}

@@ -2,7 +2,7 @@ package com.drdisagree.colorblendr.utils
 
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.ui.models.AboutAppModel
+import com.drdisagree.colorblendr.data.models.AboutAppModel
 import com.drdisagree.colorblendr.utils.AppUtil.readJsonFileFromAssets
 import org.json.JSONArray
 

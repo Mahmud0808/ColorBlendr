@@ -118,7 +118,6 @@
     <string name="icon">アイコン</string>
     <string name="reset">リセット</string>
     <string name="opt_selected1">選択済み: %s</string>
-    <string name="opt_selected2">選択済み: %s%s</string>
     <string name="dismiss">破棄</string>
     <string name="retry">再試行</string>
     <string name="grant">許可</string>

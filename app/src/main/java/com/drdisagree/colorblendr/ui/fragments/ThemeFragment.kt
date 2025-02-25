@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.ui.fragments
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,24 +9,24 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.common.Const
-import com.drdisagree.colorblendr.common.Const.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.common.Const.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.common.Const.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.common.Const.MONET_LAST_UPDATED
-import com.drdisagree.colorblendr.common.Const.MONET_PITCH_BLACK_THEME
-import com.drdisagree.colorblendr.common.Const.workingMethod
-import com.drdisagree.colorblendr.config.RPrefs.clearPref
-import com.drdisagree.colorblendr.config.RPrefs.getBoolean
-import com.drdisagree.colorblendr.config.RPrefs.getInt
-import com.drdisagree.colorblendr.config.RPrefs.putInt
-import com.drdisagree.colorblendr.config.RPrefs.putLong
+import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.resetAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.setAccentSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getCurrentMonetStyle
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.utils.ColorUtil
-import com.drdisagree.colorblendr.utils.MONET
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
@@ -40,17 +39,10 @@ import kotlinx.coroutines.withContext
 class ThemeFragment : Fragment() {
 
     private lateinit var binding: FragmentThemeBinding
-    private val monetAccentSaturation: IntArray = intArrayOf(
-        getInt(MONET_ACCENT_SATURATION, 100)
-    )
-    private val monetBackgroundSaturation: IntArray = intArrayOf(
-        getInt(MONET_BACKGROUND_SATURATION, 100)
-    )
-    private val monetBackgroundLightness: IntArray = intArrayOf(
-        getInt(MONET_BACKGROUND_LIGHTNESS, 100)
-    )
+    private var monetAccentSaturation = getAccentSaturation()
+    private var monetBackgroundSaturation = getBackgroundSaturation()
+    private var monetBackgroundLightness = getBackgroundLightness()
     private var wasDarkMode: Boolean = isDarkMode
-    private val notShizukuMode: Boolean = workingMethod != Const.WorkMethod.SHIZUKU
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,11 +62,11 @@ class ThemeFragment : Fragment() {
             colorNeutral2.title.setText(R.string.neutral_2)
 
             // Monet primary accent saturation
-            accentSaturation.seekbarProgress = getInt(MONET_ACCENT_SATURATION, 100)
+            accentSaturation.seekbarProgress = monetAccentSaturation
             accentSaturation.setOnSeekbarChangeListener(object : OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     accentSaturation.setSelectedProgress()
-                    monetAccentSaturation[0] = progress
+                    monetAccentSaturation = progress
                     updatePreviewColors()
                 }
 
@@ -82,30 +74,30 @@ class ThemeFragment : Fragment() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     resetCustomStyleIfNotNull()
-                    monetAccentSaturation[0] = seekBar.progress
-                    putInt(MONET_ACCENT_SATURATION, monetAccentSaturation[0])
-                    applyFabricatedColors()
+                    monetAccentSaturation = seekBar.progress
+                    setAccentSaturation(monetAccentSaturation)
+                    updateColors()
                 }
             })
 
             // Long Click Reset
             accentSaturation.setResetClickListener {
                 resetCustomStyleIfNotNull()
-                monetAccentSaturation[0] = 100
+                monetAccentSaturation = 100
                 updatePreviewColors()
-                clearPref(MONET_ACCENT_SATURATION)
-                applyFabricatedColors()
+                resetAccentSaturation()
+                updateColors()
                 true
             }
-            accentSaturation.setEnabled(notShizukuMode)
+            accentSaturation.setEnabled(isRootMode())
 
             // Monet background saturation
-            backgroundSaturation.seekbarProgress = getInt(MONET_BACKGROUND_SATURATION, 100)
+            backgroundSaturation.seekbarProgress = monetBackgroundSaturation
             backgroundSaturation.setOnSeekbarChangeListener(object :
                 OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     backgroundSaturation.setSelectedProgress()
-                    monetBackgroundSaturation[0] = progress
+                    monetBackgroundSaturation = progress
                     updatePreviewColors()
                 }
 
@@ -113,30 +105,30 @@ class ThemeFragment : Fragment() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     resetCustomStyleIfNotNull()
-                    monetBackgroundSaturation[0] = seekBar.progress
-                    putInt(MONET_BACKGROUND_SATURATION, monetBackgroundSaturation[0])
-                    applyFabricatedColors()
+                    monetBackgroundSaturation = seekBar.progress
+                    setBackgroundSaturation(monetBackgroundSaturation)
+                    updateColors()
                 }
             })
 
             // Reset button
             backgroundSaturation.setResetClickListener {
                 resetCustomStyleIfNotNull()
-                monetBackgroundSaturation[0] = 100
+                monetBackgroundSaturation = 100
                 updatePreviewColors()
-                clearPref(MONET_BACKGROUND_SATURATION)
-                applyFabricatedColors()
+                resetBackgroundSaturation()
+                updateColors()
                 true
             }
-            backgroundSaturation.setEnabled(notShizukuMode)
+            backgroundSaturation.setEnabled(isRootMode())
 
             // Monet background lightness
-            backgroundLightness.seekbarProgress = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+            backgroundLightness.seekbarProgress = monetBackgroundLightness
             backgroundLightness.setOnSeekbarChangeListener(object :
                 OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     backgroundLightness.setSelectedProgress()
-                    monetBackgroundLightness[0] = progress
+                    monetBackgroundLightness = progress
                     updatePreviewColors()
                 }
 
@@ -144,22 +136,22 @@ class ThemeFragment : Fragment() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
                     resetCustomStyleIfNotNull()
-                    monetBackgroundLightness[0] = seekBar.progress
-                    putInt(MONET_BACKGROUND_LIGHTNESS, monetBackgroundLightness[0])
-                    applyFabricatedColors()
+                    monetBackgroundLightness = seekBar.progress
+                    setBackgroundLightness(monetBackgroundLightness)
+                    updateColors()
                 }
             })
 
             // Long Click Reset
             backgroundLightness.setResetClickListener {
                 resetCustomStyleIfNotNull()
-                monetBackgroundLightness[0] = 100
+                monetBackgroundLightness = 100
                 updatePreviewColors()
-                clearPref(MONET_BACKGROUND_LIGHTNESS)
-                applyFabricatedColors()
+                resetBackgroundLightness()
+                updateColors()
                 true
             }
-            backgroundLightness.setEnabled(notShizukuMode)
+            backgroundLightness.setEnabled(isRootMode())
         }
 
         return binding.getRoot()
@@ -185,95 +177,77 @@ class ThemeFragment : Fragment() {
 
     private fun updateProgressBars() {
         binding.apply {
-            monetAccentSaturation[0] = getInt(MONET_ACCENT_SATURATION, 100)
-            monetBackgroundSaturation[0] = getInt(MONET_BACKGROUND_SATURATION, 100)
-            monetBackgroundLightness[0] = getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+            monetAccentSaturation = getAccentSaturation()
+            monetBackgroundSaturation = getBackgroundSaturation()
+            monetBackgroundLightness = getBackgroundLightness()
 
             accentSaturation.post {
-                accentSaturation.seekbarProgress = monetAccentSaturation[0]
+                accentSaturation.seekbarProgress = monetAccentSaturation
             }
             backgroundSaturation.post {
-                backgroundSaturation.seekbarProgress = monetBackgroundSaturation[0]
+                backgroundSaturation.seekbarProgress = monetBackgroundSaturation
             }
             backgroundLightness.post {
-                backgroundLightness.seekbarProgress = monetBackgroundLightness[0]
-            }
-        }
-    }
-
-    private fun applyFabricatedColors() {
-        CoroutineScope(Dispatchers.Main).launch {
-            putLong(
-                MONET_LAST_UPDATED,
-                System.currentTimeMillis()
-            )
-            delay(200)
-            withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors(requireContext())
-                } catch (ignored: Exception) {
-                }
+                backgroundLightness.seekbarProgress = monetBackgroundLightness
             }
         }
     }
 
     private fun updatePreviewColors() {
-        val colorPalette: ArrayList<ArrayList<Int>>? = generateModifiedColors(
+        val colorPalette: ArrayList<ArrayList<Int>> = generateModifiedColors(
             getCurrentMonetStyle(),
-            monetAccentSaturation[0],
-            monetBackgroundSaturation[0],
-            monetBackgroundLightness[0],
-            getBoolean(MONET_PITCH_BLACK_THEME, false),
-            getBoolean(MONET_ACCURATE_SHADES, true)
+            monetAccentSaturation,
+            monetBackgroundSaturation,
+            monetBackgroundLightness,
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled()
         )
 
-        if (colorPalette != null) {
-            val isDarkMode: Boolean = isDarkMode
+        val isDarkMode: Boolean = isDarkMode
 
-            binding.colorAccent1.colorContainer.apply {
-                setHalfCircleColor(colorPalette[0][4])
-                setFirstQuarterCircleColor(colorPalette[0][5])
-                setSecondQuarterCircleColor(colorPalette[0][6])
-                setSquareColor(colorPalette[0][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorAccent1.colorContainer.apply {
+            setHalfCircleColor(colorPalette[0][4])
+            setFirstQuarterCircleColor(colorPalette[0][5])
+            setSecondQuarterCircleColor(colorPalette[0][6])
+            setSquareColor(colorPalette[0][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorAccent2.colorContainer.apply {
-                setHalfCircleColor(colorPalette[1][4])
-                setFirstQuarterCircleColor(colorPalette[1][5])
-                setSecondQuarterCircleColor(colorPalette[1][6])
-                setSquareColor(colorPalette[1][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorAccent2.colorContainer.apply {
+            setHalfCircleColor(colorPalette[1][4])
+            setFirstQuarterCircleColor(colorPalette[1][5])
+            setSecondQuarterCircleColor(colorPalette[1][6])
+            setSquareColor(colorPalette[1][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorAccent3.colorContainer.apply {
-                setHalfCircleColor(colorPalette[2][4])
-                setFirstQuarterCircleColor(colorPalette[2][5])
-                setSecondQuarterCircleColor(colorPalette[2][6])
-                setSquareColor(colorPalette[2][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorAccent3.colorContainer.apply {
+            setHalfCircleColor(colorPalette[2][4])
+            setFirstQuarterCircleColor(colorPalette[2][5])
+            setSecondQuarterCircleColor(colorPalette[2][6])
+            setSquareColor(colorPalette[2][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorNeutral1.colorContainer.apply {
-                setHalfCircleColor(colorPalette[3][4])
-                setFirstQuarterCircleColor(colorPalette[3][5])
-                setSecondQuarterCircleColor(colorPalette[3][6])
-                setSquareColor(colorPalette[3][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorNeutral1.colorContainer.apply {
+            setHalfCircleColor(colorPalette[3][4])
+            setFirstQuarterCircleColor(colorPalette[3][5])
+            setSecondQuarterCircleColor(colorPalette[3][6])
+            setSquareColor(colorPalette[3][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
+        }
 
-            binding.colorNeutral2.colorContainer.apply {
-                setHalfCircleColor(colorPalette[4][4])
-                setFirstQuarterCircleColor(colorPalette[4][5])
-                setSecondQuarterCircleColor(colorPalette[4][6])
-                setSquareColor(colorPalette[4][if (!isDarkMode) 3 else 9])
-                setPadding(8f)
-                invalidateColors()
-            }
+        binding.colorNeutral2.colorContainer.apply {
+            setHalfCircleColor(colorPalette[4][4])
+            setFirstQuarterCircleColor(colorPalette[4][5])
+            setSecondQuarterCircleColor(colorPalette[4][6])
+            setSquareColor(colorPalette[4][if (!isDarkMode) 3 else 9])
+            setPadding(8f)
+            invalidateColors()
         }
     }
 
@@ -284,23 +258,24 @@ class ThemeFragment : Fragment() {
         monetBackgroundLightness: Int,
         pitchBlackTheme: Boolean,
         accurateShades: Boolean
-    ): ArrayList<ArrayList<Int>>? {
-        try {
-            return ColorUtil.generateModifiedColors(
-                style,
-                monetAccentSaturation,
-                monetBackgroundSaturation,
-                monetBackgroundLightness,
-                pitchBlackTheme,
-                accurateShades
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error generating modified colors", e)
-            return null
-        }
+    ): ArrayList<ArrayList<Int>> {
+        return ColorUtil.generateModifiedColors(
+            style,
+            monetAccentSaturation,
+            monetBackgroundSaturation,
+            monetBackgroundLightness,
+            pitchBlackTheme,
+            accurateShades
+        )
     }
 
-    companion object {
-        private val TAG: String = ThemeFragment::class.java.simpleName
+    private fun updateColors() {
+        CoroutineScope(Dispatchers.Main).launch {
+            updateColorAppliedTimestamp()
+            delay(200)
+            withContext(Dispatchers.IO) {
+                applyFabricatedColors()
+            }
+        }
     }
 }

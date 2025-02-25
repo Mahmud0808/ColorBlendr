@@ -118,7 +118,6 @@
     <string name="icon">Biểu tượng</string>
     <string name="reset">Đặt lại</string>
     <string name="opt_selected1">Đã chọn: %s</string>
-    <string name="opt_selected2">Đã chọn: %s%s</string>
     <string name="dismiss">Đóng</string>
     <string name="retry">Thử lại</string>
     <string name="grant">Cấp quyền</string>

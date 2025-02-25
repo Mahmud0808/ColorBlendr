@@ -17,9 +17,9 @@ import android.os.Process
 import android.os.RemoteException
 import android.os.UserHandle
 import android.util.Log
-import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.common.Const.FABRICATED_OVERLAY_SOURCE_PACKAGE
-import com.drdisagree.colorblendr.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_SOURCE_PACKAGE
+import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.Utils
@@ -29,11 +29,20 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 class RootConnection : RootService() {
+
     override fun onBind(intent: Intent): IBinder {
         return RootConnectionImpl()
     }
 
     class RootConnectionImpl : IRootConnection.Stub() {
+
+        /**
+         * A listener that observes process lifecycle events, specifically used to detect when
+         * the System UI process dies.
+         *
+         * This listener implements the [IProcessObserver] interface and is registered with
+         * the Activity Manager to receive notifications about process state changes.
+         */
         private val processListener: IProcessObserver.Stub = object : IProcessObserver.Stub() {
             @Throws(RemoteException::class)
             override fun onForegroundActivitiesChanged(
@@ -53,11 +62,8 @@ class RootConnection : RootService() {
                 if (uid == SystemUI_UID) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         try {
-                            enableOverlayWithIdentifier(
-                                listOf(
-                                    FABRICATED_OVERLAY_NAME_SYSTEM
-                                )
-                            )
+                            enableOverlayWithIdentifier(listOf(FABRICATED_OVERLAY_NAME_SYSTEM))
+                            Log.d(TAG, "SystemUI restarted, re-enabling overlay")
                         } catch (ignored: RemoteException) {
                             // Overlay was never registered
                         }
@@ -197,7 +203,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setEnabledExclusive(
                             packageName,
                             true,
@@ -245,10 +251,10 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setEnabledExclusiveInCategory(
                             packageName,
-                            userInfo.userHandle.getIdentifier()
+                            userInfo.userHandle.getUserIdentifier()
                         )
                         if (userId == currentUserId) {
                             currentUserListed = true
@@ -460,7 +466,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setHighestPriority(
                             packageName,
                             userId
@@ -509,7 +515,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         val tempResult = mOverlayManager.setLowestPriority(
                             packageName,
                             userId
@@ -569,7 +575,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         mOverlayManager.invalidateCachesForOverlay(
                             packageName,
                             userId
@@ -599,7 +605,7 @@ class RootConnection : RootService() {
             profiles.forEach { userInfo ->
                 try {
                     if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
                         mOverlayManager.setEnabled(
                             packageName,
                             enable,
@@ -641,7 +647,7 @@ class RootConnection : RootService() {
                 profiles.forEach { userInfo ->
                     try {
                         if (userInfo.isProfile) {
-                            val userId = userInfo.userHandle.getIdentifier()
+                            val userId = userInfo.userHandle.getUserIdentifier()
                             setEnabledMethod.invoke(
                                 omtbInstance,
                                 identifier,
@@ -731,7 +737,7 @@ class RootConnection : RootService() {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
 
             private val currentUserId: Int
-                get() = Process.myUserHandle().getIdentifier()
+                get() = Process.myUserHandle().getUserIdentifier()
 
             private val SystemUI_UID: Int
                 get() = try {
@@ -814,7 +820,7 @@ class RootConnection : RootService() {
                 }
             }
 
-            private fun UserHandle.getIdentifier(): Int {
+            private fun UserHandle.getUserIdentifier(): Int {
                 val method = UserHandle::class.java.getDeclaredMethod("getIdentifier")
                 method.isAccessible = true
                 return method.invoke(this) as Int

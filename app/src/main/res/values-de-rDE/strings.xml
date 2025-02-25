@@ -118,7 +118,6 @@
     <string name="icon">Symbol</string>
     <string name="reset">Zurücksetzen</string>
     <string name="opt_selected1">Ausgewählt: %s</string>
-    <string name="opt_selected2">Ausgewählt: %s%s</string>
     <string name="dismiss">Zurückweisen</string>
     <string name="retry">Wiederholen</string>
     <string name="grant">Erteilen</string>
