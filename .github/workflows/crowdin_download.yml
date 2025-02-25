@@ -39,7 +39,7 @@ jobs:
           printf '%s\n' '${{ steps.translators.outputs.json_report }}' > ./app/src/main/assets/translators.json
 
       - name: Download translations
-        uses: crowdin/github-action@v1
+        uses: crowdin/github-action@v2
         with:
           upload_translations: false
           upload_sources: false
