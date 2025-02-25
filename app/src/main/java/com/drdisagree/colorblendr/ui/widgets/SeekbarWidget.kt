@@ -100,12 +100,13 @@ class SeekbarWidget : RelativeLayout {
             )
         } else {
             context.getString(
-                R.string.opt_selected2,
-                if (!isDecimalFormat) seekBar!!.progress.toString() else DecimalFormat(
-                    decimalFormat
+                R.string.opt_selected1,
+                context.getString(
+                    R.string.opt_selected2,
+                    if (!isDecimalFormat) seekBar!!.progress.toString()
+                    else DecimalFormat(decimalFormat).format((seekBar!!.progress / outputScale).toDouble()),
+                    valueFormat
                 )
-                    .format((seekBar!!.progress / outputScale).toDouble()),
-                valueFormat
             )
         }
         handleResetVisibility()
