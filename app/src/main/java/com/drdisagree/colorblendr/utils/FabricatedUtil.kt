@@ -16,6 +16,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.getColorNamesM3
 import com.drdisagree.colorblendr.utils.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.DynamicColors.CUSTOM_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.DynamicColors.FIXED_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.DynamicColors.M3_REF_PALETTE
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
@@ -33,9 +34,11 @@ object FabricatedUtil {
         paletteLight: ArrayList<ArrayList<Int>>,
         paletteDark: ArrayList<ArrayList<Int>>
     ) {
-        assignDynamicPaletteToOverlay(true,  /* isDark */paletteDark)
-        assignDynamicPaletteToOverlay(false,  /* isDark */paletteLight)
+        assignDynamicPaletteToOverlay(true /* isDark */, paletteDark)
+        assignDynamicPaletteToOverlay(false /* isDark */, paletteLight)
         assignFixedColorsToOverlay(paletteLight)
+        assignCustomColorsToOverlay(true /* isDark */, paletteDark)
+        assignCustomColorsToOverlay(false /* isDark */, paletteLight)
     }
 
     private fun FabricatedOverlayResource.assignDynamicPaletteToOverlay(
@@ -125,6 +128,31 @@ object FabricatedUtil {
         }
     }
 
+    private fun FabricatedOverlayResource.assignCustomColorsToOverlay(
+        isDark: Boolean,
+        palette: ArrayList<ArrayList<Int>>
+    ) {
+        val suffix = if (isDark) "_dark" else "_light"
+
+        CUSTOM_COLORS_MAPPED.forEach { colorMapping ->
+            val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
+                prefix = "system_",
+                suffix = suffix,
+                palette = palette
+            ).let { (name, value) ->
+                name to applyColorAdjustments(
+                    colorMapping,
+                    name,
+                    value,
+                    isDark,
+                    pitchBlackTheme = false
+                )
+            }
+
+            setColor(resourceName, colorValue)
+        }
+    }
+
     fun updateFabricatedAppList(context: Context) {
         if (!isRootMode() || !isThemingEnabled()) return
 
@@ -162,6 +190,9 @@ object FabricatedUtil {
             colorValue
         ).let { adjustedValue ->
             colorMapping.adjustColorBrightnessIfRequired(adjustedValue, isDark)
+                .let { adjustedBrightness ->
+                    colorMapping.adjustLStarIfRequired(adjustedBrightness, isDark)
+                }
         }
     }
 

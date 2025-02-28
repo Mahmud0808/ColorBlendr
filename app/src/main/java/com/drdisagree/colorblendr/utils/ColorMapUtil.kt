@@ -1,20 +1,26 @@
 package com.drdisagree.colorblendr.utils
 
 import androidx.core.util.Pair
+import com.drdisagree.colorblendr.utils.ColorUtil.adjustColorLightness
 import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
 
 data class ColorMapping(
     val resourceName: String,
     val tonalPalette: TonalPalette? = null,
+    val lightModeTonalPalette: TonalPalette? = null,
+    val darkModeTonalPalette: TonalPalette? = null,
     val colorIndex: Int? = null,
     val lightModeColorIndex: Int? = null,
     val darkModeColorIndex: Int? = null,
-    val lightModeColorCode: Int? = null,
     val colorCode: Int? = null,
+    val lightModeColorCode: Int? = null,
     val darkModeColorCode: Int? = null,
     val lightnessAdjustment: Int? = null,
     val lightModeLightnessAdjustment: Int? = null,
-    val darkModeLightnessAdjustment: Int? = null
+    val darkModeLightnessAdjustment: Int? = null,
+    val lStarAdjustment: Double? = null,
+    val lightModeLStarAdjustment: Double? = null,
+    val darkModeLStarAdjustment: Double? = null
 )
 
 fun ColorMapping.extractResourceFromColorMap(
@@ -25,16 +31,14 @@ fun ColorMapping.extractResourceFromColorMap(
 ): Pair<String, Int> {
     val resourceName = prefix + resourceName + suffix
 
-    val colorValue: Int = if (tonalPalette != null) {
-        if (colorIndex != null) {
-            palette[tonalPalette.index][colorIndex]
-        } else {
-            if (isDark) {
-                palette[tonalPalette.index][darkModeColorIndex!!]
-            } else {
-                palette[tonalPalette.index][lightModeColorIndex!!]
-            }
-        }
+    val colorValue: Int = if (tonalPalette != null ||
+        (lightModeTonalPalette != null && darkModeTonalPalette != null)
+    ) {
+        val tonalPaletteIndex =
+            (tonalPalette ?: if (isDark) darkModeTonalPalette!! else lightModeTonalPalette!!).index
+        val colorIndex = colorIndex ?: if (isDark) darkModeColorIndex!! else lightModeColorIndex!!
+
+        palette[tonalPaletteIndex][colorIndex]
     } else {
         colorCode ?: if (isDark) {
             darkModeColorCode
@@ -56,6 +60,22 @@ fun ColorMapping.adjustColorBrightnessIfRequired(
         adjustLightness(colorValue, darkModeLightnessAdjustment)
     } else if (lightModeLightnessAdjustment != null && !isDark) {
         adjustLightness(colorValue, lightModeLightnessAdjustment)
+    } else {
+        colorValue
+    }
+}
+
+fun ColorMapping.adjustLStarIfRequired(
+    colorValue: Int,
+    isDark: Boolean
+): Int {
+    // LAB doesn't work for black and white, so we use CAM instead
+    return if (lStarAdjustment != null) {
+        adjustColorLightness(colorValue, lStarAdjustment.toFloat())
+    } else if (darkModeLStarAdjustment != null && isDark) {
+        adjustColorLightness(colorValue, darkModeLStarAdjustment.toFloat())
+    } else if (lightModeLStarAdjustment != null && !isDark) {
+        adjustColorLightness(colorValue, lightModeLStarAdjustment.toFloat())
     } else {
         colorValue
     }

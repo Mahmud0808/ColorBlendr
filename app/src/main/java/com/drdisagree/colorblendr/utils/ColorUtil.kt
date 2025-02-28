@@ -6,6 +6,7 @@ import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.annotation.StyleableRes
+import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
@@ -543,6 +544,28 @@ object ColorUtil {
         )
     }
 
+    /*
+     * Adjust the L* value of a color
+     */
+    fun adjustColorLStar(color: Int, targetLStar: Double): Int {
+        val lab = DoubleArray(3)
+        ColorUtils.colorToLAB(color, lab)
+        lab[0] = targetLStar.coerceIn(0.0, 100.0)
+
+        return ColorUtils.LABToColor(lab[0], lab[1], lab[2])
+    }
+
+    /*
+     * Adjust the lightness of a color
+     */
+    fun adjustColorLightness(color: Int, targetL: Float): Int {
+        val cam = Cam.fromInt(color)
+        return Cam.getInt(cam.hue, cam.chroma, targetL)
+    }
+
+    /*
+     * Calculate the text color for a background color
+     */
     fun calculateTextColor(@ColorInt color: Int): Int {
         val darkness =
             1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
