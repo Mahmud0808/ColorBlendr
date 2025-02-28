@@ -35,7 +35,6 @@ import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.ColorUtil
 import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
-import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
 import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
@@ -142,7 +141,7 @@ class ColorPaletteFragment : Fragment() {
     private fun initColorTablePreview(colorTableRows: Array<LinearLayout>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val systemColors = generateModifiedColors() ?: getSystemColors()
+                val systemColors = generateModifiedColors()
 
                 withContext(Dispatchers.Main) {
                     for (i in colorTableRows.indices) {
