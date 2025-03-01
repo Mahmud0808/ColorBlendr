@@ -27,7 +27,7 @@ fun ColorMapping.extractResourceFromColorMap(
     prefix: String = "",
     suffix: String = "",
     palette: ArrayList<ArrayList<Int>>,
-    isDark: Boolean = false
+    isDark: Boolean
 ): Pair<String, Int> {
     val resourceName = prefix + resourceName + suffix
 
@@ -35,7 +35,7 @@ fun ColorMapping.extractResourceFromColorMap(
         (lightModeTonalPalette != null && darkModeTonalPalette != null)
     ) {
         val tonalPaletteIndex =
-            (tonalPalette ?: if (isDark) darkModeTonalPalette!! else lightModeTonalPalette!!).index
+            (tonalPalette ?: if (isDark) darkModeTonalPalette else lightModeTonalPalette)!!.index
         val colorIndex = colorIndex ?: if (isDark) darkModeColorIndex!! else lightModeColorIndex!!
 
         palette[tonalPaletteIndex][colorIndex]

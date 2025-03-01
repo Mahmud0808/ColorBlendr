@@ -240,9 +240,8 @@ object DynamicColors {
             ColorMapping(
                 resourceName = "control_normal",
                 tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 80.0,
-                darkModeLStarAdjustment = 30.0
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 9
             ),
             ColorMapping(
                 resourceName = "control_highlight",
@@ -252,37 +251,32 @@ object DynamicColors {
             ColorMapping(
                 resourceName = "text_primary_inverse",
                 tonalPalette = TonalPalette.NEUTRAL,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 10.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 11
             ),
             ColorMapping(
                 resourceName = "text_secondary_and_tertiary_inverse",
                 tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 80.0,
-                darkModeLStarAdjustment = 30.0
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 9
             ),
             ColorMapping(
                 resourceName = "text_primary_inverse_disable_only",
                 tonalPalette = TonalPalette.NEUTRAL,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 10.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 11
             ),
             ColorMapping(
                 resourceName = "text_secondary_and_tertiary_inverse_disabled",
                 tonalPalette = TonalPalette.NEUTRAL,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 10.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 11
             ),
             ColorMapping(
                 resourceName = "text_hint_inverse",
                 tonalPalette = TonalPalette.NEUTRAL,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 10.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 11
             ),
             ColorMapping(
                 resourceName = "palette_key_color_primary",
@@ -397,96 +391,88 @@ object DynamicColors {
             ColorMapping(
                 resourceName = "widget_background",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 95.0,
-                darkModeLStarAdjustment = 20.0
+                lightModeColorIndex = 2,
+                darkModeColorIndex = 10
             ),
             ColorMapping(
                 resourceName = "clock_hour",
                 tonalPalette = TonalPalette.SECONDARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 60.0,
-                darkModeLStarAdjustment = 30.0
+                lightModeColorIndex = 6,
+                darkModeColorIndex = 9
             ),
             ColorMapping(
                 resourceName = "clock_minute",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 40.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 8
             ),
             ColorMapping(
                 resourceName = "clock_second",
                 tonalPalette = TonalPalette.TERTIARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 40.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 8
             ),
             ColorMapping(
                 resourceName = "weather_temp",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 80.0,
-                darkModeLStarAdjustment = 55.0
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 6,
+                darkModeLightnessAdjustment = -42
             ),
 
             // THEME APP ICONS
             ColorMapping(
                 resourceName = "theme_app",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 90.0,
-                darkModeLStarAdjustment = 30.0
+                lightModeColorIndex = 3,
+                darkModeColorIndex = 9
             ),
             ColorMapping(
                 resourceName = "on_theme_app",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 40.0,
-                darkModeLStarAdjustment = 80.0
+                lightModeColorIndex = 8,
+                darkModeColorIndex = 4
             ),
             ColorMapping(
                 resourceName = "theme_app_ring",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 8,
-                lStarAdjustment = 70.0,
+                colorIndex = 5
             ),
             ColorMapping(
                 resourceName = "theme_notif",
                 tonalPalette = TonalPalette.TERTIARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 80.0,
-                darkModeLStarAdjustment = 90.0
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 3
             ),
 
             // SUPER G COLORS
             ColorMapping(
                 resourceName = "brand_a",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 40.0,
-                darkModeLStarAdjustment = 80.0
+                lightModeColorIndex = 8,
+                darkModeColorIndex = 4
             ),
             ColorMapping(
                 resourceName = "brand_b",
                 tonalPalette = TonalPalette.SECONDARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 64.0,
-                darkModeLStarAdjustment = 92.0
+                lightModeColorIndex = 6,
+                darkModeColorIndex = 3,
+                lightModeLightnessAdjustment = -16,
+                darkModeLightnessAdjustment = 18
             ),
             ColorMapping(
                 resourceName = "brand_c",
                 tonalPalette = TonalPalette.PRIMARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 50.0,
-                darkModeLStarAdjustment = 60.0
+                lightModeColorIndex = 7,
+                darkModeColorIndex = 6
             ),
             ColorMapping(
                 resourceName = "brand_d",
                 tonalPalette = TonalPalette.TERTIARY,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 59.0,
-                darkModeLStarAdjustment = 90.0
+                lightModeColorIndex = 6,
+                darkModeColorIndex = 3,
+                lightModeLightnessAdjustment = -14,
+                darkModeLightnessAdjustment = 18
             ),
 
             // QUICK SETTING TILES
@@ -533,9 +519,9 @@ object DynamicColors {
             ColorMapping(
                 resourceName = "overview_background",
                 tonalPalette = TonalPalette.NEUTRAL_VARIANT,
-                colorIndex = 6,
-                lightModeLStarAdjustment = 80.0,
-                darkModeLStarAdjustment = 35.0
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 8,
+                darkModeLightnessAdjustment = -42
             )
         )
     }

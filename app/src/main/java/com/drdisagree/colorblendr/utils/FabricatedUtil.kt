@@ -83,7 +83,8 @@ object FabricatedUtil {
         FIXED_COLORS_MAPPED.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
                 prefix = "system_",
-                palette = paletteLight
+                palette = paletteLight,
+                isDark = false
             )
 
             setColor(resourceName, colorValue)
@@ -98,7 +99,8 @@ object FabricatedUtil {
 
         M3_REF_PALETTE.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
-                palette = palette
+                palette = palette,
+                isDark = false
             ).let { (name, value) ->
                 name to applyColorAdjustments(
                     colorMapping,
@@ -138,7 +140,8 @@ object FabricatedUtil {
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
                 prefix = "system_",
                 suffix = suffix,
-                palette = palette
+                palette = palette,
+                isDark = isDark
             ).let { (name, value) ->
                 name to applyColorAdjustments(
                     colorMapping,
