@@ -8,6 +8,7 @@ import androidx.annotation.ColorInt
 import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
@@ -15,6 +16,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApp
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.utils.colors.ColorMapping
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.convertToMonochrome
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.getColorNamesM3
 import com.drdisagree.colorblendr.utils.colors.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.colors.DynamicColors.CUSTOM_COLORS_MAPPED
@@ -51,6 +53,7 @@ object FabricatedUtil {
         palette: ArrayList<ArrayList<Int>>
     ) {
         val suffix = if (isDark) "dark" else "light"
+        val tintTextColor = tintedTextEnabled()
         val isPitchBlackTheme = pitchBlackThemeEnabled()
         val prefixSuffix = arrayOf(
             "system_" to "_${suffix}",
@@ -58,6 +61,15 @@ object FabricatedUtil {
             "m3_sys_color_dynamic_${suffix}_" to "",
             "gm3_sys_color_${suffix}_" to "",
             "gm3_sys_color_dynamic_${suffix}_" to ""
+        )
+        val textColorResources = setOf(
+            "on_surface",
+            "on_surface_variant",
+            "on_background",
+            "on_primary_container",
+            "on_secondary_container",
+            "on_tertiary_container",
+            "on_error"
         )
 
         ALL_DYNAMIC_COLORS_MAPPED.forEach { colorMapping ->
@@ -77,9 +89,33 @@ object FabricatedUtil {
                     )
                 }
 
-                setColor(resourceName, colorValue)
+                if (!tintTextColor && textColorResources.any { resourceName.contains(it) }) {
+                    addTintLessTextColorsForFramework(resourceName, colorValue)
+                } else {
+                    setColor(resourceName, colorValue)
+                }
             }
         }
+    }
+
+    private fun FabricatedOverlayResource.addTintLessTextColorsForFramework(
+        resourceName: String,
+        colorValue: Int
+    ) {
+        val isDark = resourceName.endsWith("_dark")
+        val isLight = resourceName.endsWith("_light")
+        val isError = resourceName.contains("on_error")
+        val isErrorContainer = resourceName.contains("on_error_container")
+
+        val adjustedColor = when {
+            isDark && (!isError || isErrorContainer) -> Color.WHITE
+            isLight && (!isError || isErrorContainer) -> Color.BLACK
+            isDark -> Color.BLACK
+            isLight -> Color.WHITE
+            else -> convertToMonochrome(colorValue)
+        }
+
+        setColor(resourceName, adjustedColor)
     }
 
     private fun FabricatedOverlayResource.assignFixedColorsToOverlay(
@@ -302,12 +338,14 @@ object FabricatedUtil {
         resources.forEach { (_, pairs) ->
             pairs.forEach { (name, color) ->
                 setColor(name, color)
-                setColor("g$name", color)
+                if (name.startsWith("m3")) {
+                    setColor("g$name", color)
+                }
             }
         }
 
         when {
-            targetPackage == "com.android.settings" -> {
+            targetPackage == SETTINGS -> {
                 when {
                     Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
                         setColor(

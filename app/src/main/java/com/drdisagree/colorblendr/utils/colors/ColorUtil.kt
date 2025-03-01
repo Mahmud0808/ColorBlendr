@@ -565,6 +565,15 @@ object ColorUtil {
     }
 
     /*
+     * Convert a color to monochrome
+     */
+    fun convertToMonochrome(color: Int): Int {
+        val cam = Cam.fromInt(color)
+        val lstar = CamUtils.lstarFromInt(color)
+        return Cam.getInt(cam.hue, 0f, lstar)
+    }
+
+    /*
      * Calculate the text color for a background color
      */
     fun calculateTextColor(@ColorInt color: Int): Int {
