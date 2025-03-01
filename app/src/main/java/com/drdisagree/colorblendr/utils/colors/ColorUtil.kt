@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.colors
 
 import android.content.Context
 import android.graphics.Color
@@ -15,9 +15,10 @@ import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tertiaryColorEnabled
 import com.drdisagree.colorblendr.data.enums.MONET
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.generateColorPalette
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.cam.Cam
 import com.drdisagree.colorblendr.utils.cam.CamUtils
+import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.generateColorPalette
 import com.google.android.material.color.DynamicColors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min

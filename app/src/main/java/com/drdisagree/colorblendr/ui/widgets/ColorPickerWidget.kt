@@ -17,7 +17,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
 
 class ColorPickerWidget : RelativeLayout {

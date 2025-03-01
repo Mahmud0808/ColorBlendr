@@ -18,10 +18,10 @@ import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
-import com.drdisagree.colorblendr.utils.BackupRestore
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.getStyleNameForRootless
+import com.drdisagree.colorblendr.utils.app.BackupRestore
+import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
 import com.drdisagree.colorblendr.data.enums.MONET
-import com.drdisagree.colorblendr.utils.MiscUtil.toPx
+import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

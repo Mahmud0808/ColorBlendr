@@ -1,11 +1,11 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.colors
 
 import android.graphics.Color
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.enums.MONET
-import com.drdisagree.colorblendr.utils.ColorUtil.adjustSaturation
-import com.drdisagree.colorblendr.utils.ColorUtil.shiftLightness
-import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustSaturation
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.shiftLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 

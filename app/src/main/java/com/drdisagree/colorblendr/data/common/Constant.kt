@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.data.common
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.enums.WorkMethod
-import com.drdisagree.colorblendr.utils.SystemUtil
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.google.gson.Gson
 
 object Constant {

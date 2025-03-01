@@ -23,11 +23,11 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
-import com.drdisagree.colorblendr.utils.ColorUtil.getAccentColor
-import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService
-import com.drdisagree.colorblendr.utils.ShizukuUtil.getUserServiceArgs
-import com.drdisagree.colorblendr.utils.ShizukuUtil.hasShizukuPermission
-import com.drdisagree.colorblendr.utils.ShizukuUtil.isShizukuAvailable
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getAccentColor
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.annotations.Test
 import java.util.Timer
 import java.util.TimerTask

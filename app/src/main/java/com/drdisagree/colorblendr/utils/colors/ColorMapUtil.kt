@@ -1,8 +1,8 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.colors
 
 import androidx.core.util.Pair
-import com.drdisagree.colorblendr.utils.ColorUtil.adjustColorLightness
-import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustColorLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 
 data class ColorMapping(
     val resourceName: String,

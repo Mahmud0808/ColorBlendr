@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.utils.cam;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.colors.ColorUtil;
 
 /**
  * A color appearance model, based on CAM16, extended to use L* as the lightness dimension, and

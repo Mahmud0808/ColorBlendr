@@ -26,10 +26,10 @@ import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.databinding.FragmentThemeBinding
-import com.drdisagree.colorblendr.utils.ColorUtil
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.colors.ColorUtil
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

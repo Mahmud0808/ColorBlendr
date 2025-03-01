@@ -19,9 +19,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
-import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
-import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.SystemUtil
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

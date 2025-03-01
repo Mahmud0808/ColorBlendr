@@ -6,8 +6,8 @@ import android.os.IBinder
 import android.util.Log
 import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.drdisagree.colorblendr.service.ShizukuConnection
-import com.drdisagree.colorblendr.utils.ShizukuUtil.bindUserService
-import com.drdisagree.colorblendr.utils.ShizukuUtil.getUserServiceArgs
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -46,7 +46,7 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
-import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.google.gson.reflect.TypeToken
 
 object Utilities {

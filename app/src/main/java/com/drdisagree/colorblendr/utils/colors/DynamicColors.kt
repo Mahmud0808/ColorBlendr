@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.colors
 
 import android.graphics.Color
 import android.os.Build

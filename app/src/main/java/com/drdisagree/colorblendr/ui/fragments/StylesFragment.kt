@@ -31,11 +31,11 @@ import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
 import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
 import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
-import com.drdisagree.colorblendr.utils.ColorUtil
-import com.drdisagree.colorblendr.utils.DividerItemDecoration
-import com.drdisagree.colorblendr.utils.MiscUtil.getDialogPreferredPadding
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.MiscUtil.toPx
+import com.drdisagree.colorblendr.utils.colors.ColorUtil
+import com.drdisagree.colorblendr.utils.app.DividerItemDecoration
+import com.drdisagree.colorblendr.utils.app.MiscUtil.getDialogPreferredPadding
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch

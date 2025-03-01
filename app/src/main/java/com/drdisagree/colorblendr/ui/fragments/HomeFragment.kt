@@ -19,15 +19,15 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.databinding.FragmentHomeBinding
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
-import com.drdisagree.colorblendr.utils.AppUtil
-import com.drdisagree.colorblendr.utils.AppUtil.hasStoragePermission
-import com.drdisagree.colorblendr.utils.AppUtil.openAppSettings
-import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
-import com.drdisagree.colorblendr.utils.AppUtil.requestStoragePermission
-import com.drdisagree.colorblendr.utils.FragmentUtil.TabSelection
-import com.drdisagree.colorblendr.utils.FragmentUtil.getSlidingDirection
-import com.drdisagree.colorblendr.utils.FragmentUtil.setCustomAnimations
-import com.drdisagree.colorblendr.utils.parcelable
+import com.drdisagree.colorblendr.utils.app.AppUtil
+import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
+import com.drdisagree.colorblendr.utils.app.AppUtil.openAppSettings
+import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
+import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
+import com.drdisagree.colorblendr.utils.app.FragmentUtil.TabSelection
+import com.drdisagree.colorblendr.utils.app.FragmentUtil.getSlidingDirection
+import com.drdisagree.colorblendr.utils.app.FragmentUtil.setCustomAnimations
+import com.drdisagree.colorblendr.utils.app.parcelable
 import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : Fragment() {

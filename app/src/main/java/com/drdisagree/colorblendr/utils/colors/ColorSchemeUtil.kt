@@ -1,11 +1,12 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.colors
 
 import android.content.Context
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.enums.MONET
-import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
+import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
 import com.drdisagree.colorblendr.utils.monet.hct.Hct
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette

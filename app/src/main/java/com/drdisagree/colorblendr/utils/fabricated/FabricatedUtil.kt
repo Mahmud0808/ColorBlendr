@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.fabricated
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -13,13 +13,18 @@ import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
-import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
-import com.drdisagree.colorblendr.utils.ColorUtil.getColorNamesM3
-import com.drdisagree.colorblendr.utils.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
-import com.drdisagree.colorblendr.utils.DynamicColors.CUSTOM_COLORS_MAPPED
-import com.drdisagree.colorblendr.utils.DynamicColors.FIXED_COLORS_MAPPED
-import com.drdisagree.colorblendr.utils.DynamicColors.M3_REF_PALETTE
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
+import com.drdisagree.colorblendr.utils.colors.ColorMapping
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getColorNamesM3
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.CUSTOM_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.FIXED_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.M3_REF_PALETTE
+import com.drdisagree.colorblendr.utils.colors.adjustColorBrightnessIfRequired
+import com.drdisagree.colorblendr.utils.colors.adjustLStarIfRequired
+import com.drdisagree.colorblendr.utils.colors.extractResourceFromColorMap
+import com.drdisagree.colorblendr.utils.manager.OverlayManager
+import com.drdisagree.colorblendr.utils.monet.replaceColorsPerPackageName
 
 object FabricatedUtil {
 

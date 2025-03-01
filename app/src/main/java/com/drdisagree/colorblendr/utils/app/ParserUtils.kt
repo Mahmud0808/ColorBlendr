@@ -1,9 +1,9 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.app
 
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.AboutAppModel
-import com.drdisagree.colorblendr.utils.AppUtil.readJsonFileFromAssets
+import com.drdisagree.colorblendr.utils.app.AppUtil.readJsonFileFromAssets
 import org.json.JSONArray
 
 fun parseContributors(): ArrayList<AboutAppModel> {

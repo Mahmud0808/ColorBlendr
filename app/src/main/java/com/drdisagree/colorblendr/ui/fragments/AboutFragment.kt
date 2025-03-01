@@ -12,9 +12,9 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.databinding.FragmentAboutBinding
 import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter
 import com.drdisagree.colorblendr.data.models.AboutAppModel
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.parseContributors
-import com.drdisagree.colorblendr.utils.parseTranslators
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.app.parseContributors
+import com.drdisagree.colorblendr.utils.app.parseTranslators
 
 class AboutFragment : Fragment() {
 

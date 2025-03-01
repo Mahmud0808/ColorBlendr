@@ -30,9 +30,9 @@ import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding
 import com.drdisagree.colorblendr.ui.adapters.AppListAdapter
-import com.drdisagree.colorblendr.utils.FabricatedUtil.updateFabricatedAppList
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.isOverlayEnabled
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eightbitlab.com.blurview.RenderEffectBlur
 import kotlinx.coroutines.CoroutineScope

@@ -28,9 +28,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimest
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.views.WallColorPreview
-import com.drdisagree.colorblendr.utils.ColorUtil.monetAccentColors
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.monetAccentColors
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.button.MaterialButtonToggleGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

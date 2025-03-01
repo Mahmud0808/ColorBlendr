@@ -5,7 +5,7 @@ import android.os.Build
 import android.util.Log
 import com.drdisagree.colorblendr.data.common.Utilities.getOriginalStyleName
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
-import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColorNoHash
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColorNoHash
 import org.json.JSONObject
 
 object ThemeOverlayPackage {
