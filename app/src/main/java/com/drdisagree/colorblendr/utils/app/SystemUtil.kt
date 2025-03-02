@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.app
 
 import android.content.pm.PackageManager
 import android.content.res.Configuration

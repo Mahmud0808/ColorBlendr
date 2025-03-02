@@ -17,11 +17,11 @@ import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.ui.views.ColorPreview
-import com.drdisagree.colorblendr.utils.ColorSchemeUtil.stringToEnumMonetStyle
-import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.MiscUtil.getOriginalString
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.stringToEnumMonetStyle
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope

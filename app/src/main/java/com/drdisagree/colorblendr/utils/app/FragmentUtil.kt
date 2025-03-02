@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.app
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction

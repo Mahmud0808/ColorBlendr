@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.manager
 
 import android.graphics.Color
 import android.os.Build
@@ -25,12 +25,15 @@ import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
-import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
-import com.drdisagree.colorblendr.utils.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.FabricatedUtil.assignPerAppColorsToOverlay
-import com.drdisagree.colorblendr.utils.FabricatedUtil.createDynamicOverlay
+import com.drdisagree.colorblendr.utils.app.MiscUtil
+import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 
 @Suppress("unused")
 object OverlayManager {

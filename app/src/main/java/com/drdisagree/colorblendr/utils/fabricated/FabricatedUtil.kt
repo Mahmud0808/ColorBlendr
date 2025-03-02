@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.fabricated
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,17 +8,25 @@ import androidx.annotation.ColorInt
 import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
-import com.drdisagree.colorblendr.utils.ColorUtil.adjustLightness
-import com.drdisagree.colorblendr.utils.ColorUtil.getColorNamesM3
-import com.drdisagree.colorblendr.utils.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
-import com.drdisagree.colorblendr.utils.DynamicColors.FIXED_COLORS_MAPPED
-import com.drdisagree.colorblendr.utils.DynamicColors.M3_REF_PALETTE
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
+import com.drdisagree.colorblendr.utils.colors.ColorMapping
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.convertToMonochrome
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getColorNamesM3
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.CUSTOM_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.FIXED_COLORS_MAPPED
+import com.drdisagree.colorblendr.utils.colors.DynamicColors.M3_REF_PALETTE
+import com.drdisagree.colorblendr.utils.colors.adjustColorBrightnessIfRequired
+import com.drdisagree.colorblendr.utils.colors.adjustLStarIfRequired
+import com.drdisagree.colorblendr.utils.colors.extractResourceFromColorMap
+import com.drdisagree.colorblendr.utils.manager.OverlayManager
+import com.drdisagree.colorblendr.utils.monet.replaceColorsPerPackageName
 
 object FabricatedUtil {
 
@@ -33,9 +41,11 @@ object FabricatedUtil {
         paletteLight: ArrayList<ArrayList<Int>>,
         paletteDark: ArrayList<ArrayList<Int>>
     ) {
-        assignDynamicPaletteToOverlay(true,  /* isDark */paletteDark)
-        assignDynamicPaletteToOverlay(false,  /* isDark */paletteLight)
+        assignDynamicPaletteToOverlay(true /* isDark */, paletteDark)
+        assignDynamicPaletteToOverlay(false /* isDark */, paletteLight)
         assignFixedColorsToOverlay(paletteLight)
+        assignCustomColorsToOverlay(true /* isDark */, paletteDark)
+        assignCustomColorsToOverlay(false /* isDark */, paletteLight)
     }
 
     private fun FabricatedOverlayResource.assignDynamicPaletteToOverlay(
@@ -43,6 +53,7 @@ object FabricatedUtil {
         palette: ArrayList<ArrayList<Int>>
     ) {
         val suffix = if (isDark) "dark" else "light"
+        val tintTextColor = tintedTextEnabled()
         val isPitchBlackTheme = pitchBlackThemeEnabled()
         val prefixSuffix = arrayOf(
             "system_" to "_${suffix}",
@@ -50,6 +61,15 @@ object FabricatedUtil {
             "m3_sys_color_dynamic_${suffix}_" to "",
             "gm3_sys_color_${suffix}_" to "",
             "gm3_sys_color_dynamic_${suffix}_" to ""
+        )
+        val textColorResources = setOf(
+            "on_surface",
+            "on_surface_variant",
+            "on_background",
+            "on_primary_container",
+            "on_secondary_container",
+            "on_tertiary_container",
+            "on_error"
         )
 
         ALL_DYNAMIC_COLORS_MAPPED.forEach { colorMapping ->
@@ -69,9 +89,33 @@ object FabricatedUtil {
                     )
                 }
 
-                setColor(resourceName, colorValue)
+                if (!tintTextColor && textColorResources.any { resourceName.contains(it) }) {
+                    addTintLessTextColorsForFramework(resourceName, colorValue)
+                } else {
+                    setColor(resourceName, colorValue)
+                }
             }
         }
+    }
+
+    private fun FabricatedOverlayResource.addTintLessTextColorsForFramework(
+        resourceName: String,
+        colorValue: Int
+    ) {
+        val isDark = resourceName.endsWith("_dark")
+        val isLight = resourceName.endsWith("_light")
+        val isError = resourceName.contains("on_error")
+        val isErrorContainer = resourceName.contains("on_error_container")
+
+        val adjustedColor = when {
+            isDark && (!isError || isErrorContainer) -> Color.WHITE
+            isLight && (!isError || isErrorContainer) -> Color.BLACK
+            isDark -> Color.BLACK
+            isLight -> Color.WHITE
+            else -> convertToMonochrome(colorValue)
+        }
+
+        setColor(resourceName, adjustedColor)
     }
 
     private fun FabricatedOverlayResource.assignFixedColorsToOverlay(
@@ -80,7 +124,8 @@ object FabricatedUtil {
         FIXED_COLORS_MAPPED.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
                 prefix = "system_",
-                palette = paletteLight
+                palette = paletteLight,
+                isDark = false
             )
 
             setColor(resourceName, colorValue)
@@ -95,7 +140,8 @@ object FabricatedUtil {
 
         M3_REF_PALETTE.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
-                palette = palette
+                palette = palette,
+                isDark = false
             ).let { (name, value) ->
                 name to applyColorAdjustments(
                     colorMapping,
@@ -122,6 +168,32 @@ object FabricatedUtil {
 
         if (!tintTextColor) {
             addTintlessTextColors()
+        }
+    }
+
+    private fun FabricatedOverlayResource.assignCustomColorsToOverlay(
+        isDark: Boolean,
+        palette: ArrayList<ArrayList<Int>>
+    ) {
+        val suffix = if (isDark) "_dark" else "_light"
+
+        CUSTOM_COLORS_MAPPED.forEach { colorMapping ->
+            val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
+                prefix = "system_",
+                suffix = suffix,
+                palette = palette,
+                isDark = isDark
+            ).let { (name, value) ->
+                name to applyColorAdjustments(
+                    colorMapping,
+                    name,
+                    value,
+                    isDark,
+                    pitchBlackTheme = false
+                )
+            }
+
+            setColor(resourceName, colorValue)
         }
     }
 
@@ -162,6 +234,9 @@ object FabricatedUtil {
             colorValue
         ).let { adjustedValue ->
             colorMapping.adjustColorBrightnessIfRequired(adjustedValue, isDark)
+                .let { adjustedBrightness ->
+                    colorMapping.adjustLStarIfRequired(adjustedBrightness, isDark)
+                }
         }
     }
 
@@ -263,12 +338,14 @@ object FabricatedUtil {
         resources.forEach { (_, pairs) ->
             pairs.forEach { (name, color) ->
                 setColor(name, color)
-                setColor("g$name", color)
+                if (name.startsWith("m3")) {
+                    setColor("g$name", color)
+                }
             }
         }
 
         when {
-            targetPackage == "com.android.settings" -> {
+            targetPackage == SETTINGS -> {
                 when {
                     Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
                         setColor(

@@ -24,11 +24,11 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApp
 import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
-import com.drdisagree.colorblendr.utils.AppUtil.permissionsGranted
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
-import com.drdisagree.colorblendr.utils.OverlayManager.unregisterFabricatedOverlay
-import com.drdisagree.colorblendr.utils.WallpaperColorUtil.getWallpaperColors
+import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
+import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.getWallpaperColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

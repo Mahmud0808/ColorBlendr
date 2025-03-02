@@ -32,9 +32,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLaunch
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.SystemUtil
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

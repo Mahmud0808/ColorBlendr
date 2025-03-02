@@ -17,7 +17,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.utils.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 

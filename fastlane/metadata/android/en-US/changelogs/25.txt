@@ -1,0 +1,8 @@
+Changelog:
+
+• Added new private color resources from SystemUI.
+• Included missing text color resources for consistency.
+• Resolved issues with the tinted text color option.
+• Bump AGP & dependencies.
+
+Translation credit goes to all the contributors on our Crowdin platform.

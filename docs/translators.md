@@ -183,7 +183,7 @@ Thanks to these translators and proofreaders, this project exists:
     </tr>
     <tr>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/mohamed_zeroug"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16162192/medium/5194e80616ee1b5c686d66566399c659.png" />
+        <a href="https://crowdin.com/profile/mohamed_zeroug"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16162192/medium/1cc112a2ff71e04fd8e95026d4946e86.jpg" />
           <br />
           <sub><b>Mohamed Zeroug (mohamed_zeroug)</b></sub></a>
         <br />

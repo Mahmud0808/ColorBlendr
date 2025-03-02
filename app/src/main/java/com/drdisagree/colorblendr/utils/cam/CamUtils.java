@@ -4,7 +4,7 @@ import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 
-import com.drdisagree.colorblendr.utils.ColorUtil;
+import com.drdisagree.colorblendr.utils.colors.ColorUtil;
 
 /**
  * Collection of methods for transforming between color spaces.

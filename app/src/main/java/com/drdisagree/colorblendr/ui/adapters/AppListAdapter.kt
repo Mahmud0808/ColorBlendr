@@ -16,9 +16,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.models.AppInfoModel
-import com.drdisagree.colorblendr.utils.ColorUtil.getColorFromAttribute
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColorsPerApp
-import com.drdisagree.colorblendr.utils.OverlayManager.unregisterFabricatedOverlay
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getColorFromAttribute
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

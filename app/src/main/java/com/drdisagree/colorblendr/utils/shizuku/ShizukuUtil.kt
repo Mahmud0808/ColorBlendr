@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.shizuku
 
 import android.content.ComponentName
 import android.content.ServiceConnection

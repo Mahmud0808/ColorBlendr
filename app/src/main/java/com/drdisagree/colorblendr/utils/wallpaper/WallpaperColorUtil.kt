@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils
+package com.drdisagree.colorblendr.utils.wallpaper
 
 import android.app.WallpaperManager
 import android.content.Context
@@ -16,6 +16,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorJson
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.service.BroadcastListener
+import com.drdisagree.colorblendr.utils.app.AppUtil
+import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
 import kotlinx.coroutines.Dispatchers

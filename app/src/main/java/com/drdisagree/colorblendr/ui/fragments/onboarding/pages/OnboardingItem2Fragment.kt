@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingItem2Binding
-import com.drdisagree.colorblendr.utils.AppUtil.hasStoragePermission
+import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
 
 class OnboardingItem2Fragment : Fragment() {
 

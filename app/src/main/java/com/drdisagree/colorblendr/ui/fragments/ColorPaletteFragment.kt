@@ -33,13 +33,12 @@ import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
 import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.utils.ColorUtil
-import com.drdisagree.colorblendr.utils.ColorUtil.calculateTextColor
-import com.drdisagree.colorblendr.utils.ColorUtil.getSystemColors
-import com.drdisagree.colorblendr.utils.ColorUtil.intToHexColor
-import com.drdisagree.colorblendr.utils.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.MiscUtil.setToolbarTitle
-import com.drdisagree.colorblendr.utils.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.colors.ColorUtil
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -142,7 +141,7 @@ class ColorPaletteFragment : Fragment() {
     private fun initColorTablePreview(colorTableRows: Array<LinearLayout>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val systemColors = generateModifiedColors() ?: getSystemColors()
+                val systemColors = generateModifiedColors()
 
                 withContext(Dispatchers.Main) {
                     for (i in colorTableRows.indices) {
