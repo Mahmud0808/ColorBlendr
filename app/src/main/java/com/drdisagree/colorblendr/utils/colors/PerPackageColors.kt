@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.utils.monet
+package com.drdisagree.colorblendr.utils.colors
 
 import android.graphics.Color
 import android.os.Build
@@ -11,9 +11,9 @@ import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_CLOCKS
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.applyAlphaToColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 fun FabricatedOverlayResource.replaceColorsPerPackageName(

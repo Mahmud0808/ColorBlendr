@@ -26,7 +26,7 @@ import com.drdisagree.colorblendr.utils.colors.adjustColorBrightnessIfRequired
 import com.drdisagree.colorblendr.utils.colors.adjustLStarIfRequired
 import com.drdisagree.colorblendr.utils.colors.extractResourceFromColorMap
 import com.drdisagree.colorblendr.utils.manager.OverlayManager
-import com.drdisagree.colorblendr.utils.monet.replaceColorsPerPackageName
+import com.drdisagree.colorblendr.utils.colors.replaceColorsPerPackageName
 
 object FabricatedUtil {
 
