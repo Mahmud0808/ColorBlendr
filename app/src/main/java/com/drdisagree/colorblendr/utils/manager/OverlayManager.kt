@@ -30,9 +30,9 @@ import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 
 @Suppress("unused")
@@ -248,45 +248,27 @@ object OverlayManager {
                             }
                         }
 
-                        createDynamicOverlay(
-                            paletteLight,
-                            paletteDark
-                        )
+                        createDynamicOverlay(paletteLight, paletteDark)
 
                         // Temporary workaround for Android 15 QPR1 beta 3 background color issue in settings.
                         // Currently, we set the status bar color to match the background color
                         // to achieve a uniform appearance when the background lightness is reduced.
                         // TODO: Remove once the Settings background color issue is resolved.
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            // Pitch black settings workaround
-                            if (pitchBlackTheme && isDarkMode && forcePitchBlackSettingsEnabled()) {
-                                setColor(
-                                    "system_surface_container_dark",
-                                    adjustLightness(
-                                        getColor("system_surface_container_dark"),
-                                        -58
-                                    )
-                                )
-                            }
-                            // Light theme
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                            && pitchBlackTheme && isDarkMode && forcePitchBlackSettingsEnabled()
+                        ) {
                             setColor(
-                                "primary_dark_device_default_settings_light", // status bar
-                                getColor("system_surface_container_light") // background
-                            )
-                            // Dark theme
-                            setColor(
-                                "primary_dark_device_default_settings", // status bar
-                                getColor("system_surface_container_dark") // background
+                                "system_surface_container_dark",
+                                adjustLightness(getColor("system_surface_container_dark"), -58)
                             )
                         }
 
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
-                            setColor("surface_header_dark_sysui", Color.BLACK) // QS top part color
-                            setColor(
-                                "system_surface_dim_dark",
-                                Color.BLACK
-                            ) // A14 notification scrim color
+                            // QS top part color
+                            setColor("surface_header_dark_sysui", Color.BLACK)
+                            // A14 notification scrim color
+                            setColor("system_surface_dim_dark", Color.BLACK)
                             setColor(systemPaletteNames[3][11], Color.BLACK)
                             setColor(systemPaletteNames[4][11], Color.BLACK)
                         }

@@ -49,6 +49,7 @@ import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.google.gson.reflect.TypeToken
 
+@Suppress("unused")
 object Utilities {
 
     fun isFirstRun(): Boolean {
