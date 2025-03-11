@@ -31,6 +31,8 @@ object Constant {
     const val LINEAGE_PARTS = "org.lineageos.lineageparts"
     const val PIXEL_LAUNCHER = "com.google.android.apps.nexuslauncher"
     const val DOLBY_ATMOS = "org.lineageos.dspvolume.xiaomi"
+    const val THEME_PICKER = "com.android.wallpaper"
+    const val THEME_PICKER_GOOGLE = "com.google.android.apps.wallpaper"
 
     // Request codes
     const val SHIZUKU_PERMISSION_REQUEST_ID = 100

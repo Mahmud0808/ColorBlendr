@@ -13,6 +13,8 @@ import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_LINEAGEOS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
@@ -230,7 +232,9 @@ object FabricatedUtil {
                 SETTINGS_LINEAGEOS,
                 SETTINGS_SEARCH,
                 SETTINGS_SEARCH_AOSP,
-                LINEAGE_PARTS
+                LINEAGE_PARTS,
+                THEME_PICKER,
+                THEME_PICKER_GOOGLE
             ).forEach { packageName ->
                 if (selectedApps[packageName] != java.lang.Boolean.TRUE &&
                     isAppInstalled(packageName)

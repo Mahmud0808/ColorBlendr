@@ -13,6 +13,8 @@ import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_LINEAGEOS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_CLOCKS
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
@@ -44,6 +46,9 @@ fun FabricatedOverlayResource.replaceColorsPerPackageName(
             SETTINGS_SEARCH_AOSP -> applySettingsSearchColors(palette, pitchBlackTheme)
 
             PIXEL_LAUNCHER -> applyPixelLauncherColors(palette, pitchBlackTheme)
+
+            THEME_PICKER,
+            THEME_PICKER_GOOGLE -> applyThemePickerColors(pitchBlackTheme)
         }
     }
 }
@@ -277,4 +282,15 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
         setColor("folder_preview_light", folderPreviewColor)
         setColor("folder_background_light", folderBackgroundColor)
     }
+}
+
+private fun FabricatedOverlayResource.applyThemePickerColors(pitchBlackTheme: Boolean) {
+    if (!pitchBlackTheme ||
+        !isDarkMode ||
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+    ) return
+
+    setColor("m3_sys_color_dynamic_dark_surface_container", Color.BLACK)
+    setColor("settingslib_materialColorSurfaceContainer", Color.BLACK)
+    setColor("system_surface_container", Color.BLACK)
 }
