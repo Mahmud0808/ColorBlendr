@@ -80,14 +80,15 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
+                    delay(1000)
+
                     val newConfig = Configuration(context.resources.configuration)
                     val lastUiMode = lastConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
                     val newUiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
                     if (lastUiMode != newUiMode) {
-                        delay(1000)
                         validateRootAndUpdateColors(context) {
-                            updateAllColors()
+                            updateAllColors(true)
                         }
                     }
 
