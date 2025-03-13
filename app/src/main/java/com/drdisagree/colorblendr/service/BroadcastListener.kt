@@ -153,7 +153,7 @@ class BroadcastListener : BroadcastReceiver() {
         if (requiresUpdate || force) {
             requiresUpdate = false
             validateRootAndUpdateColors(context) {
-                updateAllColors()
+                updateAllColors(true)
             }
         }
     }
@@ -205,10 +205,11 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private fun updateAllColors() {
+    @Synchronized
+    private fun updateAllColors(force: Boolean = false) {
         if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isRootOrShizukuUnknown()) return
 
-        if (abs(System.currentTimeMillis() - getLastColorAppliedTimestamp()) >= cooldownTime) {
+        if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()
 
             CoroutineScope(Dispatchers.Main).launch {
