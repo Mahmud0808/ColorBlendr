@@ -1,0 +1,8 @@
+Changelog:
+
+• Improved Settings and Wallpaper & Style pitch-black theme.
+• Fixed issues with wallpaper change and light/dark mode detection.
+• Fixed crash caused by unspecified foreground service type.
+• Bump AGP.
+
+Translation credit goes to all the contributors on our Crowdin platform.
