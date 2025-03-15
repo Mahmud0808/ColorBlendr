@@ -80,14 +80,15 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
+                    delay(1000)
+
                     val newConfig = Configuration(context.resources.configuration)
                     val lastUiMode = lastConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
                     val newUiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
                     if (lastUiMode != newUiMode) {
-                        delay(1000)
                         validateRootAndUpdateColors(context) {
-                            updateAllColors()
+                            updateAllColors(true)
                         }
                     }
 
@@ -153,7 +154,7 @@ class BroadcastListener : BroadcastReceiver() {
         if (requiresUpdate || force) {
             requiresUpdate = false
             validateRootAndUpdateColors(context) {
-                updateAllColors()
+                updateAllColors(true)
             }
         }
     }
@@ -205,10 +206,11 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private fun updateAllColors() {
+    @Synchronized
+    private fun updateAllColors(force: Boolean = false) {
         if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isRootOrShizukuUnknown()) return
 
-        if (abs(System.currentTimeMillis() - getLastColorAppliedTimestamp()) >= cooldownTime) {
+        if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()
 
             CoroutineScope(Dispatchers.Main).launch {

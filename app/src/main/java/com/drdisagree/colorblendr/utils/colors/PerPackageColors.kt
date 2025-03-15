@@ -1,19 +1,26 @@
-package com.drdisagree.colorblendr.utils.monet
+package com.drdisagree.colorblendr.utils.colors
 
 import android.graphics.Color
 import android.os.Build
+import com.drdisagree.colorblendr.data.common.Constant.DOLBY_ATMOS
 import com.drdisagree.colorblendr.data.common.Constant.GOOGLE_FEEDS
 import com.drdisagree.colorblendr.data.common.Constant.GOOGLE_NEWS
+import com.drdisagree.colorblendr.data.common.Constant.LINEAGE_PARTS
 import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.PLAY_GAMES
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_LINEAGEOS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_CLOCKS
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.applyAlphaToColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
 fun FabricatedOverlayResource.replaceColorsPerPackageName(
@@ -22,13 +29,26 @@ fun FabricatedOverlayResource.replaceColorsPerPackageName(
 ) {
     when {
         targetPackage.startsWith(SYSTEMUI_CLOCKS) -> applyClockColors(palette)
+
         else -> when (targetPackage) {
             GOOGLE_FEEDS -> applyGoogleFeedsColors(pitchBlackTheme)
+
             GOOGLE_NEWS -> applyGoogleNewsColors(palette, pitchBlackTheme)
+
             PLAY_GAMES -> applyPlayGamesColors(palette, pitchBlackTheme)
-            SETTINGS -> applySettingsColors(palette, pitchBlackTheme)
-            SETTINGS_SEARCH -> applySettingsSearchColors(pitchBlackTheme)
+
+            SETTINGS,
+            SETTINGS_LINEAGEOS,
+            LINEAGE_PARTS,
+            DOLBY_ATMOS -> applySettingsColors(palette, pitchBlackTheme)
+
+            SETTINGS_SEARCH,
+            SETTINGS_SEARCH_AOSP -> applySettingsSearchColors(palette, pitchBlackTheme)
+
             PIXEL_LAUNCHER -> applyPixelLauncherColors(palette, pitchBlackTheme)
+
+            THEME_PICKER,
+            THEME_PICKER_GOOGLE -> applyThemePickerColors(pitchBlackTheme)
         }
     }
 }
@@ -96,15 +116,42 @@ private fun FabricatedOverlayResource.applySettingsColors(
     palette: ArrayList<ArrayList<Int>>,
     pitchBlackTheme: Boolean
 ) {
-    if (!pitchBlackTheme || !isDarkMode || Build.VERSION.SDK_INT < 35) return
+    if (!pitchBlackTheme ||
+        !isDarkMode ||
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+    ) return
 
-    setColor("settingslib_materialColorSurfaceContainer", Color.BLACK) // inner page background
-    setColor("settingslib_materialColorSurfaceVariant", palette[3][11]) // app bar
-    setColor("settingslib_colorSurfaceHeader", palette[3][11]) // app bar
+    val bgColor = Color.BLACK
+    val bgColorVariant = Color.BLACK
+    val surfaceDimColor = Color.BLACK
+    val surfaceBrightColor = adjustLightness(palette[3][10], -42)
+    val surfaceHighColor = palette[3][10]
+    val surfaceHighestColor = adjustLightness(palette[3][10], 3)
+
+    setColor("settingslib_materialColorSurface", bgColor)
+    setColor("settingslib_materialColorSurfaceVariant", bgColorVariant)
+    setColor("settingslib_materialColorSurfaceDim", surfaceDimColor)
+    setColor("settingslib_materialColorSurfaceBright", surfaceBrightColor) // home pref background
+    setColor("settingslib_materialColorSurfaceContainerLowest", bgColor) // inner page background
+    setColor("settingslib_materialColorSurfaceContainerLow", bgColor) // home page background
+    setColor("settingslib_materialColorSurfaceContainer", bgColor) // inner page background
+    setColor("settingslib_materialColorSurfaceContainerHigh", surfaceHighColor)
+    setColor("settingslib_materialColorSurfaceContainerHighest", surfaceHighestColor)
+
+    // CrDroid settings tab background color
+    setColor("config_tab_color", bgColor)
 }
 
-private fun FabricatedOverlayResource.applySettingsSearchColors(pitchBlackTheme: Boolean) {
+private fun FabricatedOverlayResource.applySettingsSearchColors(
+    palette: ArrayList<ArrayList<Int>>,
+    pitchBlackTheme: Boolean
+) {
     if (!pitchBlackTheme) return
+
+    if (isDarkMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        // match with home pref background color
+        setColor("search_bar_background", adjustLightness(palette[3][10], -42))
+    }
 
     listOf(
         "m3_sys_color_dark_surface_container_lowest",
@@ -235,4 +282,15 @@ private fun FabricatedOverlayResource.applyPixelLauncherColors(
         setColor("folder_preview_light", folderPreviewColor)
         setColor("folder_background_light", folderBackgroundColor)
     }
+}
+
+private fun FabricatedOverlayResource.applyThemePickerColors(pitchBlackTheme: Boolean) {
+    if (!pitchBlackTheme ||
+        !isDarkMode ||
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+    ) return
+
+    setColor("m3_sys_color_dynamic_dark_surface_container", Color.BLACK)
+    setColor("settingslib_materialColorSurfaceContainer", Color.BLACK)
+    setColor("system_surface_container", Color.BLACK)
 }

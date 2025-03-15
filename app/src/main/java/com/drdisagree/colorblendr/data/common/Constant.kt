@@ -25,8 +25,14 @@ object Constant {
     const val GOOGLE_NEWS = "com.google.android.apps.magazines"
     const val PLAY_GAMES = "com.google.android.play.games"
     const val SETTINGS = "com.android.settings"
+    const val SETTINGS_LINEAGEOS = "org.lineageos.settings"
     const val SETTINGS_SEARCH = "com.google.android.settings.intelligence"
+    const val SETTINGS_SEARCH_AOSP = "com.android.settings.intelligence"
+    const val LINEAGE_PARTS = "org.lineageos.lineageparts"
     const val PIXEL_LAUNCHER = "com.google.android.apps.nexuslauncher"
+    const val DOLBY_ATMOS = "org.lineageos.dspvolume.xiaomi"
+    const val THEME_PICKER = "com.android.wallpaper"
+    const val THEME_PICKER_GOOGLE = "com.google.android.apps.wallpaper"
 
     // Request codes
     const val SHIZUKU_PERMISSION_REQUEST_ID = 100

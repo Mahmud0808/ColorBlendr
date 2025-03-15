@@ -1,7 +1,7 @@
 package com.drdisagree.colorblendr.utils.colors
 
-import android.graphics.Color
 import android.os.Build
+import androidx.core.graphics.toColorInt
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.enums.MONET
 
@@ -209,25 +209,25 @@ object DynamicColors {
             ),
             ColorMapping(
                 resourceName = "error",
-                colorCode = Color.parseColor("#FF5540"),
+                colorCode = "#FF5540".toColorInt(),
                 lightModeLStarAdjustment = 40.0,
                 darkModeLStarAdjustment = 80.0
             ),
             ColorMapping(
                 resourceName = "on_error",
-                colorCode = Color.parseColor("#FF5540"),
+                colorCode = "#FF5540".toColorInt(),
                 lightModeLStarAdjustment = 100.0,
                 darkModeLStarAdjustment = 20.0
             ),
             ColorMapping(
                 resourceName = "error_container",
-                colorCode = Color.parseColor("#FF5540"),
+                colorCode = "#FF5540".toColorInt(),
                 lightModeLStarAdjustment = 90.0,
                 darkModeLStarAdjustment = 30.0
             ),
             ColorMapping(
                 resourceName = "on_error_container",
-                colorCode = Color.parseColor("#FF5540"),
+                colorCode = "#FF5540".toColorInt(),
                 lightModeLStarAdjustment = if (getCurrentMonetStyle() == MONET.MONOCHROMATIC) 10.0 else 30.0,
                 darkModeLStarAdjustment = 90.0
             ),
@@ -245,8 +245,8 @@ object DynamicColors {
             ),
             ColorMapping(
                 resourceName = "control_highlight",
-                lightModeColorCode = Color.parseColor("#1F000000"),
-                darkModeColorCode = Color.parseColor("#33FFFFFF")
+                lightModeColorCode = "#1F000000".toColorInt(),
+                darkModeColorCode = "#33FFFFFF".toColorInt()
             ),
             ColorMapping(
                 resourceName = "text_primary_inverse",

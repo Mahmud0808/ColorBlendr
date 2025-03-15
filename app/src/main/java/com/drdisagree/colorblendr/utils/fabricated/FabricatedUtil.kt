@@ -8,12 +8,19 @@ import androidx.annotation.ColorInt
 import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Constant.LINEAGE_PARTS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_LINEAGEOS
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
+import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
+import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isAppInstalled
 import com.drdisagree.colorblendr.utils.colors.ColorMapping
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.convertToMonochrome
@@ -25,8 +32,8 @@ import com.drdisagree.colorblendr.utils.colors.DynamicColors.M3_REF_PALETTE
 import com.drdisagree.colorblendr.utils.colors.adjustColorBrightnessIfRequired
 import com.drdisagree.colorblendr.utils.colors.adjustLStarIfRequired
 import com.drdisagree.colorblendr.utils.colors.extractResourceFromColorMap
+import com.drdisagree.colorblendr.utils.colors.replaceColorsPerPackageName
 import com.drdisagree.colorblendr.utils.manager.OverlayManager
-import com.drdisagree.colorblendr.utils.monet.replaceColorsPerPackageName
 
 object FabricatedUtil {
 
@@ -216,7 +223,26 @@ object FabricatedUtil {
             }
         }
 
-        //        selectedApps.put(BuildConfig.APPLICATION_ID, true);
+        //        selectedApps.put(BuildConfig.APPLICATION_ID, true)
+
+        // Themed by default for android 15+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            listOf(
+                SETTINGS,
+                SETTINGS_LINEAGEOS,
+                SETTINGS_SEARCH,
+                SETTINGS_SEARCH_AOSP,
+                LINEAGE_PARTS,
+                THEME_PICKER,
+                THEME_PICKER_GOOGLE
+            ).forEach { packageName ->
+                if (selectedApps[packageName] != java.lang.Boolean.TRUE &&
+                    isAppInstalled(packageName)
+                ) {
+                    selectedApps.put(packageName, true)
+                }
+            }
+        }
 
         setSelectedFabricatedApps(selectedApps)
     }

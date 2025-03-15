@@ -7,8 +7,10 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.content.res.Configuration
 import android.media.AudioManager
+import android.os.Build
 import android.os.IBinder
 import android.os.RemoteException
 import android.provider.Settings
@@ -23,12 +25,12 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
+import com.drdisagree.colorblendr.utils.annotations.Test
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.getAccentColor
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
-import com.drdisagree.colorblendr.utils.annotations.Test
 import java.util.Timer
 import java.util.TimerTask
 
@@ -75,7 +77,7 @@ class AutoStartService : Service() {
 
         try {
             unregisterReceiver(myReceiver)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             // Receiver was probably never registered
         }
 
@@ -136,7 +138,11 @@ class AutoStartService : Service() {
             .setColor(getAccentColor(this))
             .build()
 
-        startForeground(NOTIFICATION_ID, notification)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(NOTIFICATION_ID, notification)
+        } else {
+            startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        }
     }
 
     private fun registerReceivers() {

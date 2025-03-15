@@ -30,8 +30,8 @@ import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.databinding.FragmentPerAppThemeBinding
 import com.drdisagree.colorblendr.ui.adapters.AppListAdapter
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eightbitlab.com.blurview.RenderEffectBlur
@@ -116,7 +116,7 @@ class PerAppThemeFragment : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
             updateFabricatedAppList(appContext)
-            appList = getAllInstalledApps(requireContext(), appType)
+            appList = getAllInstalledApps(appType)
             adapter = AppListAdapter(appList!!)
 
             withContext(Dispatchers.Main) {
@@ -134,7 +134,7 @@ class PerAppThemeFragment : Fragment() {
                     if (binding.searchBox.search.text.toString().trim().isNotEmpty()) {
                         filterList(binding.searchBox.search.text.toString().trim { it <= ' ' })
                     }
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                     // Fragment was not attached to activity
                 }
             }
@@ -243,7 +243,7 @@ class PerAppThemeFragment : Fragment() {
             LocalBroadcastManager
                 .getInstance(requireContext())
                 .unregisterReceiver(packageReceiver)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             // Receiver was not registered
         }
         super.onDestroy()
@@ -260,9 +260,9 @@ class PerAppThemeFragment : Fragment() {
     }
 
     companion object {
-        private fun getAllInstalledApps(context: Context, appType: AppType): List<AppInfoModel> {
+        private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
             val appList: MutableList<AppInfoModel> = ArrayList()
-            val packageManager = context.packageManager
+            val packageManager = appContext.packageManager
 
             val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
 
