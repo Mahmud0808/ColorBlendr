@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.manager
 
+import androidx.core.graphics.toColorInt
 import android.graphics.Color
 import android.os.Build
 import android.os.RemoteException
@@ -289,6 +290,7 @@ object OverlayManager {
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
                     systemuiOverlay.setBoolean("flag_monet", false)
+                    systemuiOverlay.setColor("notification_scrim_background_color", "#160000".toColorInt())
                 }
             )
 
