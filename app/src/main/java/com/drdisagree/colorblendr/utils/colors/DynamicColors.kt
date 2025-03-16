@@ -179,7 +179,7 @@ object DynamicColors {
                 resourceName = "surface_dim", // android 14+ notification scrim color
                 tonalPalette = TonalPalette.NEUTRAL,
                 lightModeColorIndex = 1,
-                darkModeColorIndex = 11,
+                darkModeColorIndex = 10,
                 lightModeLightnessAdjustment = -9,
                 darkModeLightnessAdjustment = 7
             ),
