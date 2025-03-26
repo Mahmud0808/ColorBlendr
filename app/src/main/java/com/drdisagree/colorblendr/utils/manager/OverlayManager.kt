@@ -290,7 +290,7 @@ object OverlayManager {
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
                     systemuiOverlay.setBoolean("flag_monet", false)
-                    systemuiOverlay.setColor("notification_scrim_background_color", "#CD5C5C".toColorInt())
+                    systemuiOverlay.setColor("notification_scrim_background_color", "#BD3039".toColorInt())
                 }
             )
 
