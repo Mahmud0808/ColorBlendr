@@ -56,11 +56,11 @@
     <string name="monet_fruitsalad_desc">Mélange éclectique de couleurs rappelant un assortiment vibrant de fruits frais et juteux.</string>
     <string name="monet_content">Contenu</string>
     <string name="monet_content_desc">Palette équilibrée et apaisante, favorisant un sentiment de tranquillité et de détente.</string>
-    <string name="save_current_style">Save current style</string>
-    <string name="title">Title</string>
+    <string name="save_current_style">Sauvegarder le style actuel</string>
+    <string name="title">Titre</string>
     <string name="description">Description</string>
-    <string name="save">Save</string>
-    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save">Enregistrer</string>
+    <string name="title_and_desc_cant_be_empty">Le titre et la description ne peuvent pas être vides</string>
     <!-- Settings -->
     <string name="app_service_title">Service %s</string>
     <string name="app_service_desc_on">Thème actif</string>
@@ -94,8 +94,8 @@
     <string name="custom_tertiary_color_title">Couleur tertiaire personnalisée</string>
     <string name="custom_tertiary_color_desc">Sélectionnez la couleur blanche pure pour désactiver</string>
     <string name="mode_specific_theme_title">Thème spécifique au mode</string>
-    <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
-    <string name="screen_off_update_title">Update colors on screen off</string>
+    <string name="screen_off_update_desc">Actualise les couleurs après 15 secondes d\'extinction de l\'écran ; utile pour les fonds d\'écran live</string>
+    <string name="screen_off_update_title">Mettre à jour les couleurs à l\'extinction d\'écran</string>
     <string name="mode_specific_theme_desc">Appliquer une saturation et une luminosité différentes pour les modes clair et foncé</string>
     <string name="darker_launcher_icons_title">Icônes du launcher plus sombres</string>
     <string name="darker_launcher_icons_desc">Appliquer un arrière-plan plus sombre aux icônes monochromes du pixel launcher</string>
@@ -111,9 +111,9 @@
     <string name="dev_bio">Apprenti | Développeur | Designer</string>
     <string name="buymeacoffee_title">Vous appréciez cette application ?</string>
     <string name="buymeacoffee_desc">Aidez-moi en m\'offrant un café</string>
-    <string name="contributors">Contributors behind the scene</string>
-    <string name="total_contributions">Contributions: %d</string>
-    <string name="translators">Translators bridging languages</string>
+    <string name="contributors">Contributeurs en coulisses</string>
+    <string name="total_contributions">Contributions : %d</string>
+    <string name="translators">Traducteurs reliant les langues</string>
     <!-- General -->
     <string name="icon">Icône</string>
     <string name="reset">Remise à zéro</string>
