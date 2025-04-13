@@ -39,7 +39,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>Mahmudul Hasan (DrDisagree)</b></sub></a>
         <br />
-        <sub><b>13289 words</b></sub>
+        <sub><b>13327 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Kefir2105"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15369168/medium/bf77b4c46656858dee10b163d940c4c6.jpeg" />
@@ -99,7 +99,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>Alejandro Moctezuma (AlejandroMoc)</b></sub></a>
         <br />
-        <sub><b>584 words</b></sub>
+        <sub><b>596 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Hexak"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16301244/medium/e8321064b7d3969d36f838e37c471fe0.jpeg" />
@@ -190,9 +190,9 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>114 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/0ym8n"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15787573/medium/fbeada2b75d6ab5a0415e182bf32a6be.jpeg" />
+        <a href="https://crowdin.com/profile/nemye"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15787573/medium/fbeada2b75d6ab5a0415e182bf32a6be.jpeg" />
           <br />
-          <sub><b>Eymen Eranil (0ym8n)</b></sub></a>
+          <sub><b>E (nemye)</b></sub></a>
         <br />
         <sub><b>105 words</b></sub>
       </td>
@@ -204,16 +204,16 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>103 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/tecxz5"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16544793/medium/50c9685ceaf4cf8b451b9df830cfa23d.jpeg" />
+        <a href="https://crowdin.com/profile/tecxz5"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16544793/medium/1bbf1b8b08de2789ac908491d41b234f.png" />
           <br />
           <sub><b>t5 (tecxz5)</b></sub></a>
         <br />
-        <sub><b>90 words</b></sub>
+        <sub><b>98 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/IslamAlOrabI"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15482826/medium/66d0009f12159a391f5bf7f4daec04bd.jpg" />
+        <a href="https://crowdin.com/profile/IslamAlorabI"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15482826/medium/66d0009f12159a391f5bf7f4daec04bd.jpg" />
           <br />
-          <sub><b>IslamAlOrabI</b></sub></a>
+          <sub><b>IslamAlorabI</b></sub></a>
         <br />
         <sub><b>88 words</b></sub>
       </td>
