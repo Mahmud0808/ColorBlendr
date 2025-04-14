@@ -56,11 +56,11 @@
     <string name="monet_fruitsalad_desc">Mezcla ecléctica de colores que recuerdan una vibrante variedad de frutas frescas y jugosas.</string>
     <string name="monet_content">Contenido</string>
     <string name="monet_content_desc">Paleta balanceada y calmada, que promueve un sentido de tranquilidad y contentamiento.</string>
-    <string name="save_current_style">Save current style</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
-    <string name="save">Save</string>
-    <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="save_current_style">Guardar estilo actual</string>
+    <string name="title">Título</string>
+    <string name="description">Descripción</string>
+    <string name="save">Guardar</string>
+    <string name="title_and_desc_cant_be_empty">El título y la descripción no pueden estar vacíos</string>
     <!-- Settings -->
     <string name="app_service_title">Servicio %s</string>
     <string name="app_service_desc_on">El tema está activo</string>
