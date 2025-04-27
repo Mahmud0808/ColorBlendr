@@ -39,7 +39,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>Mahmudul Hasan (DrDisagree)</b></sub></a>
         <br />
-        <sub><b>13327 words</b></sub>
+        <sub><b>13339 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Kefir2105"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15369168/medium/bf77b4c46656858dee10b163d940c4c6.jpeg" />
@@ -116,7 +116,7 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>495 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/balazsmanus"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16274774/medium/022eff90fbca496c1da294e77db756ea.png" />
+        <a href="https://crowdin.com/profile/balazsmanus"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16274774/medium/f8ceb94c85ab5c90c4dfe8a7ceea0630.png" />
           <br />
           <sub><b>BalazsManus (balazsmanus)</b></sub></a>
         <br />
