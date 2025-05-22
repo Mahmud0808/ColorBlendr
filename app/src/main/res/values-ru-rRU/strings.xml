@@ -98,11 +98,11 @@
     <string name="screen_off_update_title">Обновить цвета при выключенном экране</string>
     <string name="mode_specific_theme_desc">Применить различную насыщенность и яркость для светлых и темных режимов</string>
     <string name="darker_launcher_icons_title">Значки Darker launcher</string>
-    <string name="darker_launcher_icons_desc">Применить более темный фон к одноцветным иконкам лаунчера пикселей</string>
+    <string name="darker_launcher_icons_desc">Применить более темный фон к монохромным иконкам Pixel Launcher</string>
     <string name="semitransparent_launcher_title">Полупрозрачный лаунчер</string>
     <string name="semitransparent_launcher_desc">Применить полупрозрачный стиль к Pixel Launcher</string>
     <string name="pitch_black_settings_workaround_title">Настройки черного цвета</string>
-    <string name="pitch_black_settings_workaround_desc">Затемнить фоновый цвет параметров; побочные эффекты</string>
+    <string name="pitch_black_settings_workaround_desc">Затемнить фоновый цвет параметров; могут быть побочные эффекты</string>
     <!-- About -->
     <string name="news">Новости</string>
     <string name="support">Поддержка</string>
@@ -111,8 +111,8 @@
     <string name="dev_bio">Учащийся | Разработчик | Дизайнер</string>
     <string name="buymeacoffee_title">Понравилось приложение?</string>
     <string name="buymeacoffee_desc">Подумайте о том, чтобы купить мне кофе</string>
-    <string name="contributors">Неупомянутые участники</string>
-    <string name="total_contributions">Участники: %d</string>
+    <string name="contributors">Соучастники</string>
+    <string name="total_contributions">Правки: %d</string>
     <string name="translators">Переводчики</string>
     <!-- General -->
     <string name="icon">Иконка</string>
