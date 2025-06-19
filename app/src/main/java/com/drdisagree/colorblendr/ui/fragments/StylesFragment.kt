@@ -31,11 +31,11 @@ import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
 import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
 import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
-import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.drdisagree.colorblendr.utils.app.DividerItemDecoration
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getDialogPreferredPadding
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
+import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
@@ -244,21 +244,14 @@ class StylesFragment : Fragment() {
         val customStyle = customStyleRepository.getCustomStyleById(styleId)
         if (customStyle != null) {
             customStyleRepository.deleteCustomStyle(customStyle)
-
-            styleAdapter?.removeStyle(
-                StyleModel(
-                    isEnabled = true,
-                    monetStyle = /* placeholder */ MONET.TONAL_SPOT,
-                    customStyle = customStyle
-                )
-            )
+            styleAdapter?.removeStyle(customStyle = customStyle)
         }
     }
 
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home && isAdded) {
             parentFragmentManager.popBackStackImmediate()
             return true
         }
