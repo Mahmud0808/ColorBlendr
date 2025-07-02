@@ -148,9 +148,7 @@ object WallpaperColorUtil {
         bitmapTemp.getPixels(pixels, 0, width, 0, 0, width, height)
 
         val wallpaperColors = ArrayList(
-            Score.score(
-                QuantizerCelebi.quantize(pixels, 25)
-            )
+            Score.score(QuantizerCelebi.quantize(pixels, 128), 12)
         )
 
         return if (wallpaperColors.isEmpty()) ColorUtil.monetAccentColors else wallpaperColors
