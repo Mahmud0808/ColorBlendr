@@ -9,8 +9,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
-import com.drdisagree.colorblendr.data.common.Utilities.isRootOrShizukuUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
+import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.provider.RootConnectionProvider.Companion.builder
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
@@ -20,6 +21,7 @@ import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +42,7 @@ class SplashActivity : AppCompatActivity() {
 
         try {
             countDownLatch.await()
-        } catch (ignored: InterruptedException) {
+        } catch (_: InterruptedException) {
         }
 
         startActivity(
@@ -62,36 +64,54 @@ class SplashActivity : AppCompatActivity() {
         success: AtomicBoolean,
         countDownLatch: CountDownLatch
     ) {
-        if (!isFirstRun() && !isRootOrShizukuUnknown()) {
-            if (isRootMode()) {
-                builder(appContext)
-                    .onSuccess {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            updateWallpaperColorList(applicationContext)
-                            updateFabricatedAppList(applicationContext)
-                            success.set(true)
+        if (!isFirstRun() && !isWorkMethodUnknown()) {
+            when {
+                isRootMode() -> {
+                    builder(appContext)
+                        .onSuccess {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                updateWallpaperColorList(applicationContext)
+                                updateFabricatedAppList(applicationContext)
+                                success.set(true)
+                                keepShowing = false
+                                countDownLatch.countDown()
+                            }
+                        }
+                        .onFailure {
+                            success.set(false)
                             keepShowing = false
                             countDownLatch.countDown()
                         }
-                    }
-                    .onFailure {
-                        success.set(false)
-                        keepShowing = false
-                        countDownLatch.countDown()
-                    }
-                    .run()
-            } else if (isShizukuMode()) {
-                if (isShizukuAvailable && hasShizukuPermission()) {
-                    bindUserService(
-                        getUserServiceArgs(ShizukuConnection::class.java),
-                        ShizukuConnectionProvider.serviceConnection
-                    )
-                    success.set(true)
-                } else {
-                    success.set(false)
+                        .run()
                 }
-                keepShowing = false
-                countDownLatch.countDown()
+
+                isShizukuMode() -> {
+                    if (isShizukuAvailable && hasShizukuPermission()) {
+                        bindUserService(
+                            getUserServiceArgs(ShizukuConnection::class.java),
+                            ShizukuConnectionProvider.serviceConnection
+                        )
+                        success.set(true)
+                    } else {
+                        success.set(false)
+                    }
+                    keepShowing = false
+                    countDownLatch.countDown()
+                }
+
+                isWirelessAdbMode() -> {
+                    val isConnected = WifiAdbConnectedDevices.isMyDeviceConnected()
+
+                    success.set(isConnected)
+                    keepShowing = false
+                    countDownLatch.countDown()
+                }
+
+                else -> {
+                    success.set(false)
+                    keepShowing = false
+                    countDownLatch.countDown()
+                }
             }
         } else {
             success.set(false)

@@ -1,13 +1,11 @@
 package com.drdisagree.colorblendr.service
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.annotation.Keep
 import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.topjohnwu.superuser.Shell
-import org.json.JSONException
 import org.json.JSONObject
 import kotlin.system.exitProcess
 
@@ -17,10 +15,12 @@ class ShizukuConnection : IShizukuConnection.Stub {
         private val TAG: String = ShizukuConnection::class.java.simpleName
     }
 
+    @Suppress("unused")
     constructor() {
         Log.i(TAG, "Constructed with no arguments")
     }
 
+    @Suppress("unused")
     @Keep
     constructor(context: Context) {
         Log.i(TAG, "Constructed with context: $context")
@@ -73,7 +73,9 @@ class ShizukuConnection : IShizukuConnection.Stub {
      */
     override fun removeFabricatedColors() {
         try {
-            applyFabricatedColors(originalSettings.toString())
+            applyFabricatedColors(
+                ThemeOverlayPackage.getOriginalSettings(currentSettings).toString()
+            )
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)
         }
@@ -101,28 +103,4 @@ class ShizukuConnection : IShizukuConnection.Stub {
             currentSettings
         }
     }
-
-    @get:Throws(JSONException::class)
-    private val originalSettings: JSONObject
-        get() {
-            return JSONObject(currentSettings).apply {
-                val keysToRemove = arrayOf(
-                    ThemeOverlayPackage.THEME_STYLE,
-                    ThemeOverlayPackage.COLOR_SOURCE,
-                    ThemeOverlayPackage.SYSTEM_PALETTE
-                )
-
-                for (key in keysToRemove) {
-                    remove(key)
-                }
-
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                    remove(ThemeOverlayPackage.ACCENT_COLOR)
-                }
-
-                putOpt(ThemeOverlayPackage.COLOR_BOTH, "0")
-                putOpt(ThemeOverlayPackage.COLOR_SOURCE, "home_wallpaper")
-                putOpt(ThemeOverlayPackage.APPLIED_TIMESTAMP, System.currentTimeMillis())
-            }
-        }
 }

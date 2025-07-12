@@ -62,7 +62,6 @@ class StylesFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(
             DividerItemDecoration(
-                requireContext(),
                 requireContext().resources.getDimensionPixelSize(R.dimen.container_margin_bottom)
             )
         )

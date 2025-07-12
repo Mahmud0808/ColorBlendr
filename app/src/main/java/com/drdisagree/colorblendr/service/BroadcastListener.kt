@@ -15,7 +15,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getLastColorAppliedTimes
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorJson
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
-import com.drdisagree.colorblendr.data.common.Utilities.isRootOrShizukuUnknown
+import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
@@ -208,7 +208,7 @@ class BroadcastListener : BroadcastReceiver() {
 
     @Synchronized
     private fun updateAllColors(force: Boolean = false) {
-        if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isRootOrShizukuUnknown()) return
+        if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isWorkMethodUnknown()) return
 
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()

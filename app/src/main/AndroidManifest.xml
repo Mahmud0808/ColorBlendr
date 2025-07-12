@@ -24,6 +24,7 @@
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <queries>
         <intent>
@@ -99,6 +100,11 @@
         <service
             android:name=".service.AutoStartService"
             android:enabled="true"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".service.AdbPairingNotification"
+            android:exported="false"
             android:foregroundServiceType="specialUse" />
 
         <receiver

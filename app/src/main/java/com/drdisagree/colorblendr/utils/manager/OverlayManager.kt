@@ -11,6 +11,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_S
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
 import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
@@ -22,6 +23,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
@@ -34,6 +36,8 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 @Suppress("unused")
 object OverlayManager {
@@ -43,9 +47,7 @@ object OverlayManager {
     private var mShizukuConnection = shizukuConnection
 
     fun enableOverlay(packageName: String) {
-        if (!isRootMode()) {
-            return
-        }
+        if (!isRootMode()) return
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -64,9 +66,7 @@ object OverlayManager {
     }
 
     fun disableOverlay(packageName: String) {
-        if (!isRootMode()) {
-            return
-        }
+        if (!isRootMode()) return
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -85,9 +85,7 @@ object OverlayManager {
     }
 
     fun isOverlayInstalled(packageName: String): Boolean {
-        if (!isRootMode()) {
-            return false
-        }
+        if (!isRootMode()) return false
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -107,9 +105,7 @@ object OverlayManager {
     }
 
     fun isOverlayEnabled(packageName: String): Boolean {
-        if (!isRootMode()) {
-            return false
-        }
+        if (!isRootMode()) return false
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -129,9 +125,7 @@ object OverlayManager {
     }
 
     fun uninstallOverlayUpdates(packageName: String) {
-        if (!isRootMode()) {
-            return
-        }
+        if (!isRootMode()) return
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -150,9 +144,7 @@ object OverlayManager {
     }
 
     private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (!isRootMode()) {
-            return
-        }
+        if (!isRootMode()) return
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -172,9 +164,7 @@ object OverlayManager {
     }
 
     fun unregisterFabricatedOverlay(packageName: String) {
-        if (!isRootMode()) {
-            return
-        }
+        if (!isRootMode()) return
 
         if (mRootConnection == null) {
             mRootConnection = rootConnection
@@ -193,13 +183,9 @@ object OverlayManager {
     }
 
     fun applyFabricatedColors() {
-        if (!isThemingEnabled() && !isShizukuThemingEnabled()) {
-            return
-        }
+        if (!isThemingEnabled() && !isShizukuThemingEnabled()) return
 
-        if (applyFabricatedColorsNonRoot()) {
-            return
-        }
+        if (applyFabricatedColorsNonRoot()) return
 
         val style = getCurrentMonetStyle()
         val monetAccentSaturation = getAccentSaturation()
@@ -318,9 +304,7 @@ object OverlayManager {
     }
 
     fun removeFabricatedColors() {
-        if (removeFabricatedColorsNonRoot()) {
-            return
-        }
+        if (removeFabricatedColorsNonRoot()) return
 
         ArrayList<String>().apply {
             getSelectedFabricatedApps().filter { (_, isSelected) ->
@@ -366,63 +350,104 @@ object OverlayManager {
     }
 
     private fun applyFabricatedColorsNonRoot(): Boolean {
-        if (!isShizukuMode()) {
-            return false
-        }
+        val isShizukuMode = isShizukuMode()
+        val isWirelessAdbMode = isWirelessAdbMode()
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
-            Log.w(TAG, "Shizuku permission not available")
-            return true
-        }
+        if (!isShizukuMode && !isWirelessAdbMode) return false
 
-        if (mShizukuConnection == null) {
-            mShizukuConnection = shizukuConnection
+        val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
 
-            if (mShizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
+        if (isShizukuMode) {
+            if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
+                Log.w(TAG, "Shizuku permission not available")
                 return true
             }
-        }
 
-        try {
-            val currentSettings = mShizukuConnection!!.currentSettings
-            val jsonString = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
+            if (mShizukuConnection == null) {
+                mShizukuConnection = shizukuConnection
 
-            if (jsonString.isNotEmpty()) {
-                mShizukuConnection!!.applyFabricatedColors(
-                    MiscUtil.mergeJsonStrings(currentSettings, jsonString)
-                )
+                if (mShizukuConnection == null) {
+                    Log.w(TAG, "Shizuku service connection is null")
+                    return true
+                }
             }
-        } catch (e: Exception) {
-            Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+
+            try {
+                val currentSettings = mShizukuConnection!!.currentSettings
+
+                if (themeJson.isNotEmpty()) {
+                    mShizukuConnection!!.applyFabricatedColors(
+                        MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+            }
+        } else {
+            if (!WifiAdbConnectedDevices.isMyDeviceConnected()) {
+                Log.w(TAG, "Device not connected in wireless ADB mode")
+                return true
+            }
+
+            try {
+                val currentSettings =
+                    WifiAdbShell.exec("shell settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES").output
+
+                if (themeJson.isNotEmpty()) {
+                    val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                    WifiAdbShell.exec("shell settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+            }
         }
 
         return true
     }
 
     private fun removeFabricatedColorsNonRoot(): Boolean {
-        if (!isShizukuMode()) {
-            return false
-        }
+        val isShizukuMode = isShizukuMode()
+        val isWirelessAdbMode = isWirelessAdbMode()
 
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
-            Log.w(TAG, "Shizuku permission not available")
-            return true
-        }
+        if (!isShizukuMode && !isWirelessAdbMode) return false
 
-        if (mShizukuConnection == null) {
-            mShizukuConnection = shizukuConnection
-
-            if (mShizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
+        if (isShizukuMode) {
+            if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
+                Log.w(TAG, "Shizuku permission not available")
                 return true
             }
-        }
 
-        try {
-            mShizukuConnection!!.removeFabricatedColors()
-        } catch (e: Exception) {
-            Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
+            if (mShizukuConnection == null) {
+                mShizukuConnection = shizukuConnection
+
+                if (mShizukuConnection == null) {
+                    Log.w(TAG, "Shizuku service connection is null")
+                    return true
+                }
+            }
+
+            try {
+                mShizukuConnection!!.removeFabricatedColors()
+            } catch (e: Exception) {
+                Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
+            }
+        } else {
+            if (!WifiAdbConnectedDevices.isMyDeviceConnected()) {
+                Log.w(TAG, "Device not connected in wireless ADB mode")
+                return true
+            }
+
+            try {
+                val currentSettings =
+                    WifiAdbShell.exec("shell settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
+                        .output
+                        .ifEmpty { "{}" }
+
+                val jsonString = ThemeOverlayPackage.getOriginalSettings(currentSettings).toString()
+                WifiAdbShell.exec("shell settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+            } catch (e: Exception) {
+                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+            }
         }
 
         return true

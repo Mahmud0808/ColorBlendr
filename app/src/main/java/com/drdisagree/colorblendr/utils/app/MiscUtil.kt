@@ -51,8 +51,8 @@ object MiscUtil {
             sourceTemp = JSONObject().toString()
         }
 
-        val targetJson = JSONObject(targetTemp!!)
-        val sourceJson = JSONObject(sourceTemp!!)
+        val targetJson = JSONObject(targetTemp)
+        val sourceJson = JSONObject(sourceTemp)
 
         return mergeJsonObjects(targetJson, sourceJson).toString()
     }
@@ -102,7 +102,7 @@ inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
     else -> @Suppress("DEPRECATION") getParcelable(key) as? T
 }
 
-class DividerItemDecoration(context: Context?, private var spacing: Int) : ItemDecoration() {
+class DividerItemDecoration(private var spacing: Int) : ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,
         view: View,

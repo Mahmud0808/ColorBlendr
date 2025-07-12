@@ -50,4 +50,26 @@ object ThemeOverlayPackage {
                 JSONObject()
             }
         }
+
+    fun getOriginalSettings(currentSettings: String): JSONObject {
+        return JSONObject(currentSettings).apply {
+            val keysToRemove = arrayOf(
+                THEME_STYLE,
+                COLOR_SOURCE,
+                SYSTEM_PALETTE
+            )
+
+            for (key in keysToRemove) {
+                remove(key)
+            }
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                remove(ACCENT_COLOR)
+            }
+
+            putOpt(COLOR_BOTH, "0")
+            putOpt(COLOR_SOURCE, "home_wallpaper")
+            putOpt(APPLIED_TIMESTAMP, System.currentTimeMillis())
+        }
+    }
 }

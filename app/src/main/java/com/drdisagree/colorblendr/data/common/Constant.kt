@@ -69,6 +69,11 @@ object Constant {
     const val TINT_TEXT_COLOR = "tintTextColor"
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
     const val APP_LIST_FILTER_METHOD = "appListFilterMethod"
+    const val ADB_PAIRING_CODE = "adbPairingCode"
+    const val ADB_IP = "adbIp"
+    const val ADB_PAIRING_PORT = "adbPairingPort"
+    const val ADB_CONNECTING_PORT = "adbConnectingPort"
+
     val MONET_ACCENT_SATURATION: String
         get() = if (!modeSpecificThemesEnabled()) {
             "monetAccentSaturationValue"
