@@ -158,8 +158,36 @@
     <string name="root_service_not_found">Рут права не предоставлены.</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Использовать shizuku для работы без root. Некоторые возможности кастомизации не будут доступны.</string>
+    <string name="mode_three_title">Wireless ADB</string>
+    <string name="mode_three_desc">Use ADB via Wireless Debugging. Limited customization options will be available.</string>
     <string name="shizuku_service_not_found">Разрешение Shizuku не предоставлено.</string>
     <string name="grant_all_permissions">Пожалуйста, предоставьте все разрешения для приложения</string>
+    <string name="wireless_adb_not_connected">Wireless ADB not connected.</string>
+    <!-- Wireless ADB -->
+    <string name="pairing">Pairing</string>
+    <string name="enter_pairing_code">Enter pairing code</string>
+    <string name="enter_six_digit_pairing_code">Enter six digit pairing code</string>
+    <string name="pairing_notification_hint">You will receive a notification from ColorBlendr to help you with pairing.</string>
+    <string name="notification_access_not_granted">To complete the pairing process you will need to interact with a notification from ColorBlendr. Please allow notification access to ColorBlendr.</string>
+    <string name="notification_settings">Notification settings</string>
+    <string name="notification_style_error">If you cannot enter the Pairing Code from the notification, then you might need to change the Notification Shade to Android. Go to Notification Settings ~ Notification Style to change the Notification Style.  Otherwise you might not be able to enter the pairing code from the notification.</string>
+    <string name="wifi_connection_required">To use the Wireless Debugging feature, your device must be connected to a Wi-Fi network. If your Wi-Fi connection has no Internet access then turn off mobile data for a solid Wi-Fi connection.</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
+    <string name="wireless_debugging_guide_2">Enter the six digit Pairing Code into the notification sent by ColorBlendr.</string>
+    <string name="wireless_debugging_guide_3">Come back to the app and click on the \"Start\" button in the previous screen.</string>
+    <string name="wireless_debugging_important_notice">Please note that the left part of the Wireless Debugging option is clickable. Tapping on it will open the Wireless Debugging Pairing menu.</string>
+    <string name="adb_detection_timeout">ADB detection timeout</string>
+    <string name="grant_permission">Grant permission</string>
+    <string name="developer_options">Developer options</string>
+    <string name="developer_options_not_available">Developer options not available!</string>
+    <string name="enable_wifi">Enable Wi-Fi</string>
+    <string name="adb_connection_success_title">ADB pairing successful</string>
+    <string name="adb_connection_success_message">Your device is now connected via ADB.</string>
+    <string name="adb_connection_failed_title">ADB pairing unsuccessful</string>
+    <string name="adb_connection_failed_message">ADB connection failed. Verify that pairing is enabled and the code is correct.</string>
+    <string name="submit">Submit</string>
+    <string name="close">Close</string>
+    <string name="ok">OK</string>
     <!-- Color picker dialog -->
     <string name="colorPickerDialog_dialogName">Выбор цвета</string>
     <string name="colorPickerDialog_preset">Предустановка</string>
