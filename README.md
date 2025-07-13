@@ -41,9 +41,9 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 ## Requirements 🛠
 
-- Android 12+ device
+- Android 12+ ROM with Material You support
 
-- Working Root or Shizuku environment
+- Working **Root**, **Shizuku**, or **Wireless ADB** environment
 
 ## How to Use 🚀
 
@@ -51,7 +51,7 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - Allow permissions for the app
 
-- Select root or shizuku mode
+- Select **Root**, **Shizuku**, or **Wireless ADB** mode
 
 - That's it. Now you are good to go!
 
@@ -59,7 +59,7 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - Root is recommended if you want to have the full experience
 
-- Shizuku is also supported but customizations are limited
+- Shizuku and Wireless ADB are also supported but customizations are limited
 
 ## FAQ 🤓
 
@@ -101,4 +101,5 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - [@siavash79](https://github.com/siavash79) for helping me.
 - [@fennifith](https://github.com/fennifith) for color picker.
+- [@DP-Hridayan](https://github.com/DP-Hridayan) for local ADB.
 - And everyone who [contributed](https://github.com/Mahmud0808/ColorBlendr/blob/master/docs/contributors.md) and [translated](https://github.com/Mahmud0808/ColorBlendr/blob/master/docs/translators.md)... :)
