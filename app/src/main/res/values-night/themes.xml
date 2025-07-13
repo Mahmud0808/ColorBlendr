@@ -21,6 +21,7 @@
         <item name="snackbarStyle">@style/SnackBarStyle</item>
         <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextView</item>
         <item name="snackbarButtonStyle">@style/SnackBarStyle.Button</item>
+        <item name="actionOverflowMenuStyle">@style/PopupMenuDefault</item>
     </style>
 
     <style name="Base.Theme" parent="Base.Theme.ColorBlendr" />

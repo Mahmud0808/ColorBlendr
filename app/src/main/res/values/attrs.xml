@@ -6,6 +6,12 @@
         <attr name="icon" format="reference" />
         <attr name="iconSpaceReserved" />
         <attr name="showEndArrow" format="boolean" />
+        <attr name="position">
+            <enum name="single" value="0" />
+            <enum name="top" value="1" />
+            <enum name="mid" value="2" />
+            <enum name="bottom" value="3" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="SwitchWidget">
@@ -17,6 +23,7 @@
         <attr name="isMasterSwitch" format="boolean" />
         <attr name="summaryOnText" format="string" />
         <attr name="summaryOffText" format="string" />
+        <attr name="position" />
     </declare-styleable>
 
     <declare-styleable name="SeekbarWidget">
@@ -30,6 +37,7 @@
         <attr name="isDecimalFormat" format="boolean" />
         <attr name="decimalFormat" format="string" />
         <attr name="outputScale" format="float" />
+        <attr name="position" />
     </declare-styleable>
 
     <declare-styleable name="ColorPickerWidget">
@@ -38,18 +46,21 @@
         <attr name="previewColor" format="reference" />
         <attr name="icon" />
         <attr name="iconSpaceReserved" />
+        <attr name="position" />
     </declare-styleable>
 
     <declare-styleable name="SelectableViewWidget">
         <attr name="titleText" />
         <attr name="descriptionText" format="reference" />
         <attr name="isSelected" format="boolean" />
+        <attr name="position" />
     </declare-styleable>
 
     <declare-styleable name="StylePreviewWidget">
         <attr name="titleText" />
         <attr name="descriptionText" />
         <attr name="isSelected" />
+        <attr name="position" />
     </declare-styleable>
 
     <declare-styleable name="ColorPickerTheme">

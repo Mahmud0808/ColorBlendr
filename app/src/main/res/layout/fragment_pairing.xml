@@ -27,6 +27,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                app:cardCornerRadius="@dimen/container_corner_radius"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
@@ -115,6 +116,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 app:cardBackgroundColor="?attr/colorErrorContainer"
+                app:cardCornerRadius="@dimen/container_corner_radius"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
@@ -201,6 +203,7 @@
                 android:layout_marginTop="@dimen/container_margin_bottom"
                 android:clickable="false"
                 app:cardBackgroundColor="?attr/colorSurface"
+                app:cardCornerRadius="@dimen/container_corner_radius"
                 app:strokeWidth="0dp">
 
                 <LinearLayout

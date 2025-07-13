@@ -207,7 +207,7 @@ class StylePreviewAdapter(
                 }
             }
 
-            val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.MyPopupMenu).apply {
+            val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.PopupMenuStyles).apply {
                 menuInflater.inflate(R.menu.custom_style_menu, menu)
 
                 setOnMenuItemClickListener { item ->

@@ -42,7 +42,7 @@
                 android:id="@+id/root"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 app:descriptionText="@string/mode_one_desc"
                 app:titleText="@string/mode_one_title" />
 
@@ -50,7 +50,7 @@
                 android:id="@+id/shizuku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 app:descriptionText="@string/mode_two_desc"
                 app:titleText="@string/mode_two_title" />
 

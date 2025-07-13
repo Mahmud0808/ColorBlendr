@@ -8,6 +8,7 @@
     android:layout_marginBottom="@dimen/container_margin_bottom"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:cardCornerRadius="@dimen/container_corner_radius"
     app:cardMaxElevation="0dp"
     app:strokeWidth="0dp">
 

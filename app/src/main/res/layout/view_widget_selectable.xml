@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardCornerRadius="12dp">
+    app:cardCornerRadius="@dimen/container_corner_radius">
 
     <LinearLayout
         android:layout_width="match_parent"

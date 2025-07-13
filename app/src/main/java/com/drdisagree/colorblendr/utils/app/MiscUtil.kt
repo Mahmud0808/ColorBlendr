@@ -10,16 +10,20 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
+import com.drdisagree.colorblendr.R
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.ShapeAppearanceModel
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
-
 
 object MiscUtil {
 
@@ -36,6 +40,90 @@ object MiscUtil {
             context.supportActionBar!!.setDisplayHomeAsUpEnabled(showBackButton)
             context.supportActionBar!!.setDisplayShowHomeEnabled(showBackButton)
         }
+    }
+
+    fun setCardCornerRadius(
+        context: Context,
+        position: Int,
+        container: MaterialCardView,
+        updateBottomMargin: Boolean = true
+    ) {
+        when (position) {
+            0 -> {
+                container.shapeAppearanceModel = getShapeAppearanceModel(
+                    context,
+                    R.dimen.container_corner_radius,
+                    R.dimen.container_corner_radius,
+                    R.dimen.container_corner_radius,
+                    R.dimen.container_corner_radius
+                )
+                if (updateBottomMargin)
+                    (container.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
+                        context.resources.getDimensionPixelSize(R.dimen.container_margin_bottom)
+            }
+
+            1 -> {
+                container.shapeAppearanceModel = getShapeAppearanceModel(
+                    context,
+                    R.dimen.container_corner_radius,
+                    R.dimen.container_corner_radius,
+                    R.dimen.container_corner_radius_small,
+                    R.dimen.container_corner_radius_small
+                )
+                if (updateBottomMargin)
+                    (container.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
+                        context.resources.getDimensionPixelSize(R.dimen.container_margin_bottom_small)
+            }
+
+            2 -> {
+                container.shapeAppearanceModel = getShapeAppearanceModel(
+                    context,
+                    R.dimen.container_corner_radius_small,
+                    R.dimen.container_corner_radius_small,
+                    R.dimen.container_corner_radius_small,
+                    R.dimen.container_corner_radius_small
+                )
+                if (updateBottomMargin)
+                    (container.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
+                        context.resources.getDimensionPixelSize(R.dimen.container_margin_bottom_small)
+            }
+
+            3 -> {
+                container.shapeAppearanceModel = getShapeAppearanceModel(
+                    context,
+                    R.dimen.container_corner_radius_small,
+                    R.dimen.container_corner_radius_small,
+                    R.dimen.container_corner_radius,
+                    R.dimen.container_corner_radius
+                )
+                if (updateBottomMargin)
+                    (container.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
+                        context.resources.getDimensionPixelSize(R.dimen.container_margin_bottom)
+            }
+        }
+    }
+
+    private fun getShapeAppearanceModel(
+        context: Context,
+        @DimenRes topLeftCorner: Int,
+        @DimenRes topRightCorner: Int,
+        @DimenRes bottomLeftCorner: Int,
+        @DimenRes bottomRightCorner: Int
+    ): ShapeAppearanceModel {
+        return ShapeAppearanceModel.builder()
+            .setTopLeftCornerSize(
+                context.resources.getDimensionPixelSize(topLeftCorner).toFloat()
+            )
+            .setTopRightCornerSize(
+                context.resources.getDimensionPixelSize(topRightCorner).toFloat()
+            )
+            .setBottomLeftCornerSize(
+                context.resources.getDimensionPixelSize(bottomLeftCorner).toFloat()
+            )
+            .setBottomRightCornerSize(
+                context.resources.getDimensionPixelSize(bottomRightCorner).toFloat()
+            )
+            .build()
     }
 
     @Throws(JSONException::class)

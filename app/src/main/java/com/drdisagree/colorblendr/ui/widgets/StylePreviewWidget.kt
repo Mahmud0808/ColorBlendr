@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.widgets
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -17,11 +18,12 @@ import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.ui.views.ColorPreview
+import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
-import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope
@@ -67,21 +69,19 @@ class StylePreviewWidget : RelativeLayout {
 
         initializeId()
 
-        context.obtainStyledAttributes(
-            attrs,
-            R.styleable.StylePreviewWidget
-        ).apply {
-            setTitle(getString(R.styleable.StylePreviewWidget_titleText))
-            setDescription(getString(R.styleable.StylePreviewWidget_descriptionText))
-            recycle()
-        }
+        val typedArray: TypedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.StylePreviewWidget)
+        setTitle(typedArray.getString(R.styleable.StylePreviewWidget_titleText))
+        setDescription(typedArray.getString(R.styleable.StylePreviewWidget_descriptionText))
+        val position = typedArray.getInt(R.styleable.StylePreviewWidget_position, 0)
+        typedArray.recycle()
 
         coroutineScope.launch {
             setColorPreview()
         }
 
         container!!.setOnClickListener { v: View? ->
-            if (onClickListener != null && !isSelected()) {
+            if (onClickListener != null && !isSelected) {
                 setSelected(true)
                 onClickListener!!.onClick(v)
             }
@@ -94,6 +94,8 @@ class StylePreviewWidget : RelativeLayout {
             }
             return@setOnLongClickListener false
         }
+
+        setCardCornerRadius(context, position, container!!, false)
     }
 
     fun setTitle(titleResId: Int) {
@@ -136,7 +138,7 @@ class StylePreviewWidget : RelativeLayout {
     override fun setSelected(isSelected: Boolean) {
         this.isSelected = isSelected
         container!!.setCardBackgroundColor(cardBackgroundColor)
-        container!!.setStrokeWidth(if (isSelected) 2 else 0)
+        container!!.strokeWidth = if (isSelected) 2 else 0
         titleTextView!!.setTextColor(getTextColor(isSelected))
         descriptionTextView!!.setTextColor(getTextColor(isSelected))
     }
@@ -212,7 +214,7 @@ class StylePreviewWidget : RelativeLayout {
     @get:ColorInt
     private val cardBackgroundColor: Int
         get() {
-            return if (isSelected()) MaterialColors.getColor(
+            return if (isSelected) MaterialColors.getColor(
                 this,
                 com.google.android.material.R.attr.colorPrimaryContainer
             ) else MaterialColors.getColor(
@@ -235,7 +237,7 @@ class StylePreviewWidget : RelativeLayout {
         val superState: Parcelable? = super.onSaveInstanceState()
 
         val ss = SavedState(superState)
-        ss.isSelected = isSelected()
+        ss.isSelected = isSelected
 
         return ss
     }

@@ -26,7 +26,8 @@
                 android:layout_marginHorizontal="@dimen/container_margin_horizontal"
                 android:layout_marginBottom="@dimen/container_margin_bottom"
                 android:clickable="true"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:cardCornerRadius="@dimen/container_corner_radius">
 
                 <LinearLayout
                     android:layout_width="match_parent"

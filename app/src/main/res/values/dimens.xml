@@ -2,7 +2,11 @@
 <resources>
     <dimen name="reset_icon_size">28dp</dimen>
     <dimen name="about_button_icon_size">22dp</dimen>
-    <dimen name="default_corner_radius">12dp</dimen>
+    <dimen name="default_corner_radius">24dp</dimen>
     <dimen name="container_margin_horizontal">16dp</dimen>
     <dimen name="container_margin_bottom">12dp</dimen>
+    <dimen name="container_margin_bottom_small">2dp</dimen>
+    <dimen name="container_corner_radius">24dp</dimen>
+    <dimen name="container_corner_radius_small">4dp</dimen>
+    <dimen name="container_corner_radius_round">120dp</dimen>
 </resources>

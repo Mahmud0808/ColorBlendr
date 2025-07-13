@@ -39,6 +39,7 @@
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_brush"
                 app:isChecked="true"
+                app:position="top"
                 app:summaryText="@string/accurate_shades_desc"
                 app:titleText="@string/accurate_shades_title" />
 
@@ -47,6 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_invert_colors"
+                app:position="mid"
                 app:summaryText="@string/pitch_black_theme_desc"
                 app:titleText="@string/pitch_black_theme_title" />
 
@@ -55,6 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_color_fill"
+                app:position="mid"
                 app:summaryText="@string/custom_primary_color_desc"
                 app:titleText="@string/custom_primary_color_title" />
 
@@ -64,6 +67,7 @@
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_text"
                 app:isChecked="true"
+                app:position="mid"
                 app:summaryText="@string/tint_text_desc"
                 app:titleText="@string/tint_text_title" />
 
@@ -72,6 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_color_picker"
+                app:position="bottom"
                 app:summaryText="@string/override_colors_manually_desc"
                 app:titleText="@string/override_colors_manually_title" />
 

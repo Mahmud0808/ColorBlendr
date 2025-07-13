@@ -12,6 +12,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.google.android.material.card.MaterialCardView
 import java.text.DecimalFormat
 import java.util.Objects
@@ -65,6 +66,7 @@ class SeekbarWidget : RelativeLayout {
         isDecimalFormat = typedArray.getBoolean(R.styleable.SeekbarWidget_isDecimalFormat, false)
         decimalFormat = typedArray.getString(R.styleable.SeekbarWidget_decimalFormat)
         outputScale = typedArray.getFloat(R.styleable.SeekbarWidget_outputScale, 1f)
+        val position = typedArray.getInt(R.styleable.SeekbarWidget_position, 0)
         typedArray.recycle()
 
         if (valueFormat == null) {
@@ -79,6 +81,7 @@ class SeekbarWidget : RelativeLayout {
         handleResetVisibility()
         setOnSeekbarChangeListener(null)
         setResetClickListener(null)
+        setCardCornerRadius(context, position, container!!)
     }
 
     fun setTitle(titleResId: Int) {

@@ -3,7 +3,6 @@ package com.drdisagree.colorblendr.ui.widgets
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -16,7 +15,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -67,6 +66,7 @@ class SwitchWidget : RelativeLayout {
         summaryOnText = typedArray.getString(R.styleable.SwitchWidget_summaryOnText)
         summaryOffText = typedArray.getString(R.styleable.SwitchWidget_summaryOffText)
         isSwitchChecked = typedArray.getBoolean(R.styleable.SwitchWidget_isChecked, false)
+        val position = typedArray.getInt(R.styleable.SwitchWidget_position, 0)
         updateSummary()
         typedArray.recycle()
 
@@ -96,6 +96,12 @@ class SwitchWidget : RelativeLayout {
                     switchChangeListener!!.onCheckedChanged(buttonView, isChecked)
                 }
             }
+        }
+
+        if (isMasterSwitch) {
+            container!!.radius = resources.getDimension(R.dimen.container_corner_radius_round)
+        } else {
+            setCardCornerRadius(context, position, container!!)
         }
     }
 
@@ -203,27 +209,23 @@ class SwitchWidget : RelativeLayout {
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
+        val typedValue = TypedValue()
+        val a: TypedArray = context!!.obtainStyledAttributes(
+            typedValue.data,
+            intArrayOf(com.google.android.material.R.attr.colorPrimary)
+        )
+        val color: Int = a.getColor(0, 0)
+        a.recycle()
+
+        iconImageView!!.setImageTintList(ColorStateList.valueOf(color))
+
         if (enabled) {
-            val typedValue: TypedValue = TypedValue()
-            val a: TypedArray = getContext().obtainStyledAttributes(
-                typedValue.data,
-                intArrayOf(com.google.android.material.R.attr.colorPrimary)
-            )
-            val color: Int = a.getColor(0, 0)
-            a.recycle()
-
-            iconImageView!!.setImageTintList(ColorStateList.valueOf(color))
-
             titleTextView!!.setAlpha(1.0f)
+            iconImageView!!.setAlpha(1.0f)
             summaryTextView!!.setAlpha(0.8f)
         } else {
-            if (isDarkMode) {
-                iconImageView!!.setImageTintList(ColorStateList.valueOf(Color.DKGRAY))
-            } else {
-                iconImageView!!.setImageTintList(ColorStateList.valueOf(Color.LTGRAY))
-            }
-
             titleTextView!!.setAlpha(0.6f)
+            iconImageView!!.setAlpha(0.4f)
             summaryTextView!!.setAlpha(0.4f)
         }
 

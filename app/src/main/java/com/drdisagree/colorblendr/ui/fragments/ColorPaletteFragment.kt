@@ -33,11 +33,11 @@ import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
 import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -114,7 +114,7 @@ class ColorPaletteFragment : Fragment() {
                     colorTableRows,
                     generateModifiedColors()
                 )
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
     }
@@ -155,7 +155,12 @@ class ColorPaletteFragment : Fragment() {
                             }
 
                             val textView = TextView(requireContext()).apply {
+                                layoutParams = LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT
+                                )
                                 text = colorCodes[j].toString()
+                                textAlignment = View.TEXT_ALIGNMENT_CENTER
                                 setTextColor(calculateTextColor(systemColors[i][j]))
                                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                                 alpha = 0.8f
@@ -249,7 +254,7 @@ class ColorPaletteFragment : Fragment() {
                                             withContext(Dispatchers.IO) {
                                                 try {
                                                     applyFabricatedColors()
-                                                } catch (ignored: Exception) {
+                                                } catch (_: Exception) {
                                                 }
                                             }
                                         }
@@ -279,7 +284,7 @@ class ColorPaletteFragment : Fragment() {
                         withContext(Dispatchers.IO) {
                             try {
                                 applyFabricatedColors()
-                            } catch (ignored: Exception) {
+                            } catch (_: Exception) {
                             }
                         }
                     }

@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.google.android.material.card.MaterialCardView
 
@@ -62,6 +63,7 @@ class ColorPickerWidget : RelativeLayout {
         val colorResId: Int =
             typedArray.getResourceId(R.styleable.ColorPickerWidget_previewColor, Int.MIN_VALUE)
         selectedColor = typedArray.getColor(R.styleable.ColorPickerWidget_previewColor, Color.WHITE)
+        val position = typedArray.getInt(R.styleable.ColorPickerWidget_position, 0)
         typedArray.recycle()
 
         if (icon != 0) {
@@ -76,6 +78,8 @@ class ColorPickerWidget : RelativeLayout {
         if (colorResId != Int.MIN_VALUE) {
             previewColor = ContextCompat.getColor(getContext(), colorResId)
         }
+
+        setCardCornerRadius(context, position, container!!)
     }
 
     fun setTitle(titleResId: Int) {
@@ -122,11 +126,7 @@ class ColorPickerWidget : RelativeLayout {
             this.selectedColor = colorTemp
 
             if (!isEnabled) {
-                colorTemp = if (isDarkMode) {
-                    Color.DKGRAY
-                } else {
-                    Color.LTGRAY
-                }
+                colorTemp = if (isDarkMode) Color.DKGRAY else Color.LTGRAY
             }
 
             val drawable = GradientDrawable(
@@ -140,27 +140,23 @@ class ColorPickerWidget : RelativeLayout {
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
+        val typedValue = TypedValue()
+        val a: TypedArray = context.obtainStyledAttributes(
+            typedValue.data,
+            intArrayOf(com.google.android.material.R.attr.colorPrimary)
+        )
+        val color: Int = a.getColor(0, 0)
+        a.recycle()
+
+        iconImageView!!.imageTintList = ColorStateList.valueOf(color)
+
         if (enabled) {
-            val typedValue = TypedValue()
-            val a: TypedArray = context.obtainStyledAttributes(
-                typedValue.data,
-                intArrayOf(com.google.android.material.R.attr.colorPrimary)
-            )
-            val color: Int = a.getColor(0, 0)
-            a.recycle()
-
-            iconImageView!!.imageTintList = ColorStateList.valueOf(color)
-
             titleTextView!!.alpha = 1.0f
+            iconImageView!!.alpha = 1.0f
             summaryTextView!!.alpha = 0.8f
         } else {
-            if (isDarkMode) {
-                iconImageView!!.imageTintList = ColorStateList.valueOf(Color.DKGRAY)
-            } else {
-                iconImageView!!.imageTintList = ColorStateList.valueOf(Color.LTGRAY)
-            }
-
             titleTextView!!.alpha = 0.6f
+            iconImageView!!.alpha = 0.4f
             summaryTextView!!.alpha = 0.4f
         }
 
