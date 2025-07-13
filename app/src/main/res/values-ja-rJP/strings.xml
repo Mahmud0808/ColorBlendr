@@ -20,7 +20,7 @@
     <string name="color_palette_rootless_warn">パレット内の任意の色をタップすると、16 進数のカラーコードをコピーできます。</string>
     <string name="primary">プライマリ</string>
     <string name="secondary">セカンダリ</string>
-    <string name="tertiary">トライナリ</string>
+    <string name="tertiary">ターシャリ</string>
     <string name="neutral_1">ニュートラル 1</string>
     <string name="neutral_2">ニュートラル 2</string>
     <string name="color_code">カラーコード: %s</string>
@@ -90,9 +90,9 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">高度な設定</string>
     <string name="custom_secondary_color_desc">カスタムセカンダリカラー</string>
-    <string name="custom_secondary_color_summary">ピュアホワイトを選択して無効化します</string>
-    <string name="custom_tertiary_color_title">カスタムトライナリカラー</string>
-    <string name="custom_tertiary_color_desc">ピュアホワイトを選択して無効化します</string>
+    <string name="custom_secondary_color_summary">無効化するにはピュアホワイトを選択します</string>
+    <string name="custom_tertiary_color_title">カスタムターシャリカラー</string>
+    <string name="custom_tertiary_color_desc">無効化するにはピュアホワイトを選択します</string>
     <string name="mode_specific_theme_title">モード固有のテーマ</string>
     <string name="screen_off_update_desc">画面がオフになってから 15 秒後に色を更新します、ライブ壁紙の使用時に役立ちます</string>
     <string name="screen_off_update_title">画面オフで色を更新</string>
@@ -158,8 +158,36 @@
     <string name="root_service_not_found">root 権限が許可されていません。</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">カラーの変更に Shizuku を使用します。これは 非 root 環境でも使用可能です。一部のカスタマイズオプションが使用可能です。</string>
+    <string name="mode_three_title">ワイヤレスADB</string>
+    <string name="mode_three_desc">ワイヤレスデバッグ経由でADBを使用します。一部のカスタマイズオプションが使用可能です。</string>
     <string name="shizuku_service_not_found">Shizuku の権限が許可されていません。</string>
     <string name="grant_all_permissions">続行するにはすべての権限を許可してください</string>
+    <string name="wireless_adb_not_connected">ワイヤレスADBが接続されていません。</string>
+    <!-- Wireless ADB -->
+    <string name="pairing">ペアリング</string>
+    <string name="enter_pairing_code">ペアリングコードを入力</string>
+    <string name="enter_six_digit_pairing_code">6桁のペアリングコードを入力してください</string>
+    <string name="pairing_notification_hint">ペアリングをお手伝いするためにColorBlendrから通知が届きます。</string>
+    <string name="notification_access_not_granted">ペアリングを完了するにはColorBlendrからの通知に対して操作をする必要があります。ColorBlendrに通知へのアクセスを許可してください。</string>
+    <string name="notification_settings">通知設定</string>
+    <string name="notification_style_error">通知に対してペアリングコードを入力できない場合は、通知シェードをAndroidのものに変更する必要がある場合があります。[通知設定] - [通知のスタイル] から通知のスタイルを変更してください。そうしない場合、通知からペアリングコードを入力できない場合があります。</string>
+    <string name="wifi_connection_required">ワイヤレスデバッグを使用するには、お使いのデバイスがWi-Fiネットワークに接続されている必要があります。Wi-Fi接続にてインターネットアクセスがない場合はWi-Fi接続を維持するためにモバイルデータ通信をオフにしてください。</string>
+    <string name="wireless_debugging_guide_1">[開発者向けオプション] &gt; [ワイヤレス デバッグ] を開き、 [ペア設定コードによるデバイスのペア設定] をタップすると、6桁のコードが表示されます。</string>
+    <string name="wireless_debugging_guide_2">ColorBlendrから送信された通知に6桁のペアリングコードを入力してください。</string>
+    <string name="wireless_debugging_guide_3">アプリに戻り、前の画面で [開始] ボタンをクリックしてください。</string>
+    <string name="wireless_debugging_important_notice">[ワイヤレス デバッグ] の項目の左側の部分はクリックすることができます。それをタップするとワイヤレスデバッグのペアリングメニューが開きます。</string>
+    <string name="adb_detection_timeout">ADBの検出がタイムアウトしました</string>
+    <string name="grant_permission">権限の許可</string>
+    <string name="developer_options">開発者向けオプション</string>
+    <string name="developer_options_not_available">開発者向けオプションは利用できません。</string>
+    <string name="enable_wifi">Wi-Fiを有効にする</string>
+    <string name="adb_connection_success_title">ADBのペアリングに成功しました</string>
+    <string name="adb_connection_success_message">デバイスはADB経由で接続されました。</string>
+    <string name="adb_connection_failed_title">ADBのペアリングに失敗しました</string>
+    <string name="adb_connection_failed_message">ADB接続に失敗しました。ペアリングが有効であり、コードが正しいことを確認してください。</string>
+    <string name="submit">送信</string>
+    <string name="close">閉じる</string>
+    <string name="ok">OK</string>
     <!-- Color picker dialog -->
     <string name="colorPickerDialog_dialogName">カラーピッカー</string>
     <string name="colorPickerDialog_preset">プリセット</string>
