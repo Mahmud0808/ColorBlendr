@@ -39,6 +39,8 @@ object MiscUtil {
             context.supportActionBar!!.setTitle(title)
             context.supportActionBar!!.setDisplayHomeAsUpEnabled(showBackButton)
             context.supportActionBar!!.setDisplayShowHomeEnabled(showBackButton)
+            context.supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_toolbar_chevron)
+            if (showBackButton) toolbar?.setNavigationIcon(R.drawable.ic_toolbar_chevron)
         }
     }
 
