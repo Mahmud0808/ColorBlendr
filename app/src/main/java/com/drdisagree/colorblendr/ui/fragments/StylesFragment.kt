@@ -91,6 +91,8 @@ class StylesFragment : Fragment() {
         desc: String = "",
         callback: (String, String) -> Unit
     ) {
+        binding.addStyle.visibility = View.GONE
+
         val dialogLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(
@@ -155,6 +157,9 @@ class StylesFragment : Fragment() {
             }
             .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
+            }
+            .setOnDismissListener {
+                binding.addStyle.visibility = if (isRootMode()) View.VISIBLE else View.GONE
             }
             .show()
     }
