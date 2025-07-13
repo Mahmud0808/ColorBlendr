@@ -100,6 +100,8 @@ class SwitchWidget : RelativeLayout {
 
         if (isMasterSwitch) {
             container!!.radius = resources.getDimension(R.dimen.container_corner_radius_round)
+            (container!!.layoutParams as MarginLayoutParams).bottomMargin =
+                context.resources.getDimensionPixelSize(R.dimen.container_margin_bottom) * 2
         } else {
             setCardCornerRadius(context, position, container!!)
         }
