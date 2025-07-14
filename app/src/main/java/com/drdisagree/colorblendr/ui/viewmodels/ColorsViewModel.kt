@@ -47,10 +47,14 @@ class ColorsViewModel : ViewModel() {
     fun loadWallpaperColors() {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperColors = getWallpaperColors()
-            _wallpaperColors.postValue(wallpaperColors)
+            if (wallpaperColors != _wallpaperColors.value) {
+                _wallpaperColors.postValue(wallpaperColors)
+            }
 
             val colorPalettes = loadPreviewColorPalettes(wallpaperColors)
-            _wallpaperColorPalettes.postValue(colorPalettes)
+            if (colorPalettes != _wallpaperColorPalettes.value) {
+                _wallpaperColorPalettes.postValue(colorPalettes)
+            }
         }
     }
 
@@ -59,10 +63,14 @@ class ColorsViewModel : ViewModel() {
             val basicColors: List<Int> = appContext.resources
                 .getStringArray(R.array.basic_color_codes)
                 .map { it.toColorInt() }
-            _basicColors.postValue(basicColors)
+            if (basicColors != _basicColors.value) {
+                _basicColors.postValue(basicColors)
+            }
 
             val colorPalettes = loadPreviewColorPalettes(basicColors)
-            _basicColorPalettes.postValue(colorPalettes)
+            if (colorPalettes != _basicColorPalettes.value) {
+                _basicColorPalettes.postValue(colorPalettes)
+            }
         }
     }
 
