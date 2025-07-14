@@ -78,33 +78,30 @@
             android:orientation="horizontal"
             android:paddingHorizontal="16dp">
 
-            <TextView
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.TextButton"
                 android:id="@+id/cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:minWidth="0dp"
                 android:paddingHorizontal="12dp"
-                android:paddingVertical="8dp"
-                android:text="@android:string/cancel"
-                android:textAllCaps="true"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="@android:string/cancel" />
 
-            <TextView
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.TextButton"
                 android:id="@+id/confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
+                android:layout_marginStart="12dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:minWidth="0dp"
                 android:paddingHorizontal="12dp"
-                android:paddingVertical="8dp"
-                android:text="@android:string/ok"
-                android:textAllCaps="true"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="@android:string/ok" />
 
         </LinearLayout>
     </FrameLayout>
