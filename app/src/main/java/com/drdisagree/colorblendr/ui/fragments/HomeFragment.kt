@@ -12,6 +12,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -65,7 +66,7 @@ class HomeFragment : Fragment() {
                 } else {
                     requestPermissionsLauncher.launch(AppUtil.REQUIRED_PERMISSIONS)
                 }
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }, 2000)
 
@@ -91,19 +92,19 @@ class HomeFragment : Fragment() {
 
             when (tag) {
                 ColorsFragment::class.java.simpleName -> {
-                    binding.bottomNavigationView.menu.getItem(0).setChecked(true)
+                    binding.bottomNavigationView.menu[0].isChecked = true
                 }
 
                 ThemeFragment::class.java.simpleName -> {
-                    binding.bottomNavigationView.menu.getItem(1).setChecked(true)
+                    binding.bottomNavigationView.menu[1].isChecked = true
                 }
 
                 StylesFragment::class.java.simpleName -> {
-                    binding.bottomNavigationView.menu.getItem(2).setChecked(true)
+                    binding.bottomNavigationView.menu[2].isChecked = true
                 }
 
                 SettingsFragment::class.java.simpleName -> {
-                    binding.bottomNavigationView.menu.getItem(3).setChecked(true)
+                    binding.bottomNavigationView.menu[3].isChecked = true
                 }
             }
         }
