@@ -1,7 +1,5 @@
 package com.drdisagree.colorblendr.ui.fragments
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -21,7 +19,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -56,6 +53,7 @@ import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
+import com.drdisagree.colorblendr.utils.app.MiscUtil.crossfade
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -224,26 +222,18 @@ class SettingsFragment : Fragment() {
         binding.overrideColorsManually.setEnabled(isRootMode())
 
         binding.backupRestore.container.setOnClickListener {
-            crossfade(
-                binding.backupRestore.backupRestoreButtons
-            )
+            binding.backupRestore.backupRestoreButtons.crossfade()
         }
         binding.backupRestore.backup.setOnClickListener {
-            backupRestoreSettings(
-                true
-            )
+            backupRestoreSettings(true)
         }
         binding.backupRestore.restore.setOnClickListener {
-            backupRestoreSettings(
-                false
-            )
+            backupRestoreSettings(false)
         }
 
         // About this app
         binding.about.setOnClickListener {
-            HomeFragment.replaceFragment(
-                AboutFragment()
-            )
+            HomeFragment.replaceFragment(AboutFragment())
         }
 
         return binding.getRoot()
@@ -283,34 +273,6 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun crossfade(view: View) {
-        try {
-            val animTime: Int = resources.getInteger(android.R.integer.config_mediumAnimTime)
-            if (view.isGone) {
-                view.alpha = 0f
-                view.visibility = View.VISIBLE
-                view.animate()
-                    .alpha(1f)
-                    .setDuration(animTime.toLong())
-                    .setListener(null)
-            } else {
-                view.animate()
-                    .alpha(0f)
-                    .setDuration(animTime.toLong())
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            try {
-                                view.alpha = 0f
-                                view.visibility = View.GONE
-                            } catch (_: Exception) {
-                            }
-                        }
-                    })
-            }
-        } catch (_: Exception) {
-        }
-    }
 
     private fun backupRestoreSettings(isBackingUp: Boolean) {
         val fileIntent = Intent().apply {

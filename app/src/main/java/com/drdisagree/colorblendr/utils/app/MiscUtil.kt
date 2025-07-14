@@ -1,5 +1,7 @@
 package com.drdisagree.colorblendr.utils.app
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -14,6 +16,7 @@ import android.view.ViewGroup
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
@@ -126,6 +129,35 @@ object MiscUtil {
                 context.resources.getDimensionPixelSize(bottomRightCorner).toFloat()
             )
             .build()
+    }
+
+    fun View.crossfade() {
+        try {
+            val animTime: Int = resources.getInteger(android.R.integer.config_mediumAnimTime)
+            if (isGone) {
+                alpha = 0f
+                visibility = View.VISIBLE
+                animate()
+                    .alpha(1f)
+                    .setDuration(animTime.toLong())
+                    .setListener(null)
+            } else {
+                animate()
+                    .alpha(0f)
+                    .setDuration(animTime.toLong())
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            try {
+                                alpha = 0f
+                                visibility = View.GONE
+                            } catch (_: Exception) {
+                            }
+                        }
+                    })
+            }
+        } catch (_: Exception) {
+        }
     }
 
     @Throws(JSONException::class)
