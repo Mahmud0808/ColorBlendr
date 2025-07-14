@@ -21,6 +21,7 @@ import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
 import com.drdisagree.colorblendr.utils.app.BackupRestore
+import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +31,8 @@ import kotlinx.coroutines.launch
 
 class StylePreviewAdapter(
     private val fragment: StylesFragment,
-    private var styleList: MutableList<StyleModel>
+    private var styleList: MutableList<StyleModel>,
+    private val paletteList: Map<String, List<List<Int>>>
 ) : RecyclerView.Adapter<StylePreviewAdapter.StyleViewHolder>() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
@@ -154,7 +156,7 @@ class StylePreviewAdapter(
                 // call again because recyclerview recycles views and
                 // they don't get updated if we don't call this
                 resetCustomColors()
-                setColorPreview()
+                setPreviewColors(paletteList[styleData.titleResId.getOriginalString()] ?: emptyList())
             }
 
             setOnClickListener {
@@ -189,7 +191,7 @@ class StylePreviewAdapter(
             }
 
             // call after setting title
-            setCustomColors(customStyle.palette)
+            setCustomPreviewColors(customStyle.palette)
 
             setOnClickListener {
                 selectedCustomStyle = customStyle.styleId
