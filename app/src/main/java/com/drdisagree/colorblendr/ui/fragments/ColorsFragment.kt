@@ -36,8 +36,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
-import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
+import com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.dialogs.ColorPickerDialog
+import com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.picker.ImagePickerView
 
 @Suppress("deprecation")
 class ColorsFragment : BaseFragment() {
@@ -97,7 +97,7 @@ class ColorsFragment : BaseFragment() {
 
         binding.seedColorPicker.setOnClickListener {
             ColorPickerDialog()
-                .withCornerRadius(10f)
+                .withCornerRadius(24f)
                 .withColor(monetSeedColor[0])
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView::class.java)

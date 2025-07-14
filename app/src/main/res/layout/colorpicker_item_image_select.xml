@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <me.jfenn.colorpickerdialog.views.RoundedSquareImageView
+    <com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.RoundedSquareImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
