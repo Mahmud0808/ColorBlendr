@@ -1,0 +1,85 @@
+Privacy Policy for ColorBlendr
+==============================
+
+Effective Date: July 14, 2025
+Developer: Mahmudul Hasan Khan
+
+ColorBlendr is an open-source theming utility that allows users to customize Material You colors on devices with Android 12+.
+Your privacy is important. This app does not collect, track, or share any personal data.
+
+Data Collection and Usage
+-------------------------
+
+ColorBlendr does **not** collect, store, or transmit any personal information or usage data.
+All user interactions and app logic are performed locally on the device.
+
+Internet Usage
+--------------
+
+ColorBlendr requires internet access solely to display images of contributors and translators from remote sources (e.g., GitHub avatars or hosted image URLs).
+No personal data is uploaded, and no tracking or analytics are performed.
+These images are loaded as-is and are not cached or stored beyond standard system behavior.
+
+Permissions Used and Justifications
+-----------------------------------
+
+The app requests the following permissions only to enable essential functionality:
+
+1. **QUERY_ALL_PACKAGES**
+   - Purpose: To list installed apps for per-app theming functionality.
+   - Justification: Required for selecting which apps to apply themes to.
+   - Access is entirely local and is never shared or transmitted.
+
+2. **Post Notification**
+   - Purpose: To keep the app's background service alive.
+   - ColorBlendr does **not** read or analyze the contents of your notifications.
+
+3. **Read External Storage / File Access**
+   - Purpose: To read the current wallpaper file for extracting color data.
+   - Accessed locally and not stored or transmitted.
+
+4. **Photos / Media / Images Permission**
+   - Purpose: To allow the user to pick an image and extract colors from it.
+   - The image is processed locally and not stored or uploaded.
+
+5. **Internet Permission**
+   - Purpose: To load profile pictures of app contributors and translators.
+   - No user data is sent or received beyond basic image display.
+
+Data Sharing and Third Parties
+------------------------------
+
+ColorBlendr does **not** use analytics, ads, crash reporting, or any third-party SDKs that collect data.
+It does not share any information with third parties.
+
+Children's Privacy
+------------------
+
+ColorBlendr is safe for all age groups and does not collect any data from children under 13.
+
+Security
+--------
+
+Since no personal data is processed or stored, there is no risk of data breach or exposure.
+The internet is used passively for image display only.
+
+Open Source Transparency
+------------------------
+
+ColorBlendr is fully open source. You can review the complete source code at:
+https://github.com/Mahmud0808/ColorBlendr
+
+This ensures full transparency and trust.
+
+Changes to This Policy
+----------------------
+
+Any future updates to this privacy policy will be posted on the app’s GitHub repository and updated here.
+
+Contact
+-------
+
+For questions, suggestions, or privacy concerns, please contact:
+
+Mahmudul Hasan Khan
+GitHub: https://github.com/Mahmud0808

@@ -251,15 +251,16 @@ class SettingsFragment : BaseFragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.advanced_settings -> {
-                        HomeFragment.replaceFragment(
-                            SettingsAdvancedFragment()
-                        )
+                        HomeFragment.replaceFragment(SettingsAdvancedFragment())
                         true
                     }
 
-                    else -> {
-                        false
+                    R.id.privacy_policy -> {
+                        HomeFragment.replaceFragment(PrivacyPolicyFragment())
+                        true
                     }
+
+                    else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
