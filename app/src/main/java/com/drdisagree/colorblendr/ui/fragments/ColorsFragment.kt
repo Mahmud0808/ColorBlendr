@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
@@ -28,7 +27,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimest
 import com.drdisagree.colorblendr.databinding.FragmentColorsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.ui.views.WallColorPreview
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
@@ -42,12 +40,11 @@ import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
 @Suppress("deprecation")
-class ColorsFragment : Fragment() {
+class ColorsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentColorsBinding
     private lateinit var monetSeedColor: IntArray
     private val colorsViewModel: ColorsViewModel by activityViewModels()
-    private val stylesViewModel: StylesViewModel by activityViewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val wallpaperChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -58,9 +55,6 @@ class ColorsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        colorsViewModel.refreshData()
-        stylesViewModel.refreshData()
 
         if (isShizukuMode()) {
             clearAllOverriddenColors()

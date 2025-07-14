@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,18 +39,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 
-class StylesFragment : Fragment() {
+class StylesFragment : BaseFragment() {
 
     private lateinit var binding: FragmentStylesBinding
     private var styleAdapter: StylePreviewAdapter? = null
     private val customStyleRepository = Utilities.getCustomStyleRepository()
     private val stylesViewModel: StylesViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        stylesViewModel.refreshData()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

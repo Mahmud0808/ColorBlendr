@@ -13,8 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
@@ -48,17 +47,11 @@ import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
-class ColorPaletteFragment : Fragment() {
+class ColorPaletteFragment : BaseFragment() {
 
     private lateinit var binding: FragmentColorPaletteBinding
     private lateinit var colorTableRows: Array<LinearLayout>
-    private lateinit var sharedViewModel: SharedViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-    }
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

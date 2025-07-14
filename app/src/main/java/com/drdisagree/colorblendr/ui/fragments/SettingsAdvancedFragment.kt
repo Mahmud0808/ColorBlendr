@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import androidx.fragment.app.Fragment
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -43,7 +42,7 @@ import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
-class SettingsAdvancedFragment : Fragment() {
+class SettingsAdvancedFragment : BaseFragment() {
 
     private lateinit var binding: FragmentSettingsAdvancedBinding
     private val hasPixelLauncher: Boolean = SystemUtil.isAppInstalled(PIXEL_LAUNCHER)
