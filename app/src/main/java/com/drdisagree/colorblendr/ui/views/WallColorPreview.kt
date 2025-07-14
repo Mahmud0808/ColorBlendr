@@ -19,9 +19,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.app.SystemUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -64,7 +64,7 @@ class WallColorPreview : View {
     private var circleRadius = 10 * resources.displayMetrics.density
     private var clearCircleRadius = circleRadius + 0 * resources.displayMetrics.density
     private var isSelected = false
-    private var colorPalette: ArrayList<ArrayList<Int>>? = null
+    private var colorPalette: List<List<Int>>? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
     @ColorInt
@@ -214,23 +214,27 @@ class WallColorPreview : View {
         invalidate()
     }
 
-    fun setMainColor(@ColorInt color: Int) {
+    fun setPreviewColors(
+        @ColorInt color: Int,
+        colorPaletteList: List<List<Int>>? = null
+    ) {
         coroutineScope.launch {
             try {
-                colorPalette = withContext(Dispatchers.IO) {
-                    generateModifiedColors(
-                        getCurrentMonetStyle(),
-                        color,
-                        getAccentSaturation(),
-                        getBackgroundSaturation(),
-                        getBackgroundLightness(),
-                        pitchBlackThemeEnabled(),
-                        accurateShadesEnabled(),
-                        false,
-                        SystemUtil.isDarkMode,
-                        false
-                    )
-                }
+                colorPalette = colorPaletteList
+                    ?: withContext(Dispatchers.IO) {
+                        generateModifiedColors(
+                            getCurrentMonetStyle(),
+                            color,
+                            getAccentSaturation(),
+                            getBackgroundSaturation(),
+                            getBackgroundLightness(),
+                            pitchBlackThemeEnabled(),
+                            accurateShadesEnabled(),
+                            false,
+                            SystemUtil.isDarkMode,
+                            false
+                        )
+                    }
 
                 withContext(Dispatchers.Main) {
                     setHalfCircleColor(colorPalette!![0][4])
@@ -240,7 +244,7 @@ class WallColorPreview : View {
                     setCenterCircleColor(color)
                     invalidateColors()
                 }
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
     }
