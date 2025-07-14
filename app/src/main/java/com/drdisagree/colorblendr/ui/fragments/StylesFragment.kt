@@ -50,7 +50,7 @@ class StylesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        stylesViewModel.loadStylePalettes()
+        stylesViewModel.refreshData()
     }
 
     override fun onCreateView(

@@ -59,7 +59,8 @@ class ColorsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        stylesViewModel.loadStylePalettes()
+        colorsViewModel.refreshData()
+        stylesViewModel.refreshData()
 
         if (isShizukuMode()) {
             clearAllOverriddenColors()

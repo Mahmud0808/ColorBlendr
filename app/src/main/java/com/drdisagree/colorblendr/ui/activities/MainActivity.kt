@@ -35,6 +35,7 @@ import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.sch
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment
 import com.drdisagree.colorblendr.ui.fragments.onboarding.OnboardingFragment
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
+import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.wifiadb.AdbMdns
 import com.drdisagree.colorblendr.utils.wifiadb.AdbMdns.AdbFoundCallback
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private val timeoutHandler: Handler = Handler(Looper.getMainLooper())
     private var timeoutRunnable: Runnable? = null
     private val colorsViewModel: ColorsViewModel by viewModels()
+    private val stylesViewModel: StylesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,6 +231,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             recreate()
             colorsViewModel.refreshData()
+            stylesViewModel.refreshData()
         }
     }
 

@@ -36,6 +36,10 @@ class StylesViewModel : ViewModel() {
     val stylePalettes: LiveData<Map<String, List<List<Int>>>> = _stylePalettes
 
     init {
+        refreshData()
+    }
+
+    fun refreshData() {
         loadStylePalettes()
     }
 
