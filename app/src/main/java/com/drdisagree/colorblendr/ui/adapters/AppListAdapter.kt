@@ -14,6 +14,7 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.getColorFromAttribute
@@ -31,7 +32,10 @@ class AppListAdapter(private val appList: List<AppInfoModel>) :
     private val selectedApps: HashMap<String, Boolean> = HashMap()
 
     init {
-        if (isThemingEnabled(false) || isShizukuThemingEnabled(false)) {
+        if (isThemingEnabled(false)
+            || isShizukuThemingEnabled(false)
+            || isWirelessAdbThemingEnabled(false)
+        ) {
             appList
                 .asSequence()
                 .filter { it.isSelected }

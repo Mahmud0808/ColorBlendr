@@ -24,6 +24,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
@@ -183,7 +184,7 @@ object OverlayManager {
     }
 
     fun applyFabricatedColors() {
-        if (!isThemingEnabled() && !isShizukuThemingEnabled()) return
+        if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) return
 
         if (applyFabricatedColorsNonRoot()) return
 

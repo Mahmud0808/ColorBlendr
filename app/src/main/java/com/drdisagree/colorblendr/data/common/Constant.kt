@@ -68,6 +68,7 @@ object Constant {
     const val SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn"
     const val TINT_TEXT_COLOR = "tintTextColor"
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
+    const val WIRELESS_ADB_THEMING_ENABLED = "wirelessAdbThemingEnabled"
     const val APP_LIST_FILTER_METHOD = "appListFilterMethod"
     const val ADB_PAIRING_CODE = "adbPairingCode"
     const val ADB_IP = "adbIp"
