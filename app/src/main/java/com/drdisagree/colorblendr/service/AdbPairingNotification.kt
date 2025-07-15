@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.annotation.RequiresPermission
@@ -185,7 +187,11 @@ class AdbPairingNotification : Service() {
             .setOngoing(true)
             .build()
 
-        startForeground(PAIRING_NOTIFICATION_ID, notification)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(PAIRING_NOTIFICATION_ID, notification)
+        } else {
+            startForeground(PAIRING_NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        }
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
