@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">Застосувати напівпрозорий стиль до Pixel лаунчера</string>
     <string name="pitch_black_settings_workaround_title">Обхід налаштування чорного кольору</string>
     <string name="pitch_black_settings_workaround_desc">Затемнення кольору тла налаштувань; викликає побічні ефекти</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">Новини</string>
     <string name="support">Підтримка</string>

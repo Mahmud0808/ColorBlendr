@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">পিক্সেল লঞ্চারে একটি আধা-স্বচ্ছ স্টাইল প্রয়োগ করুন</string>
     <string name="pitch_black_settings_workaround_title">পিচ ব্ল্যাক সেটিংসের সমাধান</string>
     <string name="pitch_black_settings_workaround_desc">সেটিংসের ব্যাকগ্রাউন্ডের রঙ গাঢ় করুন; পার্শ্ব প্রতিক্রিয়া রয়েছে</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">খবর</string>
     <string name="support">সাপোর্ট</string>

@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">为 Pixel 启动器应用半透明样式</string>
     <string name="pitch_black_settings_workaround_title">漆黑设置的临时解决方案</string>
     <string name="pitch_black_settings_workaround_desc">调暗设置背景颜色；可能引发副作用</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">新闻</string>
     <string name="support">支持</string>

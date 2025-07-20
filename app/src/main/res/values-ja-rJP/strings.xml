@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">Pixel Launcher に半透明なスタイルを適用します</string>
     <string name="pitch_black_settings_workaround_title">ピッチブラック設定の回避策</string>
     <string name="pitch_black_settings_workaround_desc">設定の背景色を黒くします、副作用を引き起こす問題があります</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">ニュース</string>
     <string name="support">サポート</string>
