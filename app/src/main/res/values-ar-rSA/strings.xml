@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">تطبيق أسلوب شبه شفاف على مشغل Pixel</string>
     <string name="pitch_black_settings_workaround_title">حل بديل لإعدادات باللون الأسود الداكن</string>
     <string name="pitch_black_settings_workaround_desc">تعتيم لون خلفية الإعدادات؛ قد يسبب بعض التأثيرات الجانبية</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">أخبار</string>
     <string name="support">دعم</string>

@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">Félig átlátszó stílus alkalmazása a pixel indítóra</string>
     <string name="pitch_black_settings_workaround_title">Szurokfekete beállítások megoldása</string>
     <string name="pitch_black_settings_workaround_desc">A beállítások háttérszínének sötétítése; mellékhatásokat okozhat</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">Hírek</string>
     <string name="support">Támogatás</string>

@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">Aplicar un estilo semitransparente a Pixel Launcher</string>
     <string name="pitch_black_settings_workaround_title">Solución alternativa de ajuste de negro puro</string>
     <string name="pitch_black_settings_workaround_desc">Oscurece el color de fondo de los ajustes; causa efectos secundarios</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">Noticias</string>
     <string name="support">Asistencia</string>
