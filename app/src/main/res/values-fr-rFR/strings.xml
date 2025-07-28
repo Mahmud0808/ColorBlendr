@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">Appliquer un style semi-transparent au pixel launcher</string>
     <string name="pitch_black_settings_workaround_title">Solution de contournement pour le thème noir des paramètres</string>
     <string name="pitch_black_settings_workaround_desc">Assombrir la couleur d\'arrière-plan des paramètres ; provoque des effets secondaires</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">Nouveautés</string>
     <string name="support">Support</string>

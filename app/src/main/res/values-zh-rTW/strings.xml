@@ -103,6 +103,8 @@
     <string name="semitransparent_launcher_desc">對像素啟動器套用半透明樣式</string>
     <string name="pitch_black_settings_workaround_title">純黑設定解決方法</string>
     <string name="pitch_black_settings_workaround_desc">使設定背景顏色變暗；可能會造成副作用</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy">Privacy policy</string>
     <!-- About -->
     <string name="news">新聞</string>
     <string name="support">支援</string>
