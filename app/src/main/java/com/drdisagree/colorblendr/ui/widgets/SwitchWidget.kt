@@ -163,9 +163,9 @@ class SwitchWidget : RelativeLayout {
 
         if (isMasterSwitch) {
             container!!.setCardBackgroundColor(getCardBackgroundColor(isChecked))
-            iconImageView!!.setColorFilter(getIconColor(isChecked), PorterDuff.Mode.SRC_IN)
-            titleTextView!!.setTextColor(getTextColor(isChecked))
-            summaryTextView!!.setTextColor(getTextColor(isChecked))
+            iconImageView!!.setColorFilter(getIconTextColor(isChecked), PorterDuff.Mode.SRC_IN)
+            titleTextView!!.setTextColor(getIconTextColor(isChecked))
+            summaryTextView!!.setTextColor(getIconTextColor(isChecked))
         }
     }
 
@@ -181,17 +181,7 @@ class SwitchWidget : RelativeLayout {
     }
 
     @ColorInt
-    private fun getIconColor(isSelected: Boolean): Int {
-        return if (isSelected) MaterialColors.getColor(
-            this,
-            com.google.android.material.R.attr.colorPrimary
-        ) else MaterialColors.getColor(
-            this, com.google.android.material.R.attr.colorOnSurface
-        )
-    }
-
-    @ColorInt
-    private fun getTextColor(isSelected: Boolean): Int {
+    private fun getIconTextColor(isSelected: Boolean): Int {
         return if (isSelected) MaterialColors.getColor(
             this,
             com.google.android.material.R.attr.colorOnPrimaryContainer
