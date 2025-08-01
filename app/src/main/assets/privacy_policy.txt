@@ -25,7 +25,7 @@ Permissions Used and Justifications
 
 The app requests the following permissions only to enable essential functionality:
 
-1. **QUERY_ALL_PACKAGES**
+1. **Query All Packages**
    - Purpose: To list installed apps for per-app theming functionality.
    - Justification: Required for selecting which apps to apply themes to.
    - Access is entirely local and is never shared or transmitted.
