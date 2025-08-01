@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.1"
+agp = "8.12.0"
 androidUtils = "0.0.5"
 annotation = "1.9.1"
 appcompat = "1.7.1"
@@ -23,8 +23,8 @@ recyclerviewSelection = "1.2.0"
 remotepreferences = "0.8"
 roomVersion = "2.7.2"
 shizuku = "13.1.5"
-workRuntime = "2.10.2"
-lifecycleCommonJvm = "2.9.1"
+workRuntime = "2.10.3"
+lifecycleCommonJvm = "2.9.2"
 zip4j = "2.11.5"
 
 [plugins]
