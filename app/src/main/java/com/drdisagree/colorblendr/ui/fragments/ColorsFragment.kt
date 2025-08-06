@@ -97,7 +97,7 @@ class ColorsFragment : BaseFragment() {
 
         binding.seedColorPicker.setOnClickListener {
             ColorPickerDialog()
-                .withCornerRadius(10f)
+                .withCornerRadius(24f)
                 .withColor(monetSeedColor[0])
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView::class.java)

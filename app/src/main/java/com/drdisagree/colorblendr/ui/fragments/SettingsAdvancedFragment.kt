@@ -62,7 +62,7 @@ class SettingsAdvancedFragment : BaseFragment() {
         binding.secondaryColorPicker.previewColor = monetSecondaryColor
         binding.secondaryColorPicker.setOnClickListener {
             ColorPickerDialog()
-                .withCornerRadius(10f)
+                .withCornerRadius(24f)
                 .withColor(monetSecondaryColor)
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView::class.java)
@@ -86,7 +86,7 @@ class SettingsAdvancedFragment : BaseFragment() {
         binding.tertiaryColorPicker.previewColor = monetTertiaryColor
         binding.tertiaryColorPicker.setOnClickListener {
             ColorPickerDialog()
-                .withCornerRadius(10f)
+                .withCornerRadius(24f)
                 .withColor(monetTertiaryColor)
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView::class.java)

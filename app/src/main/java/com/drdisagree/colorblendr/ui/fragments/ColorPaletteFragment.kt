@@ -220,7 +220,7 @@ class ColorPaletteFragment : BaseFragment() {
                             }
 
                             ColorPickerDialog()
-                                .withCornerRadius(10f)
+                                .withCornerRadius(24f)
                                 .withColor(v.tag as Int)
                                 .withAlphaEnabled(false)
                                 .withPicker(ImagePickerView::class.java)
