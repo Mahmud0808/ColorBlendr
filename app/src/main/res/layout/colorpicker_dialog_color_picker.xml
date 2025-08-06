@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="?attr/colorSurface"
-    android:clipChildren="true"
-    android:clipToOutline="true"
-    app:cardCornerRadius="@dimen/default_corner_radius"
+    app:cardCornerRadius="8dp"
     app:strokeWidth="0dp">
 
     <FrameLayout
@@ -25,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.color.HorizontalSmoothColorView
+                <me.jfenn.colorpickerdialog.views.color.HorizontalSmoothColorView
                     android:id="@+id/color"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -61,7 +59,7 @@
                 app:tabMode="fixed"
                 app:tabSelectedTextColor="?attr/colorPrimary" />
 
-            <com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.HeightableViewPager
+            <me.jfenn.colorpickerdialog.views.HeightableViewPager
                 android:id="@+id/slidersPager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

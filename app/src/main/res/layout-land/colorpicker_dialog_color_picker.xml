@@ -22,7 +22,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true">
 
-            <com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.color.VerticalSmoothColorView
+            <me.jfenn.colorpickerdialog.views.color.VerticalSmoothColorView
                 android:id="@+id/color"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -66,7 +66,7 @@
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="?attr/colorPrimary" />
 
-            <com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.HeightableViewPager
+            <me.jfenn.colorpickerdialog.views.HeightableViewPager
                 android:id="@+id/slidersPager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

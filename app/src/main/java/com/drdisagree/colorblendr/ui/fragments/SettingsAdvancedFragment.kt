@@ -31,8 +31,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLaunch
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
-import com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.dialogs.ColorPickerDialog
-import com.drdisagree.colorblendr.ui.widgets.colorpickerdialog.views.picker.ImagePickerView
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
@@ -41,6 +39,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
 class SettingsAdvancedFragment : BaseFragment() {
 
@@ -62,7 +62,7 @@ class SettingsAdvancedFragment : BaseFragment() {
         binding.secondaryColorPicker.previewColor = monetSecondaryColor
         binding.secondaryColorPicker.setOnClickListener {
             ColorPickerDialog()
-                .withCornerRadius(24f)
+                .withCornerRadius(10f)
                 .withColor(monetSecondaryColor)
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView::class.java)
@@ -86,7 +86,7 @@ class SettingsAdvancedFragment : BaseFragment() {
         binding.tertiaryColorPicker.previewColor = monetTertiaryColor
         binding.tertiaryColorPicker.setOnClickListener {
             ColorPickerDialog()
-                .withCornerRadius(24f)
+                .withCornerRadius(10f)
                 .withColor(monetTertiaryColor)
                 .withAlphaEnabled(false)
                 .withPicker(ImagePickerView::class.java)
