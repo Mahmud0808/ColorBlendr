@@ -13,6 +13,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
@@ -37,6 +38,12 @@ class StylesViewModel : ViewModel() {
 
     init {
         refreshData()
+
+        viewModelScope.launch {
+            RefreshCoordinator.refreshEvent.collect {
+                refreshData()
+            }
+        }
     }
 
     fun refreshData() {

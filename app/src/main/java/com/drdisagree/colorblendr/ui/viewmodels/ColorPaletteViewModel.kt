@@ -10,6 +10,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +22,12 @@ class ColorPaletteViewModel : ViewModel() {
 
     init {
         refreshData()
+
+        viewModelScope.launch {
+            RefreshCoordinator.refreshEvent.collect {
+                refreshData()
+            }
+        }
     }
 
     fun refreshData() {

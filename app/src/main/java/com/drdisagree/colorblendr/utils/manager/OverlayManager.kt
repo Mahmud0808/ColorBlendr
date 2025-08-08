@@ -27,6 +27,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.utils.app.MiscUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
@@ -290,6 +291,9 @@ object OverlayManager {
                 )
             }
         }.forEach { registerFabricatedOverlay(it) }
+
+        // Trigger a refresh to all the viewmodels
+        RefreshCoordinator.triggerRefresh()
     }
 
     fun applyFabricatedColorsPerApp(
@@ -402,6 +406,9 @@ object OverlayManager {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
             }
         }
+
+        // Trigger a refresh to all the viewmodels
+        RefreshCoordinator.triggerRefresh()
 
         return true
     }
