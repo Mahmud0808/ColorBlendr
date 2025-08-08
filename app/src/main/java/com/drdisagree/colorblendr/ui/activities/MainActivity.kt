@@ -34,6 +34,7 @@ import com.drdisagree.colorblendr.databinding.ActivityMainBinding
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.fragments.HomeFragment
 import com.drdisagree.colorblendr.ui.fragments.onboarding.OnboardingFragment
+import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     private var timeoutRunnable: Runnable? = null
     private val colorsViewModel: ColorsViewModel by viewModels()
     private val stylesViewModel: StylesViewModel by viewModels()
+    private val colorPaletteViewModel: ColorPaletteViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -232,6 +234,7 @@ class MainActivity : AppCompatActivity() {
             recreate()
             colorsViewModel.refreshData()
             stylesViewModel.refreshData()
+            colorPaletteViewModel.refreshData()
         }
     }
 
