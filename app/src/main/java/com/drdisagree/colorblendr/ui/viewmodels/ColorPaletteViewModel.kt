@@ -24,10 +24,10 @@ class ColorPaletteViewModel : ViewModel() {
     }
 
     fun refreshData() {
-        loadBasicColors()
+        loadPaletteColors()
     }
 
-    fun loadBasicColors() {
+    fun loadPaletteColors() {
         viewModelScope.launch(Dispatchers.IO) {
             val colorList = generateModifiedColors(
                 getCurrentMonetStyle(),
