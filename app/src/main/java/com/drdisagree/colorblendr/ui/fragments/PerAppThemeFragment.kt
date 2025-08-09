@@ -90,7 +90,11 @@ class PerAppThemeFragment : Fragment() {
                 setShowPerAppThemeWarning(false)
                 binding.warn.container.animate()
                     .translationX(binding.warn.container.width * 2f).alpha(0f).withEndAction {
-                        binding.warn.container.visibility = View.GONE
+                        try {
+                            binding.warn.container.visibility = View.GONE
+                        } catch (_: Exception) {
+                            // Fragment was not attached to activity
+                        }
                     }.start()
             }
         }
