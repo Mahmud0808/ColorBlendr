@@ -159,7 +159,7 @@ class SelectableViewWidget : RelativeLayout {
         get() {
             return if (isSelected) MaterialColors.getColor(
                 this,
-                com.google.android.material.R.attr.colorPrimary
+                com.google.android.material.R.attr.colorOnPrimaryContainer
             ) else MaterialColors.getColor(
                 this,
                 com.google.android.material.R.attr.colorOnSurface
