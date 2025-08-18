@@ -21,9 +21,9 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>1081 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/dzzdrzrx"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/c168a5ae378385d8c32b3a1c96435187.jpg" />
+        <a href="https://crowdin.com/profile/Qluto"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/c168a5ae378385d8c32b3a1c96435187.jpg" />
           <br />
-          <sub><b>dzzdrzrx</b></sub></a>
+          <sub><b>Qluto</b></sub></a>
         <br />
         <sub><b>956 words</b></sub>
       </td>
