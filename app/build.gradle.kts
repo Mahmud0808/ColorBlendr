@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace = "com.drdisagree.colorblendr"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 31
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 28
         versionName = "v1.11.6"
 
