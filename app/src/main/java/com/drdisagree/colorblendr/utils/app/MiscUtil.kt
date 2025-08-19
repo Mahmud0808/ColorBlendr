@@ -6,7 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.TypedArray
+import android.graphics.PorterDuff
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
@@ -16,6 +19,7 @@ import android.view.ViewGroup
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -24,6 +28,8 @@ import com.drdisagree.colorblendr.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.ShapeAppearanceModel
+import me.jfenn.androidutils.seekbar.SeekBarBackgroundDrawable
+import me.jfenn.androidutils.seekbar.SeekBarDrawable
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
@@ -233,4 +239,24 @@ class DividerItemDecoration(private var spacing: Int) : ItemDecoration() {
     ) {
         outRect.bottom = spacing
     }
+}
+
+fun setProgressBarDrawable(seekBar: AppCompatSeekBar, drawable: Drawable, handleColor: Int) {
+    // Create the background layer with semi-transparency
+    val background = SeekBarBackgroundDrawable(drawable.mutate().constantState!!.newDrawable())
+    background.alpha = 255
+
+    // Create the progress layer
+    val progressLayer = SeekBarDrawable(drawable)
+
+    // Combine into a LayerDrawable
+    val layers = LayerDrawable(arrayOf(progressLayer, background))
+    layers.setId(0, android.R.id.progress)
+    layers.setId(1, android.R.id.background)
+
+    // Set as SeekBar's progress drawable
+    seekBar.progressDrawable = layers
+
+    // Apply color filter to thumb
+    seekBar.thumb?.setColorFilter(handleColor, PorterDuff.Mode.SRC_IN)
 }

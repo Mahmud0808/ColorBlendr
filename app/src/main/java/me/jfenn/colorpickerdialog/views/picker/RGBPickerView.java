@@ -1,8 +1,11 @@
 package me.jfenn.colorpickerdialog.views.picker;
 
+import static com.drdisagree.colorblendr.utils.app.MiscUtilKt.setProgressBarDrawable;
+
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.animation.DecelerateInterpolator;
@@ -14,8 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
-import me.jfenn.androidutils.seekbar.SeekBarUtils;
 import com.drdisagree.colorblendr.R;
+
 import me.jfenn.colorpickerdialog.utils.ColorUtils;
 
 public class RGBPickerView extends PickerView {
@@ -79,20 +82,27 @@ public class RGBPickerView extends PickerView {
         green.setOnSeekBarChangeListener(listener);
         blue.setOnSeekBarChangeListener(listener);
 
-        SeekBarUtils.setProgressBarColor(
-                red,
-                ColorUtils.fromAttrRes(getContext(), R.attr.redColor, R.color.colorPickerDialog_red)
-        );
+        int redColor = ColorUtils.fromAttrRes(getContext(), R.attr.redColor, R.color.colorPickerDialog_red);
+        int greenColor = ColorUtils.fromAttrRes(getContext(), R.attr.greenColor, R.color.colorPickerDialog_green);
+        int blueColor = ColorUtils.fromAttrRes(getContext(), R.attr.blueColor, R.color.colorPickerDialog_blue);
 
-        SeekBarUtils.setProgressBarColor(
-                green,
-                ColorUtils.fromAttrRes(getContext(), R.attr.greenColor, R.color.colorPickerDialog_green)
+        GradientDrawable redDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{redColor, redColor}
         );
+        setProgressBarDrawable(red, redDrawable, redColor);
 
-        SeekBarUtils.setProgressBarColor(
-                blue,
-                ColorUtils.fromAttrRes(getContext(), R.attr.blueColor, R.color.colorPickerDialog_blue)
+        GradientDrawable greenDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{greenColor, greenColor}
         );
+        setProgressBarDrawable(green, greenDrawable, greenColor);
+
+        GradientDrawable blueDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{blueColor, blueColor}
+        );
+        setProgressBarDrawable(blue, blueDrawable, blueColor);
     }
 
     @Override

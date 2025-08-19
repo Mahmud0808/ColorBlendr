@@ -24,8 +24,10 @@
             android:layout_height="36dp"
             android:layout_gravity="center_horizontal"
             android:alpha="0.5"
+            android:importantForAccessibility="no"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_add_a_photo" />
+            app:srcCompat="@drawable/ic_add_a_photo"
+            app:tint="?android:textColorSecondary" />
 
         <TextView
             android:layout_width="match_parent"

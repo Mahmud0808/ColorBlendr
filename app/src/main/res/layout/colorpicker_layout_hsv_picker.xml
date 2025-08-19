@@ -29,7 +29,11 @@
             android:layout_weight="4"
             android:max="360"
             android:progress="0"
-            android:theme="@style/Widget.AppCompat.SeekBar" />
+            android:progressBackgroundTint="@null"
+            android:progressTint="@null"
+            android:secondaryProgressTint="@null"
+            android:theme="@style/Widget.AppCompat.SeekBar"
+            android:thumb="@drawable/color_picker_thumb" />
 
         <TextView
             android:id="@+id/hueInt"
@@ -70,7 +74,11 @@
             android:layout_weight="4"
             android:max="255"
             android:progress="0"
-            android:theme="@style/Widget.AppCompat.SeekBar" />
+            android:progressBackgroundTint="@null"
+            android:progressTint="@null"
+            android:secondaryProgressTint="@null"
+            android:theme="@style/Widget.AppCompat.SeekBar"
+            android:thumb="@drawable/color_picker_thumb" />
 
         <TextView
             android:id="@+id/saturationInt"
@@ -111,7 +119,11 @@
             android:layout_weight="4"
             android:max="255"
             android:progress="0"
-            android:theme="@style/Widget.AppCompat.SeekBar" />
+            android:progressBackgroundTint="@null"
+            android:progressTint="@null"
+            android:secondaryProgressTint="@null"
+            android:theme="@style/Widget.AppCompat.SeekBar"
+            android:thumb="@drawable/color_picker_thumb" />
 
         <TextView
             android:id="@+id/brightnessInt"

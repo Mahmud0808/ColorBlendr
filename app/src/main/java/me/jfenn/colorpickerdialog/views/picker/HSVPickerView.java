@@ -1,5 +1,7 @@
 package me.jfenn.colorpickerdialog.views.picker;
 
+import static com.drdisagree.colorblendr.utils.app.MiscUtilKt.setProgressBarDrawable;
+
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
@@ -19,7 +21,6 @@ import com.drdisagree.colorblendr.R;
 
 import java.util.Locale;
 
-import me.jfenn.androidutils.seekbar.SeekBarUtils;
 import me.jfenn.colorpickerdialog.utils.ColorUtils;
 
 public class HSVPickerView extends PickerView {
@@ -138,25 +139,28 @@ public class HSVPickerView extends PickerView {
         int neutralColor = ColorUtils.fromAttr(getContext(), R.attr.neutralColor,
                 ColorUtils.fromAttrRes(getContext(), android.R.attr.textColorPrimary, R.color.colorPickerDialog_neutral));
 
-        SeekBarUtils.setProgressBarDrawable(hue, new GradientDrawable(
+        GradientDrawable hueDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 ColorUtils.getColorWheelArr(1f, 1f)
-        ), neutralColor);
+        );
+        setProgressBarDrawable(hue, hueDrawable, neutralColor);
 
-        SeekBarUtils.setProgressBarDrawable(saturation, new GradientDrawable(
+        GradientDrawable saturationDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 new int[]{
                         Color.HSVToColor(new float[]{hue.getProgress(), 0, 1f}),
                         Color.HSVToColor(new float[]{hue.getProgress(), 1, 1f})
                 }
-        ), neutralColor);
+        );
+        setProgressBarDrawable(saturation, saturationDrawable, neutralColor);
 
-        SeekBarUtils.setProgressBarDrawable(brightness, new GradientDrawable(
+        GradientDrawable brightnessDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 new int[]{
                         Color.HSVToColor(new float[]{hue.getProgress(), 1f, 0}),
                         Color.HSVToColor(new float[]{hue.getProgress(), 1f, 1})
                 }
-        ), neutralColor);
+        );
+        setProgressBarDrawable(brightness, brightnessDrawable, neutralColor);
     }
 }
