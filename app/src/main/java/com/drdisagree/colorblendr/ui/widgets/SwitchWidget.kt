@@ -85,7 +85,7 @@ class SwitchWidget : RelativeLayout {
             }
         }
 
-        materialSwitch!!.setOnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
+        materialSwitch!!.setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
             if (materialSwitch!!.isEnabled) {
                 if (beforeSwitchChangeListener != null) {
                     beforeSwitchChangeListener!!.beforeSwitchChanged()
@@ -144,7 +144,7 @@ class SwitchWidget : RelativeLayout {
         set(isChecked) {
             materialSwitch!!.setChecked(isChecked)
             if (switchChangeListener != null) {
-                switchChangeListener!!.onCheckedChanged(materialSwitch, isChecked)
+                switchChangeListener!!.onCheckedChanged(materialSwitch!!, isChecked)
             }
         }
 
