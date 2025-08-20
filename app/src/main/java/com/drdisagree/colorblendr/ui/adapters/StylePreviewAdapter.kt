@@ -19,7 +19,6 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
-import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
@@ -33,8 +32,7 @@ import kotlinx.coroutines.launch
 class StylePreviewAdapter(
     private val fragment: StylesFragment,
     private var styleList: MutableList<StyleModel>,
-    private val paletteList: Map<String, List<List<Int>>>,
-    private val stylesViewModel: StylesViewModel
+    private val paletteList: Map<String, List<List<Int>>>
 ) : RecyclerView.Adapter<StylePreviewAdapter.StyleViewHolder>() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())

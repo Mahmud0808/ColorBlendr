@@ -72,8 +72,7 @@ class StylesFragment : BaseFragment() {
             styleAdapter = StylePreviewAdapter(
                 this@StylesFragment,
                 stylesViewModel.styleList.value.orEmpty().toMutableList(),
-                stylePalettes,
-                stylesViewModel
+                stylePalettes
             )
             binding.recyclerView.adapter = styleAdapter
         }
