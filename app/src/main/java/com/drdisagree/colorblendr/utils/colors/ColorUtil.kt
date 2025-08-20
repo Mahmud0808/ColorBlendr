@@ -23,6 +23,7 @@ import com.google.android.material.color.DynamicColors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 object ColorUtil {
 
@@ -634,9 +635,9 @@ object ColorUtil {
         b = if (b > 0.0031308) 1.055 * b.pow(1 / 2.4) - 0.055 else 12.92 * b
 
         return Color.rgb(
-            constrain(Math.round(r * 255).toInt(), 0, 255),
-            constrain(Math.round(g * 255).toInt(), 0, 255),
-            constrain(Math.round(b * 255).toInt(), 0, 255)
+            constrain((r * 255).roundToInt(), 0, 255),
+            constrain((g * 255).roundToInt(), 0, 255),
+            constrain((b * 255).roundToInt(), 0, 255)
         )
     }
 
@@ -683,5 +684,30 @@ object ColorUtil {
         val blue = this and 0xFF
 
         return (alpha shl 24) or (red shl 16) or (green shl 8) or blue
+    }
+
+    /**
+     * Adjusts the L* (lightness) and alpha of a color.
+     *
+     * @param lStar New L* value (0–100). Pass null to keep original.
+     * @param alpha New alpha (0f–1f). Pass null to keep original.
+     */
+    fun Int.withLStarAndAlpha(lStar: Double? = null, alpha: Float? = null): Int {
+        val lab = DoubleArray(3)
+        ColorUtils.colorToLAB(this, lab)
+
+        // Change L* if provided
+        val newColor = if (lStar != null) {
+            ColorUtils.LABToColor(lStar, lab[1], lab[2])
+        } else {
+            this
+        }
+
+        // Change alpha if provided
+        return if (alpha != null) {
+            ColorUtils.setAlphaComponent(newColor, (alpha * 255).toInt())
+        } else {
+            newColor
+        }
     }
 }

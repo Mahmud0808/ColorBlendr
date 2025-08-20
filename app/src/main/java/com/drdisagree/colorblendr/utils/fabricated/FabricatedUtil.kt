@@ -25,6 +25,7 @@ import com.drdisagree.colorblendr.utils.colors.ColorMapping
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.convertToMonochrome
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.getColorNamesM3
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.withLStarAndAlpha
 import com.drdisagree.colorblendr.utils.colors.DynamicColors.ALL_DYNAMIC_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.colors.DynamicColors.CUSTOM_COLORS_MAPPED
 import com.drdisagree.colorblendr.utils.colors.DynamicColors.FIXED_COLORS_MAPPED
@@ -400,6 +401,45 @@ object FabricatedUtil {
                     }
                 }
             }
+        }
+    }
+
+    fun FabricatedOverlayResource.generateSurfaceEffectColors(isDark: Boolean) {
+        val colorResNames = listOf(
+            "surface_effect_0_color",
+            "surface_effect_1_color",
+            "surface_effect_2_color",
+            "surface_effect_3_color"
+        )
+        // Pair of (light mode, dark mode)
+        val sourceColorResNames = listOf(
+            "system_accent1_100" to "system_accent1_800",
+            "system_neutral1_500" to "system_neutral1_500",
+            "system_accent1_0" to "system_accent1_100",
+            "system_accent1_600" to "system_accent1_100",
+        )
+        val lStarValue = listOf(
+            null to null,
+            98.toDouble() to 6.toDouble(),
+            null to null,
+            null to null
+        )
+        val alphaValue = listOf(
+            0.5f to 0.5f,
+            0.54f to 0.54f,
+            0.32f to 0.15f,
+            0.15f to 0.10f
+        )
+
+        colorResNames.forEachIndexed { i, colorResName ->
+            setColor(
+                colorResName,
+                getColor(if (!isDark) sourceColorResNames[i].first else sourceColorResNames[i].second)
+                    .withLStarAndAlpha(
+                        if (!isDark) lStarValue[i].first else lStarValue[i].second,
+                        if (!isDark) alphaValue[i].first else alphaValue[i].second
+                    )
+            )
         }
     }
 }

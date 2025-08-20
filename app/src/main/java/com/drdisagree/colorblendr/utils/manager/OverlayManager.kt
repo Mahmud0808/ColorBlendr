@@ -37,6 +37,7 @@ import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
@@ -235,7 +236,11 @@ object OverlayManager {
                                 )
                             }
                         }
+                        // SurfaceEffectColors
+                        // Source: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/packages/SystemUI/src/com/android/systemui/common/shared/colors/SurfaceEffectColors.kt
+                        generateSurfaceEffectColors(isDarkMode)
 
+                        // Dynamic colors
                         createDynamicOverlay(paletteLight, paletteDark)
 
                         // Temporary workaround for Android 15 QPR1 beta 3 background color issue in settings.
