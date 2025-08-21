@@ -58,7 +58,8 @@ class BroadcastListener : BroadcastReceiver() {
                     handleBootCompleted(context)
                 }
 
-                Intent.ACTION_WALLPAPER_CHANGED -> {
+                Intent.ACTION_WALLPAPER_CHANGED,
+                Intent.ACTION_USER_FOREGROUND -> {
                     handleWallpaperChanged(context, true)
                 }
 
