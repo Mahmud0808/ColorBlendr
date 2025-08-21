@@ -254,7 +254,7 @@ class RootConnection : RootService() {
                     if (userInfo.isProfile || userId == thisUserId) {
                         val result = mOverlayManager.setEnabledExclusiveInCategory(
                             packageName,
-                            userInfo.userHandle.getUserIdentifier()
+                            userId
                         )
 
                         // Capture result only for current user
