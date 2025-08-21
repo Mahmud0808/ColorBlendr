@@ -29,6 +29,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
+import com.drdisagree.colorblendr.service.IRootConnection
+import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.drdisagree.colorblendr.utils.app.MiscUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
@@ -46,61 +48,59 @@ import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 object OverlayManager {
 
     private val TAG: String = OverlayManager::class.java.simpleName
-    private var mRootConnection = rootConnection
-    private var mShizukuConnection = shizukuConnection
+    private lateinit var mRootConnection: IRootConnection
+    private lateinit var mShizukuConnection: IShizukuConnection
+
+    private fun ensureRootConnection(): Boolean {
+        if (::mRootConnection.isInitialized.not()) {
+            if (rootConnection == null) {
+                Log.w(TAG, "Root service connection is null")
+                return false
+            }
+            mRootConnection = rootConnection!!
+        }
+        return true
+    }
+
+    private fun ensureShizukuConnection(): Boolean {
+        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
+            Log.w(TAG, "Shizuku permission not available")
+            return false
+        } else if (::mShizukuConnection.isInitialized.not()) {
+            if (shizukuConnection == null) {
+                Log.w(TAG, "Shizuku service connection is null")
+                return false
+            }
+            mShizukuConnection = shizukuConnection!!
+        }
+        return true
+    }
 
     fun enableOverlay(packageName: String) {
-        if (!isRootMode()) return
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return
 
         try {
-            mRootConnection!!.enableOverlay(listOf(packageName))
+            mRootConnection.enableOverlay(listOf(packageName))
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to enable overlay: $packageName", e)
         }
     }
 
     fun disableOverlay(packageName: String) {
-        if (!isRootMode()) return
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return
 
         try {
-            mRootConnection!!.disableOverlay(listOf(packageName))
+            mRootConnection.disableOverlay(listOf(packageName))
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to disable overlay: $packageName", e)
         }
     }
 
     fun isOverlayInstalled(packageName: String): Boolean {
-        if (!isRootMode()) return false
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return false
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return false
 
         try {
-            return mRootConnection!!.isOverlayInstalled(packageName)
+            return mRootConnection.isOverlayInstalled(packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to check if overlay is installed: $packageName", e)
             return false
@@ -108,19 +108,10 @@ object OverlayManager {
     }
 
     fun isOverlayEnabled(packageName: String): Boolean {
-        if (!isRootMode()) return false
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return false
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return false
 
         try {
-            return mRootConnection!!.isOverlayEnabled(packageName)
+            return mRootConnection.isOverlayEnabled(packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to check if overlay is enabled: $packageName", e)
             return false
@@ -128,58 +119,31 @@ object OverlayManager {
     }
 
     fun uninstallOverlayUpdates(packageName: String) {
-        if (!isRootMode()) return
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return
 
         try {
-            mRootConnection!!.uninstallOverlayUpdates(packageName)
+            mRootConnection.uninstallOverlayUpdates(packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to uninstall overlay updates: $packageName", e)
         }
     }
 
     private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (!isRootMode()) return
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return
 
         try {
-            mRootConnection!!.registerFabricatedOverlay(fabricatedOverlay)
-            mRootConnection!!.enableOverlayWithIdentifier(listOf(fabricatedOverlay.overlayName))
+            mRootConnection.registerFabricatedOverlay(fabricatedOverlay)
+            mRootConnection.enableOverlayWithIdentifier(listOf(fabricatedOverlay.overlayName))
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to register fabricated overlay: " + fabricatedOverlay.overlayName, e)
         }
     }
 
     fun unregisterFabricatedOverlay(packageName: String) {
-        if (!isRootMode()) return
-
-        if (mRootConnection == null) {
-            mRootConnection = rootConnection
-
-            if (mRootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return
-            }
-        }
+        if (!isRootMode() || !ensureRootConnection()) return
 
         try {
-            mRootConnection!!.unregisterFabricatedOverlay(packageName)
+            mRootConnection.unregisterFabricatedOverlay(packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to unregister fabricated overlay: $packageName", e)
         }
@@ -368,25 +332,13 @@ object OverlayManager {
         val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
 
         if (isShizukuMode) {
-            if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
-                Log.w(TAG, "Shizuku permission not available")
-                return true
-            }
-
-            if (mShizukuConnection == null) {
-                mShizukuConnection = shizukuConnection
-
-                if (mShizukuConnection == null) {
-                    Log.w(TAG, "Shizuku service connection is null")
-                    return true
-                }
-            }
+            if (!ensureShizukuConnection()) return true
 
             try {
-                val currentSettings = mShizukuConnection!!.currentSettings
+                val currentSettings = mShizukuConnection.currentSettings
 
                 if (themeJson.isNotEmpty()) {
-                    mShizukuConnection!!.applyFabricatedColors(
+                    mShizukuConnection.applyFabricatedColors(
                         MiscUtil.mergeJsonStrings(currentSettings, themeJson)
                     )
                 }
@@ -425,22 +377,10 @@ object OverlayManager {
         if (!isShizukuMode && !isWirelessAdbMode) return false
 
         if (isShizukuMode) {
-            if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
-                Log.w(TAG, "Shizuku permission not available")
-                return true
-            }
-
-            if (mShizukuConnection == null) {
-                mShizukuConnection = shizukuConnection
-
-                if (mShizukuConnection == null) {
-                    Log.w(TAG, "Shizuku service connection is null")
-                    return true
-                }
-            }
+            if (!ensureShizukuConnection()) return true
 
             try {
-                mShizukuConnection!!.removeFabricatedColors()
+                mShizukuConnection.removeFabricatedColors()
             } catch (e: Exception) {
                 Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
             }
