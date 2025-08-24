@@ -104,7 +104,7 @@
     <string name="pitch_black_settings_workaround_title">Solución alternativa de ajuste de negro puro</string>
     <string name="pitch_black_settings_workaround_desc">Oscurece el color de fondo de los ajustes; causa efectos secundarios</string>
     <!-- Privacy policy -->
-    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy">Política de privacidad</string>
     <!-- About -->
     <string name="news">Noticias</string>
     <string name="support">Asistencia</string>
@@ -164,10 +164,10 @@
     <string name="mode_three_desc">Use ADB via Wireless Debugging. Limited customization options will be available.</string>
     <string name="shizuku_service_not_found">No se otorgó permiso de Shizuku.</string>
     <string name="grant_all_permissions">Por favor, concede todos los permisos para continuar</string>
-    <string name="wireless_adb_not_connected">Wireless ADB not connected.</string>
+    <string name="wireless_adb_not_connected">ADB Inalámbrico no conectado.</string>
     <!-- Wireless ADB -->
-    <string name="pairing">Pairing</string>
-    <string name="enter_pairing_code">Enter pairing code</string>
+    <string name="pairing">Emparejando</string>
+    <string name="enter_pairing_code">Ingresa el código de emparejamiento</string>
     <string name="enter_six_digit_pairing_code">Enter six digit pairing code</string>
     <string name="pairing_notification_hint">You will receive a notification from ColorBlendr to help you with pairing.</string>
     <string name="notification_access_not_granted">To complete the pairing process you will need to interact with a notification from ColorBlendr. Please allow notification access to ColorBlendr.</string>
