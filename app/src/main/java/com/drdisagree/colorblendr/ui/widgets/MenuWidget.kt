@@ -117,7 +117,7 @@ class MenuWidget : RelativeLayout {
         val typedValue = TypedValue()
         val a = context.obtainStyledAttributes(
             typedValue.data,
-            intArrayOf(com.google.android.material.R.attr.colorPrimary)
+            intArrayOf(com.google.android.material.R.attr.colorPrimaryFixed)
         )
         val color = a.getColor(0, 0)
         a.recycle()

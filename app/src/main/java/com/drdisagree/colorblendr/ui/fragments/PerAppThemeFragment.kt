@@ -115,7 +115,7 @@ class PerAppThemeFragment : Fragment() {
 
     private fun initAppList(appType: AppType) {
         binding.recyclerView.visibility = View.GONE
-        binding.progressBar.visibility = View.VISIBLE
+        binding.loadingIndicator.visibility = View.VISIBLE
         binding.searchBox.search.removeTextChangedListener(textWatcher)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -128,7 +128,7 @@ class PerAppThemeFragment : Fragment() {
                     binding.recyclerView.adapter = adapter
                     binding.searchBox.search.addTextChangedListener(textWatcher)
 
-                    binding.progressBar.visibility = View.GONE
+                    binding.loadingIndicator.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
 
                     binding.searchBox.clear.setOnClickListener {

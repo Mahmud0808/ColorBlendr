@@ -126,7 +126,7 @@ object ColorUtil {
     fun getAccentColor(context: Context): Int {
         val typedValue = TypedValue()
         context.theme.resolveAttribute(
-            com.google.android.material.R.attr.colorPrimary,
+            com.google.android.material.R.attr.colorPrimaryFixed,
             typedValue,
             true
         )
@@ -657,7 +657,7 @@ object ColorUtil {
                 com.google.android.material.R.style.ThemeOverlay_Material3_DynamicColors_DayNight
             )
             val attrsToResolve = intArrayOf(
-                com.google.android.material.R.attr.colorPrimary,
+                com.google.android.material.R.attr.colorPrimaryFixed,
                 com.google.android.material.R.attr.colorSecondary,
                 com.google.android.material.R.attr.colorTertiary
             )

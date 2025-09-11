@@ -132,7 +132,7 @@ class AppListAdapter(private val appList: List<AppInfoModel>) :
     private fun getIconColor(isSelected: Boolean): Int {
         return if (isSelected) getColorFromAttribute(
             context!!,
-            com.google.android.material.R.attr.colorPrimary
+            com.google.android.material.R.attr.colorPrimaryFixed
         ) else getColorFromAttribute(
             context!!, com.google.android.material.R.attr.colorOnSurface
         )
