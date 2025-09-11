@@ -29,14 +29,12 @@
                 android:visibility="gone"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/progressBar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:indeterminate="true"
-                app:indicatorColor="?attr/colorPrimary"
-                app:trackCornerRadius="8dp" />
+            <com.google.android.material.loadingindicator.LoadingIndicator
+                android:id="@+id/loadingIndicator"
+                style="@style/Widget.Material3.LoadingIndicator.Contained"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
         </FrameLayout>
 
