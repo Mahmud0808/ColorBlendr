@@ -73,6 +73,7 @@ class SwitchWidget : RelativeLayout {
         if (icon != 0) {
             iconSpaceReserved = true
             iconImageView!!.setImageResource(icon)
+            iconImageView!!.setImageTintList(ColorStateList.valueOf(getIconColor()))
         }
 
         if (!iconSpaceReserved) {
@@ -198,18 +199,22 @@ class SwitchWidget : RelativeLayout {
         beforeSwitchChangeListener = listener
     }
 
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-
+    @ColorInt
+    private fun getIconColor(): Int {
         val typedValue = TypedValue()
         val a: TypedArray = context!!.obtainStyledAttributes(
             typedValue.data,
-            intArrayOf(com.google.android.material.R.attr.colorPrimaryFixed)
+            intArrayOf(com.google.android.material.R.attr.colorPrimaryVariant)
         )
         val color: Int = a.getColor(0, 0)
         a.recycle()
+        return color
+    }
 
-        iconImageView!!.setImageTintList(ColorStateList.valueOf(color))
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+
+        iconImageView!!.setImageTintList(ColorStateList.valueOf(getIconColor()))
 
         if (enabled) {
             titleTextView!!.setAlpha(1.0f)

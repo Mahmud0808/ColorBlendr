@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.ui.widgets
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -9,6 +10,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.google.android.material.card.MaterialCardView
@@ -56,6 +58,7 @@ class MenuWidget : RelativeLayout {
         if (icon != 0) {
             iconSpaceReserved = true
             iconImageView!!.setImageResource(icon)
+            iconImageView!!.setImageTintList(ColorStateList.valueOf(getIconColor()))
         }
 
         if (!iconSpaceReserved) {
@@ -111,18 +114,22 @@ class MenuWidget : RelativeLayout {
         container!!.setOnLongClickListener(l)
     }
 
+    @ColorInt
+    private fun getIconColor(): Int {
+        val typedValue = TypedValue()
+        val a: TypedArray = context!!.obtainStyledAttributes(
+            typedValue.data,
+            intArrayOf(com.google.android.material.R.attr.colorPrimaryVariant)
+        )
+        val color: Int = a.getColor(0, 0)
+        a.recycle()
+        return color
+    }
+
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        val typedValue = TypedValue()
-        val a = context.obtainStyledAttributes(
-            typedValue.data,
-            intArrayOf(com.google.android.material.R.attr.colorPrimaryFixed)
-        )
-        val color = a.getColor(0, 0)
-        a.recycle()
-
-        iconImageView!!.imageTintList = ColorStateList.valueOf(color)
+        iconImageView!!.imageTintList = ColorStateList.valueOf(getIconColor())
         endArrowImageView!!.imageTintList = ColorStateList.valueOf(
             MaterialColors.getColor(
                 this,

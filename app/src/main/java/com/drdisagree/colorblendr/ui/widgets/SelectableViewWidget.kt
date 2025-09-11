@@ -108,7 +108,7 @@ class SelectableViewWidget : RelativeLayout {
         val typedValue = TypedValue()
         val a: TypedArray = context.obtainStyledAttributes(
             typedValue.data,
-            intArrayOf(com.google.android.material.R.attr.colorPrimaryFixed)
+            intArrayOf(com.google.android.material.R.attr.colorPrimaryVariant)
         )
         val color: Int = a.getColor(0, 0)
         a.recycle()
