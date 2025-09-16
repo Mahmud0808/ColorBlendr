@@ -4,21 +4,24 @@ Privacy Policy for ColorBlendr
 Effective Date: July 14, 2025
 Developer: Mahmudul Hasan Khan
 
-ColorBlendr is an open-source theming utility that allows users to customize Material You colors on devices with Android 12+.
+ColorBlendr is an open-source theming utility that allows users to customize **Material You** colors on devices running Android 12+.
+
 Your privacy is important. This app does not collect, track, or share any personal data.
 
 Data Collection and Usage
 -------------------------
 
 ColorBlendr does **not** collect, store, or transmit any personal information or usage data.
-All user interactions and app logic are performed locally on the device.
+All user interactions, processing, and app logic occur locally on the device.
+No background tracking, profiling, or analytics are performed.
 
 Internet Usage
 --------------
 
-ColorBlendr requires internet access solely to display images of contributors and translators from remote sources (e.g., GitHub avatars or hosted image URLs).
+ColorBlendr requires internet access **only** to display images of contributors and translators from remote sources (e.g., GitHub avatars or hosted image URLs).
 No personal data is uploaded, and no tracking or analytics are performed.
-These images are loaded as-is and are not cached or stored beyond standard system behavior.
+These images are fetched from external sources but are not cached, stored, or modified beyond standard Android system behavior.
+No personal data is uploaded, and no network requests are used for analytics, advertising, or user tracking.
 
 Permissions Used and Justifications
 -----------------------------------
@@ -46,6 +49,23 @@ The app requests the following permissions only to enable essential functionalit
    - Purpose: To load profile pictures of app contributors and translators.
    - No user data is sent or received beyond basic image display.
 
+External Links
+--------------
+
+The app may display external links (e.g., GitHub repositories, contributor profiles, or documentation pages).
+When you open such links, you are subject to the **respective privacy policies** of those websites or services.
+ColorBlendr is not responsible for the content, practices, or privacy policies of external websites.
+
+Libraries, Dependencies, and Native Binaries
+--------------------------------------------
+
+ColorBlendr may rely on open-source libraries and Android frameworks strictly to provide functionality (e.g., Material Components, AndroidX libraries).
+These libraries operate locally on your device and do not collect, store, or transmit any personal information.
+The app may also include compiled native binaries (such as .so files) to enable features like local ADB connections or system-level operations.
+All binaries run only on the user’s device and do not communicate with external servers.
+The use of libraries and binaries is limited to providing the required functionality of ColorBlendr, such as interacting with system APIs.
+If in the future any library or binary includes data collection or external communication, this privacy policy will be updated accordingly.
+
 Data Sharing and Third Parties
 ------------------------------
 
@@ -55,13 +75,13 @@ It does not share any information with third parties.
 Children's Privacy
 ------------------
 
-ColorBlendr is safe for all age groups and does not collect any data from children under 13.
+ColorBlendr is safe for all age groups and does not knowingly collect, store, or process data from children under 13.
 
 Security
 --------
 
-Since no personal data is processed or stored, there is no risk of data breach or exposure.
-The internet is used passively for image display only.
+Since no personal data is collected, stored, or transmitted, the risk of data exposure is minimal.
+Internet use is limited to passive image display from trusted sources.
 
 Open Source Transparency
 ------------------------
@@ -74,7 +94,7 @@ This ensures full transparency and trust.
 Changes to This Policy
 ----------------------
 
-Any future updates to this privacy policy will be posted on the app’s GitHub repository and updated here.
+Any future updates to this privacy policy will be published in the app’s GitHub repository and reflected in the app itself.
 
 Contact
 -------
