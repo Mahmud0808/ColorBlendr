@@ -25,7 +25,6 @@ import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -149,18 +148,14 @@ object WallpaperColorUtil {
     }
 
     fun drawableToBitmap(drawable: Drawable): Bitmap {
-        val bitmap: Bitmap
-
-        if (drawable is BitmapDrawable) {
-            if (drawable.bitmap != null) {
-                return drawable.bitmap
-            }
+        if (drawable is BitmapDrawable && drawable.bitmap != null) {
+            return drawable.bitmap
         }
 
         val intrinsicWidth = drawable.intrinsicWidth
         val intrinsicHeight = drawable.intrinsicHeight
 
-        bitmap = if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
+        return if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
             val colors = ColorUtil.monetAccentColors
             val colorCount = colors.size
 
@@ -188,8 +183,6 @@ object WallpaperColorUtil {
                 }
             )
         }
-
-        return bitmap
     }
 
     private object WallpaperLoader {
@@ -208,31 +201,24 @@ object WallpaperColorUtil {
             return try {
                 val wallpaperManager = WallpaperManager.getInstance(context)
 
-                if (wallpaperManager.wallpaperInfo != null) {
-                    drawableToBitmap(
-                        wallpaperManager.wallpaperInfo.loadThumbnail(
-                            appContext.packageManager
-                        )
-                    )
-                } else {
-                    val wallpaperFile = if (which == WallpaperManager.FLAG_SYSTEM) {
-                        wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_SYSTEM)
-                    } else {
-                        wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_LOCK)
-                    }
-
-                    wallpaperFile?.let {
-                        val decodeFileDescriptor = createMiniBitmap(
-                            BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
-                        )
-                        it.close()
-                        decodeFileDescriptor
-                    } ?: run {
-                        Log.e(TAG, "Error getting wallpaper bitmap: wallpaperFile is null")
-                        null
-                    }
+                // Live wallpaper
+                wallpaperManager.wallpaperInfo?.let { info ->
+                    return drawableToBitmap(info.loadThumbnail(appContext.packageManager))
                 }
-            } catch (e: IOException) {
+
+                // Static wallpaper
+                wallpaperManager.getWallpaperFile(which)?.use { file ->
+                    return createMiniBitmap(BitmapFactory.decodeFileDescriptor(file.fileDescriptor))
+                }
+
+                // Built-in wallpaper (fallback)
+                wallpaperManager.getBuiltInDrawable(which)?.let { drawable ->
+                    return drawableToBitmap(drawable)
+                }
+
+                Log.e(TAG, "Error getting wallpaper bitmap: all sources returned null")
+                null
+            } catch (e: Exception) {
                 Log.e(TAG, "Error getting wallpaper bitmap", e)
                 null
             }
