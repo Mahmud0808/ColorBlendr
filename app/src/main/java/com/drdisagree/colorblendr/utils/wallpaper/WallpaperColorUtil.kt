@@ -9,6 +9,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.util.Size
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
+import androidx.core.graphics.withClip
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -47,10 +50,6 @@ object WallpaperColorUtil {
                 }
             }
         }
-    }
-
-    suspend fun getWallpaperColor(context: Context): Int {
-        return getWallpaperColors(context)[0]
     }
 
     suspend fun getWallpaperColors(context: Context): ArrayList<Int> {
@@ -100,7 +99,7 @@ object WallpaperColorUtil {
     }
 
     private fun createMiniBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
-        return Bitmap.createScaledBitmap(bitmap, width, height, false)
+        return bitmap.scale(width, height, false)
     }
 
     private fun calculateOptimalSize(width: Int, height: Int): Size {
@@ -133,12 +132,7 @@ object WallpaperColorUtil {
                 bitmapTemp.width,
                 bitmapTemp.height
             )
-            bitmapTemp = Bitmap.createScaledBitmap(
-                bitmapTemp,
-                optimalSize.width,
-                optimalSize.height,
-                false
-            )
+            bitmapTemp = bitmapTemp.scale(optimalSize.width, optimalSize.height, false)
         }
 
         val width = bitmapTemp.width
@@ -170,28 +164,24 @@ object WallpaperColorUtil {
             val colors = ColorUtil.monetAccentColors
             val colorCount = colors.size
 
-            Bitmap.createBitmap(colorCount, 1, Bitmap.Config.ARGB_8888).apply {
+            createBitmap(colorCount, 1).apply {
                 val canvas = Canvas(this)
                 val rectWidth = canvas.width / colorCount
+
                 colors.forEachIndexed { colorIndex, color ->
-                    canvas.save()
-                    canvas.clipRect(
-                        colorIndex * rectWidth,
-                        0,
-                        (colorIndex + 1) * rectWidth,
-                        canvas.height
-                    )
-                    canvas.drawColor(color)
-                    canvas.restore()
+                    canvas.withClip(
+                        left = colorIndex * rectWidth,
+                        top = 0,
+                        right = (colorIndex + 1) * rectWidth,
+                        bottom = canvas.height
+                    ) {
+                        drawColor(color)
+                    }
                 }
             }
         } else {
             createMiniBitmap(
-                Bitmap.createBitmap(
-                    intrinsicWidth,
-                    intrinsicHeight,
-                    Bitmap.Config.ARGB_8888
-                ).apply {
+                createBitmap(intrinsicWidth, intrinsicHeight).apply {
                     val canvas = Canvas(this)
                     drawable.setBounds(0, 0, intrinsicWidth, intrinsicHeight)
                     drawable.draw(canvas)
