@@ -47,8 +47,8 @@ class ColorsViewModel : ViewModel() {
     }
 
     fun refreshData() {
-        loadWallpaperColors()
         loadBasicColors()
+        loadWallpaperColors()
     }
 
     fun loadWallpaperColors() {
