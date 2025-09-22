@@ -36,17 +36,17 @@ object WallpaperColorUtil {
     private const val MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE
 
     suspend fun updateWallpaperColorList(context: Context) {
-        if (AppUtil.permissionsGranted(context)) {
-            val wallpaperColors = getWallpaperColors(context)
-            val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
+        if (!AppUtil.permissionsGranted(context)) return
 
-            if (getWallpaperColorJson() != currentWallpaperColors) {
-                BroadcastListener.requiresUpdate = true
-                setWallpaperColorJson(currentWallpaperColors)
+        val wallpaperColors = getWallpaperColors(context)
+        val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
 
-                if (!customColorEnabled()) {
-                    setSeedColorValue(wallpaperColors[0])
-                }
+        if (getWallpaperColorJson() != currentWallpaperColors) {
+            BroadcastListener.requiresUpdate = true
+            setWallpaperColorJson(currentWallpaperColors)
+
+            if (!customColorEnabled()) {
+                setSeedColorValue(wallpaperColors[0])
             }
         }
     }
@@ -76,7 +76,7 @@ object WallpaperColorUtil {
                 withContext(Dispatchers.IO) {
                     WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
                 }?.let { bitmap ->
-                    mergedColors.addAll(getWallpaperColors(bitmap))
+                    mergedColors.addAll(bitmap.extractColors())
                 }
             }
 
@@ -122,8 +122,8 @@ object WallpaperColorUtil {
         return Size(newWidth, newHeight)
     }
 
-    private fun getWallpaperColors(bitmap: Bitmap?): ArrayList<Int> {
-        var bitmapTemp = bitmap ?: return ColorUtil.monetAccentColors
+    private fun Bitmap?.extractColors(): ArrayList<Int> {
+        var bitmapTemp = this ?: return ColorUtil.monetAccentColors
 
         val bitmapArea = bitmapTemp.width * bitmapTemp.height
         if (bitmapArea > MAX_WALLPAPER_EXTRACTION_AREA) {
@@ -147,13 +147,13 @@ object WallpaperColorUtil {
         return if (wallpaperColors.isEmpty()) ColorUtil.monetAccentColors else wallpaperColors
     }
 
-    fun drawableToBitmap(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable && drawable.bitmap != null) {
-            return drawable.bitmap
+    private fun Drawable.toBitmap(): Bitmap {
+        if (this is BitmapDrawable && bitmap != null) {
+            return bitmap
         }
 
-        val intrinsicWidth = drawable.intrinsicWidth
-        val intrinsicHeight = drawable.intrinsicHeight
+        val intrinsicWidth = intrinsicWidth
+        val intrinsicHeight = intrinsicHeight
 
         return if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
             val colors = ColorUtil.monetAccentColors
@@ -178,8 +178,8 @@ object WallpaperColorUtil {
             createMiniBitmap(
                 createBitmap(intrinsicWidth, intrinsicHeight).apply {
                     val canvas = Canvas(this)
-                    drawable.setBounds(0, 0, intrinsicWidth, intrinsicHeight)
-                    drawable.draw(canvas)
+                    setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+                    draw(canvas)
                 }
             )
         }
@@ -188,12 +188,11 @@ object WallpaperColorUtil {
     private object WallpaperLoader {
 
         private val TAG: String = WallpaperLoader::class.java.simpleName
-        private val ioDispatcher = Dispatchers.IO
 
         suspend fun loadWallpaperAsync(
             context: Context,
             which: Int
-        ): Bitmap? = withContext(ioDispatcher) {
+        ): Bitmap? = withContext(Dispatchers.IO) {
             loadWallpaper(context, which)
         }
 
@@ -203,7 +202,7 @@ object WallpaperColorUtil {
 
                 // Live wallpaper
                 wallpaperManager.wallpaperInfo?.let { info ->
-                    return drawableToBitmap(info.loadThumbnail(appContext.packageManager))
+                    return info.loadThumbnail(appContext.packageManager).toBitmap()
                 }
 
                 // Static wallpaper
@@ -213,7 +212,7 @@ object WallpaperColorUtil {
 
                 // Built-in wallpaper (fallback)
                 wallpaperManager.getBuiltInDrawable(which)?.let { drawable ->
-                    return drawableToBitmap(drawable)
+                    return drawable.toBitmap()
                 }
 
                 Log.e(TAG, "Error getting wallpaper bitmap: all sources returned null")
