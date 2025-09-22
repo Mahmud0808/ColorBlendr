@@ -95,6 +95,7 @@ android {
 dependencies {
     compileOnly(project(":systemstubs"))
     implementation(project(":libadb"))
+    implementation(project(":colorpickerdialog"))
 
     implementation(libs.core.ktx)
     implementation(libs.libsu.core)
@@ -111,7 +112,6 @@ dependencies {
     implementation(libs.circleimageview)
     implementation(libs.glide)
     implementation(libs.preference.ktx)
-    implementation(libs.androidUtils)
     implementation(libs.core.splashscreen)
     implementation(libs.work.runtime)
     implementation(libs.palette)

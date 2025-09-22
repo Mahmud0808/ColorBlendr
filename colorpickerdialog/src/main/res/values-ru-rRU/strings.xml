@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Выбор цвета</string>
+    <string name="colorPickerDialog_preset">Предустановка</string>
+    <string name="colorPickerDialog_image">Изображение</string>
+    <string name="colorPickerDialog_imageColorPicker">Выбрать цвет с изображения</string>
+    <string name="colorPickerDialog_grant_permissions">Предоставить разрешения</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Чтобы продолжить, предоставьте доступ к внешнему хранилищу.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Это изображение нельзя использовать.</string>
+    <string name="colorPickerDialog_title_all_photos">Все фото</string>
+</resources>

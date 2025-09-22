@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Színválasztó</string>
+    <string name="colorPickerDialog_preset">Séma</string>
+    <string name="colorPickerDialog_image">Kép</string>
+    <string name="colorPickerDialog_imageColorPicker">Szín kiválasztása képből</string>
+    <string name="colorPickerDialog_grant_permissions">Engedélyek Megadása</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Kérlek adj \'Külső Tárhely\' hozzáférést a folytatáshoz.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Ezt a képet nem lehetett használni.</string>
+    <string name="colorPickerDialog_title_all_photos">Összes kép</string>
+</resources>

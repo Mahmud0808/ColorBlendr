@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Wybór kolorów</string>
+    <string name="colorPickerDialog_preset">Szablony</string>
+    <string name="colorPickerDialog_image">Obraz</string>
+    <string name="colorPickerDialog_imageColorPicker">Wybierz kolor z obrazu</string>
+    <string name="colorPickerDialog_grant_permissions">Przyznaj uprawnienia</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Proszę przyznać uprawnienia \'Pamięć zewnętrzna\' aby kontynuować.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Nie można użyć tego obrazu.</string>
+    <string name="colorPickerDialog_title_all_photos">Wszystkie zdjęcia</string>
+</resources>

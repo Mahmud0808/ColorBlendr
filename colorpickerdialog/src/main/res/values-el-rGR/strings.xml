@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Color Picker</string>
+    <string name="colorPickerDialog_preset">Preset</string>
+    <string name="colorPickerDialog_image">Image</string>
+    <string name="colorPickerDialog_imageColorPicker">Pick Color from Image</string>
+    <string name="colorPickerDialog_grant_permissions">Grant Permissions</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Please grant the \'External Storage\' permissions to continue.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Couldn\'t use this image.</string>
+    <string name="colorPickerDialog_title_all_photos">All Photos</string>
+</resources>

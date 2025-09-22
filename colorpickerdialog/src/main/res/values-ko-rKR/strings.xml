@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">색 선택기</string>
+    <string name="colorPickerDialog_preset">프리셋</string>
+    <string name="colorPickerDialog_image">이미지</string>
+    <string name="colorPickerDialog_imageColorPicker">이미지로 색선택</string>
+    <string name="colorPickerDialog_grant_permissions">권한 부여</string>
+    <string name="colorPickerDialog_msg_grant_permissions">계속하려면 \'외부 저장소\' 권한을 부여해 주세요.</string>
+    <string name="colorPickerDialog_msg_image_invalid">이 이미지를 사용할 수 없습니다.</string>
+    <string name="colorPickerDialog_title_all_photos">모든 이미지</string>
+</resources>

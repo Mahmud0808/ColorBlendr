@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">顏色選擇器</string>
+    <string name="colorPickerDialog_preset">預設</string>
+    <string name="colorPickerDialog_image">圖片</string>
+    <string name="colorPickerDialog_imageColorPicker">從圖片選取顏色</string>
+    <string name="colorPickerDialog_grant_permissions">授予權限</string>
+    <string name="colorPickerDialog_msg_grant_permissions">請授予「外部儲存」權限以繼續。</string>
+    <string name="colorPickerDialog_msg_image_invalid">無法使用此圖片。</string>
+    <string name="colorPickerDialog_title_all_photos">所有照片</string>
+</resources>

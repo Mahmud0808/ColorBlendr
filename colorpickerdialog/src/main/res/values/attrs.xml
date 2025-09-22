@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ColorPickerTheme">
+        <attr name="redColor" format="color" />
+        <attr name="greenColor" format="color" />
+        <attr name="blueColor" format="color" />
+        <attr name="neutralColor" format="color" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Bộ chọn màu</string>
+    <string name="colorPickerDialog_preset">Preset</string>
+    <string name="colorPickerDialog_image">Ảnh</string>
+    <string name="colorPickerDialog_imageColorPicker">Chọn màu từ ảnh</string>
+    <string name="colorPickerDialog_grant_permissions">Cấp quyền</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Vui lòng cấp quyền \'Bộ nhớ ngoài\' để tiếp tục.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Không thể dùng ảnh này.</string>
+    <string name="colorPickerDialog_title_all_photos">Tất cả hình ảnh</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Selector de color</string>
+    <string name="colorPickerDialog_preset">Preajuste</string>
+    <string name="colorPickerDialog_image">Imagen</string>
+    <string name="colorPickerDialog_imageColorPicker">Seleccionar color desde la imagen</string>
+    <string name="colorPickerDialog_grant_permissions">Garantizar permisos</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Por favor, garantiza el permiso \"Almacenamiento Externo\" para continuar.</string>
+    <string name="colorPickerDialog_msg_image_invalid">No se pudo usar esta imagen.</string>
+    <string name="colorPickerDialog_title_all_photos">Todas las fotos</string>
+</resources>
