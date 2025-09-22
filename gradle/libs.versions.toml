@@ -25,7 +25,7 @@ recyclerviewSelection = "1.2.0"
 remotepreferences = "0.8"
 roomVersion = "2.8.0"
 shizuku = "13.1.5"
-spake2Android = "2.2.0"
+spake2Android = "-SNAPSHOT"
 sunSecurityAndroid = "1.1"
 workRuntime = "2.10.4"
 lifecycleCommonJvm = "2.9.4"
@@ -66,7 +66,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
-spake2-android = { module = "com.github.MuntashirAkon.spake2-java:spake2-android", version.ref = "spake2Android" }
+spake2-android = { module = "com.github.Mahmud0808.spake2-java:spake2-android", version.ref = "spake2Android" }
 sun-security-android = { module = "com.github.MuntashirAkon:sun-security-android", version.ref = "sunSecurityAndroid" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }
