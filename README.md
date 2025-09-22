@@ -101,5 +101,5 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - [@siavash79](https://github.com/siavash79) for helping me.
 - [@fennifith](https://github.com/fennifith) for color picker.
-- [@DP-Hridayan](https://github.com/DP-Hridayan) for local ADB.
+- [@MuntashirAkon](https://github.com/MuntashirAkon) for lib adb.
 - And everyone who [contributed](https://github.com/Mahmud0808/ColorBlendr/blob/master/docs/contributors.md) and [translated](https://github.com/Mahmud0808/ColorBlendr/blob/master/docs/translators.md)... :)
