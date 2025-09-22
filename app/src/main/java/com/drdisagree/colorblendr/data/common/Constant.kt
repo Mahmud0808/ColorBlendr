@@ -70,10 +70,10 @@ object Constant {
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
     const val WIRELESS_ADB_THEMING_ENABLED = "wirelessAdbThemingEnabled"
     const val APP_LIST_FILTER_METHOD = "appListFilterMethod"
-    const val ADB_PAIRING_CODE = "adbPairingCode"
     const val ADB_IP = "adbIp"
     const val ADB_PAIRING_PORT = "adbPairingPort"
-    const val ADB_CONNECTING_PORT = "adbConnectingPort"
+    const val ADB_SEARCH_NOTIFICATION = "adb_searching_notification"
+    const val ADB_PAIR_NOTIFICATION = "adb_pairing_notification"
 
     val MONET_ACCENT_SATURATION: String
         get() = if (!modeSpecificThemesEnabled()) {

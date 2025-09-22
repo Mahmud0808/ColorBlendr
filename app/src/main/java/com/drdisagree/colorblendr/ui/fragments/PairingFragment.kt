@@ -15,7 +15,7 @@ import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.utils.app.AppUtil
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 class PairingFragment : Fragment() {
 
@@ -95,7 +95,7 @@ class PairingFragment : Fragment() {
 
         updateNotificationPermissionState()
 
-        if (WifiAdbConnectedDevices.isMyDeviceConnected()) {
+        if (WifiAdbShell.isMyDeviceConnected()) {
             requireActivity().supportFragmentManager.popBackStack()
         }
     }

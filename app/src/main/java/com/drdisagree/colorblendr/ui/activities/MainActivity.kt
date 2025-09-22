@@ -24,9 +24,10 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Constant.ADB_CONNECTING_PORT
 import com.drdisagree.colorblendr.data.common.Constant.ADB_IP
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIRING_PORT
+import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIR_NOTIFICATION
+import com.drdisagree.colorblendr.data.common.Constant.ADB_SEARCH_NOTIFICATION
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.config.Prefs
@@ -38,8 +39,7 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
-import com.drdisagree.colorblendr.utils.wifiadb.AdbMdns
-import com.drdisagree.colorblendr.utils.wifiadb.AdbMdns.AdbFoundCallback
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -47,7 +47,6 @@ import com.google.android.material.shape.MaterialShapeDrawable
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var adbMdns: AdbMdns? = null
     private val timeoutHandler: Handler = Handler(Looper.getMainLooper())
     private var timeoutRunnable: Runnable? = null
     private val colorsViewModel: ColorsViewModel by viewModels()
@@ -107,64 +106,58 @@ class MainActivity : AppCompatActivity() {
                 )
                 params.topMargin = 0
                 params.bottomMargin = 0
-                v.setLayoutParams(params)
+                v.layoutParams = params
                 windowInsets
             }
         }
     }
 
     fun pairThisDevice() {
-        stopMdns()
-        showSearchingNotification()
+        showPairingNotification(true)
         startPairingCodeSearch()
     }
 
-    private fun showSearchingNotification() {
-        val workRequest = OneTimeWorkRequest.Builder(AdbPairingNotificationWorker::class.java)
+    private fun startPairingCodeSearch() {
+        WifiAdbShell.getPairingAddress(
+            object : WifiAdbShell.IpAddressListener {
+                override fun onPortDetected(ip: String?, port: Int) {
+                    if (ip != null && port != -1) {
+                        Prefs.putString(ADB_IP, ip)
+                        Prefs.putString(ADB_PAIRING_PORT, port.toString())
+                        showPairingNotification()
+                    }
+                }
+            }
+        )
+        startTimeout()
+    }
+
+    private fun showPairingNotification(isSearching: Boolean = false) {
+        val workManager = WorkManager.getInstance(this)
+
+        val workRequest = OneTimeWorkRequest
+            .Builder(AdbPairingNotificationWorker::class.java)
             .setInputData(
                 Data.Builder()
-                    .putString("message", "Searching for Pairing Codes...")
+                    .putString("message", if (isSearching) "searching" else null)
                     .build()
             )
             .build()
 
-        WorkManager.getInstance(this)
-            .enqueueUniqueWork(
-                "adb_searching_notification",
-                ExistingWorkPolicy.REPLACE,
-                workRequest
-            )
-    }
-
-    // Start searching for wireless debugging pairing code
-    private fun startPairingCodeSearch() {
-        adbMdns = AdbMdns(
-            this,
-            object : AdbFoundCallback {
-                override fun onPairingCodeDetected(ipAddress: String, port: Int) {
-                    Prefs.putString(ADB_IP, ipAddress)
-                    Prefs.putString(ADB_PAIRING_PORT, port.toString())
-                    enterPairingCodeNotification()
-                }
-
-                override fun onConnectCodeDetected(ipAddress: String, port: Int) {
-                    Prefs.putString(ADB_IP, ipAddress)
-                    Prefs.putString(ADB_CONNECTING_PORT, port.toString())
-                }
-            }
+        workManager.enqueueUniqueWork(
+            if (isSearching) ADB_SEARCH_NOTIFICATION else ADB_PAIR_NOTIFICATION,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
         )
-
-        adbMdns?.start()
-        startTimeout() // Start the 3-minute timeout
     }
 
     // We run a timeout after which the pairing code searching will stop
     private fun startTimeout() {
-        timeoutRunnable = Runnable {
-            stopMdns()
+        cancelTimeout()
 
+        timeoutRunnable = Runnable {
             val workManager = WorkManager.getInstance(this)
-            workManager.getWorkInfosForUniqueWork("adb_searching_notification")
+            workManager.getWorkInfosForUniqueWork(ADB_SEARCH_NOTIFICATION)
                 .get() // This blocks on background thread; should be inside a coroutine or background thread
                 .firstOrNull()
                 ?.let { workInfo ->
@@ -177,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-            workManager.cancelUniqueWork("adb_searching_notification")
+            workManager.cancelUniqueWork(ADB_SEARCH_NOTIFICATION)
         }
 
         timeoutHandler.postDelayed(timeoutRunnable!!, 3 * 60 * 1000) // 3 minutes
@@ -187,20 +180,6 @@ class MainActivity : AppCompatActivity() {
         if (timeoutRunnable != null) {
             timeoutHandler.removeCallbacks(timeoutRunnable!!)
         }
-    }
-
-    private fun stopMdns() {
-        adbMdns?.stop()
-        adbMdns = null
-        cancelTimeout()
-    }
-
-    private fun enterPairingCodeNotification() {
-        val workRequest =
-            OneTimeWorkRequest.Builder(AdbPairingNotificationWorker::class.java).build()
-
-        WorkManager.getInstance(this)
-            .enqueueUniqueWork("adb_pairing_notification", ExistingWorkPolicy.REPLACE, workRequest)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -220,9 +199,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        cancelTimeout()
 
-        stopMdns()
+        super.onDestroy()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

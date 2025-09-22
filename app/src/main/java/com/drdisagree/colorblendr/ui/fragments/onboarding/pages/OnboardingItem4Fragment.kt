@@ -10,7 +10,6 @@ import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.databinding.FragmentOnboardingItem4Binding
 import com.drdisagree.colorblendr.ui.activities.MainActivity.Companion.replaceFragment
 import com.drdisagree.colorblendr.ui.fragments.PairingFragment
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 class OnboardingItem4Fragment : Fragment() {
@@ -43,7 +42,7 @@ class OnboardingItem4Fragment : Fragment() {
             binding.root.isSelected = false
             binding.shizuku.isSelected = false
 
-            if (!WifiAdbConnectedDevices.isMyDeviceConnected()) {
+            if (!WifiAdbShell.isMyDeviceConnected()) {
                 binding.wirelessAdb.isSelected = false
                 replaceFragment(PairingFragment(), true)
             } else {
@@ -55,15 +54,13 @@ class OnboardingItem4Fragment : Fragment() {
     }
 
     private fun disconnectFromWirelessAdb() {
-        if (WifiAdbConnectedDevices.isMyDeviceConnected()) {
-            WifiAdbShell.exec("disconnect")
-        }
+        WifiAdbShell.disconnect()
     }
 
     override fun onResume() {
         super.onResume()
 
-        if (WifiAdbConnectedDevices.isMyDeviceConnected()) {
+        if (WifiAdbShell.isMyDeviceConnected()) {
             binding.root.isSelected = false
             binding.shizuku.isSelected = false
             binding.wirelessAdb.isSelected = true

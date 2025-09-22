@@ -10,41 +10,42 @@ import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Constant.ADB_CONNECTING_PORT
 import com.drdisagree.colorblendr.data.common.Constant.ADB_IP
-import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIRING_CODE
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIRING_PORT
 import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnect
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbPair
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 class AdbPairingNotification : Service() {
+
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        requestPairingCodeInput()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        createNotificationChannel()
-        requestPairingCodeInput()
+        val message = intent?.getStringExtra("message")
+        if (!message.isNullOrEmpty()) {
+            showSearchingNotification()
+        } else {
+            requestPairingCodeInput()
+        }
 
         if (intent != null) {
             if (ACTION_STOP_SERVICE == intent.action) {
-                stopNotification()
+                stopNotification(PAIRING_NOTIFICATION_ID)
                 stopSelf()
                 return START_NOT_STICKY
-            }
-
-            if (!this.isNotificationActive) {
-                requestPairingCodeInput()
             }
 
             handleUserInput(intent)
@@ -60,7 +61,7 @@ class AdbPairingNotification : Service() {
             val code = remoteInput.getString(PAIRING_CODE, "")
 
             if (!code.isNullOrEmpty()) {
-                storeAdbCredentials(code)
+                initiateAdbPairing(code)
             } else {
                 requestPairingCodeInput()
             }
@@ -68,75 +69,90 @@ class AdbPairingNotification : Service() {
     }
 
     private fun requestPairingCodeInput() {
-        sendNotification(
+        showPairingCodeNotification(
             getString(R.string.enter_pairing_code),
             getString(R.string.enter_pairing_code)
         )
     }
 
-    private fun storeAdbCredentials(code: String) {
-        Prefs.putString(ADB_PAIRING_CODE, code)
-
+    private fun initiateAdbPairing(code: String) {
         val ip = Prefs.getString(ADB_IP, null)
             ?: throw IllegalStateException("ADB IP not set")
         val port = Prefs.getString(ADB_PAIRING_PORT, null)
             ?: throw IllegalStateException("ADB Port not set")
 
-        WifiAdbPair.pair(
-            this,
+        WifiAdbShell.pair(
             ip,
-            port,
+            port.toInt(),
             code,
-            object : WifiAdbPair.PairingCallback {
-                override fun onSuccess() {
-                    connectAdb()
+            object : WifiAdbShell.PairingListener {
+                override fun onPairingSuccess() {
+                    Log.d("AdbPairingNotification", "Pairing successful, connecting to ADB...")
                 }
 
                 @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-                override fun onFailure(errorMessage: String?) {
-                    showFinalNotification(
-                        getString(R.string.adb_connection_failed_title),
-                        if (errorMessage.isNullOrEmpty()) getString(R.string.adb_connection_failed_message) else errorMessage
-                    )
+                override fun onPairingFailed() {
+                    handler.post {
+                        showResultNotification(
+                            getString(R.string.adb_connection_failed_title),
+                            getString(R.string.adb_connection_failed_message)
+                        )
+                    }
+                }
+            },
+            object : WifiAdbShell.ConnectionListener {
+                @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+                override fun onConnectionSuccess() {
+                    handler.post {
+                        showResultNotification(
+                            getString(R.string.adb_connection_success_title),
+                            getString(R.string.adb_connection_success_message)
+                        )
+                    }
+                }
+
+                @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+                override fun onConnectionFailed() {
+                    handler.post {
+                        showResultNotification(
+                            getString(R.string.adb_connection_failed_title),
+                            getString(R.string.adb_connection_failed_message)
+                        )
+                    }
                 }
             }
         )
 
-        stopNotification()
+        stopNotification(PAIRING_NOTIFICATION_ID)
         stopSelf()
     }
 
-    private fun connectAdb() {
-        val ip = Prefs.getString(ADB_IP, null)
-            ?: throw IllegalStateException("ADB IP not set")
-        val port = Prefs.getString(ADB_CONNECTING_PORT, null)
-            ?: throw IllegalStateException("ADB Port not set")
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun showSearchingNotification() {
+        cancelNotification(SEARCHING_NOTIFICATION_ID)
 
-        WifiAdbConnect.connect(
-            ip,
-            port,
-            object : WifiAdbConnect.ConnectingCallback {
-                @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-                override fun onSuccess() {
-                    showFinalNotification(
-                        getString(R.string.adb_connection_success_title),
-                        getString(R.string.adb_connection_success_message)
-                    )
-                }
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_notification)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(getString(R.string.searching_pairing_code))
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setOngoing(false)
+            .build()
 
-                @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-                override fun onFailure(errorMessage: String?) {
-                    showFinalNotification(
-                        getString(R.string.adb_connection_failed_title),
-                        if (errorMessage.isNullOrEmpty()) getString(R.string.adb_connection_failed_message) else errorMessage
-                    )
-                }
-            }
-        )
+        // Update the foreground notification
+        NotificationManagerCompat.from(this).apply {
+            notify(SEARCHING_NOTIFICATION_ID, notification)
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(SEARCHING_NOTIFICATION_ID, notification)
+        } else {
+            startForeground(SEARCHING_NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        }
     }
 
-    private fun sendNotification(title: String, label: String) {
-        cancelNotification()
+    private fun showPairingCodeNotification(title: String, label: String) {
+        cancelNotification(PAIRING_NOTIFICATION_ID)
 
         val remoteInput = RemoteInput.Builder(PAIRING_CODE)
             .setLabel(label)
@@ -195,7 +211,7 @@ class AdbPairingNotification : Service() {
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun showFinalNotification(title: String, message: String) {
+    private fun showResultNotification(title: String, message: String) {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_notification)
             .setContentTitle(title)
@@ -213,23 +229,23 @@ class AdbPairingNotification : Service() {
         stopForeground(STOP_FOREGROUND_DETACH)
     }
 
-    private fun stopNotification() {
+    private fun stopNotification(notificationId: Int) {
         NotificationManagerCompat.from(this).apply {
-            cancel(PAIRING_NOTIFICATION_ID)
+            cancel(notificationId)
         }
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
-    private fun cancelNotification() {
+    private fun cancelNotification(notificationId: Int) {
         NotificationManagerCompat.from(this).apply {
-            cancel(PAIRING_NOTIFICATION_ID)
+            cancel(notificationId)
         }
     }
 
-    private val isNotificationActive: Boolean
+    private val isPairingNotificationActive: Boolean
         get() {
             val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            for (notification in manager.getActiveNotifications()) {
+            for (notification in manager.activeNotifications) {
                 if (notification.id == PAIRING_NOTIFICATION_ID) {
                     return true // Notification is still active
                 }
@@ -262,6 +278,7 @@ class AdbPairingNotification : Service() {
     companion object {
         private const val CHANNEL_ID = "adb_pairing_channel"
         private const val PAIRING_NOTIFICATION_ID = 101
+        private const val SEARCHING_NOTIFICATION_ID = 102
         private const val PAIRING_CODE = "pairing_code"
         private const val ACTION_SUBMIT_CODE = "action_submit_code"
         private const val ACTION_STOP_SERVICE = "action_stop_service"

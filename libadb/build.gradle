@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: GPL-3.0-or-later OR Apache-2.0
+
+plugins {
+    alias(libs.plugins.agp.library)
+}
+
+group = 'io.github.muntashirakon'
+version = '3.1.0'
+
+android {
+    compileSdk 35
+    namespace "io.github.muntashirakon.adb"
+
+    defaultConfig {
+        minSdk 1
+        targetSdk 35
+        aarMetadata {
+            minCompileSdk = 1
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+dependencies {
+    implementation libs.annotation
+    implementation libs.bcprov.jdk15to18
+    implementation libs.spake2.android
+
+    testImplementation libs.junit
+}

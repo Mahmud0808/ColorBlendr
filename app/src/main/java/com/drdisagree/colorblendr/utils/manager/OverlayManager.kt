@@ -40,9 +40,8 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 
 @Suppress("unused")
 object OverlayManager {
@@ -346,18 +345,20 @@ object OverlayManager {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
             }
         } else {
-            if (!WifiAdbConnectedDevices.isMyDeviceConnected()) {
+            if (!WifiAdbShell.isMyDeviceConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
                 return true
             }
 
             try {
-                val currentSettings =
-                    WifiAdbShell.exec("shell settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES").output
-
-                if (themeJson.isNotEmpty()) {
-                    val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
-                    WifiAdbShell.exec("shell settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES") { currentSettings ->
+                    if (themeJson.isNotEmpty()) {
+                        val jsonString = MiscUtil.mergeJsonStrings(
+                            currentSettings,
+                            themeJson
+                        )
+                        WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                    }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
@@ -385,19 +386,18 @@ object OverlayManager {
                 Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
             }
         } else {
-            if (!WifiAdbConnectedDevices.isMyDeviceConnected()) {
+            if (!WifiAdbShell.isMyDeviceConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
                 return true
             }
 
             try {
-                val currentSettings =
-                    WifiAdbShell.exec("shell settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
-                        .output
-                        .ifEmpty { "{}" }
-
-                val jsonString = ThemeOverlayPackage.getOriginalSettings(currentSettings).toString()
-                WifiAdbShell.exec("shell settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES") { currentSettings ->
+                    val jsonString = ThemeOverlayPackage
+                        .getOriginalSettings(currentSettings.ifEmpty { "{}" })
+                        .toString()
+                    WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
             }

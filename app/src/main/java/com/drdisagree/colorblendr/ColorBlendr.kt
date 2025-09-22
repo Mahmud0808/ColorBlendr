@@ -7,6 +7,7 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.google.android.material.color.DynamicColors
+import io.github.muntashirakon.adb.PRNGFixes
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.ref.WeakReference
 
@@ -15,10 +16,9 @@ class ColorBlendr : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        contextReference = WeakReference(
-            applicationContext
-        )
+        contextReference = WeakReference(applicationContext)
         DynamicColors.applyToActivitiesIfAvailable(this)
+        PRNGFixes.apply()
     }
 
     override fun attachBaseContext(base: Context) {

@@ -14,8 +14,8 @@ android {
     defaultConfig {
         minSdk = 31
         targetSdk = 36
-        versionCode = 28
-        versionName = "v1.11.6"
+        versionCode = 35
+        versionName = "v2.0.0"
 
         ndk {
             abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
@@ -94,6 +94,7 @@ android {
 
 dependencies {
     compileOnly(project(":systemstubs"))
+    implementation(project(":libadb"))
 
     implementation(libs.core.ktx)
     implementation(libs.libsu.core)
@@ -125,4 +126,5 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.zip4j)
+    implementation(libs.sun.security.android)
 }

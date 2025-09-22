@@ -186,6 +186,7 @@
     <string name="pairing">Pairing</string>
     <string name="enter_pairing_code">Enter pairing code</string>
     <string name="enter_six_digit_pairing_code">Enter six digit pairing code</string>
+    <string name="searching_pairing_code">Searching for pairing code…</string>
     <string name="pairing_notification_hint">You will receive a notification from ColorBlendr to help you with pairing.</string>
     <string name="notification_access_not_granted">To complete the pairing process you will need to interact with a notification from ColorBlendr. Please allow notification access to ColorBlendr.</string>
     <string name="notification_settings">Notification settings</string>

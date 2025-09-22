@@ -16,14 +16,20 @@ class AdbPairingNotificationWorker(
 
     override fun doWork(): Result {
         val context = applicationContext
-        val pairingCode = inputData.getString("pairingCode")
+        val pairingCode = inputData.getString(PAIRING_CODE_KEY)
+        val message = inputData.getString("message")
 
         context.startForegroundService(
             Intent(context, AdbPairingNotification::class.java).apply {
-                putExtra("pairingCode", pairingCode)
+                putExtra(PAIRING_CODE_KEY, pairingCode)
+                message?.let { putExtra("message", it) }
             }
         )
 
         return Result.success()
+    }
+
+    companion object {
+        const val PAIRING_CODE_KEY = "pairingCode"
     }
 }

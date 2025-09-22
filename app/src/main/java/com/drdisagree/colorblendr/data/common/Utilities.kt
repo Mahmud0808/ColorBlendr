@@ -1,8 +1,6 @@
 package com.drdisagree.colorblendr.data.common
 
 import android.graphics.Color
-import com.drdisagree.colorblendr.data.common.Constant.ADB_CONNECTING_PORT
-import com.drdisagree.colorblendr.data.common.Constant.ADB_IP
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
@@ -113,17 +111,6 @@ object Utilities {
 
     fun isWorkMethodUnknown(): Boolean {
         return getWorkingMethod() == WorkMethod.NULL
-    }
-
-    fun getMyDeviceIdentifier(): String? {
-        val ip = getString(ADB_IP, null)
-        val port = getString(ADB_CONNECTING_PORT, null)
-
-        if (ip.isNullOrEmpty() || port.isNullOrEmpty()) {
-            return null // No device configured
-        }
-
-        return "$ip:$port"
     }
 
     fun getCurrentMonetStyle(): MONET {

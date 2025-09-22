@@ -16,12 +16,12 @@ import com.drdisagree.colorblendr.provider.RootConnectionProvider.Companion.buil
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,11 +100,25 @@ class SplashActivity : AppCompatActivity() {
                 }
 
                 isWirelessAdbMode() -> {
-                    val isConnected = WifiAdbConnectedDevices.isMyDeviceConnected()
+                    if (WifiAdbShell.isMyDeviceConnected()) {
+                        success.set(true)
+                        keepShowing = false
+                        countDownLatch.countDown()
+                    } else {
+                        WifiAdbShell.autoConnect(object : WifiAdbShell.ConnectionListener {
+                            override fun onConnectionSuccess() {
+                                success.set(true)
+                                keepShowing = false
+                                countDownLatch.countDown()
+                            }
 
-                    success.set(isConnected)
-                    keepShowing = false
-                    countDownLatch.countDown()
+                            override fun onConnectionFailed() {
+                                success.set(false)
+                                keepShowing = false
+                                countDownLatch.countDown()
+                            }
+                        })
+                    }
                 }
 
                 else -> {

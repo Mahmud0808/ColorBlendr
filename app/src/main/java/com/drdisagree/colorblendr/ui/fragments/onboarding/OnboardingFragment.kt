@@ -31,12 +31,12 @@ import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem3F
 import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem4Fragment
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.requestShizukuPermission
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbConnectedDevices
 import kotlinx.coroutines.launch
 
 class OnboardingFragment : Fragment() {
@@ -159,7 +159,7 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun checkAdbConnection() {
-        if (WifiAdbConnectedDevices.isMyDeviceConnected()) {
+        if (WifiAdbShell.isMyDeviceConnected()) {
             goToHomeFragment()
         } else {
             Toast.makeText(
