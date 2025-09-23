@@ -1,0 +1,15 @@
+New Features:
+• Updated to Material 3 expressive design
+• Added support for wireless ADB mode
+• Multi-user profile theming support
+• Increased wallpaper color extraction limits
+
+Fixes:
+• Fixed color picker seekbar on some ROMs
+• Fixed rare crashes for better stability
+
+Misc:
+• Improved performance
+• Updated translations
+
+Translation credit goes to all the contributors on our Crowdin platform.
