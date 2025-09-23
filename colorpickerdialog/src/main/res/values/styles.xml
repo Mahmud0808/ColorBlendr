@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ColorPickerDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
+    <style name="ColorPickerDialog" parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog" />
 
 </resources>

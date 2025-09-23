@@ -34,23 +34,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.drdisagree.colorblendr.ui.views.RoundedMaterialButtonToggleGroup
+                    <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/colors_toggle_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="22dp"
                         android:layout_marginTop="16dp"
-                        android:divider="@drawable/divider_toggle_button"
-                        android:dividerPadding="8dp"
-                        android:gravity="center"
-                        android:showDividers="middle"
+                        android:gravity="center_horizontal"
+                        android:spacing="8dp"
                         app:checkedButton="@id/wallpaper_colors_button"
                         app:selectionRequired="true"
                         app:singleSelection="true">
 
-                        <com.google.android.material.button.MaterialButton
+                        <Button
                             android:id="@+id/wallpaper_colors_button"
-                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:minHeight="0dp"
@@ -58,9 +55,8 @@
                             android:text="@string/wallpaper_colors"
                             android:textSize="13sp" />
 
-                        <com.google.android.material.button.MaterialButton
+                        <Button
                             android:id="@+id/basic_colors_button"
-                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:minHeight="0dp"
@@ -68,7 +64,7 @@
                             android:text="@string/basic_colors"
                             android:textSize="13sp" />
 
-                    </com.drdisagree.colorblendr.ui.views.RoundedMaterialButtonToggleGroup>
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
 
                     <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/wallpaper_colors_container"

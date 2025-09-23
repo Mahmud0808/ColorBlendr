@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Base.Theme.ColorBlendr" parent="Theme.Material3.DayNight">
+    <style name="Base.Theme.ColorBlendr" parent="Theme.Material3Expressive.DayNight">
         <!-- Window layout. -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
