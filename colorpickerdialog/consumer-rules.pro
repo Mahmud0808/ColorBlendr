@@ -1,0 +1,1 @@
+-keep,allowoptimization,allowobfuscation class me.jfenn.colorpickerdialog.** { *; }

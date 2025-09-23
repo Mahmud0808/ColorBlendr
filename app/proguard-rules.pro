@@ -26,6 +26,3 @@
 -keepattributes Signature
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
-
-# Color picker
--keep,allowoptimization,allowobfuscation class me.jfenn.colorpickerdialog.** { *; }
