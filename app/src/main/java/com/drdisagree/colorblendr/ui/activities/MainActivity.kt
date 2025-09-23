@@ -39,8 +39,8 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.shape.MaterialShapeDrawable
 
@@ -78,8 +78,9 @@ class MainActivity : AppCompatActivity() {
                     },
                     false
                 )
-                intent?.removeExtra("data")
             }
+            intent?.removeExtra("success")
+            intent?.removeExtra("data")
         }
     }
 
@@ -222,6 +223,12 @@ class MainActivity : AppCompatActivity() {
 
         fun replaceFragment(fragment: Fragment, animate: Boolean) {
             val tag: String = fragment.javaClass.simpleName
+            val existing = myFragmentManager.findFragmentByTag(tag)
+
+            if (existing != null && existing.isVisible) {
+                return // already showing, don’t replace
+            }
+
             val fragmentTransaction: FragmentTransaction = myFragmentManager.beginTransaction()
 
             if (animate) {
