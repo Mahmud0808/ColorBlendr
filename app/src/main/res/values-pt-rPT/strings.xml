@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_moto">Express yourself with colors</string>
     <!-- Tabs -->
     <string name="colors">Colors</string>
     <string name="theme">Theme</string>
@@ -37,7 +38,7 @@
     <string name="background_saturation">Background saturation</string>
     <string name="background_lightness">Background lightness</string>
     <!-- Styles -->
-    <string name="monet_neutral">Neutro</string>
+    <string name="monet_neutral">Neutral</string>
     <string name="monet_neutral_desc">Lively and refreshing color palette inspired by the effervescence of spritz beverages.</string>
     <string name="monet_monochrome">Monochrome</string>
     <string name="monet_monochrome_desc">Harmonious scheme using variations of a single hue for a sleek and minimalist aesthetic.</string>
@@ -168,6 +169,7 @@
     <string name="pairing">Pairing</string>
     <string name="enter_pairing_code">Enter pairing code</string>
     <string name="enter_six_digit_pairing_code">Enter six digit pairing code</string>
+    <string name="searching_pairing_code">Searching for pairing code…</string>
     <string name="pairing_notification_hint">You will receive a notification from ColorBlendr to help you with pairing.</string>
     <string name="notification_access_not_granted">To complete the pairing process you will need to interact with a notification from ColorBlendr. Please allow notification access to ColorBlendr.</string>
     <string name="notification_settings">Notification settings</string>
@@ -189,13 +191,4 @@
     <string name="submit">Submit</string>
     <string name="close">Close</string>
     <string name="ok">OK</string>
-    <!-- Color picker dialog -->
-    <string name="colorPickerDialog_dialogName">Color Picker</string>
-    <string name="colorPickerDialog_preset">Preset</string>
-    <string name="colorPickerDialog_image">Image</string>
-    <string name="colorPickerDialog_imageColorPicker">Pick Color from Image</string>
-    <string name="colorPickerDialog_grant_permissions">Grant Permissions</string>
-    <string name="colorPickerDialog_msg_grant_permissions">Please grant the \'External Storage\' permissions to continue.</string>
-    <string name="colorPickerDialog_msg_image_invalid">Couldn\'t use this image.</string>
-    <string name="colorPickerDialog_title_all_photos">All Photos</string>
 </resources>
