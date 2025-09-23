@@ -24,6 +24,7 @@
         android:layout_marginBottom="12dp"
         android:contentDescription="@string/save_current_style"
         app:layout_behavior="com.google.android.material.behavior.HideViewOnScrollBehavior"
+        app:materialThemeOverlay="@style/ThemeOverlay.Material3Expressive.FloatingActionButton.TertiaryContainer"
         app:srcCompat="@drawable/ic_add"
         app:tint="?attr/colorOnTertiaryContainer" />
 
