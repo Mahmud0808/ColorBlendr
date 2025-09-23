@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">カラーピッカー</string>
+    <string name="colorPickerDialog_preset">プリセット</string>
+    <string name="colorPickerDialog_image">画像</string>
+    <string name="colorPickerDialog_imageColorPicker">画像から色を選択</string>
+    <string name="colorPickerDialog_grant_permissions">権限の許可</string>
+    <string name="colorPickerDialog_msg_grant_permissions">続行するには、「外部ストレージ」の権限を許可してください。</string>
+    <string name="colorPickerDialog_msg_image_invalid">この画像は使用できませんでした。</string>
+    <string name="colorPickerDialog_title_all_photos">すべての画像</string>
+</resources>

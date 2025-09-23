@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.fragments
 
 import android.content.DialogInterface
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -10,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.drdisagree.colorblendr.R
@@ -25,30 +24,27 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
-import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.databinding.FragmentStylesBinding
 import com.drdisagree.colorblendr.databinding.ViewTextFieldOutlinedBinding
 import com.drdisagree.colorblendr.ui.adapters.StylePreviewAdapter
-import com.drdisagree.colorblendr.utils.colors.ColorUtil
+import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.DividerItemDecoration
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getDialogPreferredPadding
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
+import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 
-class StylesFragment : Fragment() {
+class StylesFragment : BaseFragment() {
 
     private lateinit var binding: FragmentStylesBinding
     private var styleAdapter: StylePreviewAdapter? = null
     private val customStyleRepository = Utilities.getCustomStyleRepository()
-    private val isAtleastA13 = isRootMode() ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    private val isAtleastA14 = isRootMode() ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    private val stylesViewModel: StylesViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,14 +58,22 @@ class StylesFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(
             DividerItemDecoration(
-                requireContext(),
                 requireContext().resources.getDimensionPixelSize(R.dimen.container_margin_bottom)
             )
         )
 
-        lifecycleScope.launch {
-            val styles = getStyleList()
-            styleAdapter = StylePreviewAdapter(this@StylesFragment, styles)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        stylesViewModel.stylePalettes.observe(viewLifecycleOwner) { stylePalettes ->
+            styleAdapter = StylePreviewAdapter(
+                this@StylesFragment,
+                stylesViewModel.styleList.value.orEmpty().toMutableList(),
+                stylePalettes
+            )
             binding.recyclerView.adapter = styleAdapter
         }
 
@@ -83,8 +87,6 @@ class StylesFragment : Fragment() {
                 }
             )
         }
-
-        return binding.root
     }
 
     fun showNewStyleDialog(
@@ -92,6 +94,8 @@ class StylesFragment : Fragment() {
         desc: String = "",
         callback: (String, String) -> Unit
     ) {
+        binding.addStyle.visibility = View.GONE
+
         val dialogLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(
@@ -157,6 +161,9 @@ class StylesFragment : Fragment() {
             .setNegativeButton(getString(android.R.string.cancel)) { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
             }
+            .setOnDismissListener {
+                binding.addStyle.visibility = if (isRootMode()) View.VISIBLE else View.GONE
+            }
             .show()
     }
 
@@ -195,7 +202,6 @@ class StylesFragment : Fragment() {
         )
 
         customStyleRepository.saveCustomStyle(newStyle)
-
         styleAdapter?.addStyle(
             StyleModel(
                 isEnabled = true,
@@ -203,6 +209,7 @@ class StylesFragment : Fragment() {
                 customStyle = newStyle
             )
         )
+        stylesViewModel.refreshData()
     }
 
     suspend fun editCustomStyle(
@@ -227,7 +234,6 @@ class StylesFragment : Fragment() {
             )
 
             customStyleRepository.updateCustomStyle(updatedStyle)
-
             styleAdapter?.updateStyle(
                 StyleModel(
                     isEnabled = true,
@@ -235,6 +241,7 @@ class StylesFragment : Fragment() {
                     customStyle = updatedStyle
                 )
             )
+            stylesViewModel.refreshData()
         }
     }
 
@@ -244,95 +251,18 @@ class StylesFragment : Fragment() {
         val customStyle = customStyleRepository.getCustomStyleById(styleId)
         if (customStyle != null) {
             customStyleRepository.deleteCustomStyle(customStyle)
-
-            styleAdapter?.removeStyle(
-                StyleModel(
-                    isEnabled = true,
-                    monetStyle = /* placeholder */ MONET.TONAL_SPOT,
-                    customStyle = customStyle
-                )
-            )
+            styleAdapter?.removeStyle(customStyle = customStyle)
+            stylesViewModel.refreshData()
         }
     }
 
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home && isAdded) {
             parentFragmentManager.popBackStackImmediate()
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private suspend fun getStyleList(): ArrayList<StyleModel> {
-        return arrayListOf(
-            StyleModel(
-                titleResId = R.string.monet_neutral,
-                descriptionResId = R.string.monet_neutral_desc,
-                isEnabled = isAtleastA13,
-                monetStyle = MONET.SPRITZ
-            ),
-            StyleModel(
-                titleResId = R.string.monet_monochrome,
-                descriptionResId = R.string.monet_monochrome_desc,
-                isEnabled = isAtleastA14,
-                monetStyle = MONET.MONOCHROMATIC
-            ),
-            StyleModel(
-                titleResId = R.string.monet_tonalspot,
-                descriptionResId = R.string.monet_tonalspot_desc,
-                isEnabled = true,
-                monetStyle = MONET.TONAL_SPOT
-            ),
-            StyleModel(
-                titleResId = R.string.monet_vibrant,
-                descriptionResId = R.string.monet_vibrant_desc,
-                isEnabled = isAtleastA13,
-                monetStyle = MONET.VIBRANT
-            ),
-            StyleModel(
-                titleResId = R.string.monet_rainbow,
-                descriptionResId = R.string.monet_rainbow_desc,
-                isEnabled = isAtleastA13,
-                monetStyle = MONET.RAINBOW
-            ),
-            StyleModel(
-                titleResId = R.string.monet_expressive,
-                descriptionResId = R.string.monet_expressive_desc,
-                isEnabled = isAtleastA13,
-                monetStyle = MONET.EXPRESSIVE
-            ),
-            StyleModel(
-                titleResId = R.string.monet_fidelity,
-                descriptionResId = R.string.monet_fidelity_desc,
-                isEnabled = isRootMode(),
-                monetStyle = MONET.FIDELITY
-            ),
-            StyleModel(
-                titleResId = R.string.monet_content,
-                descriptionResId = R.string.monet_content_desc,
-                isEnabled = isRootMode(),
-                monetStyle = MONET.CONTENT
-            ),
-            StyleModel(
-                titleResId = R.string.monet_fruitsalad,
-                descriptionResId = R.string.monet_fruitsalad_desc,
-                isEnabled = isAtleastA13,
-                monetStyle = MONET.FRUIT_SALAD
-            )
-        ).apply {
-            if (!isRootMode()) return@apply
-
-            customStyleRepository.getCustomStyles().forEach { customStyle ->
-                add(
-                    StyleModel(
-                        isEnabled = true,
-                        monetStyle = customStyle.monet,
-                        customStyle = customStyle
-                    )
-                )
-            }
-        }
     }
 }

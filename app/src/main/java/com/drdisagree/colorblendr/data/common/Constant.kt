@@ -68,7 +68,13 @@ object Constant {
     const val SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn"
     const val TINT_TEXT_COLOR = "tintTextColor"
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
+    const val WIRELESS_ADB_THEMING_ENABLED = "wirelessAdbThemingEnabled"
     const val APP_LIST_FILTER_METHOD = "appListFilterMethod"
+    const val ADB_IP = "adbIp"
+    const val ADB_PAIRING_PORT = "adbPairingPort"
+    const val ADB_SEARCH_NOTIFICATION = "adb_searching_notification"
+    const val ADB_PAIR_NOTIFICATION = "adb_pairing_notification"
+
     val MONET_ACCENT_SATURATION: String
         get() = if (!modeSpecificThemesEnabled()) {
             "monetAccentSaturationValue"

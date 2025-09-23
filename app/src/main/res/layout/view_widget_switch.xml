@@ -8,6 +8,7 @@
     android:layout_marginBottom="@dimen/container_margin_bottom"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:cardCornerRadius="@dimen/container_corner_radius"
     app:cardMaxElevation="0dp"
     app:strokeWidth="0dp">
 
@@ -62,7 +63,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            app:thumbIcon="@drawable/ic_switch_thumb" />
 
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

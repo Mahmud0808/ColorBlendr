@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Farbauswahl</string>
+    <string name="colorPickerDialog_preset">Voreinstellung</string>
+    <string name="colorPickerDialog_image">Bild</string>
+    <string name="colorPickerDialog_imageColorPicker">Farbe aus einem Bild benutzen</string>
+    <string name="colorPickerDialog_grant_permissions">Berechtigungen erteilen</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Bitte erteile die Berechtigungen für „Externer Speicher“, um fortzufahren.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Dieses Bild konnte nicht verwendet werden.</string>
+    <string name="colorPickerDialog_title_all_photos">Alle Fotos</string>
+</resources>

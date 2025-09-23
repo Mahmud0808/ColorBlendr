@@ -3,4 +3,7 @@
     <item
         android:id="@+id/advanced_settings"
         android:title="@string/advanced_settings" />
+    <item
+        android:id="@+id/privacy_policy"
+        android:title="@string/privacy_policy" />
 </menu>

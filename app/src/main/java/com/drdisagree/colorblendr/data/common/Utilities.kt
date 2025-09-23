@@ -30,6 +30,7 @@ import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
+import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
@@ -76,6 +77,14 @@ object Utilities {
         putBoolean(SHIZUKU_THEMING_ENABLED, enabled)
     }
 
+    fun isWirelessAdbThemingEnabled(defaultValue: Boolean = true): Boolean {
+        return getBoolean(WIRELESS_ADB_THEMING_ENABLED, defaultValue)
+    }
+
+    fun setWirelessAdbThemingEnabled(enabled: Boolean) {
+        putBoolean(WIRELESS_ADB_THEMING_ENABLED, enabled)
+    }
+
     private fun getWorkingMethod(): WorkMethod {
         return WorkMethod.fromString(getString(PREF_WORKING_METHOD, WorkMethod.NULL.toString()))
     }
@@ -96,7 +105,11 @@ object Utilities {
         return getWorkingMethod() == WorkMethod.SHIZUKU
     }
 
-    fun isRootOrShizukuUnknown(): Boolean {
+    fun isWirelessAdbMode(): Boolean {
+        return getWorkingMethod() == WorkMethod.WIRELESS_ADB
+    }
+
+    fun isWorkMethodUnknown(): Boolean {
         return getWorkingMethod() == WorkMethod.NULL
     }
 

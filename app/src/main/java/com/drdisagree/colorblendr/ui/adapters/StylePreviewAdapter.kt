@@ -15,13 +15,15 @@ import com.drdisagree.colorblendr.data.common.Utilities.setCurrentCustomStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setOriginalStyleName
 import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
+import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.fragments.StylesFragment
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
 import com.drdisagree.colorblendr.utils.app.BackupRestore
-import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
-import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
+import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,7 +31,8 @@ import kotlinx.coroutines.launch
 
 class StylePreviewAdapter(
     private val fragment: StylesFragment,
-    private var styleList: MutableList<StyleModel>
+    private var styleList: MutableList<StyleModel>,
+    private val paletteList: Map<String, List<List<Int>>>
 ) : RecyclerView.Adapter<StylePreviewAdapter.StyleViewHolder>() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
@@ -89,9 +92,9 @@ class StylePreviewAdapter(
         }
     }
 
-    fun removeStyle(style: StyleModel) {
+    fun removeStyle(customStyle: CustomStyleModel?) {
         val position = styleList.indexOfFirst {
-            it.customStyle?.styleId == style.customStyle?.styleId
+            it.customStyle?.styleId == customStyle?.styleId
         }
 
         if (position != -1) {
@@ -134,7 +137,7 @@ class StylePreviewAdapter(
                             bottomMargin
                         )
                     }
-                    setLayoutParams(this)
+                    layoutParams = this
                 }
             }
         }
@@ -153,7 +156,7 @@ class StylePreviewAdapter(
                 // call again because recyclerview recycles views and
                 // they don't get updated if we don't call this
                 resetCustomColors()
-                setColorPreview()
+                setPreviewColors(paletteList[styleData.titleResId.getOriginalString()] ?: emptyList())
             }
 
             setOnClickListener {
@@ -188,7 +191,7 @@ class StylePreviewAdapter(
             }
 
             // call after setting title
-            setCustomColors(customStyle.palette)
+            setCustomPreviewColors(customStyle.palette)
 
             setOnClickListener {
                 selectedCustomStyle = customStyle.styleId
@@ -206,7 +209,7 @@ class StylePreviewAdapter(
                 }
             }
 
-            val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.MyPopupMenu).apply {
+            val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.PopupMenuStyles).apply {
                 menuInflater.inflate(R.menu.custom_style_menu, menu)
 
                 setOnMenuItemClickListener { item ->

@@ -1,7 +1,5 @@
 package com.drdisagree.colorblendr.ui.fragments
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -21,9 +19,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
@@ -36,6 +33,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
@@ -47,18 +45,20 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.databinding.FragmentSettingsBinding
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.app.MiscUtil.crossfade
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
+import com.drdisagree.colorblendr.utils.app.parcelable
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.removeFabricatedColors
-import com.drdisagree.colorblendr.utils.app.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -67,11 +67,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentSettingsBinding
-    private var sharedViewModel: SharedViewModel? = null
     private var isMasterSwitchEnabled: Boolean = true
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val masterSwitch: CompoundButton.OnCheckedChangeListener =
         CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
@@ -82,6 +82,7 @@ class SettingsFragment : Fragment() {
 
             setThemingEnabled(isChecked)
             setShizukuThemingEnabled(isChecked)
+            setWirelessAdbThemingEnabled(isChecked)
             updateColorAppliedTimestamp()
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -97,8 +98,9 @@ class SettingsFragment : Fragment() {
                     }
 
                     isMasterSwitchEnabled = false
-                    val isOverlayEnabled =
-                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM) || isShizukuThemingEnabled()
+                    val isOverlayEnabled = isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
+                            || isShizukuThemingEnabled()
+                            || isWirelessAdbThemingEnabled()
                     buttonView.isChecked = isOverlayEnabled
                     isMasterSwitchEnabled = true
 
@@ -109,16 +111,10 @@ class SettingsFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -136,9 +132,10 @@ class SettingsFragment : Fragment() {
                 getString(R.string.app_name)
             )
         )
-        binding.themingEnabled.isSwitchChecked = (isThemingEnabled() &&
-                isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)) ||
-                isShizukuThemingEnabled()
+        binding.themingEnabled.isSwitchChecked = (isThemingEnabled()
+                && isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM))
+                || isShizukuThemingEnabled()
+                || isWirelessAdbThemingEnabled()
 
         binding.themingEnabled.setSwitchChangeListener(masterSwitch)
 
@@ -147,7 +144,7 @@ class SettingsFragment : Fragment() {
         binding.accurateShades.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
             setAccurateShadesEnabled(isChecked)
-            sharedViewModel!!.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
+            sharedViewModel.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
             updateColors()
         }
         binding.accurateShades.setEnabled(isRootMode())
@@ -166,7 +163,7 @@ class SettingsFragment : Fragment() {
         binding.customPrimaryColor.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
             setCustomColorEnabled(isChecked)
-            sharedViewModel!!.setVisibilityState(
+            sharedViewModel.setVisibilityState(
                 MONET_SEED_COLOR_ENABLED,
                 if (isChecked) View.VISIBLE else View.GONE
             )
@@ -224,26 +221,18 @@ class SettingsFragment : Fragment() {
         binding.overrideColorsManually.setEnabled(isRootMode())
 
         binding.backupRestore.container.setOnClickListener {
-            crossfade(
-                binding.backupRestore.backupRestoreButtons
-            )
+            binding.backupRestore.backupRestoreButtons.crossfade()
         }
         binding.backupRestore.backup.setOnClickListener {
-            backupRestoreSettings(
-                true
-            )
+            backupRestoreSettings(true)
         }
         binding.backupRestore.restore.setOnClickListener {
-            backupRestoreSettings(
-                false
-            )
+            backupRestoreSettings(false)
         }
 
         // About this app
         binding.about.setOnClickListener {
-            HomeFragment.replaceFragment(
-                AboutFragment()
-            )
+            HomeFragment.replaceFragment(AboutFragment())
         }
 
         return binding.getRoot()
@@ -262,15 +251,16 @@ class SettingsFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.advanced_settings -> {
-                        HomeFragment.replaceFragment(
-                            SettingsAdvancedFragment()
-                        )
+                        HomeFragment.replaceFragment(SettingsAdvancedFragment())
                         true
                     }
 
-                    else -> {
-                        false
+                    R.id.privacy_policy -> {
+                        HomeFragment.replaceFragment(PrivacyPolicyFragment())
+                        true
                     }
+
+                    else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -283,34 +273,6 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun crossfade(view: View) {
-        try {
-            val animTime: Int = resources.getInteger(android.R.integer.config_mediumAnimTime)
-            if (view.visibility == View.GONE) {
-                view.alpha = 0f
-                view.visibility = View.VISIBLE
-                view.animate()
-                    .alpha(1f)
-                    .setDuration(animTime.toLong())
-                    .setListener(null)
-            } else {
-                view.animate()
-                    .alpha(0f)
-                    .setDuration(animTime.toLong())
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            try {
-                                view.alpha = 0f
-                                view.visibility = View.GONE
-                            } catch (ignored: Exception) {
-                            }
-                        }
-                    })
-            }
-        } catch (ignored: Exception) {
-        }
-    }
 
     private fun backupRestoreSettings(isBackingUp: Boolean) {
         val fileIntent = Intent().apply {
@@ -414,7 +376,7 @@ class SettingsFragment : Fragment() {
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home && isAdded) {
             getParentFragmentManager().popBackStackImmediate()
             return true
         }

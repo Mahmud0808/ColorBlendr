@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ColorPickerDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
-
     <style name="SnackBarStyle" parent="Widget.Material3.Snackbar">
         <item name="android:backgroundTint">?attr/colorSecondaryContainer</item>
     </style>
@@ -30,7 +28,19 @@
         <item name="android:progressDrawable">@drawable/seekbar_track</item>
     </style>
 
-    <style name="MyPopupMenu" parent="@style/Widget.Material3.PopupMenu">
+    <style name="PopupMenuStyles" parent="@style/Widget.Material3.PopupMenu">
         <item name="android:dropDownHorizontalOffset">-16dp</item>
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    </style>
+
+    <style name="PopupMenuDefault" parent="@style/Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    </style>
+
+    <style name="RoundedTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
     </style>
 </resources>

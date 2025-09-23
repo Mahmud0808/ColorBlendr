@@ -74,8 +74,8 @@ class AboutAppAdapter(
                     BuildConfig.VERSION_NAME,
                     BuildConfig.VERSION_CODE
                 )
-                holder.btnNews.setOnClickListener { openUrl("https://t.me/IconifyOfficial") }
-                holder.btnSupport.setOnClickListener { openUrl("https://t.me/IconifyDiscussion") }
+                holder.btnNews.setOnClickListener { openUrl("https://t.me/DrDsProjects") }
+                holder.btnSupport.setOnClickListener { openUrl("https://t.me/DrDsProjectsChat") }
                 holder.btnGithub.setOnClickListener { openUrl("https://github.com/Mahmud0808/ColorBlendr") }
                 holder.developer.setOnClickListener { openUrl("https://github.com/Mahmud0808") }
                 holder.buymeacoffee.setOnClickListener { openUrl("https://buymeacoffee.com/drdisagree") }

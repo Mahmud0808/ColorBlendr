@@ -37,9 +37,7 @@ class OnboardingItem2Fragment : Fragment() {
         // Post notifications permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             binding.postNotifications.setOnClickListener {
-                if (hasNotificationPermission) {
-                    return@setOnClickListener
-                }
+                if (hasNotificationPermission) return@setOnClickListener
 
                 binding.postNotifications.isSelected = false
                 requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -50,9 +48,8 @@ class OnboardingItem2Fragment : Fragment() {
 
         // Read media images permission
         binding.readMediaImages.setOnClickListener {
-            if (hasMediaPermission) {
-                return@setOnClickListener
-            }
+            if (hasMediaPermission) return@setOnClickListener
+
             binding.readMediaImages.isSelected = false
             requestMediaPermission.launch(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(
@@ -119,9 +116,7 @@ class OnboardingItem2Fragment : Fragment() {
     private val requestMediaPermission = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result: Map<String, Boolean> ->
-        this.handleMediaPermissionsResult(
-            result
-        )
+        this.handleMediaPermissionsResult(result)
     }
 
     private fun handleMediaPermissionsResult(result: Map<String, Boolean>) {
@@ -154,5 +149,11 @@ class OnboardingItem2Fragment : Fragment() {
             requireContext(),
             permission
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        initPermissionsAndViews()
     }
 }

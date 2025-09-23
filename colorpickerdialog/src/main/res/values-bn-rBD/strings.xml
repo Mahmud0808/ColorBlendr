@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">রঙ চয়নকারী</string>
+    <string name="colorPickerDialog_preset">প্রিসেট</string>
+    <string name="colorPickerDialog_image">ছবি</string>
+    <string name="colorPickerDialog_imageColorPicker">ছবি থেকে রঙ বেছে নিন</string>
+    <string name="colorPickerDialog_grant_permissions">অনুমতি দিন</string>
+    <string name="colorPickerDialog_msg_grant_permissions">চালিয়ে যাওয়ার জন্য \'External Storage\'-এর অনুমতি দিন।</string>
+    <string name="colorPickerDialog_msg_image_invalid">এই ছবিটি ব্যবহার করা যায়নি।</string>
+    <string name="colorPickerDialog_title_all_photos">সকল ছবি</string>
+</resources>

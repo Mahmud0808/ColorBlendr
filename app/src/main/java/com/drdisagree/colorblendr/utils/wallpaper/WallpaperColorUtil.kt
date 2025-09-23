@@ -9,6 +9,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.util.Size
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
+import androidx.core.graphics.withClip
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -22,7 +25,6 @@ import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
 import com.drdisagree.colorblendr.utils.monet.score.Score
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -34,23 +36,19 @@ object WallpaperColorUtil {
     private const val MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE
 
     suspend fun updateWallpaperColorList(context: Context) {
-        if (AppUtil.permissionsGranted(context)) {
-            val wallpaperColors = getWallpaperColors(context)
-            val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
+        if (!AppUtil.permissionsGranted(context)) return
 
-            if (getWallpaperColorJson() != currentWallpaperColors) {
-                BroadcastListener.requiresUpdate = true
-                setWallpaperColorJson(currentWallpaperColors)
+        val wallpaperColors = getWallpaperColors(context)
+        val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
 
-                if (!customColorEnabled()) {
-                    setSeedColorValue(wallpaperColors[0])
-                }
+        if (getWallpaperColorJson() != currentWallpaperColors) {
+            BroadcastListener.requiresUpdate = true
+            setWallpaperColorJson(currentWallpaperColors)
+
+            if (!customColorEnabled()) {
+                setSeedColorValue(wallpaperColors[0])
             }
         }
-    }
-
-    suspend fun getWallpaperColor(context: Context): Int {
-        return getWallpaperColors(context)[0]
     }
 
     suspend fun getWallpaperColors(context: Context): ArrayList<Int> {
@@ -78,7 +76,7 @@ object WallpaperColorUtil {
                 withContext(Dispatchers.IO) {
                     WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
                 }?.let { bitmap ->
-                    mergedColors.addAll(getWallpaperColors(bitmap))
+                    mergedColors.addAll(bitmap.extractColors())
                 }
             }
 
@@ -100,7 +98,7 @@ object WallpaperColorUtil {
     }
 
     private fun createMiniBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
-        return Bitmap.createScaledBitmap(bitmap, width, height, false)
+        return bitmap.scale(width, height, false)
     }
 
     private fun calculateOptimalSize(width: Int, height: Int): Size {
@@ -124,8 +122,8 @@ object WallpaperColorUtil {
         return Size(newWidth, newHeight)
     }
 
-    private fun getWallpaperColors(bitmap: Bitmap?): ArrayList<Int> {
-        var bitmapTemp = bitmap ?: return ColorUtil.monetAccentColors
+    private fun Bitmap?.extractColors(): ArrayList<Int> {
+        var bitmapTemp = this ?: return ColorUtil.monetAccentColors
 
         val bitmapArea = bitmapTemp.width * bitmapTemp.height
         if (bitmapArea > MAX_WALLPAPER_EXTRACTION_AREA) {
@@ -133,12 +131,7 @@ object WallpaperColorUtil {
                 bitmapTemp.width,
                 bitmapTemp.height
             )
-            bitmapTemp = Bitmap.createScaledBitmap(
-                bitmapTemp,
-                optimalSize.width,
-                optimalSize.height,
-                false
-            )
+            bitmapTemp = bitmapTemp.scale(optimalSize.width, optimalSize.height, false)
         }
 
         val width = bitmapTemp.width
@@ -148,71 +141,58 @@ object WallpaperColorUtil {
         bitmapTemp.getPixels(pixels, 0, width, 0, 0, width, height)
 
         val wallpaperColors = ArrayList(
-            Score.score(
-                QuantizerCelebi.quantize(pixels, 25)
-            )
+            Score.score(QuantizerCelebi.quantize(pixels, 128), 12)
         )
 
         return if (wallpaperColors.isEmpty()) ColorUtil.monetAccentColors else wallpaperColors
     }
 
-    fun drawableToBitmap(drawable: Drawable): Bitmap {
-        val bitmap: Bitmap
-
-        if (drawable is BitmapDrawable) {
-            if (drawable.bitmap != null) {
-                return drawable.bitmap
-            }
+    private fun Drawable.toBitmap(): Bitmap {
+        if (this is BitmapDrawable && bitmap != null) {
+            return bitmap
         }
 
-        val intrinsicWidth = drawable.intrinsicWidth
-        val intrinsicHeight = drawable.intrinsicHeight
+        val intrinsicWidth = intrinsicWidth
+        val intrinsicHeight = intrinsicHeight
 
-        bitmap = if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
+        return if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
             val colors = ColorUtil.monetAccentColors
             val colorCount = colors.size
 
-            Bitmap.createBitmap(colorCount, 1, Bitmap.Config.ARGB_8888).apply {
+            createBitmap(colorCount, 1).apply {
                 val canvas = Canvas(this)
                 val rectWidth = canvas.width / colorCount
+
                 colors.forEachIndexed { colorIndex, color ->
-                    canvas.save()
-                    canvas.clipRect(
-                        colorIndex * rectWidth,
-                        0,
-                        (colorIndex + 1) * rectWidth,
-                        canvas.height
-                    )
-                    canvas.drawColor(color)
-                    canvas.restore()
+                    canvas.withClip(
+                        left = colorIndex * rectWidth,
+                        top = 0,
+                        right = (colorIndex + 1) * rectWidth,
+                        bottom = canvas.height
+                    ) {
+                        drawColor(color)
+                    }
                 }
             }
         } else {
             createMiniBitmap(
-                Bitmap.createBitmap(
-                    intrinsicWidth,
-                    intrinsicHeight,
-                    Bitmap.Config.ARGB_8888
-                ).apply {
+                createBitmap(intrinsicWidth, intrinsicHeight).apply {
                     val canvas = Canvas(this)
-                    drawable.setBounds(0, 0, intrinsicWidth, intrinsicHeight)
-                    drawable.draw(canvas)
+                    setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+                    draw(canvas)
                 }
             )
         }
-
-        return bitmap
     }
 
     private object WallpaperLoader {
 
         private val TAG: String = WallpaperLoader::class.java.simpleName
-        private val ioDispatcher = Dispatchers.IO
 
         suspend fun loadWallpaperAsync(
             context: Context,
             which: Int
-        ): Bitmap? = withContext(ioDispatcher) {
+        ): Bitmap? = withContext(Dispatchers.IO) {
             loadWallpaper(context, which)
         }
 
@@ -220,31 +200,24 @@ object WallpaperColorUtil {
             return try {
                 val wallpaperManager = WallpaperManager.getInstance(context)
 
-                if (wallpaperManager.wallpaperInfo != null) {
-                    drawableToBitmap(
-                        wallpaperManager.wallpaperInfo.loadThumbnail(
-                            appContext.packageManager
-                        )
-                    )
-                } else {
-                    val wallpaperFile = if (which == WallpaperManager.FLAG_SYSTEM) {
-                        wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_SYSTEM)
-                    } else {
-                        wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_LOCK)
-                    }
-
-                    wallpaperFile?.let {
-                        val decodeFileDescriptor = createMiniBitmap(
-                            BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
-                        )
-                        it.close()
-                        decodeFileDescriptor
-                    } ?: run {
-                        Log.e(TAG, "Error getting wallpaper bitmap: wallpaperFile is null")
-                        null
-                    }
+                // Live wallpaper
+                wallpaperManager.wallpaperInfo?.let { info ->
+                    return info.loadThumbnail(appContext.packageManager).toBitmap()
                 }
-            } catch (e: IOException) {
+
+                // Static wallpaper
+                wallpaperManager.getWallpaperFile(which)?.use { file ->
+                    return createMiniBitmap(BitmapFactory.decodeFileDescriptor(file.fileDescriptor))
+                }
+
+                // Built-in wallpaper (fallback)
+                wallpaperManager.getBuiltInDrawable(which)?.let { drawable ->
+                    return drawable.toBitmap()
+                }
+
+                Log.e(TAG, "Error getting wallpaper bitmap: all sources returned null")
+                null
+            } catch (e: Exception) {
                 Log.e(TAG, "Error getting wallpaper bitmap", e)
                 null
             }

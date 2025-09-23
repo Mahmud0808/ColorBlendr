@@ -3,10 +3,4 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
-
-    <color name="colorPickerDialog_red">#D32F2F</color>
-    <color name="colorPickerDialog_green">#388E3C</color>
-    <color name="colorPickerDialog_blue">#1976D2</color>
-    <color name="colorPickerDialog_neutral">#000000</color>
-    <color name="color_branding_img">@color/material_dynamic_primary50</color>
 </resources>

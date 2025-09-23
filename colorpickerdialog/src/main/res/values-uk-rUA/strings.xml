@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Піпетка</string>
+    <string name="colorPickerDialog_preset">Пресет</string>
+    <string name="colorPickerDialog_image">Зображення</string>
+    <string name="colorPickerDialog_imageColorPicker">Взяти колір із зображення</string>
+    <string name="colorPickerDialog_grant_permissions">Надати дозволи</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Надайте дозвіл Зовнішньому сховищу, щоб продовжити.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Не вдалося використати це зображення.</string>
+    <string name="colorPickerDialog_title_all_photos">Усі фото</string>
+</resources>

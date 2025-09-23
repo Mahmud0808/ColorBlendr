@@ -2,7 +2,7 @@ package com.drdisagree.colorblendr.ui.widgets
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
+import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -10,8 +10,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 
@@ -51,11 +52,13 @@ class MenuWidget : RelativeLayout {
         var iconSpaceReserved =
             typedArray.getBoolean(R.styleable.MenuWidget_iconSpaceReserved, false)
         val showEndArrow = typedArray.getBoolean(R.styleable.MenuWidget_showEndArrow, false)
+        val position = typedArray.getInt(R.styleable.MenuWidget_position, 0)
         typedArray.recycle()
 
         if (icon != 0) {
             iconSpaceReserved = true
             iconImageView!!.setImageResource(icon)
+            iconImageView!!.setImageTintList(ColorStateList.valueOf(getIconColor()))
         }
 
         if (!iconSpaceReserved) {
@@ -65,6 +68,8 @@ class MenuWidget : RelativeLayout {
         if (showEndArrow) {
             endArrowImageView!!.visibility = VISIBLE
         }
+
+        setCardCornerRadius(context, position, container!!)
     }
 
     fun setTitle(titleResId: Int) {
@@ -109,42 +114,38 @@ class MenuWidget : RelativeLayout {
         container!!.setOnLongClickListener(l)
     }
 
+    @ColorInt
+    private fun getIconColor(): Int {
+        val typedValue = TypedValue()
+        val a: TypedArray = context!!.obtainStyledAttributes(
+            typedValue.data,
+            intArrayOf(com.google.android.material.R.attr.colorPrimaryVariant)
+        )
+        val color: Int = a.getColor(0, 0)
+        a.recycle()
+        return color
+    }
+
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
+        iconImageView!!.imageTintList = ColorStateList.valueOf(getIconColor())
+        endArrowImageView!!.imageTintList = ColorStateList.valueOf(
+            MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorOnSurface
+            )
+        )
+
         if (enabled) {
-            val typedValue = TypedValue()
-            val a = context.obtainStyledAttributes(
-                typedValue.data,
-                intArrayOf(com.google.android.material.R.attr.colorPrimary)
-            )
-            val color = a.getColor(0, 0)
-            a.recycle()
-
-            iconImageView!!.imageTintList = ColorStateList.valueOf(color)
-            endArrowImageView!!.imageTintList = ColorStateList.valueOf(
-                MaterialColors.getColor(
-                    this,
-                    com.google.android.material.R.attr.colorOnSurface
-                )
-            )
-
             titleTextView!!.alpha = 1.0f
+            iconImageView!!.alpha = 1.0f
+            endArrowImageView!!.alpha = 1.0f
             summaryTextView!!.alpha = 0.8f
         } else {
-            if (isDarkMode) {
-                iconImageView!!.imageTintList =
-                    ColorStateList.valueOf(Color.DKGRAY)
-                endArrowImageView!!.imageTintList =
-                    ColorStateList.valueOf(Color.DKGRAY)
-            } else {
-                iconImageView!!.imageTintList =
-                    ColorStateList.valueOf(Color.LTGRAY)
-                endArrowImageView!!.imageTintList =
-                    ColorStateList.valueOf(Color.LTGRAY)
-            }
-
             titleTextView!!.alpha = 0.6f
+            iconImageView!!.alpha = 0.4f
+            endArrowImageView!!.alpha = 0.4f
             summaryTextView!!.alpha = 0.4f
         }
 

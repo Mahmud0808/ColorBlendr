@@ -13,31 +13,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
 import com.drdisagree.colorblendr.databinding.FragmentColorPaletteBinding
+import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
-import com.drdisagree.colorblendr.utils.colors.ColorUtil
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -48,17 +41,12 @@ import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
-class ColorPaletteFragment : Fragment() {
+class ColorPaletteFragment : BaseFragment() {
 
     private lateinit var binding: FragmentColorPaletteBinding
     private lateinit var colorTableRows: Array<LinearLayout>
-    private lateinit var sharedViewModel: SharedViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-    }
+    private val colorPaletteViewModel: ColorPaletteViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,13 +85,15 @@ class ColorPaletteFragment : Fragment() {
 
         sharedViewModel.getBooleanStates()
             .observe(getViewLifecycleOwner()) { stringBooleanMap: Map<String, Boolean> ->
-                this.updateBooleanStates(
-                    stringBooleanMap
-                )
+                this.updateBooleanStates(stringBooleanMap)
             }
 
         // Color table preview
-        initColorTablePreview(colorTableRows)
+        colorPaletteViewModel.colorPalette.observe(viewLifecycleOwner) { palette ->
+            if (palette.isNotEmpty()) {
+                initColorTablePreview(colorTableRows, palette)
+            }
+        }
     }
 
     private fun updateBooleanStates(stringBooleanMap: Map<String, Boolean>) {
@@ -112,16 +102,16 @@ class ColorPaletteFragment : Fragment() {
             try {
                 updatePreviewColors(
                     colorTableRows,
-                    generateModifiedColors()
+                    colorPaletteViewModel.colorPalette.value
                 )
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
     }
 
     private fun updatePreviewColors(
         colorTableRows: Array<LinearLayout>,
-        palette: ArrayList<ArrayList<Int>>?
+        palette: List<List<Int>>?
     ) {
         if (palette == null) return
 
@@ -138,47 +128,49 @@ class ColorPaletteFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun initColorTablePreview(colorTableRows: Array<LinearLayout>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val systemColors = generateModifiedColors()
+    private fun initColorTablePreview(
+        colorTableRows: Array<LinearLayout>,
+        systemColors: List<List<Int>>
+    ) {
+        try {
+            for (i in colorTableRows.indices) {
+                for (j in 0 until colorTableRows[i].childCount) {
+                    val childView = colorTableRows[i].getChildAt(j)
+                    childView.background.setTint(systemColors[i][j])
+                    childView.tag = systemColors[i][j]
 
-                withContext(Dispatchers.Main) {
-                    for (i in colorTableRows.indices) {
-                        for (j in 0 until colorTableRows[i].childCount) {
-                            val childView = colorTableRows[i].getChildAt(j)
-                            childView.background.setTint(systemColors[i][j])
-                            childView.tag = systemColors[i][j]
-
-                            if (getInt(systemPaletteNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
-                                childView.background.setTint(getInt(systemPaletteNames[i][j], 0))
-                            }
-
-                            val textView = TextView(requireContext()).apply {
-                                text = colorCodes[j].toString()
-                                setTextColor(calculateTextColor(systemColors[i][j]))
-                                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-                                alpha = 0.8f
-                                setMaxLines(1)
-                                setSingleLine(true)
-                                setAutoSizeTextTypeUniformWithConfiguration(
-                                    1,
-                                    20,
-                                    1,
-                                    TypedValue.COMPLEX_UNIT_SP
-                                )
-                            }
-
-                            (childView as ViewGroup).addView(textView)
-                            (childView as LinearLayout).gravity = Gravity.CENTER
-                        }
+                    if (getInt(systemPaletteNames[i][j], Int.MIN_VALUE) != Int.MIN_VALUE) {
+                        childView.background.setTint(getInt(systemPaletteNames[i][j], 0))
                     }
 
-                    enablePaletteOnClickListener(colorTableRows)
+                    val textView = TextView(requireContext()).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                        text = colorCodes[j].toString()
+                        textAlignment = View.TEXT_ALIGNMENT_CENTER
+                        setTextColor(calculateTextColor(systemColors[i][j]))
+                        setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                        alpha = 0.8f
+                        setMaxLines(1)
+                        setSingleLine(true)
+                        setAutoSizeTextTypeUniformWithConfiguration(
+                            1,
+                            20,
+                            1,
+                            TypedValue.COMPLEX_UNIT_SP
+                        )
+                    }
+
+                    (childView as ViewGroup).addView(textView)
+                    (childView as LinearLayout).gravity = Gravity.CENTER
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error initializing color table preview", e)
             }
+
+            enablePaletteOnClickListener(colorTableRows)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing color table preview", e)
         }
     }
 
@@ -228,7 +220,7 @@ class ColorPaletteFragment : Fragment() {
                             }
 
                             ColorPickerDialog()
-                                .withCornerRadius(10f)
+                                .withCornerRadius(24f)
                                 .withColor(v.tag as Int)
                                 .withAlphaEnabled(false)
                                 .withPicker(ImagePickerView::class.java)
@@ -247,11 +239,9 @@ class ColorPaletteFragment : Fragment() {
                                             updateColorAppliedTimestamp()
                                             delay(200)
                                             withContext(Dispatchers.IO) {
-                                                try {
-                                                    applyFabricatedColors()
-                                                } catch (ignored: Exception) {
-                                                }
+                                                applyFabricatedColors()
                                             }
+                                            colorPaletteViewModel.refreshData()
                                         }
                                     }
                                 }
@@ -277,27 +267,14 @@ class ColorPaletteFragment : Fragment() {
                     CoroutineScope(Dispatchers.Main).launch {
                         updateColorAppliedTimestamp()
                         withContext(Dispatchers.IO) {
-                            try {
-                                applyFabricatedColors()
-                            } catch (ignored: Exception) {
-                            }
+                            applyFabricatedColors()
                         }
+                        colorPaletteViewModel.refreshData()
                     }
                     true
                 }
             }
         }
-    }
-
-    private fun generateModifiedColors(): ArrayList<ArrayList<Int>> {
-        return ColorUtil.generateModifiedColors(
-            getCurrentMonetStyle(),
-            getAccentSaturation(),
-            getBackgroundSaturation(),
-            getBackgroundLightness(),
-            pitchBlackThemeEnabled(),
-            accurateShadesEnabled()
-        )
     }
 
     companion object {

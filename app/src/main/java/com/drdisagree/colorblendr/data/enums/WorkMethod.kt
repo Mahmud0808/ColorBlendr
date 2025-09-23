@@ -3,13 +3,14 @@ package com.drdisagree.colorblendr.data.enums
 enum class WorkMethod {
     NULL,
     ROOT,
-    SHIZUKU;
+    SHIZUKU,
+    WIRELESS_ADB;
 
     companion object {
         fun fromString(str: String?): WorkMethod {
             return try {
                 valueOf(str!!)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 NULL
             }
         }

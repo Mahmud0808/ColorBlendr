@@ -1,5 +1,5 @@
 <resources>
-    <style name="Base.Theme.ColorBlendr" parent="Theme.Material3.DayNight">
+    <style name="Base.Theme.ColorBlendr" parent="Theme.Material3Expressive.DayNight">
         <!-- Window layout. -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -20,6 +20,7 @@
         <item name="snackbarStyle">@style/SnackBarStyle</item>
         <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextView</item>
         <item name="snackbarButtonStyle">@style/SnackBarStyle.Button</item>
+        <item name="actionOverflowMenuStyle">@style/PopupMenuDefault</item>
     </style>
 
     <style name="Base.Theme" parent="Base.Theme.ColorBlendr" />

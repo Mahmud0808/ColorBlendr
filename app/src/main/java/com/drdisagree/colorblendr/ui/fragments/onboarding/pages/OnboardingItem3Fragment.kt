@@ -99,7 +99,7 @@ class OnboardingItem3Fragment : Fragment() {
             backgroundColor = typedValue.data
 
             theme.resolveAttribute(
-                com.google.android.material.R.attr.colorPrimary,
+                com.google.android.material.R.attr.colorPrimaryVariant,
                 typedValue,
                 true
             )
@@ -113,7 +113,7 @@ class OnboardingItem3Fragment : Fragment() {
             backgroundColor = typedValue.data
 
             theme.resolveAttribute(
-                com.google.android.material.R.attr.colorError,
+                com.google.android.material.R.attr.colorPrimaryVariant,
                 typedValue,
                 true
             )

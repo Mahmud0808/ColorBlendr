@@ -4,6 +4,7 @@
     android:id="@+id/outlinedTextField"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    style="@style/RoundedTextInputLayout"
     android:layout_gravity="center"
     android:hint="Label"
     tools:ignore="HardcodedText">

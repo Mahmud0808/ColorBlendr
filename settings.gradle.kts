@@ -25,3 +25,5 @@ rootProject.name = "ColorBlendr"
 
 include(":app")
 include(":systemstubs")
+include(":libadb")
+include(":colorpickerdialog")

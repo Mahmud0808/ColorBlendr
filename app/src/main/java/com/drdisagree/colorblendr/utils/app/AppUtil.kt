@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.utils.app
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +18,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 object AppUtil {
+
     val REQUIRED_PERMISSIONS: Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(
             Manifest.permission.POST_NOTIFICATIONS,
@@ -26,10 +28,6 @@ object AppUtil {
         )
 
     fun permissionsGranted(context: Context): Boolean {
-        if (!hasStoragePermission()) {
-            return false
-        }
-
         for (permission in REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(
                     context,
@@ -48,10 +46,13 @@ object AppUtil {
     }
 
     fun requestStoragePermission(context: Context) {
-        val intent = Intent()
-        intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-        intent.setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
-        (context as Activity).startActivityForResult(intent, 0)
+        (context as Activity).startActivityForResult(
+            Intent().apply {
+                action = Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+            },
+            0
+        )
 
         ActivityCompat.requestPermissions(
             context, arrayOf(
@@ -62,11 +63,31 @@ object AppUtil {
         )
     }
 
+    fun hasNotificationPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED)
+        } else {
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+            notificationManager != null && notificationManager.areNotificationsEnabled()
+        }
+    }
+
+    fun openAppNotificationSettings(context: Context) {
+        context.startActivity(
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            }
+        )
+    }
+
     fun openAppSettings(context: Context) {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", context.packageName, null)
-        intent.setData(uri)
-        context.startActivity(intent)
+        context.startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", context.packageName, null)
+            }
+        )
     }
 
     fun readJsonFileFromAssets(fileName: String): String {

@@ -8,6 +8,7 @@ import android.content.om.IOverlayManager
 import android.content.om.OverlayIdentifier
 import android.content.om.OverlayManagerTransaction
 import android.content.pm.PackageManager
+import android.content.pm.UserInfo
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -64,7 +65,7 @@ class RootConnection : RootService() {
                         try {
                             enableOverlayWithIdentifier(listOf(FABRICATED_OVERLAY_NAME_SYSTEM))
                             Log.d(TAG, "SystemUI restarted, re-enabling overlay")
-                        } catch (ignored: RemoteException) {
+                        } catch (_: RemoteException) {
                             // Overlay was never registered
                         }
                     }, 3000)
@@ -196,22 +197,26 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusive(packageName: String): Boolean {
-            var result = false
+            var currentUserResult = false
             var currentUserListed = false
-            val profiles = mUserManager.getProfiles(currentUserId, true)
+            val thisUserId = currentUserId
+            val profiles = mUserManager.getProfiles(thisUserId, true)
 
             profiles.forEach { userInfo ->
                 try {
-                    if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getUserIdentifier()
-                        val tempResult = mOverlayManager.setEnabledExclusive(
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
+                        val result = mOverlayManager.setEnabledExclusive(
                             packageName,
                             true,
                             userId
                         )
-                        if (userId == currentUserId) {
+
+                        // Capture result only for current user
+                        if (userId == thisUserId) {
                             currentUserListed = true
-                            result = tempResult
+                            currentUserResult = result
                         }
                     }
                 } catch (e: Exception) {
@@ -224,10 +229,15 @@ class RootConnection : RootService() {
             }
 
             if (!currentUserListed) {
-                result = mOverlayManager.setEnabledExclusive(packageName, true, currentUserId)
+                // If the current user was not listed, we still need to enable the overlay for them
+                currentUserResult = mOverlayManager.setEnabledExclusive(
+                    packageName,
+                    true,
+                    thisUserId
+                )
             }
 
-            return result
+            return currentUserResult
         }
 
         /**
@@ -244,21 +254,25 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun enableOverlayExclusiveInCategory(packageName: String): Boolean {
-            var result = false
+            var currentUserResult = false
             var currentUserListed = false
-            val profiles = mUserManager.getProfiles(currentUserId, true)
+            val thisUserId = currentUserId
+            val profiles = mUserManager.getProfiles(thisUserId, true)
 
             profiles.forEach { userInfo ->
                 try {
-                    if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getUserIdentifier()
-                        val tempResult = mOverlayManager.setEnabledExclusiveInCategory(
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
+                        val result = mOverlayManager.setEnabledExclusiveInCategory(
                             packageName,
-                            userInfo.userHandle.getUserIdentifier()
+                            userId
                         )
-                        if (userId == currentUserId) {
+
+                        // Capture result only for current user
+                        if (userId == thisUserId) {
                             currentUserListed = true
-                            result = tempResult
+                            currentUserResult = result
                         }
                     }
                 } catch (e: Exception) {
@@ -271,10 +285,14 @@ class RootConnection : RootService() {
             }
 
             if (!currentUserListed) {
-                result = mOverlayManager.setEnabledExclusiveInCategory(packageName, currentUserId)
+                // If the current user was not listed, we still need to enable the overlay for them
+                currentUserResult = mOverlayManager.setEnabledExclusiveInCategory(
+                    packageName,
+                    thisUserId
+                )
             }
 
-            return result
+            return currentUserResult
         }
 
         /**
@@ -459,21 +477,25 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setHighestPriority(packageName: String): Boolean {
-            var result = false
+            var currentUserResult = false
             var currentUserListed = false
-            val profiles = mUserManager.getProfiles(currentUserId, true)
+            val thisUserId = currentUserId
+            val profiles = mUserManager.getProfiles(thisUserId, true)
 
             profiles.forEach { userInfo ->
                 try {
-                    if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getUserIdentifier()
-                        val tempResult = mOverlayManager.setHighestPriority(
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
+                        val result = mOverlayManager.setHighestPriority(
                             packageName,
                             userId
                         )
-                        if (userId == currentUserId) {
+
+                        // Capture result only for current user
+                        if (userId == thisUserId) {
                             currentUserListed = true
-                            result = tempResult
+                            currentUserResult = result
                         }
                     }
                 } catch (e: Exception) {
@@ -486,10 +508,14 @@ class RootConnection : RootService() {
             }
 
             if (!currentUserListed) {
-                result = mOverlayManager.setHighestPriority(packageName, currentUserId)
+                // If the current user was not listed, we still need to set the overlay as highest priority for them
+                currentUserResult = mOverlayManager.setHighestPriority(
+                    packageName,
+                    thisUserId
+                )
             }
 
-            return result
+            return currentUserResult
         }
 
         /**
@@ -508,21 +534,25 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun setLowestPriority(packageName: String): Boolean {
-            var result = false
+            var currentUserResult = false
             var currentUserListed = false
-            val profiles = mUserManager.getProfiles(currentUserId, true)
+            val thisUserId = currentUserId
+            val profiles = mUserManager.getProfiles(thisUserId, true)
 
             profiles.forEach { userInfo ->
                 try {
-                    if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getUserIdentifier()
-                        val tempResult = mOverlayManager.setLowestPriority(
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
+                        val result = mOverlayManager.setLowestPriority(
                             packageName,
                             userId
                         )
-                        if (userId == currentUserId) {
+
+                        // Capture result only for current user
+                        if (userId == thisUserId) {
                             currentUserListed = true
-                            result = tempResult
+                            currentUserResult = result
                         }
                     }
                 } catch (e: Exception) {
@@ -535,10 +565,14 @@ class RootConnection : RootService() {
             }
 
             if (!currentUserListed) {
-                result = mOverlayManager.setLowestPriority(packageName, currentUserId)
+                // If the current user was not listed, we still need to set the overlay as lowest priority for them
+                currentUserResult = mOverlayManager.setLowestPriority(
+                    packageName,
+                    thisUserId
+                )
             }
 
-            return result
+            return currentUserResult
         }
 
         /**
@@ -570,17 +604,20 @@ class RootConnection : RootService() {
         @Throws(RemoteException::class)
         override fun invalidateCachesForOverlay(packageName: String) {
             var currentUserListed = false
-            val profiles = mUserManager.getProfiles(currentUserId, true)
+            val thisUserId = currentUserId
+            val profiles = mUserManager.getProfiles(thisUserId, true)
 
             profiles.forEach { userInfo ->
                 try {
-                    if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getUserIdentifier()
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
                         mOverlayManager.invalidateCachesForOverlay(
                             packageName,
                             userId
                         )
-                        if (userId == currentUserId) {
+
+                        if (userId == thisUserId) {
                             currentUserListed = true
                         }
                     }
@@ -594,24 +631,31 @@ class RootConnection : RootService() {
             }
 
             if (!currentUserListed) {
-                mOverlayManager.invalidateCachesForOverlay(packageName, currentUserId)
+                // If the current user was not listed, we still need to invalidate caches for them
+                mOverlayManager.invalidateCachesForOverlay(
+                    packageName,
+                    thisUserId
+                )
             }
         }
 
         private fun switchOverlay(packageName: String, enable: Boolean) {
             var currentUserListed = false
-            val profiles = mUserManager.getProfiles(currentUserId, true)
+            val thisUserId = currentUserId
+            val profiles = mUserManager.getProfiles(thisUserId, true)
 
             profiles.forEach { userInfo ->
                 try {
-                    if (userInfo.isProfile) {
-                        val userId = userInfo.userHandle.getUserIdentifier()
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
                         mOverlayManager.setEnabled(
                             packageName,
                             enable,
                             userId
                         )
-                        if (userId == currentUserId) {
+
+                        if (userId == thisUserId) {
                             currentUserListed = true
                         }
                     }
@@ -625,7 +669,12 @@ class RootConnection : RootService() {
             }
 
             if (!currentUserListed) {
-                mOverlayManager.setEnabled(packageName, enable, currentUserId)
+                // If the current user was not listed, we still need to set the overlay for them
+                mOverlayManager.setEnabled(
+                    packageName,
+                    enable,
+                    thisUserId
+                )
             }
         }
 
@@ -641,20 +690,23 @@ class RootConnection : RootService() {
                     Int::class.javaPrimitiveType
                 )
 
+                val thisUserId = currentUserId
                 var currentUserListed = false
-                val profiles = mUserManager.getProfiles(currentUserId, true)
+                val profiles = mUserManager.getProfiles(thisUserId, true)
 
                 profiles.forEach { userInfo ->
                     try {
-                        if (userInfo.isProfile) {
-                            val userId = userInfo.userHandle.getUserIdentifier()
+                        val userId = userInfo.userHandle.getUserIdentifier()
+
+                        if (userInfo.isProfile || userId == thisUserId) {
                             setEnabledMethod.invoke(
                                 omtbInstance,
                                 identifier,
                                 enable,
                                 userId
                             )
-                            if (userId == currentUserId) {
+
+                            if (userId == thisUserId) {
                                 currentUserListed = true
                             }
                         }
@@ -668,11 +720,12 @@ class RootConnection : RootService() {
                 }
 
                 if (!currentUserListed) {
+                    // If the current user was not listed, we still need to set the overlay for them
                     setEnabledMethod.invoke(
                         omtbInstance,
                         identifier,
                         enable,
-                        currentUserId
+                        thisUserId
                     )
                 }
 
@@ -737,7 +790,7 @@ class RootConnection : RootService() {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
 
             private val currentUserId: Int
-                get() = Process.myUserHandle().getUserIdentifier()
+                get() = getForegroundUserId()
 
             private val SystemUI_UID: Int
                 get() = try {
@@ -817,6 +870,46 @@ class RootConnection : RootService() {
                 } catch (e: Exception) {
                     Log.e(TAG, "generateOverlayIdentifier: ", e)
                     return null
+                }
+            }
+
+            @Suppress("DiscouragedPrivateApi", "UNCHECKED_CAST", "Unused")
+            private fun getAllUsers(): List<UserInfo> {
+                return try {
+                    val method = mUserManager.javaClass.getMethod(
+                        "getUsers",
+                        Boolean::class.javaPrimitiveType,
+                        Boolean::class.javaPrimitiveType,
+                        Boolean::class.javaPrimitiveType
+                    )
+                    method.isAccessible = true
+                    method.invoke(
+                        mUserManager,
+                        true, // excludePartial
+                        false, // excludeDying
+                        false // excludePreCreated
+                    ) as List<UserInfo>
+                } catch (e: Exception) {
+                    Log.w(TAG, "Falling back to getProfiles()", e)
+                    mUserManager.getProfiles(currentUserId, true)
+                }
+            }
+
+            @SuppressLint("DiscouragedPrivateApi")
+            private fun getForegroundUserId(): Int {
+                return try {
+                    val method = mActivityManager.javaClass.getMethod("getCurrentUser")
+                    method.isAccessible = true
+                    val result = method.invoke(mActivityManager)
+
+                    when (result) {
+                        is Int -> result
+                        is UserInfo -> result.userHandle.getUserIdentifier()
+                        else -> throw IllegalStateException("Unexpected return type from ActivityManager.getCurrentUser(): ${result?.javaClass}")
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to get current foreground user", e)
+                    Process.myUserHandle().getUserIdentifier()
                 }
             }
 

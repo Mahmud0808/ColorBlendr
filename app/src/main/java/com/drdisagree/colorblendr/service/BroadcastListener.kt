@@ -15,9 +15,10 @@ import com.drdisagree.colorblendr.data.common.Utilities.getLastColorAppliedTimes
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorJson
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
-import com.drdisagree.colorblendr.data.common.Utilities.isRootOrShizukuUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
@@ -57,7 +58,8 @@ class BroadcastListener : BroadcastReceiver() {
                     handleBootCompleted(context)
                 }
 
-                Intent.ACTION_WALLPAPER_CHANGED -> {
+                Intent.ACTION_WALLPAPER_CHANGED,
+                Intent.ACTION_USER_FOREGROUND -> {
                     handleWallpaperChanged(context, true)
                 }
 
@@ -208,7 +210,9 @@ class BroadcastListener : BroadcastReceiver() {
 
     @Synchronized
     private fun updateAllColors(force: Boolean = false) {
-        if ((!isThemingEnabled() && !isShizukuThemingEnabled()) || isRootOrShizukuUnknown()) return
+        if ((!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled())
+            || isWorkMethodUnknown()
+        ) return
 
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()

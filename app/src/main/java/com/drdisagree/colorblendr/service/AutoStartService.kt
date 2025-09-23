@@ -112,7 +112,7 @@ class AutoStartService : Service() {
 
     private fun showNotification() {
         val notificationIntent = Intent().apply {
-            setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
             putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
@@ -149,6 +149,7 @@ class AutoStartService : Service() {
         val intentFilterWithoutScheme = IntentFilter().apply {
             @Suppress("DEPRECATION")
             addAction(Intent.ACTION_WALLPAPER_CHANGED)
+            addAction(Intent.ACTION_USER_FOREGROUND)
             addAction(Intent.ACTION_CONFIGURATION_CHANGED)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_SCREEN_OFF)

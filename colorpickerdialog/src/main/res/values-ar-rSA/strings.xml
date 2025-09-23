@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">متنقي الألوان</string>
+    <string name="colorPickerDialog_preset">إعدادات</string>
+    <string name="colorPickerDialog_image">صورة</string>
+    <string name="colorPickerDialog_imageColorPicker">اختيار اللون من الصورة</string>
+    <string name="colorPickerDialog_grant_permissions">منح الصلاحيات</string>
+    <string name="colorPickerDialog_msg_grant_permissions">الرجاء منح صلاحيات \"التخزين الخارجي\" للمتابعة.</string>
+    <string name="colorPickerDialog_msg_image_invalid">تعذر استخدام هذه الصورة.</string>
+    <string name="colorPickerDialog_title_all_photos">جميع الصور</string>
+</resources>

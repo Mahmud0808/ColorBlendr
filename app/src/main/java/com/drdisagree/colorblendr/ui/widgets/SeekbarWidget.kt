@@ -12,7 +12,9 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
 import java.text.DecimalFormat
 import java.util.Objects
 
@@ -65,6 +67,7 @@ class SeekbarWidget : RelativeLayout {
         isDecimalFormat = typedArray.getBoolean(R.styleable.SeekbarWidget_isDecimalFormat, false)
         decimalFormat = typedArray.getString(R.styleable.SeekbarWidget_decimalFormat)
         outputScale = typedArray.getFloat(R.styleable.SeekbarWidget_outputScale, 1f)
+        val position = typedArray.getInt(R.styleable.SeekbarWidget_position, 0)
         typedArray.recycle()
 
         if (valueFormat == null) {
@@ -79,6 +82,7 @@ class SeekbarWidget : RelativeLayout {
         handleResetVisibility()
         setOnSeekbarChangeListener(null)
         setResetClickListener(null)
+        setCardCornerRadius(context, position, container!!)
     }
 
     fun setTitle(titleResId: Int) {
@@ -199,12 +203,27 @@ class SeekbarWidget : RelativeLayout {
         resetIcon!!.isEnabled = enabled
         seekBar!!.isEnabled = enabled
 
+        val textIconColor = MaterialColors.getColor(
+            titleTextView!!,
+            if (enabled) {
+                com.google.android.material.R.attr.colorOnPrimaryContainer
+            } else {
+                com.google.android.material.R.attr.colorOnSurface
+            }
+        )
+
+        titleTextView!!.setTextColor(textIconColor)
+        summaryTextView!!.setTextColor(textIconColor)
+        resetIcon!!.setColorFilter(textIconColor)
+
         if (enabled) {
             titleTextView!!.alpha = 1.0f
             summaryTextView!!.alpha = 0.8f
+            resetIcon!!.alpha = 1.0f
         } else {
-            titleTextView!!.alpha = 0.6f
-            summaryTextView!!.alpha = 0.4f
+            titleTextView!!.alpha = 0.5f
+            summaryTextView!!.alpha = 0.3f
+            resetIcon!!.alpha = 0.5f
         }
     }
 

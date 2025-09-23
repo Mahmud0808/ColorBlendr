@@ -1,0 +1,19 @@
+<resources>
+    <string name="colorPickerDialog_dialogName">Color Picker</string>
+    <string name="colorPickerDialog_red" translatable="false">R</string>
+    <string name="colorPickerDialog_blue" translatable="false">B</string>
+    <string name="colorPickerDialog_green" translatable="false">G</string>
+    <string name="colorPickerDialog_alpha" translatable="false">A</string>
+    <string name="colorPickerDialog_hue" translatable="false">H</string>
+    <string name="colorPickerDialog_saturation" translatable="false">S</string>
+    <string name="colorPickerDialog_brightness" translatable="false">V</string>
+    <string name="colorPickerDialog_rgb" translatable="false">RGB</string>
+    <string name="colorPickerDialog_hsv" translatable="false">HSV</string>
+    <string name="colorPickerDialog_preset">Preset</string>
+    <string name="colorPickerDialog_image">Image</string>
+    <string name="colorPickerDialog_imageColorPicker">Pick Color from Image</string>
+    <string name="colorPickerDialog_grant_permissions">Grant Permissions</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Please grant the \'External Storage\' permissions to continue.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Couldn\'t use this image.</string>
+    <string name="colorPickerDialog_title_all_photos">All Photos</string>
+</resources>

@@ -90,7 +90,11 @@ class PerAppThemeFragment : Fragment() {
                 setShowPerAppThemeWarning(false)
                 binding.warn.container.animate()
                     .translationX(binding.warn.container.width * 2f).alpha(0f).withEndAction {
-                        binding.warn.container.visibility = View.GONE
+                        try {
+                            binding.warn.container.visibility = View.GONE
+                        } catch (_: Exception) {
+                            // Fragment was not attached to activity
+                        }
                     }.start()
             }
         }
@@ -111,7 +115,7 @@ class PerAppThemeFragment : Fragment() {
 
     private fun initAppList(appType: AppType) {
         binding.recyclerView.visibility = View.GONE
-        binding.progressBar.visibility = View.VISIBLE
+        binding.loadingIndicator.visibility = View.VISIBLE
         binding.searchBox.search.removeTextChangedListener(textWatcher)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -124,7 +128,7 @@ class PerAppThemeFragment : Fragment() {
                     binding.recyclerView.adapter = adapter
                     binding.searchBox.search.addTextChangedListener(textWatcher)
 
-                    binding.progressBar.visibility = View.GONE
+                    binding.loadingIndicator.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
 
                     binding.searchBox.clear.setOnClickListener {
@@ -252,7 +256,7 @@ class PerAppThemeFragment : Fragment() {
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home && isAdded) {
             parentFragmentManager.popBackStackImmediate()
             return true
         }

@@ -16,7 +16,8 @@
         style="@style/Widget.Material3.CardView.Outlined"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardBackgroundColor="@color/transparent">
+        app:cardBackgroundColor="@color/transparent"
+        app:cardCornerRadius="@dimen/container_corner_radius">
 
         <LinearLayout
             android:id="@+id/search_card"

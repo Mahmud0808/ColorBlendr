@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.agp.app)
@@ -8,16 +9,16 @@ plugins {
 
 android {
     namespace = "com.drdisagree.colorblendr"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 31
-        targetSdk = 35
-        versionCode = 26
-        versionName = "v1.11.5"
+        targetSdk = 36
+        versionCode = 35
+        versionName = "v2.0.0"
 
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
         }
     }
 
@@ -64,23 +65,37 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
     lint {
         abortOnError = true
         checkReleaseBuilds = false
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
     }
 
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
     }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 }
 
 dependencies {
     compileOnly(project(":systemstubs"))
+    implementation(project(":libadb"))
+    implementation(project(":colorpickerdialog"))
 
     implementation(libs.core.ktx)
     implementation(libs.libsu.core)
@@ -97,7 +112,6 @@ dependencies {
     implementation(libs.circleimageview)
     implementation(libs.glide)
     implementation(libs.preference.ktx)
-    implementation(libs.androidUtils)
     implementation(libs.core.splashscreen)
     implementation(libs.work.runtime)
     implementation(libs.palette)
@@ -112,4 +126,5 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.zip4j)
+    implementation(libs.sun.security.android)
 }

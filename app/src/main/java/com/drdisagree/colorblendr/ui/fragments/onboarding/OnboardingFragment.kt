@@ -8,6 +8,7 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
@@ -30,6 +31,7 @@ import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem3F
 import com.drdisagree.colorblendr.ui.fragments.onboarding.pages.OnboardingItem4Fragment
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
@@ -100,6 +102,10 @@ class OnboardingFragment : Fragment() {
                     WorkMethod.SHIZUKU -> {
                         checkShizukuConnection()
                     }
+
+                    WorkMethod.WIRELESS_ADB -> {
+                        checkAdbConnection()
+                    }
                 }
 
                 return@setOnClickListener
@@ -152,6 +158,18 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    private fun checkAdbConnection() {
+        if (WifiAdbShell.isMyDeviceConnected()) {
+            goToHomeFragment()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                R.string.wireless_adb_not_connected,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     private fun goToHomeFragment() {
         lifecycleScope.launch {
             try {
@@ -177,7 +195,7 @@ class OnboardingFragment : Fragment() {
     private fun animateBackButton(position: Int) {
         val duration = 300
 
-        if (position == 0 && binding.btnPrev.visibility == View.VISIBLE) {
+        if (position == 0 && binding.btnPrev.isVisible) {
             val fadeOut = getFadeOutAnimation(duration)
             binding.btnPrev.startAnimation(fadeOut)
         } else if (position != 0 && binding.btnPrev.visibility != View.VISIBLE) {
@@ -247,7 +265,11 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onBackPressed() {
-        if (binding.viewPager.currentItem == 0) {
+        val fragmentManager = requireActivity().supportFragmentManager
+
+        if (fragmentManager.backStackEntryCount > 0) {
+            fragmentManager.popBackStack()
+        } else if (binding.viewPager.currentItem == 0) {
             requireActivity().finish()
         } else {
             binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)

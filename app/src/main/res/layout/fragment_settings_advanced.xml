@@ -28,6 +28,7 @@
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_paint"
                 app:previewColor="@android:color/white"
+                app:position="top"
                 app:summaryText="@string/custom_secondary_color_summary"
                 app:titleText="@string/custom_secondary_color_desc" />
 
@@ -37,6 +38,7 @@
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_paint"
                 app:previewColor="@android:color/white"
+                app:position="bottom"
                 app:summaryText="@string/custom_tertiary_color_desc"
                 app:titleText="@string/custom_tertiary_color_title" />
 
@@ -61,6 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_dark_icon"
+                app:position="top"
                 app:summaryText="@string/darker_launcher_icons_desc"
                 app:titleText="@string/darker_launcher_icons_title" />
 
@@ -69,6 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_semi_transparent"
+                app:position="bottom"
                 app:summaryText="@string/semitransparent_launcher_desc"
                 app:titleText="@string/semitransparent_launcher_title" />
 

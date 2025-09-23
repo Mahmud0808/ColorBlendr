@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="colorPickerDialog_dialogName">Výběr barvy</string>
+    <string name="colorPickerDialog_preset">Předvolba</string>
+    <string name="colorPickerDialog_image">Z fotky</string>
+    <string name="colorPickerDialog_imageColorPicker">Vybrat barvu z obrázku</string>
+    <string name="colorPickerDialog_grant_permissions">Udělit oprávnění</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Pro pokračování udělte oprávnění \'Externí úložiště\'.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Tento obrázek nelze použít.</string>
+    <string name="colorPickerDialog_title_all_photos">Všechny fotky</string>
+</resources>
