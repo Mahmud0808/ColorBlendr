@@ -12,12 +12,7 @@ android {
         aarMetadata {
             minCompileSdk = 31
         }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-        }
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
     compileOptions {
