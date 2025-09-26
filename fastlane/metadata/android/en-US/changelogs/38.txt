@@ -1,0 +1,6 @@
+Changelog:
+
+• Stripped unnecessary files to reduce app size
+• Fixed translations and added per-app language preferences
+
+Translation credit goes to all the contributors on our Crowdin platform.
