@@ -38,7 +38,7 @@
     <string name="background_saturation">Background saturation</string>
     <string name="background_lightness">Background lightness</string>
     <!-- Styles -->
-    <string name="monet_neutral">Neutral</string>
+    <string name="monet_neutral">Neutro</string>
     <string name="monet_neutral_desc">Lively and refreshing color palette inspired by the effervescence of spritz beverages.</string>
     <string name="monet_monochrome">Monochrome</string>
     <string name="monet_monochrome_desc">Harmonious scheme using variations of a single hue for a sleek and minimalist aesthetic.</string>

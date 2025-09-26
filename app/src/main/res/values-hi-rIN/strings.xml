@@ -2,12 +2,12 @@
 <resources>
     <string name="app_moto">Express yourself with colors</string>
     <!-- Tabs -->
-    <string name="colors">Colors</string>
-    <string name="theme">Theme</string>
+    <string name="colors">रंग</string>
+    <string name="theme">थीम</string>
     <string name="styles">Styles</string>
-    <string name="settings">Settings</string>
+    <string name="settings">सेटिंग</string>
     <!-- Colors -->
-    <string name="wallpaper_colors">Wallpaper colors</string>
+    <string name="wallpaper_colors">वालपेपर के रंग</string>
     <string name="basic_colors">Basic colors</string>
     <string name="seed_color_picker_title">Custom primary color</string>
     <string name="seed_color_picker_desc">Create palette based on custom color</string>
@@ -18,9 +18,9 @@
     <!-- Color palette -->
     <string name="color_palette_root_warn">Tap on any color in the palette to customize its appearance; long press to reset to the default color.</string>
     <string name="color_palette_rootless_warn">Tap on any color in the palette to copy its hexadecimal color code.</string>
-    <string name="primary">Primary</string>
-    <string name="secondary">Secondary</string>
-    <string name="tertiary">Tertiary</string>
+    <string name="primary">प्राथमिक</string>
+    <string name="secondary">द्वितीयक</string>
+    <string name="tertiary">तृतीयक</string>
     <string name="neutral_1">Neutral 1</string>
     <string name="neutral_2">Neutral 2</string>
     <string name="color_code">Color code: %s</string>
