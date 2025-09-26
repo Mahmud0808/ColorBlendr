@@ -1,5 +1,7 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.agp.app)
@@ -22,10 +24,29 @@ android {
         }
     }
 
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    var releaseSigning = signingConfigs.getByName("debug")
+
+    try {
+        val keystoreProperties = Properties()
+        FileInputStream(keystorePropertiesFile).use { inputStream ->
+            keystoreProperties.load(inputStream)
+        }
+
+        releaseSigning = signingConfigs.create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    } catch (_: Exception) {
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
             isShrinkResources = false
+            signingConfig = releaseSigning
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -36,6 +57,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = releaseSigning
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -88,7 +110,25 @@ android {
     packaging {
         jniLibs {
             useLegacyPackaging = true
+            excludes += setOf(
+                "/META-INF/*",
+                "/META-INF/versions/**",
+                "/org/bouncycastle/**",
+                "/kotlin/**",
+                "/kotlinx/**"
+            )
         }
+        resources.excludes += setOf(
+            "/META-INF/*",
+            "/META-INF/versions/**",
+            "/org/bouncycastle/**",
+            "/kotlin/**",
+            "/kotlinx/**",
+            "rebel.xml",
+            "/*.txt",
+            "/*.bin",
+            "/*.json"
+        )
     }
 }
 
