@@ -14,18 +14,18 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>42000 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/mikropsoft"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15972315/medium/23948a4df1f365f3bd7accc92c87bc4e.jpg" />
+          <br />
+          <sub><b>𝗛𝗼𝗹𝗶 (mikropsoft)</b></sub></a>
+        <br />
+        <sub><b>4130 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/strange977"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12483545/medium/d7a65be2b31ae56a243c1a5da6740b9d.jpg" />
           <br />
           <sub><b>Andrea Ferrario (strange977)</b></sub></a>
         <br />
         <sub><b>1293 words</b></sub>
-      </td>
-      <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/mikropsoft"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15972315/medium/23948a4df1f365f3bd7accc92c87bc4e.jpg" />
-          <br />
-          <sub><b>𝗛𝗼𝗹𝗶 (mikropsoft)</b></sub></a>
-        <br />
-        <sub><b>2209 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/kouzelnik3"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14254180/medium/8439fcdaec8fb0a9e7e7041f7c37b882_default.png" />
@@ -37,7 +37,7 @@ Thanks to these translators and proofreaders, this project exists:
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Darkon24"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
           <br />
-          <sub><b>Darkon24</b></sub></a>
+          <sub><b>XzyDev(old Darkon24) (Darkon24)</b></sub></a>
         <br />
         <sub><b>956 words</b></sub>
       </td>
