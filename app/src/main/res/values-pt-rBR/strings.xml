@@ -169,7 +169,7 @@
     <string name="pairing">Pareando</string>
     <string name="enter_pairing_code">Digite o código de pareamento</string>
     <string name="enter_six_digit_pairing_code">Digite o código de pareamento de seis dígitos</string>
-    <string name="searching_pairing_code">Searching for pairing code…</string>
+    <string name="searching_pairing_code">Procurando código de pareamento…</string>
     <string name="pairing_notification_hint">Você receberá uma notificação do ColorBlendr para ajudar no pareamento.</string>
     <string name="notification_access_not_granted">Para concluir o processo de pareamento, você precisará interagir com uma notificação do ColorBlendr. Permita o acesso de notificação ao ColorBlendr.</string>
     <string name="notification_settings">Configurações de notificação</string>

@@ -5,7 +5,7 @@
     <string name="colorPickerDialog_image">Imagem</string>
     <string name="colorPickerDialog_imageColorPicker">Escolha a cor da imagem</string>
     <string name="colorPickerDialog_grant_permissions">Conceder permissões</string>
-    <string name="colorPickerDialog_msg_grant_permissions">Por favor, conceda permissões de Armazenamento externo para continuar.</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Por favor, conceda a permissão de Armazenamento externo para continuar.</string>
     <string name="colorPickerDialog_msg_image_invalid">Não foi possível usar esta imagem.</string>
     <string name="colorPickerDialog_title_all_photos">Todas as fotos</string>
 </resources>

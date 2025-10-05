@@ -155,7 +155,7 @@
     <string name="file_access_permission_required">Pro generování barev tapety je vyžadován přístup k souborům.</string>
     <string name="choose_method">Vyberte metodu</string>
     <string name="select_method">Vyberte metodu pro pokračování</string>
-    <string name="mode_one_title">Root</string>
+    <string name="mode_one_title">Kořenový adresář</string>
     <string name="mode_one_desc">Použít root přístup pro změnu barev. Všechny možnosti přizpůsobení budou k dispozici.</string>
     <string name="root_service_not_found">Root oprávnění nebylo uděleno.</string>
     <string name="mode_two_title">Shizuku</string>
@@ -169,7 +169,7 @@
     <string name="pairing">Párování</string>
     <string name="enter_pairing_code">Zadejte párovací kód</string>
     <string name="enter_six_digit_pairing_code">Zadejte šestimístný párovací kód</string>
-    <string name="searching_pairing_code">Searching for pairing code…</string>
+    <string name="searching_pairing_code">Vyhledávání kódu pro párování…</string>
     <string name="pairing_notification_hint">Obdržíte oznámení od ColorBlendru, aby vám pomohl s párováním.</string>
     <string name="notification_access_not_granted">Pro dokončení procesu párování budete muset interagovat s oznámením od ColorBlendr. Prosím povolte přístup k upozornění od ColorBlendr.</string>
     <string name="notification_settings">Nastavení upozornění</string>
