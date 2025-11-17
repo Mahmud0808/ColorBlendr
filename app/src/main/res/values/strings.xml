@@ -66,6 +66,8 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
     <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
 
     <!-- Settings -->
