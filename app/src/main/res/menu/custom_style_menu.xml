@@ -6,6 +6,11 @@
         android:iconTint="?attr/colorOnSurface"
         android:title="@string/edit" />
     <item
+        android:id="@+id/update"
+        android:icon="@drawable/ic_renew"
+        android:iconTint="?attr/colorOnSurface"
+        android:title="@string/update" />
+    <item
         android:id="@+id/delete"
         android:icon="@drawable/ic_delete"
         android:iconTint="?attr/colorOnSurface"

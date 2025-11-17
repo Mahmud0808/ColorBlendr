@@ -238,6 +238,15 @@ class StylePreviewAdapter(
                             true
                         }
 
+                        R.id.update -> {
+                            fragment.showUpdateConfirmation {
+                                coroutineScope.launch {
+                                    fragment.updateCustomStyle(styleId = customStyle.styleId)
+                                }
+                            }
+                            true
+                        }
+
                         R.id.delete -> {
                             fragment.showDeleteConfirmation {
                                 coroutineScope.launch {
@@ -269,6 +278,15 @@ class StylePreviewAdapter(
             // update current selected position
             notifyItemChanged(bindingAdapterPosition)
             selectedPosition = bindingAdapterPosition
+        }
+
+        private fun Fragment.showUpdateConfirmation(onConfirm: () -> Unit) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.update_style_confirmation_title)
+                .setMessage(R.string.update_style_confirmation_desc)
+                .setPositiveButton(R.string.update) { _, _ -> onConfirm() }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
 
         private fun Fragment.showDeleteConfirmation(onConfirm: () -> Unit) {

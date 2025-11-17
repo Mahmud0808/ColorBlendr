@@ -245,9 +245,43 @@ class StylesFragment : BaseFragment() {
         }
     }
 
-    suspend fun deleteCustomStyle(
-        styleId: String
-    ) {
+    suspend fun updateCustomStyle(styleId: String) {
+        val customStyle = customStyleRepository.getCustomStyleById(styleId)
+        if (customStyle != null) {
+            val allPrefs = Prefs.getAllPrefs()
+            for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
+                allPrefs.remove(excludedPref)
+            }
+
+            val currentMonet = getCurrentMonetStyle()
+            val updatedPalette = ColorUtil.generateModifiedColors(
+                currentMonet,
+                getAccentSaturation(),
+                getBackgroundSaturation(),
+                getBackgroundLightness(),
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
+            )
+
+            val updatedStyle = customStyle.copy(
+                prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
+                monet = currentMonet,
+                palette = updatedPalette
+            )
+
+            customStyleRepository.updateCustomStyle(updatedStyle)
+            styleAdapter?.updateStyle(
+                StyleModel(
+                    isEnabled = true,
+                    monetStyle = updatedStyle.monet,
+                    customStyle = updatedStyle
+                )
+            )
+            stylesViewModel.refreshData()
+        }
+    }
+
+    suspend fun deleteCustomStyle(styleId: String) {
         val customStyle = customStyleRepository.getCustomStyleById(styleId)
         if (customStyle != null) {
             customStyleRepository.deleteCustomStyle(customStyle)
