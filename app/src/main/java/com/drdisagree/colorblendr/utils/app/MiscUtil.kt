@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -211,6 +212,22 @@ object MiscUtil {
         val padding = typedArray.getDimensionPixelSize(0, toPx(20))
         typedArray.recycle()
         return padding
+    }
+
+    fun PopupMenu.showIcons() {
+        try {
+            val fields = PopupMenu::class.java.getDeclaredField("mPopup")
+            fields.isAccessible = true
+            val menuPopupHelper = fields.get(this)
+            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+            val setForceIcons = classPopupHelper.getMethod(
+                "setForceShowIcon",
+                Boolean::class.javaPrimitiveType
+            )
+            setForceIcons.invoke(menuPopupHelper, true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
 

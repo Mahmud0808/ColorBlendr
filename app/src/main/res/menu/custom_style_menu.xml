@@ -2,8 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/edit"
+        android:icon="@drawable/ic_edit"
+        android:iconTint="?attr/colorOnSurface"
         android:title="@string/edit" />
     <item
         android:id="@+id/delete"
+        android:icon="@drawable/ic_delete"
+        android:iconTint="?attr/colorOnSurface"
         android:title="@string/delete" />
 </menu>
