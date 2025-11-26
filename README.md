@@ -44,8 +44,10 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 - Android 12+ ROM with Material You support
 
 - Working **Root**, **Shizuku**, or **Wireless ADB** environment
-> [!WARNING]  
-> SuperSU/Superuser root doesn't work with this app
+
+> [!WARNING]
+> 
+> SuperSU root is not supported.
 
 ## How to Use 🚀
 
