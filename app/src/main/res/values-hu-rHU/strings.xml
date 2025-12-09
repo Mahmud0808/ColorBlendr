@@ -60,7 +60,15 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
     <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="update_style_confirmation_title">Update style?</string>
+    <string name="update_style_confirmation_desc">Are you sure you want to update this custom style using your current theme?</string>
+    <string name="delete_style_confirmation_title">Delete style?</string>
+    <string name="delete_style_confirmation_desc">Are you sure you want to delete this custom style?</string>
     <!-- Settings -->
     <string name="app_service_title">%s szolgáltatás</string>
     <string name="app_service_desc_on">A tematizálás aktív</string>

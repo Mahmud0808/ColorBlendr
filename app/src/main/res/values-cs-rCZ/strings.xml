@@ -60,7 +60,15 @@
     <string name="title">Název</string>
     <string name="description">Popis</string>
     <string name="save">Uložit</string>
+    <string name="edit">Upravit</string>
+    <string name="update">Aktualizovat</string>
+    <string name="delete">Odstranit</string>
+    <string name="cancel">Zrušit</string>
     <string name="title_and_desc_cant_be_empty">Název a popis nesmí být prázdný</string>
+    <string name="update_style_confirmation_title">Aktualizovat styl?</string>
+    <string name="update_style_confirmation_desc">Jste si jisti, že chcete aktualizovat tento vlastní styl pomocí vašeho aktuálního motivu?</string>
+    <string name="delete_style_confirmation_title">Smazat styl?</string>
+    <string name="delete_style_confirmation_desc">Opravdu chcete odstranit tento vlastní styl?</string>
     <!-- Settings -->
     <string name="app_service_title">Služba %s</string>
     <string name="app_service_desc_on">Motiv je aktivní</string>
