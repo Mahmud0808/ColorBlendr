@@ -60,7 +60,15 @@
     <string name="title">Titolo</string>
     <string name="description">Descrizione</string>
     <string name="save">Salva</string>
+    <string name="edit">Modifica</string>
+    <string name="update">Aggiorna</string>
+    <string name="delete">Elimina</string>
+    <string name="cancel">Annulla</string>
     <string name="title_and_desc_cant_be_empty">Titolo e descrizione non possono essere vuoti</string>
+    <string name="update_style_confirmation_title">Aggiornare stile?</string>
+    <string name="update_style_confirmation_desc">Sei sicuro di voler aggiornare questo stile personalizzato utilizzando il tuo tema attuale?</string>
+    <string name="delete_style_confirmation_title">Eliminare stile?</string>
+    <string name="delete_style_confirmation_desc">Sei sicuro di voler eliminare questo stile personalizzato?</string>
     <!-- Settings -->
     <string name="app_service_title">%s servizio</string>
     <string name="app_service_desc_on">Il tema è attivo</string>

@@ -60,7 +60,15 @@
     <string name="title">Başlık</string>
     <string name="description">Açıklama</string>
     <string name="save">Kaydet</string>
+    <string name="edit">Düzenle</string>
+    <string name="update">Güncelle</string>
+    <string name="delete">Sil</string>
+    <string name="cancel">İptal</string>
     <string name="title_and_desc_cant_be_empty">Başlık ve açıklama boş bırakılamaz</string>
+    <string name="update_style_confirmation_title">Stil güncellensin mi?</string>
+    <string name="update_style_confirmation_desc">Bu özel stili mevcut temanızı kullanarak güncellemek istediğinizden emin misiniz?</string>
+    <string name="delete_style_confirmation_title">Stil silinsin mi?</string>
+    <string name="delete_style_confirmation_desc">Bu özel stili silmek istediğinizden emin misiniz?</string>
     <!-- Settings -->
     <string name="app_service_title">%s hizmeti</string>
     <string name="app_service_desc_on">Temalandırma etkin</string>
