@@ -106,6 +106,14 @@ class SettingsAdvancedFragment : BaseFragment() {
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
         }
 
+        // ColorSpec version 2025
+        binding.colorspecVersion.isSwitchChecked = getColorSpecVersion2025Enabled()
+        binding.colorspecVersion.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
+            setColorSpecVersion2025Enabled(isChecked)
+            updateColors()
+        }
+
         // Update colors on screen off
         binding.screenOffUpdate.isSwitchChecked = screenOffColorUpdateEnabled()
         binding.screenOffUpdate.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
@@ -114,14 +122,6 @@ class SettingsAdvancedFragment : BaseFragment() {
             if (!isChecked) {
                 updateColors()
             }
-        }
-
-        // ColorSpec version 2025
-        binding.colorspecVersion.isSwitchChecked = getColorSpecVersion2025Enabled()
-        binding.colorspecVersion.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            resetCustomStyleIfNotNull()
-            setColorSpecVersion2025Enabled(isChecked)
-            updateColors()
         }
 
         // Mode specific themes

@@ -43,22 +43,22 @@
                 app:titleText="@string/custom_tertiary_color_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
-                android:id="@+id/screen_off_update"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:icon="@drawable/ic_update"
-                app:position="top"
-                app:summaryText="@string/screen_off_update_desc"
-                app:titleText="@string/screen_off_update_title" />
-
-            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/colorspec_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_star_shine"
-                app:position="mid"
+                app:position="top"
                 app:summaryText="@string/colorspec_desc"
                 app:titleText="@string/colorspec_title" />
+
+            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+                android:id="@+id/screen_off_update"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_update"
+                app:position="mid"
+                app:summaryText="@string/screen_off_update_desc"
+                app:titleText="@string/screen_off_update_title" />
 
             <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
                 android:id="@+id/mode_specific_themes"
