@@ -107,6 +107,7 @@ class SettingsAdvancedFragment : BaseFragment() {
         }
 
         // ColorSpec version 2025
+        binding.colorspecVersion.isEnabled = isRootMode()
         binding.colorspecVersion.isSwitchChecked = getColorSpecVersion2025Enabled()
         binding.colorspecVersion.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
