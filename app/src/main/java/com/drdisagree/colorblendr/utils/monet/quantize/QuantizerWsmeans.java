@@ -34,27 +34,43 @@ import java.util.Random;
  * the Performance of K-Means for Color Quantization. https://arxiv.org/abs/1101.0395
  */
 public final class QuantizerWsmeans {
-    private static final int MAX_ITERATIONS = 10;
-    private static final double MIN_MOVEMENT_DISTANCE = 3.0;
-
     private QuantizerWsmeans() {
     }
+
+    private static final class Distance implements Comparable<Distance> {
+        int index;
+        double distance;
+
+        Distance() {
+            this.index = -1;
+            this.distance = -1;
+        }
+
+        @Override
+        public int compareTo(Distance other) {
+            return ((Double) this.distance).compareTo(other.distance);
+        }
+    }
+
+    private static final int MAX_ITERATIONS = 10;
+    private static final double MIN_MOVEMENT_DISTANCE = 3.0;
 
     /**
      * Reduce the number of colors needed to represented the input, minimizing the difference between
      * the original image and the recolored image.
      *
-     * @param inputPixels      Colors in ARGB format.
+     * @param inputPixels Colors in ARGB format.
      * @param startingClusters Defines the initial state of the quantizer. Passing an empty array is
-     *                         fine, the implementation will create its own initial state that leads to reproducible
-     *                         results for the same inputs. Passing an array that is the result of Wu quantization leads
-     *                         to higher quality results.
-     * @param maxColors        The number of colors to divide the image into. A lower number of colors may be
-     *                         returned.
+     *     fine, the implementation will create its own initial state that leads to reproducible
+     *     results for the same inputs. Passing an array that is the result of Wu quantization leads
+     *     to higher quality results.
+     * @param maxColors The number of colors to divide the image into. A lower number of colors may be
+     *     returned.
      * @return Map with keys of colors in ARGB format, values of how many of the input pixels belong
-     * to the color.
+     *     to the color.
      */
-    public static Map<Integer, Integer> quantize(int[] inputPixels, int[] startingClusters, int maxColors) {
+    public static Map<Integer, Integer> quantize(
+            int[] inputPixels, int[] startingClusters, int maxColors) {
         // Uses a seeded random number generator to ensure consistent results.
         Random random = new Random(0x42688);
 
@@ -157,7 +173,8 @@ public final class QuantizerWsmeans {
                     }
                 }
                 if (newClusterIndex != -1) {
-                    double distanceChange = Math.abs(Math.sqrt(minimumDistance) - Math.sqrt(previousDistance));
+                    double distanceChange =
+                            Math.abs(Math.sqrt(minimumDistance) - Math.sqrt(previousDistance));
                     if (distanceChange > MIN_MOVEMENT_DISTANCE) {
                         pointsMoved++;
                         clusterIndices[i] = newClusterIndex;
@@ -214,20 +231,5 @@ public final class QuantizerWsmeans {
         }
 
         return argbToPopulation;
-    }
-
-    private static final class Distance implements Comparable<Distance> {
-        int index;
-        double distance;
-
-        Distance() {
-            this.index = -1;
-            this.distance = -1;
-        }
-
-        @Override
-        public int compareTo(Distance other) {
-            return ((Double) this.distance).compareTo(other.distance);
-        }
     }
 }

@@ -15,17 +15,48 @@
  */
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpec;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpecs;
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
-import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
-import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
 
 /**
  * A calm theme, sedated colors that aren't particularly chromatic.
  */
 public class SchemeTonalSpot extends DynamicScheme {
+
     public SchemeTonalSpot(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(sourceColorHct, Variant.TONAL_SPOT, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 36.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 16.0), TonalPalette.fromHueAndChroma(MathUtils.sanitizeDegreesDouble(sourceColorHct.getHue() + 60.0), 24.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 6.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 8.0));
+        this(sourceColorHct, isDark, contrastLevel, DEFAULT_SPEC_VERSION, DEFAULT_PLATFORM);
+    }
+
+    public SchemeTonalSpot(
+            Hct sourceColorHct,
+            boolean isDark,
+            double contrastLevel,
+            ColorSpec.SpecVersion specVersion,
+            Platform platform) {
+        super(
+                sourceColorHct,
+                Variant.TONAL_SPOT,
+                isDark,
+                contrastLevel,
+                platform,
+                specVersion,
+                ColorSpecs.get(specVersion)
+                        .getPrimaryPalette(Variant.TONAL_SPOT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getSecondaryPalette(
+                                Variant.TONAL_SPOT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getTertiaryPalette(
+                                Variant.TONAL_SPOT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getNeutralPalette(Variant.TONAL_SPOT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getNeutralVariantPalette(
+                                Variant.TONAL_SPOT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getErrorPalette(Variant.TONAL_SPOT, sourceColorHct, isDark, platform, contrastLevel));
     }
 }

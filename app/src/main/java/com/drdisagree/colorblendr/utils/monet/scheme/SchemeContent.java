@@ -16,12 +16,11 @@
 
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
-import com.drdisagree.colorblendr.utils.monet.dislike.DislikeAnalyzer;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpec;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpecs;
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
-import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
-import com.drdisagree.colorblendr.utils.monet.temperature.TemperatureCache;
 
 /**
  * A scheme that places the source color in Scheme.primaryContainer.
@@ -36,7 +35,36 @@ import com.drdisagree.colorblendr.utils.monet.temperature.TemperatureCache;
  * appearance.
  */
 public class SchemeContent extends DynamicScheme {
+
     public SchemeContent(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(sourceColorHct, Variant.CONTENT, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), sourceColorHct.getChroma()), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), Math.max(sourceColorHct.getChroma() - 32.0, sourceColorHct.getChroma() * 0.5)), TonalPalette.fromHct(DislikeAnalyzer.fixIfDisliked(new TemperatureCache(sourceColorHct).getAnalogousColors(/* count= */ 3, /* divisions= */ 6).get(2))), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), sourceColorHct.getChroma() / 8.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), (sourceColorHct.getChroma() / 8.0) + 4.0));
+        this(sourceColorHct, isDark, contrastLevel, DEFAULT_SPEC_VERSION, DEFAULT_PLATFORM);
+    }
+
+    public SchemeContent(
+            Hct sourceColorHct,
+            boolean isDark,
+            double contrastLevel,
+            ColorSpec.SpecVersion specVersion,
+            Platform platform) {
+        super(
+                sourceColorHct,
+                Variant.CONTENT,
+                isDark,
+                contrastLevel,
+                platform,
+                specVersion,
+                ColorSpecs.get(specVersion)
+                        .getPrimaryPalette(Variant.CONTENT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getSecondaryPalette(Variant.CONTENT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getTertiaryPalette(Variant.CONTENT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getNeutralPalette(Variant.CONTENT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getNeutralVariantPalette(
+                                Variant.CONTENT, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getErrorPalette(Variant.CONTENT, sourceColorHct, isDark, platform, contrastLevel));
     }
 }

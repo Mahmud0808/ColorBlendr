@@ -28,6 +28,15 @@ import androidx.annotation.NonNull;
  */
 public final class ToneDeltaPair {
     /**
+     * Describes how to fulfill a tone delta pair constraint.
+     */
+    public enum DeltaConstraint {
+        EXACT,
+        NEARER,
+        FARTHER
+    }
+
+    /**
      * The first role in a pair.
      */
     private final DynamicColor roleA;
@@ -37,14 +46,10 @@ public final class ToneDeltaPair {
      */
     private final DynamicColor roleB;
 
-    /**
-     * Required difference between tones. Absolute value, negative values have undefined behavior.
-     */
+    /** Required difference between tones. Absolute value, negative values have undefined behavior. */
     private final double delta;
 
-    /**
-     * The relative relation between tones of roleA and roleB, as described above.
-     */
+    /** The relative relation between tones of roleA and roleB, as described above. */
     private final TonePolarity polarity;
 
     /**
@@ -54,6 +59,11 @@ public final class ToneDeltaPair {
     private final boolean stayTogether;
 
     /**
+     * How to fulfill the tone delta pair constraint.
+     */
+    private final DeltaConstraint constraint;
+
+    /**
      * Documents a constraint in tone distance between two DynamicColors.
      *
      * <p>The polarity is an adjective that describes "A", compared to "B".
@@ -61,24 +71,56 @@ public final class ToneDeltaPair {
      * <p>For instance, ToneDeltaPair(A, B, 15, 'darker', stayTogether) states that A's tone should be
      * at least 15 darker than B's.
      *
-     * <p>'nearer' and 'farther' describes closeness to the surface roles. For instance,
-     * ToneDeltaPair(A, B, 10, 'nearer', stayTogether) states that A should be 10 lighter than B in
-     * light mode, and 10 darker than B in dark mode.
+     * <p>'relative_darker' and 'relative_lighter' describes the tone adjustment relative to the
+     * surface color trend (white in light mode; black in dark mode). For instance, ToneDeltaPair(A,
+     * B, 10, 'relative_lighter', 'farther') states that A should be at least 10 lighter than B in
+     * light mode, and at least 10 darker than B in dark mode.
      *
-     * @param roleA        The first role in a pair.
-     * @param roleB        The second role in a pair.
-     * @param delta        Required difference between tones. Absolute value, negative values have undefined
-     *                     behavior.
-     * @param polarity     The relative relation between tones of roleA and roleB, as described above.
+     * @param roleA The first role in a pair.
+     * @param roleB The second role in a pair.
+     * @param delta Required difference between tones. Absolute value, negative values have undefined
+     *     behavior.
+     * @param polarity The relative relation between tones of roleA and roleB, as described above.
      * @param stayTogether Whether these two roles should stay on the same side of the "awkward zone"
-     *                     (T50-59). This is necessary for certain cases where one role has two backgrounds.
+     *     (T50-59). This is necessary for certain cases where one role has two backgrounds.
      */
-    public ToneDeltaPair(DynamicColor roleA, DynamicColor roleB, double delta, TonePolarity polarity, boolean stayTogether) {
+    public ToneDeltaPair(
+            DynamicColor roleA,
+            DynamicColor roleB,
+            double delta,
+            TonePolarity polarity,
+            boolean stayTogether) {
         this.roleA = roleA;
         this.roleB = roleB;
         this.delta = delta;
         this.polarity = polarity;
         this.stayTogether = stayTogether;
+        this.constraint = DeltaConstraint.EXACT;
+    }
+
+    /**
+     * Documents a constraint in tone distance between two DynamicColors.
+     *
+     * @param roleA      The first role in a pair.
+     * @param roleB      The second role in a pair.
+     * @param delta      Required difference between tones. Absolute value, negative values have undefined
+     *                   behavior.
+     * @param polarity   The relative relation between tones of roleA and roleB, as described above.
+     * @param constraint How to fulfill the tone delta pair constraint.
+     * @see #ToneDeltaPair(DynamicColor, DynamicColor, double, TonePolarity, boolean)
+     */
+    public ToneDeltaPair(
+            DynamicColor roleA,
+            DynamicColor roleB,
+            double delta,
+            TonePolarity polarity,
+            DeltaConstraint constraint) {
+        this.roleA = roleA;
+        this.roleB = roleB;
+        this.delta = delta;
+        this.polarity = polarity;
+        this.stayTogether = true;
+        this.constraint = constraint;
     }
 
     @NonNull
@@ -91,7 +133,6 @@ public final class ToneDeltaPair {
         return roleB;
     }
 
-    @NonNull
     public double getDelta() {
         return delta;
     }
@@ -101,8 +142,12 @@ public final class ToneDeltaPair {
         return polarity;
     }
 
-    @NonNull
     public boolean getStayTogether() {
         return stayTogether;
+    }
+
+    @NonNull
+    public DeltaConstraint getConstraint() {
+        return constraint;
     }
 }

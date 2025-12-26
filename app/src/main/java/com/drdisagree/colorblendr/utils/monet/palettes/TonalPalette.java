@@ -23,19 +23,14 @@ import java.util.Map;
 
 /**
  * A convenience class for retrieving colors that are constant in hue and chroma, but vary in tone.
+ *
+ * <p>TonalPalette is intended for use in a single thread due to its stateful caching.
  */
 public final class TonalPalette {
     Map<Integer, Integer> cache;
     Hct keyColor;
     double hue;
     double chroma;
-
-    private TonalPalette(double hue, double chroma, Hct keyColor) {
-        cache = new HashMap<>();
-        this.hue = hue;
-        this.chroma = chroma;
-        this.keyColor = keyColor;
-    }
 
     /**
      * Create tones using the HCT hue and chroma from a color.
@@ -60,7 +55,7 @@ public final class TonalPalette {
     /**
      * Create tones from a defined HCT hue and chroma.
      *
-     * @param hue    HCT hue
+     * @param hue HCT hue
      * @param chroma HCT chroma
      * @return Tones matching hue and chroma.
      */
@@ -69,18 +64,27 @@ public final class TonalPalette {
         return new TonalPalette(hue, chroma, keyColor);
     }
 
+    private TonalPalette(double hue, double chroma, Hct keyColor) {
+        cache = new HashMap<>();
+        this.hue = hue;
+        this.chroma = chroma;
+        this.keyColor = keyColor;
+    }
+
     /**
      * Create an ARGB color with HCT hue and chroma of this Tones instance, and the provided HCT tone.
      *
      * @param tone HCT tone, measured from 0 to 100.
      * @return ARGB representation of a color with that tone.
      */
-    // AndroidJdkLibsChecker is higher priority than ComputeIfAbsentUseValue (b/119581923)
-    @SuppressWarnings("ComputeIfAbsentUseValue")
     public int tone(int tone) {
         Integer color = cache.get(tone);
         if (color == null) {
-            color = Hct.from(this.hue, this.chroma, tone).toInt();
+            if (tone == 99 && Hct.isYellow(this.hue)) {
+                color = averageArgb(this.tone(98), this.tone(100));
+            } else {
+                color = Hct.from(this.hue, this.chroma, tone).toInt();
+            }
             cache.put(tone, color);
         }
         return color;
@@ -100,33 +104,39 @@ public final class TonalPalette {
         return this.chroma;
     }
 
-    /**
-     * The hue of the Tonal Palette, in HCT. Ranges from 0 to 360.
-     */
+    /** The hue of the Tonal Palette, in HCT. Ranges from 0 to 360. */
     public double getHue() {
         return this.hue;
     }
 
-    /**
-     * The key color is the first tone, starting from T50, that matches the palette's chroma.
-     */
+    /** The key color is the first tone, starting from T50, that matches the palette's chroma. */
     public Hct getKeyColor() {
         return this.keyColor;
     }
 
-    /**
-     * Key color is a color that represents the hue and chroma of a tonal palette.
-     */
+    private int averageArgb(int argb1, int argb2) {
+        int red1 = (argb1 >>> 16) & 0xff;
+        int green1 = (argb1 >>> 8) & 0xff;
+        int blue1 = argb1 & 0xff;
+        int red2 = (argb2 >>> 16) & 0xff;
+        int green2 = (argb2 >>> 8) & 0xff;
+        int blue2 = argb2 & 0xff;
+        int red = Math.round((red1 + red2) / 2f);
+        int green = Math.round((green1 + green2) / 2f);
+        int blue = Math.round((blue1 + blue2) / 2f);
+        return (255 << 24 | (red & 255) << 16 | (green & 255) << 8 | (blue & 255)) >>> 0;
+    }
+
+    /** Key color is a color that represents the hue and chroma of a tonal palette. */
     private static final class KeyColor {
-        private static final double MAX_CHROMA_VALUE = 200.0;
         private final double hue;
         private final double requestedChroma;
+
         // Cache that maps tone to max chroma to avoid duplicated HCT calculation.
         private final Map<Integer, Double> chromaCache = new HashMap<>();
+        private static final double MAX_CHROMA_VALUE = 200.0;
 
-        /**
-         * Key color is a color that represents the hue and chroma of a tonal palette
-         */
+        /** Key color is a color that represents the hue and chroma of a tonal palette */
         public KeyColor(double hue, double requestedChroma) {
             this.hue = hue;
             this.requestedChroma = requestedChroma;
@@ -183,7 +193,13 @@ public final class TonalPalette {
 
         // Find the maximum chroma for a given tone
         private double maxChroma(int tone) {
-            return chromaCache.computeIfAbsent(tone, (Integer key) -> Hct.from(hue, MAX_CHROMA_VALUE, key).getChroma());
+            if (chromaCache.get(tone) == null) {
+                Double newChroma = Hct.from(hue, MAX_CHROMA_VALUE, tone).getChroma();
+                if (newChroma != null) {
+                    chromaCache.put(tone, newChroma);
+                }
+            }
+            return chromaCache.get(tone);
         }
     }
 }

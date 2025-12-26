@@ -25,12 +25,30 @@ package com.drdisagree.colorblendr.utils.monet.utils;
  * CAM16.
  */
 public class ColorUtils {
-    static final double[][] SRGB_TO_XYZ = new double[][]{new double[]{0.41233895, 0.35762064, 0.18051042}, new double[]{0.2126, 0.7152, 0.0722}, new double[]{0.01932141, 0.11916382, 0.95034478},};
-    static final double[][] XYZ_TO_SRGB = new double[][]{new double[]{3.2413774792388685, -1.5376652402851851, -0.49885366846268053,}, new double[]{-0.9691452513005321, 1.8758853451067872, 0.04156585616912061,}, new double[]{0.05562093689691305, -0.20395524564742123, 1.0571799111220335,},};
-    static final double[] WHITE_POINT_D65 = new double[]{95.047, 100.0, 108.883};
-
     private ColorUtils() {
     }
+
+    static final double[][] SRGB_TO_XYZ =
+            new double[][]{
+                    new double[]{0.41233895, 0.35762064, 0.18051042},
+                    new double[]{0.2126, 0.7152, 0.0722},
+                    new double[]{0.01932141, 0.11916382, 0.95034478},
+            };
+
+    static final double[][] XYZ_TO_SRGB =
+            new double[][]{
+                    new double[]{
+                            3.2413774792388685, -1.5376652402851851, -0.49885366846268053,
+                    },
+                    new double[]{
+                            -0.9691452513005321, 1.8758853451067872, 0.04156585616912061,
+                    },
+                    new double[]{
+                            0.05562093689691305, -0.20395524564742123, 1.0571799111220335,
+                    },
+            };
+
+    static final double[] WHITE_POINT_D65 = new double[]{95.047, 100.0, 108.883};
 
     /**
      * Converts a color from RGB components to ARGB format.
@@ -49,44 +67,32 @@ public class ColorUtils {
         return argbFromRgb(r, g, b);
     }
 
-    /**
-     * Returns the alpha component of a color in ARGB format.
-     */
+    /** Returns the alpha component of a color in ARGB format. */
     public static int alphaFromArgb(int argb) {
         return (argb >> 24) & 255;
     }
 
-    /**
-     * Returns the red component of a color in ARGB format.
-     */
+    /** Returns the red component of a color in ARGB format. */
     public static int redFromArgb(int argb) {
         return (argb >> 16) & 255;
     }
 
-    /**
-     * Returns the green component of a color in ARGB format.
-     */
+    /** Returns the green component of a color in ARGB format. */
     public static int greenFromArgb(int argb) {
         return (argb >> 8) & 255;
     }
 
-    /**
-     * Returns the blue component of a color in ARGB format.
-     */
+    /** Returns the blue component of a color in ARGB format. */
     public static int blueFromArgb(int argb) {
         return argb & 255;
     }
 
-    /**
-     * Returns whether a color in ARGB format is opaque.
-     */
+    /** Returns whether a color in ARGB format is opaque. */
     public static boolean isOpaque(int argb) {
         return alphaFromArgb(argb) >= 255;
     }
 
-    /**
-     * Converts a color from ARGB to XYZ.
-     */
+    /** Converts a color from ARGB to XYZ. */
     public static int argbFromXyz(double x, double y, double z) {
         double[][] matrix = XYZ_TO_SRGB;
         double linearR = matrix[0][0] * x + matrix[0][1] * y + matrix[0][2] * z;
@@ -98,9 +104,7 @@ public class ColorUtils {
         return argbFromRgb(r, g, b);
     }
 
-    /**
-     * Converts a color from XYZ to ARGB.
-     */
+    /** Converts a color from XYZ to ARGB. */
     public static double[] xyzFromArgb(int argb) {
         double r = linearized(redFromArgb(argb));
         double g = linearized(greenFromArgb(argb));
@@ -108,9 +112,7 @@ public class ColorUtils {
         return MathUtils.matrixMultiply(new double[]{r, g, b}, SRGB_TO_XYZ);
     }
 
-    /**
-     * Converts a color represented in Lab color space into an ARGB integer.
-     */
+    /** Converts a color represented in Lab color space into an ARGB integer. */
     public static int argbFromLab(double l, double a, double b) {
         double[] whitePoint = WHITE_POINT_D65;
         double fy = (l + 16.0) / 116.0;
@@ -149,7 +151,7 @@ public class ColorUtils {
         double l = 116.0 * fy - 16;
         double a = 500.0 * (fx - fy);
         double b = 200.0 * (fy - fz);
-        return new double[]{l, a, b};
+        return new double[] {l, a, b};
     }
 
     /**
@@ -267,4 +269,3 @@ public class ColorUtils {
         }
     }
 }
-

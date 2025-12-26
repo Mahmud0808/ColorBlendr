@@ -16,9 +16,6 @@
 
 package com.drdisagree.colorblendr.utils.monet.dynamiccolor;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -26,8 +23,8 @@ import com.drdisagree.colorblendr.utils.monet.contrast.Contrast;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -50,20 +47,15 @@ import java.util.function.Function;
  * flexibility, any desired behavior of a color for any design system, but it usually unnecessary.
  * See the default constructor for more information.
  */
-// Prevent lint for Function.apply not being available on Android before API level 14 (4.0.1).
-// "AndroidJdkLibsChecker" for Function, "NewApi" for Function.apply().
-// A java_library Bazel rule with an Android constraint cannot skip these warnings without this
-// annotation; another solution would be to create an android_library rule and supply
-// AndroidManifest with an SDK set higher than 14.
-@SuppressWarnings({"AndroidJdkLibsChecker", "NewApi"})
 public final class DynamicColor {
     public final String name;
     public final Function<DynamicScheme, TonalPalette> palette;
     public final Function<DynamicScheme, Double> tone;
     public final boolean isBackground;
+    public final Function<DynamicScheme, Double> chromaMultiplier;
     public final Function<DynamicScheme, DynamicColor> background;
     public final Function<DynamicScheme, DynamicColor> secondBackground;
-    public final ContrastCurve contrastCurve;
+    public final Function<DynamicScheme, ContrastCurve> contrastCurve;
     public final Function<DynamicScheme, ToneDeltaPair> toneDeltaPair;
 
     public final Function<DynamicScheme, Double> opacity;
@@ -83,21 +75,21 @@ public final class DynamicColor {
      *
      * <p>For opaque colors (colors with alpha = 100%).
      *
-     * @param name             The name of the dynamic color.
-     * @param palette          Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
-     *                         defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
-     *                         a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
-     * @param tone             Function that provides a tone, given a DynamicScheme.
-     * @param isBackground     Whether this dynamic color is a background, with some other color as the
-     *                         foreground.
-     * @param background       The background of the dynamic color (as a function of a `DynamicScheme`), if
-     *                         it exists.
+     * @param name The name of the dynamic color.
+     * @param palette Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
+     *     defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
+     *     a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
+     * @param tone Function that provides a tone, given a DynamicScheme.
+     * @param isBackground Whether this dynamic color is a background, with some other color as the
+     *     foreground.
+     * @param background The background of the dynamic color (as a function of a `DynamicScheme`), if
+     *     it exists.
      * @param secondBackground A second background of the dynamic color (as a function of a
-     *                         `DynamicScheme`), if it exists.
-     * @param contrastCurve    A `ContrastCurve` object specifying how its contrast against its
-     *                         background should behave in various contrast levels options.
-     * @param toneDeltaPair    A `ToneDeltaPair` object specifying a tone delta constraint between two
-     *                         colors. One of them must be the color being constructed.
+     *     `DynamicScheme`), if it exists.
+     * @param contrastCurve A `ContrastCurve` object specifying how its contrast against its
+     *     background should behave in various contrast levels options.
+     * @param toneDeltaPair A `ToneDeltaPair` object specifying a tone delta constraint between two
+     *     colors. One of them must be the color being constructed.
      */
     public DynamicColor(
             @NonNull String name,
@@ -108,16 +100,16 @@ public final class DynamicColor {
             @Nullable Function<DynamicScheme, DynamicColor> secondBackground,
             @Nullable ContrastCurve contrastCurve,
             @Nullable Function<DynamicScheme, ToneDeltaPair> toneDeltaPair) {
-
-        this.name = name;
-        this.palette = palette;
-        this.tone = tone;
-        this.isBackground = isBackground;
-        this.background = background;
-        this.secondBackground = secondBackground;
-        this.contrastCurve = contrastCurve;
-        this.toneDeltaPair = toneDeltaPair;
-        this.opacity = null;
+        this(
+                name,
+                palette,
+                tone,
+                isBackground,
+                background,
+                secondBackground,
+                contrastCurve,
+                toneDeltaPair,
+                /* opacity= */ null);
     }
 
     /**
@@ -133,22 +125,22 @@ public final class DynamicColor {
      *
      * <p>For opaque colors (colors with alpha = 100%).
      *
-     * @param name             The name of the dynamic color.
-     * @param palette          Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
-     *                         defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
-     *                         a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
-     * @param tone             Function that provides a tone, given a DynamicScheme.
-     * @param isBackground     Whether this dynamic color is a background, with some other color as the
-     *                         foreground.
-     * @param background       The background of the dynamic color (as a function of a `DynamicScheme`), if
-     *                         it exists.
+     * @param name The name of the dynamic color.
+     * @param palette Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
+     *     defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
+     *     a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
+     * @param tone Function that provides a tone, given a DynamicScheme.
+     * @param isBackground Whether this dynamic color is a background, with some other color as the
+     *     foreground.
+     * @param background The background of the dynamic color (as a function of a `DynamicScheme`), if
+     *     it exists.
      * @param secondBackground A second background of the dynamic color (as a function of a
-     *                         `DynamicScheme`), if it exists.
-     * @param contrastCurve    A `ContrastCurve` object specifying how its contrast against its
-     *                         background should behave in various contrast levels options.
-     * @param toneDeltaPair    A `ToneDeltaPair` object specifying a tone delta constraint between two
-     *                         colors. One of them must be the color being constructed.
-     * @param opacity          A function returning the opacity of a color, as a number between 0 and 1.
+     *     `DynamicScheme`), if it exists.
+     * @param contrastCurve A `ContrastCurve` object specifying how its contrast against its
+     *     background should behave in various contrast levels options.
+     * @param toneDeltaPair A `ToneDeltaPair` object specifying a tone delta constraint between two
+     *     colors. One of them must be the color being constructed.
+     * @param opacity A function returning the opacity of a color, as a number between 0 and 1.
      */
     public DynamicColor(
             @NonNull String name,
@@ -160,10 +152,35 @@ public final class DynamicColor {
             @Nullable ContrastCurve contrastCurve,
             @Nullable Function<DynamicScheme, ToneDeltaPair> toneDeltaPair,
             @Nullable Function<DynamicScheme, Double> opacity) {
+        this(
+                name,
+                palette,
+                tone,
+                isBackground,
+                null,
+                background,
+                secondBackground,
+                (s) -> contrastCurve,
+                toneDeltaPair,
+                opacity);
+    }
+
+    public DynamicColor(
+            @NonNull String name,
+            @NonNull Function<DynamicScheme, TonalPalette> palette,
+            @NonNull Function<DynamicScheme, Double> tone,
+            boolean isBackground,
+            @Nullable Function<DynamicScheme, Double> chromaMultiplier,
+            @Nullable Function<DynamicScheme, DynamicColor> background,
+            @Nullable Function<DynamicScheme, DynamicColor> secondBackground,
+            @Nullable Function<DynamicScheme, ContrastCurve> contrastCurve,
+            @Nullable Function<DynamicScheme, ToneDeltaPair> toneDeltaPair,
+            @Nullable Function<DynamicScheme, Double> opacity) {
         this.name = name;
         this.palette = palette;
         this.tone = tone;
         this.isBackground = isBackground;
+        this.chromaMultiplier = chromaMultiplier;
         this.background = background;
         this.secondBackground = secondBackground;
         this.contrastCurve = contrastCurve;
@@ -186,11 +203,11 @@ public final class DynamicColor {
      *
      * <p>For colors that are not backgrounds, and do not have backgrounds.
      *
-     * @param name    The name of the dynamic color.
+     * @param name The name of the dynamic color.
      * @param palette Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
-     *                defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
-     *                a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
-     * @param tone    Function that provides a tone, given a DynamicScheme.
+     *     defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
+     *     a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
+     * @param tone Function that provides a tone, given a DynamicScheme.
      */
     @NonNull
     public static DynamicColor fromPalette(
@@ -223,13 +240,13 @@ public final class DynamicColor {
      *
      * <p>For colors that do not have backgrounds.
      *
-     * @param name         The name of the dynamic color.
-     * @param palette      Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
-     *                     defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
-     *                     a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
-     * @param tone         Function that provides a tone, given a DynamicScheme.
+     * @param name The name of the dynamic color.
+     * @param palette Function that provides a TonalPalette given DynamicScheme. A TonalPalette is
+     *     defined by a hue and chroma, so this replaces the need to specify hue/chroma. By providing
+     *     a tonal palette, when contrast adjustments are made, intended chroma can be preserved.
+     * @param tone Function that provides a tone, given a DynamicScheme.
      * @param isBackground Whether this dynamic color is a background, with some other color as the
-     *                     foreground.
+     *     foreground.
      */
     @NonNull
     public static DynamicColor fromPalette(
@@ -261,6 +278,52 @@ public final class DynamicColor {
         Hct hct = Hct.fromInt(argb);
         TonalPalette palette = TonalPalette.fromInt(argb);
         return DynamicColor.fromPalette(name, (s) -> palette, (s) -> hct.getTone());
+    }
+
+    /**
+     * Returns an ARGB integer (i.e. a hex code).
+     *
+     * @param scheme Defines the conditions of the user interface, for example, whether or not it is
+     *               dark mode or light mode, and what the desired contrast level is.
+     */
+    public int getArgb(@NonNull DynamicScheme scheme) {
+        int argb = getHct(scheme).toInt();
+        if (opacity == null || opacity.apply(scheme) == null) {
+            return argb;
+        }
+        double percentage = opacity.apply(scheme);
+        int alpha = MathUtils.clampInt(0, 255, (int) Math.round(percentage * 255));
+        return (argb & 0x00ffffff) | (alpha << 24);
+    }
+
+    /**
+     * Returns an HCT object.
+     *
+     * @param scheme Defines the conditions of the user interface, for example, whether or not it is
+     *               dark mode or light mode, and what the desired contrast level is.
+     */
+    @NonNull
+    public Hct getHct(@NonNull DynamicScheme scheme) {
+        Hct cachedAnswer = hctCache.get(scheme);
+        if (cachedAnswer != null) {
+            return cachedAnswer;
+        }
+
+        Hct answer = ColorSpecs.get(scheme.specVersion).getHct(scheme, this);
+        // NOMUTANTS--trivial test with onerous dependency injection requirement.
+        if (hctCache.size() > 4) {
+            hctCache.clear();
+        }
+        // NOMUTANTS--trivial test with onerous dependency injection requirement.
+        hctCache.put(scheme, answer);
+        return answer;
+    }
+
+    /**
+     * Returns the tone in HCT, ranging from 0 to 100, of the resolved color given scheme.
+     */
+    public double getTone(@NonNull DynamicScheme scheme) {
+        return ColorSpecs.get(scheme.specVersion).getTone(scheme, this);
     }
 
     /**
@@ -326,224 +389,216 @@ public final class DynamicColor {
         return Math.round(tone) <= 49;
     }
 
-    /**
-     * Returns an ARGB integer (i.e. a hex code).
-     *
-     * @param scheme Defines the conditions of the user interface, for example, whether or not it is
-     *               dark mode or light mode, and what the desired contrast level is.
-     */
-    public int getArgb(@NonNull DynamicScheme scheme) {
-        int argb = getHct(scheme).toInt();
-        if (opacity == null) {
-            return argb;
+    public static Function<DynamicScheme, Double> getInitialToneFromBackground(
+            @Nullable Function<DynamicScheme, DynamicColor> background) {
+        if (background == null) {
+            return (s) -> 50.0;
         }
-        double percentage = opacity.apply(scheme);
-        int alpha = MathUtils.clampInt(0, 255, (int) Math.round(percentage * 255));
-        return (argb & 0x00ffffff) | (alpha << 24);
+        return (s) -> background.apply(s) != null ? background.apply(s).getTone(s) : 50.0;
+    }
+
+    public Builder toBuilder() {
+        return new Builder()
+                .setName(this.name)
+                .setPalette(this.palette)
+                .setTone(this.tone)
+                .setIsBackground(this.isBackground)
+                .setChromaMultiplier(this.chromaMultiplier)
+                .setBackground(this.background)
+                .setSecondBackground(this.secondBackground)
+                .setContrastCurve(this.contrastCurve)
+                .setToneDeltaPair(this.toneDeltaPair)
+                .setOpacity(this.opacity);
     }
 
     /**
-     * Returns an HCT object.
-     *
-     * @param scheme Defines the conditions of the user interface, for example, whether or not it is
-     *               dark mode or light mode, and what the desired contrast level is.
+     * Builder for {@link DynamicColor}.
      */
-    @NonNull
-    public Hct getHct(@NonNull DynamicScheme scheme) {
-        Hct cachedAnswer = hctCache.get(scheme);
-        if (cachedAnswer != null) {
-            return cachedAnswer;
+    public static class Builder {
+        private String name;
+        private Function<DynamicScheme, TonalPalette> palette;
+        private Function<DynamicScheme, Double> tone;
+        private boolean isBackground;
+        private Function<DynamicScheme, Double> chromaMultiplier;
+        private Function<DynamicScheme, DynamicColor> background;
+        private Function<DynamicScheme, DynamicColor> secondBackground;
+        private Function<DynamicScheme, ContrastCurve> contrastCurve;
+        private Function<DynamicScheme, ToneDeltaPair> toneDeltaPair;
+        private Function<DynamicScheme, Double> opacity;
+
+        @CanIgnoreReturnValue
+        public Builder setName(@NonNull String name) {
+            this.name = name;
+            return this;
         }
-        // This is crucial for aesthetics: we aren't simply the taking the standard color
-        // and changing its tone for contrast. Rather, we find the tone for contrast, then
-        // use the specified chroma from the palette to construct a new color.
-        //
-        // For example, this enables colors with standard tone of T90, which has limited chroma, to
-        // "recover" intended chroma as contrast increases.
-        double tone = getTone(scheme);
-        Hct answer = palette.apply(scheme).getHct(tone);
-        // NOMUTANTS--trivial test with onerous dependency injection requirement.
-        if (hctCache.size() > 4) {
-            hctCache.clear();
+
+        @CanIgnoreReturnValue
+        public Builder setPalette(@NonNull Function<DynamicScheme, TonalPalette> palette) {
+            this.palette = palette;
+            return this;
         }
-        // NOMUTANTS--trivial test with onerous dependency injection requirement.
-        hctCache.put(scheme, answer);
-        return answer;
-    }
 
-    /**
-     * Returns the tone in HCT, ranging from 0 to 100, of the resolved color given scheme.
-     */
-    public double getTone(@NonNull DynamicScheme scheme) {
-        boolean decreasingContrast = scheme.contrastLevel < 0;
+        @CanIgnoreReturnValue
+        public Builder setTone(@NonNull Function<DynamicScheme, Double> tone) {
+            this.tone = tone;
+            return this;
+        }
 
-        // Case 1: dual foreground, pair of colors with delta constraint.
-        if (toneDeltaPair != null) {
-            ToneDeltaPair toneDeltaPair = this.toneDeltaPair.apply(scheme);
-            DynamicColor roleA = toneDeltaPair.getRoleA();
-            DynamicColor roleB = toneDeltaPair.getRoleB();
-            double delta = toneDeltaPair.getDelta();
-            TonePolarity polarity = toneDeltaPair.getPolarity();
-            boolean stayTogether = toneDeltaPair.getStayTogether();
+        @CanIgnoreReturnValue
+        public Builder setIsBackground(boolean isBackground) {
+            this.isBackground = isBackground;
+            return this;
+        }
 
-            DynamicColor bg = background.apply(scheme);
-            double bgTone = bg.getTone(scheme);
+        @CanIgnoreReturnValue
+        public Builder setChromaMultiplier(@NonNull Function<DynamicScheme, Double> chromaMultiplier) {
+            this.chromaMultiplier = chromaMultiplier;
+            return this;
+        }
 
-            boolean aIsNearer =
-                    (polarity == TonePolarity.NEARER
-                            || (polarity == TonePolarity.LIGHTER && !scheme.isDark)
-                            || (polarity == TonePolarity.DARKER && scheme.isDark));
-            DynamicColor nearer = aIsNearer ? roleA : roleB;
-            DynamicColor farther = aIsNearer ? roleB : roleA;
-            boolean amNearer = name.equals(nearer.name);
-            double expansionDir = scheme.isDark ? 1 : -1;
+        @CanIgnoreReturnValue
+        public Builder setBackground(@NonNull Function<DynamicScheme, DynamicColor> background) {
+            this.background = background;
+            return this;
+        }
 
-            // 1st round: solve to min, each
-            double nContrast = nearer.contrastCurve.get(scheme.contrastLevel);
-            double fContrast = farther.contrastCurve.get(scheme.contrastLevel);
+        @CanIgnoreReturnValue
+        public Builder setSecondBackground(
+                @NonNull Function<DynamicScheme, DynamicColor> secondBackground) {
+            this.secondBackground = secondBackground;
+            return this;
+        }
 
-            // If a color is good enough, it is not adjusted.
-            // Initial and adjusted tones for `nearer`
-            double nInitialTone = nearer.tone.apply(scheme);
-            double nTone =
-                    Contrast.ratioOfTones(bgTone, nInitialTone) >= nContrast
-                            ? nInitialTone
-                            : DynamicColor.foregroundTone(bgTone, nContrast);
-            // Initial and adjusted tones for `farther`
-            double fInitialTone = farther.tone.apply(scheme);
-            double fTone =
-                    Contrast.ratioOfTones(bgTone, fInitialTone) >= fContrast
-                            ? fInitialTone
-                            : DynamicColor.foregroundTone(bgTone, fContrast);
+        @CanIgnoreReturnValue
+        public Builder setContrastCurve(@NonNull Function<DynamicScheme, ContrastCurve> contrastCurve) {
+            this.contrastCurve = contrastCurve;
+            return this;
+        }
 
-            if (decreasingContrast) {
-                // If decreasing contrast, adjust color to the "bare minimum"
-                // that satisfies contrast.
-                nTone = DynamicColor.foregroundTone(bgTone, nContrast);
-                fTone = DynamicColor.foregroundTone(bgTone, fContrast);
+        @CanIgnoreReturnValue
+        public Builder setToneDeltaPair(@NonNull Function<DynamicScheme, ToneDeltaPair> toneDeltaPair) {
+            this.toneDeltaPair = toneDeltaPair;
+            return this;
+        }
+
+        @CanIgnoreReturnValue
+        public Builder setOpacity(@NonNull Function<DynamicScheme, Double> opacity) {
+            this.opacity = opacity;
+            return this;
+        }
+
+        @CanIgnoreReturnValue
+        Builder extendSpecVersion(ColorSpec.SpecVersion specVersion, DynamicColor extendedColor) {
+            validateExtendedColor(specVersion, extendedColor);
+
+            return new Builder()
+                    .setName(this.name)
+                    .setIsBackground(this.isBackground)
+                    .setPalette(
+                            (s) -> {
+                                Function<DynamicScheme, TonalPalette> palette =
+                                        s.specVersion == specVersion ? extendedColor.palette : this.palette;
+                                return palette != null ? palette.apply(s) : null;
+                            })
+                    .setTone(
+                            (s) -> {
+                                Function<DynamicScheme, Double> tone =
+                                        s.specVersion == specVersion ? extendedColor.tone : this.tone;
+                                return tone != null ? tone.apply(s) : null;
+                            })
+                    .setChromaMultiplier(
+                            (s) -> {
+                                Function<DynamicScheme, Double> chromaMultiplier =
+                                        s.specVersion == specVersion
+                                                ? extendedColor.chromaMultiplier
+                                                : this.chromaMultiplier;
+                                return chromaMultiplier != null ? chromaMultiplier.apply(s) : 1.0;
+                            })
+                    .setBackground(
+                            (s) -> {
+                                Function<DynamicScheme, DynamicColor> background =
+                                        s.specVersion == specVersion ? extendedColor.background : this.background;
+                                return background != null ? background.apply(s) : null;
+                            })
+                    .setSecondBackground(
+                            (s) -> {
+                                Function<DynamicScheme, DynamicColor> secondBackground =
+                                        s.specVersion == specVersion
+                                                ? extendedColor.secondBackground
+                                                : this.secondBackground;
+                                return secondBackground != null ? secondBackground.apply(s) : null;
+                            })
+                    .setContrastCurve(
+                            (s) -> {
+                                Function<DynamicScheme, ContrastCurve> contrastCurve =
+                                        s.specVersion == specVersion ? extendedColor.contrastCurve : this.contrastCurve;
+                                return contrastCurve != null ? contrastCurve.apply(s) : null;
+                            })
+                    .setToneDeltaPair(
+                            (s) -> {
+                                Function<DynamicScheme, ToneDeltaPair> toneDeltaPair =
+                                        s.specVersion == specVersion ? extendedColor.toneDeltaPair : this.toneDeltaPair;
+                                return toneDeltaPair != null ? toneDeltaPair.apply(s) : null;
+                            })
+                    .setOpacity(
+                            (s) -> {
+                                Function<DynamicScheme, Double> opacity =
+                                        s.specVersion == specVersion ? extendedColor.opacity : this.opacity;
+                                return opacity != null ? opacity.apply(s) : null;
+                            });
+        }
+
+        public DynamicColor build() {
+            if (this.background == null && this.secondBackground != null) {
+                throw new IllegalArgumentException(
+                        "Color " + name + " has secondBackground defined, but background is not defined.");
             }
-
-            // If constraint is not satisfied, try another round.
-            if ((fTone - nTone) * expansionDir < delta) {
-                // 2nd round: expand farther to match delta.
-                fTone = MathUtils.clampDouble(0, 100, nTone + delta * expansionDir);
-                // If constraint is not satisfied, try another round.
-                if ((fTone - nTone) * expansionDir < delta) {
-                    // 3rd round: contract nearer to match delta.
-                    nTone = MathUtils.clampDouble(0, 100, fTone - delta * expansionDir);
-                }
+            if (this.background == null && this.contrastCurve != null) {
+                throw new IllegalArgumentException(
+                        "Color " + name + " has contrastCurve defined, but background is not defined.");
             }
-
-            // Avoids the 50-59 awkward zone.
-            if (50 <= nTone && nTone < 60) {
-                // If `nearer` is in the awkward zone, move it away, together with
-                // `farther`.
-                if (expansionDir > 0) {
-                    nTone = 60;
-                    fTone = max(fTone, nTone + delta * expansionDir);
-                } else {
-                    nTone = 49;
-                    fTone = min(fTone, nTone + delta * expansionDir);
-                }
-            } else if (50 <= fTone && fTone < 60) {
-                if (stayTogether) {
-                    // Fixes both, to avoid two colors on opposite sides of the "awkward
-                    // zone".
-                    if (expansionDir > 0) {
-                        nTone = 60;
-                        fTone = max(fTone, nTone + delta * expansionDir);
-                    } else {
-                        nTone = 49;
-                        fTone = min(fTone, nTone + delta * expansionDir);
-                    }
-                } else {
-                    // Not required to stay together; fixes just one.
-                    if (expansionDir > 0) {
-                        fTone = 60;
-                    } else {
-                        fTone = 49;
-                    }
-                }
+            if (this.background != null && this.contrastCurve == null) {
+                throw new IllegalArgumentException(
+                        "Color " + name + " has background defined, but contrastCurve is not defined.");
             }
+            return new DynamicColor(
+                    this.name,
+                    this.palette,
+                    this.tone == null ? getInitialToneFromBackground(this.background) : this.tone,
+                    this.isBackground,
+                    this.chromaMultiplier,
+                    this.background,
+                    this.secondBackground,
+                    this.contrastCurve,
+                    this.toneDeltaPair,
+                    this.opacity);
+        }
 
-            // Returns `nTone` if this color is `nearer`, otherwise `fTone`.
-            return amNearer ? nTone : fTone;
-        } else {
-            // Case 2: No contrast pair; just solve for itself.
-            double answer = tone.apply(scheme);
-
-            if (background == null) {
-                return answer; // No adjustment for colors with no background.
+        private void validateExtendedColor(ColorSpec.SpecVersion specVersion, DynamicColor extendedColor) {
+            if (!this.name.equals(extendedColor.name)) {
+                throw new IllegalArgumentException(
+                        "Attempting to extend color "
+                                + this.name
+                                + " with color "
+                                + extendedColor.name
+                                + " of different name for spec version "
+                                + specVersion
+                                + ".");
             }
-
-            double bgTone = background.apply(scheme).getTone(scheme);
-
-            double desiredRatio = contrastCurve.get(scheme.contrastLevel);
-
-            if (Contrast.ratioOfTones(bgTone, answer) >= desiredRatio) {
-                // Don't "improve" what's good enough.
-            } else {
-                // Rough improvement.
-                answer = DynamicColor.foregroundTone(bgTone, desiredRatio);
+            if (this.isBackground != extendedColor.isBackground) {
+                throw new IllegalArgumentException(
+                        "Attempting to extend color "
+                                + this.name
+                                + " as a "
+                                + (this.isBackground ? "background" : "foreground")
+                                + " with color "
+                                + extendedColor.name
+                                + " as a "
+                                + (extendedColor.isBackground ? "background" : "foreground")
+                                + " for spec version "
+                                + specVersion
+                                + ".");
             }
-
-            if (decreasingContrast) {
-                answer = DynamicColor.foregroundTone(bgTone, desiredRatio);
-            }
-
-            if (isBackground && 50 <= answer && answer < 60) {
-                // Must adjust
-                if (Contrast.ratioOfTones(49, bgTone) >= desiredRatio) {
-                    answer = 49;
-                } else {
-                    answer = 60;
-                }
-            }
-
-            if (secondBackground != null) {
-                // Case 3: Adjust for dual backgrounds.
-
-                double bgTone1 = background.apply(scheme).getTone(scheme);
-                double bgTone2 = secondBackground.apply(scheme).getTone(scheme);
-
-                double upper = max(bgTone1, bgTone2);
-                double lower = min(bgTone1, bgTone2);
-
-                if (Contrast.ratioOfTones(upper, answer) >= desiredRatio
-                        && Contrast.ratioOfTones(lower, answer) >= desiredRatio) {
-                    return answer;
-                }
-
-                // The darkest light tone that satisfies the desired ratio,
-                // or -1 if such ratio cannot be reached.
-                double lightOption = Contrast.lighter(upper, desiredRatio);
-
-                // The lightest dark tone that satisfies the desired ratio,
-                // or -1 if such ratio cannot be reached.
-                double darkOption = Contrast.darker(lower, desiredRatio);
-
-                // Tones suitable for the foreground.
-                ArrayList<Double> availables = new ArrayList<>();
-                if (lightOption != -1) {
-                    availables.add(lightOption);
-                }
-                if (darkOption != -1) {
-                    availables.add(darkOption);
-                }
-
-                boolean prefersLight =
-                        DynamicColor.tonePrefersLightForeground(bgTone1)
-                                || DynamicColor.tonePrefersLightForeground(bgTone2);
-                if (prefersLight) {
-                    return (lightOption == -1) ? 100 : lightOption;
-                }
-                if (availables.size() == 1) {
-                    return availables.get(0);
-                }
-                return (darkOption == -1) ? 0 : darkOption;
-            }
-
-            return answer;
         }
     }
 }

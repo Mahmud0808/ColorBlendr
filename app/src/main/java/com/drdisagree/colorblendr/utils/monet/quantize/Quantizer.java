@@ -17,5 +17,5 @@
 package com.drdisagree.colorblendr.utils.monet.quantize;
 
 interface Quantizer {
-    QuantizerResult quantize(int[] pixels, int maxColors);
+    public QuantizerResult quantize(int[] pixels, int maxColors);
 }

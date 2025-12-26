@@ -112,9 +112,9 @@ public class MathUtils {
      * distance, so either direction is shortest. The value 1.0 is returned in this case.
      *
      * @param from The angle travel starts from, in degrees.
-     * @param to   The angle travel ends at, in degrees.
+     * @param to The angle travel ends at, in degrees.
      * @return -1 if decreasing from leads to the shortest travel distance, 1 if increasing from leads
-     * to the shortest travel distance.
+     *     to the shortest travel distance.
      */
     public static double rotationDirection(double from, double to) {
         double increasingDifference = sanitizeDegreesDouble(to - from);
@@ -128,9 +128,7 @@ public class MathUtils {
         return 180.0 - Math.abs(Math.abs(a - b) - 180.0);
     }
 
-    /**
-     * Multiplies a 1x3 row vector with a 3x3 matrix.
-     */
+    /** Multiplies a 1x3 row vector with a 3x3 matrix. */
     public static double[] matrixMultiply(double[] row, double[][] matrix) {
         double a = row[0] * matrix[0][0] + row[1] * matrix[0][1] + row[2] * matrix[0][2];
         double b = row[0] * matrix[1][0] + row[1] * matrix[1][1] + row[2] * matrix[1][2];
@@ -138,4 +136,3 @@ public class MathUtils {
         return new double[]{a, b, c};
     }
 }
-

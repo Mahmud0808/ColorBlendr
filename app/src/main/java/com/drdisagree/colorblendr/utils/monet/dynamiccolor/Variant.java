@@ -15,9 +15,15 @@
  */
 package com.drdisagree.colorblendr.utils.monet.dynamiccolor;
 
-/**
- * Themes for Dynamic Color.
- */
+/** Themes for Dynamic Color. */
 public enum Variant {
-    MONOCHROME, NEUTRAL, TONAL_SPOT, VIBRANT, EXPRESSIVE, FIDELITY, CONTENT, RAINBOW, FRUIT_SALAD
+    MONOCHROME,
+    NEUTRAL,
+    TONAL_SPOT,
+    VIBRANT,
+    EXPRESSIVE,
+    FIDELITY,
+    CONTENT,
+    RAINBOW,
+    FRUIT_SALAD
 }

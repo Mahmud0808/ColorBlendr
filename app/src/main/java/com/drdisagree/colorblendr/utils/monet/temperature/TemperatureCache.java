@@ -49,42 +49,11 @@ public final class TemperatureCache {
      * Create a cache that allows calculation of ex. complementary and analogous colors.
      *
      * @param input Color to find complement/analogous colors of. Any colors will have the same tone,
-     *              and chroma as the input color, modulo any restrictions due to the other hues having lower
-     *              limits on chroma.
+     *     and chroma as the input color, modulo any restrictions due to the other hues having lower
+     *     limits on chroma.
      */
     public TemperatureCache(Hct input) {
         this.input = input;
-    }
-
-    /**
-     * Value representing cool-warm factor of a color. Values below 0 are considered cool, above,
-     * warm.
-     *
-     * <p>Color science has researched emotion and harmony, which art uses to select colors. Warm-cool
-     * is the foundation of analogous and complementary colors. See: - Li-Chen Ou's Chapter 19 in
-     * Handbook of Color Psychology (2015). - Josef Albers' Interaction of Color chapters 19 and 21.
-     *
-     * <p>Implementation of Ou, Woodcock and Wright's algorithm, which uses Lab/LCH color space.
-     * Return value has these properties:<br>
-     * - Values below 0 are cool, above 0 are warm.<br>
-     * - Lower bound: -9.66. Chroma is infinite. Assuming max of Lab chroma 130.<br>
-     * - Upper bound: 8.61. Chroma is infinite. Assuming max of Lab chroma 130.
-     */
-    public static double rawTemperature(Hct color) {
-        double[] lab = ColorUtils.labFromArgb(color.toInt());
-        double hue = MathUtils.sanitizeDegreesDouble(Math.toDegrees(Math.atan2(lab[2], lab[1])));
-        double chroma = Math.hypot(lab[1], lab[2]);
-        return -0.5 + 0.02 * Math.pow(chroma, 1.07) * Math.cos(Math.toRadians(MathUtils.sanitizeDegreesDouble(hue - 50.)));
-    }
-
-    /**
-     * Determines if an angle is between two other angles, rotating clockwise.
-     */
-    private static boolean isBetween(double angle, double a, double b) {
-        if (a < b) {
-            return a <= angle && angle <= b;
-        }
-        return a <= angle || angle <= b;
     }
 
     /**
@@ -148,7 +117,7 @@ public final class TemperatureCache {
      *
      * <p>Behavior is undefined when count or divisions is 0. When divisions < count, colors repeat.
      *
-     * @param count     The number of colors to return, includes the input color.
+     * @param count The number of colors to return, includes the input color.
      * @param divisions The number of divisions on the color wheel.
      */
     public List<Hct> getAnalogousColors(int count, int divisions) {
@@ -214,7 +183,7 @@ public final class TemperatureCache {
 
         int ccwCount = (int) Math.floor(((double) count - 1.0) / 2.0);
         for (int i = 1; i < (ccwCount + 1); i++) {
-            int index = -i;
+            int index = 0 - i;
             while (index < 0) {
                 index = allColors.size() + index;
             }
@@ -257,6 +226,30 @@ public final class TemperatureCache {
     }
 
     /**
+     * Value representing cool-warm factor of a color. Values below 0 are considered cool, above,
+     * warm.
+     *
+     * <p>Color science has researched emotion and harmony, which art uses to select colors. Warm-cool
+     * is the foundation of analogous and complementary colors. See: - Li-Chen Ou's Chapter 19 in
+     * Handbook of Color Psychology (2015). - Josef Albers' Interaction of Color chapters 19 and 21.
+     *
+     * <p>Implementation of Ou, Woodcock and Wright's algorithm, which uses Lab/LCH color space.
+     * Return value has these properties:<br>
+     * - Values below 0 are cool, above 0 are warm.<br>
+     * - Lower bound: -9.66. Chroma is infinite. Assuming max of Lab chroma 130.<br>
+     * - Upper bound: 8.61. Chroma is infinite. Assuming max of Lab chroma 130.
+     */
+    public static double rawTemperature(Hct color) {
+        double[] lab = ColorUtils.labFromArgb(color.toInt());
+        double hue = MathUtils.sanitizeDegreesDouble(Math.toDegrees(Math.atan2(lab[2], lab[1])));
+        double chroma = Math.hypot(lab[1], lab[2]);
+        return -0.5
+                + 0.02
+                * Math.pow(chroma, 1.07)
+                * Math.cos(Math.toRadians(MathUtils.sanitizeDegreesDouble(hue - 50.)));
+    }
+
+    /**
      * Coldest color with same chroma and tone as input.
      */
     private Hct getColdest() {
@@ -286,12 +279,6 @@ public final class TemperatureCache {
      *
      * <p>Sorted from coldest first to warmest last.
      */
-    // Prevent lint for Comparator not being available on Android before API level 24, 7.0, 2016.
-    // "AndroidJdkLibsChecker" for one linter, "NewApi" for another.
-    // A java_library Bazel rule with an Android constraint cannot skip these warnings without this
-    // annotation; another solution would be to create an android_library rule and supply
-    // AndroidManifest with an SDK set higher than 23.
-    @SuppressWarnings({"AndroidJdkLibsChecker", "NewApi"})
     private List<Hct> getHctsByTemp() {
         if (precomputedHctsByTemp != null) {
             return precomputedHctsByTemp;
@@ -299,7 +286,8 @@ public final class TemperatureCache {
 
         List<Hct> hcts = new ArrayList<>(getHctsByHue());
         hcts.add(input);
-        Comparator<Hct> temperaturesComparator = Comparator.comparing((Hct arg) -> getTempsByHct().get(arg), Double::compareTo);
+        Comparator<Hct> temperaturesComparator =
+                Comparator.comparing((Hct arg) -> getTempsByHct().get(arg), Double::compareTo);
         Collections.sort(hcts, temperaturesComparator);
         precomputedHctsByTemp = hcts;
         return precomputedHctsByTemp;
@@ -325,10 +313,18 @@ public final class TemperatureCache {
         return precomputedTempsByHct;
     }
 
-    /**
-     * Warmest color with same chroma and tone as input.
-     */
+    /** Warmest color with same chroma and tone as input. */
     private Hct getWarmest() {
         return getHctsByTemp().get(getHctsByTemp().size() - 1);
+    }
+
+    /**
+     * Determines if an angle is between two other angles, rotating clockwise.
+     */
+    private static boolean isBetween(double angle, double a, double b) {
+        if (a < b) {
+            return a <= angle && angle <= b;
+        }
+        return a <= angle || angle <= b;
     }
 }

@@ -24,7 +24,12 @@ import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 /**
  * An intermediate concept between the key color for a UI theme, and a full color scheme. 5 sets of
  * tones are generated, all except one use the same hue as the key color, and all vary in chroma.
+ *
+ * @deprecated Use {@link dynamiccolor.DynamicScheme} for color
+ *     scheme generation. Use {@link palettes.CorePalettes} for core
+ *     palettes container class.
  */
+@Deprecated
 public final class CorePalette {
     public TonalPalette a1;
     public TonalPalette a2;
@@ -32,6 +37,32 @@ public final class CorePalette {
     public TonalPalette n1;
     public TonalPalette n2;
     public TonalPalette error;
+
+    /**
+     * Create key tones from a color.
+     *
+     * @param argb ARGB representation of a color
+     * @deprecated Use {@link dynamiccolor.DynamicScheme} for color
+     * scheme generation. Use {@link palettes.CorePalettes} for
+     * core palettes container class.
+     */
+    @Deprecated
+    public static CorePalette of(int argb) {
+        return new CorePalette(argb, false);
+    }
+
+    /**
+     * Create content key tones from a color.
+     *
+     * @param argb ARGB representation of a color
+     * @deprecated Use {@link dynamiccolor.DynamicScheme} for color
+     * scheme generation. Use {@link palettes.CorePalettes} for
+     * core palettes container class.
+     */
+    @Deprecated
+    public static CorePalette contentOf(int argb) {
+        return new CorePalette(argb, true);
+    }
 
     private CorePalette(int argb, boolean isContent) {
         Hct hct = Hct.fromInt(argb);
@@ -51,23 +82,5 @@ public final class CorePalette {
             this.n2 = TonalPalette.fromHueAndChroma(hue, 8.);
         }
         this.error = TonalPalette.fromHueAndChroma(25, 84.);
-    }
-
-    /**
-     * Create key tones from a color.
-     *
-     * @param argb ARGB representation of a color
-     */
-    public static CorePalette of(int argb) {
-        return new CorePalette(argb, false);
-    }
-
-    /**
-     * Create content key tones from a color.
-     *
-     * @param argb ARGB representation of a color
-     */
-    public static CorePalette contentOf(int argb) {
-        return new CorePalette(argb, true);
     }
 }

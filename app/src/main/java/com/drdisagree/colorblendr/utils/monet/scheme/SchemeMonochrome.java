@@ -16,16 +16,48 @@
 
 package com.drdisagree.colorblendr.utils.monet.scheme;
 
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpec;
+import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpecs;
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme;
 import com.drdisagree.colorblendr.utils.monet.dynamiccolor.Variant;
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
-import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 
 /**
  * A monochrome theme, colors are purely black / white / gray.
  */
 public class SchemeMonochrome extends DynamicScheme {
+
     public SchemeMonochrome(Hct sourceColorHct, boolean isDark, double contrastLevel) {
-        super(sourceColorHct, Variant.MONOCHROME, isDark, contrastLevel, TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0), TonalPalette.fromHueAndChroma(sourceColorHct.getHue(), 0.0));
+        this(sourceColorHct, isDark, contrastLevel, DEFAULT_SPEC_VERSION, DEFAULT_PLATFORM);
+    }
+
+    public SchemeMonochrome(
+            Hct sourceColorHct,
+            boolean isDark,
+            double contrastLevel,
+            ColorSpec.SpecVersion specVersion,
+            Platform platform) {
+        super(
+                sourceColorHct,
+                Variant.MONOCHROME,
+                isDark,
+                contrastLevel,
+                platform,
+                specVersion,
+                ColorSpecs.get(specVersion)
+                        .getPrimaryPalette(Variant.MONOCHROME, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getSecondaryPalette(
+                                Variant.MONOCHROME, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getTertiaryPalette(
+                                Variant.MONOCHROME, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getNeutralPalette(Variant.MONOCHROME, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getNeutralVariantPalette(
+                                Variant.MONOCHROME, sourceColorHct, isDark, platform, contrastLevel),
+                ColorSpecs.get(specVersion)
+                        .getErrorPalette(Variant.MONOCHROME, sourceColorHct, isDark, platform, contrastLevel));
     }
 }

@@ -16,9 +16,15 @@
 
 package com.drdisagree.colorblendr.utils.monet.dynamiccolor;
 
+import static java.lang.Math.min;
+
 import com.drdisagree.colorblendr.utils.monet.hct.Hct;
 import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette;
 import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
+
+import java.text.DecimalFormat;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Provides important settings for creating colors dynamically, and 6 color palettes. Requires: 1. A
@@ -26,11 +32,49 @@ import com.drdisagree.colorblendr.utils.monet.utils.MathUtils;
  * (-1 to 1, currently contrast ratio 3.0 and 7.0)
  */
 public class DynamicScheme {
+
+    public static final ColorSpec.SpecVersion DEFAULT_SPEC_VERSION = ColorSpec.SpecVersion.SPEC_2021;
+    public static final Platform DEFAULT_PLATFORM = Platform.PHONE;
+
+    /**
+     * The platform on which this scheme is intended to be used.
+     */
+    public enum Platform {
+        PHONE,
+        WATCH
+    }
+
+    /**
+     * The source color of the scheme in ARGB format.
+     */
     public final int sourceColorArgb;
+
+    /**
+     * The source color of the scheme in HCT format.
+     */
     public final Hct sourceColorHct;
+
+    /** The variant of the scheme. */
     public final Variant variant;
+
+    /** Whether or not the scheme is dark mode. */
     public final boolean isDark;
+
+    /**
+     * The platform on which this scheme is intended to be used.
+     */
+    public final Platform platform;
+
+    /**
+     * Value from -1 to 1. -1 represents minimum contrast. 0 represents standard (i.e. the design as
+     * spec'd), and 1 represents maximum contrast.
+     */
     public final double contrastLevel;
+
+    /**
+     * The spec version of the scheme.
+     */
+    public final ColorSpec.SpecVersion specVersion;
 
     public final TonalPalette primaryPalette;
     public final TonalPalette secondaryPalette;
@@ -39,47 +83,187 @@ public class DynamicScheme {
     public final TonalPalette neutralVariantPalette;
     public final TonalPalette errorPalette;
 
-    public DynamicScheme(Hct sourceColorHct, Variant variant, boolean isDark, double contrastLevel, TonalPalette primaryPalette, TonalPalette secondaryPalette, TonalPalette tertiaryPalette, TonalPalette neutralPalette, TonalPalette neutralVariantPalette) {
+    public DynamicScheme(
+            Hct sourceColorHct,
+            Variant variant,
+            boolean isDark,
+            double contrastLevel,
+            TonalPalette primaryPalette,
+            TonalPalette secondaryPalette,
+            TonalPalette tertiaryPalette,
+            TonalPalette neutralPalette,
+            TonalPalette neutralVariantPalette) {
+        this(
+                sourceColorHct,
+                variant,
+                isDark,
+                contrastLevel,
+                primaryPalette,
+                secondaryPalette,
+                tertiaryPalette,
+                neutralPalette,
+                neutralVariantPalette,
+                Optional.empty());
+    }
+
+    public DynamicScheme(
+            Hct sourceColorHct,
+            Variant variant,
+            boolean isDark,
+            double contrastLevel,
+            TonalPalette primaryPalette,
+            TonalPalette secondaryPalette,
+            TonalPalette tertiaryPalette,
+            TonalPalette neutralPalette,
+            TonalPalette neutralVariantPalette,
+            Optional<TonalPalette> errorPalette) {
+        this(
+                sourceColorHct,
+                variant,
+                isDark,
+                contrastLevel,
+                Platform.PHONE,
+                ColorSpec.SpecVersion.SPEC_2021,
+                primaryPalette,
+                secondaryPalette,
+                tertiaryPalette,
+                neutralPalette,
+                neutralVariantPalette,
+                errorPalette);
+    }
+
+    public DynamicScheme(
+            Hct sourceColorHct,
+            Variant variant,
+            boolean isDark,
+            double contrastLevel,
+            Platform platform,
+            ColorSpec.SpecVersion specVersion,
+            TonalPalette primaryPalette,
+            TonalPalette secondaryPalette,
+            TonalPalette tertiaryPalette,
+            TonalPalette neutralPalette,
+            TonalPalette neutralVariantPalette,
+            Optional<TonalPalette> errorPalette) {
         this.sourceColorArgb = sourceColorHct.toInt();
         this.sourceColorHct = sourceColorHct;
         this.variant = variant;
         this.isDark = isDark;
         this.contrastLevel = contrastLevel;
+        this.platform = platform;
+        this.specVersion = maybeFallbackSpecVersion(specVersion, variant);
 
         this.primaryPalette = primaryPalette;
         this.secondaryPalette = secondaryPalette;
         this.tertiaryPalette = tertiaryPalette;
         this.neutralPalette = neutralPalette;
         this.neutralVariantPalette = neutralVariantPalette;
-        this.errorPalette = TonalPalette.fromHueAndChroma(25.0, 84.0);
+        this.errorPalette = errorPalette.orElse(TonalPalette.fromHueAndChroma(25.0, 84.0));
+    }
+
+    public static DynamicScheme from(DynamicScheme other, boolean isDark) {
+        return from(other, isDark, other.contrastLevel);
+    }
+
+    public static DynamicScheme from(DynamicScheme other, boolean isDark, double contrastLevel) {
+        return new DynamicScheme(
+                other.sourceColorHct,
+                other.variant,
+                isDark,
+                contrastLevel,
+                other.platform,
+                other.specVersion,
+                other.primaryPalette,
+                other.secondaryPalette,
+                other.tertiaryPalette,
+                other.neutralPalette,
+                other.neutralVariantPalette,
+                Optional.of(other.errorPalette));
     }
 
     /**
-     * Given a set of hues and set of hue rotations, locate which hues the source color's hue is
-     * between, apply the rotation at the same index as the first hue in the range, and return the
-     * rotated hue.
-     *
-     * @param sourceColorHct The color whose hue should be rotated.
-     * @param hues           A set of hues.
-     * @param rotations      A set of hue rotations.
-     * @return Color's hue with a rotation applied.
+     * Returns the spec version to use for the given variant. If the variant is not supported by the
+     * given spec version, the fallback spec version is returned.
      */
-    public static double getRotatedHue(Hct sourceColorHct, double[] hues, double[] rotations) {
-        final double sourceHue = sourceColorHct.getHue();
-        if (rotations.length == 1) {
-            return MathUtils.sanitizeDegreesDouble(sourceHue + rotations[0]);
-        }
-        final int size = hues.length;
-        for (int i = 0; i <= (size - 2); i++) {
-            final double thisHue = hues[i];
-            final double nextHue = hues[i + 1];
-            if (thisHue < sourceHue && sourceHue < nextHue) {
-                return MathUtils.sanitizeDegreesDouble(sourceHue + rotations[i]);
+    private static ColorSpec.SpecVersion maybeFallbackSpecVersion(ColorSpec.SpecVersion specVersion, Variant variant) {
+        return switch (variant) {
+            case EXPRESSIVE, VIBRANT, TONAL_SPOT, NEUTRAL -> specVersion;
+            default -> ColorSpec.SpecVersion.SPEC_2021;
+        };
+    }
+
+    /**
+     * Returns a new hue based on a piecewise function and input color hue.
+     *
+     * <p>For example, for the following function:
+     *
+     * <pre>
+     * result = 26, if 0 <= hue < 101;
+     * result = 39, if 101 <= hue < 210;
+     * result = 28, if 210 <= hue < 360.
+     * </pre>
+     *
+     * <p>call the function as:
+     *
+     * <pre>
+     * double[] hueBreakpoints = {0, 101, 210, 360};
+     * double[] hues = {26, 39, 28};
+     * double result = scheme.piecewise(sourceColor, hueBreakpoints, hues);
+     * </pre>
+     *
+     * @param sourceColorHct The input value.
+     * @param hueBreakpoints The breakpoints, in sorted order. No default lower or upper bounds are
+     *     assumed.
+     * @param hues The hues that should be applied when source color's hue is >= the same index in
+     *     hueBreakpoints array, and < the hue at the next index in hueBreakpoints array. Otherwise,
+     *     the source color's hue is returned.
+     */
+    public static double getPiecewiseValue(
+            Hct sourceColorHct, double[] hueBreakpoints, double[] hues) {
+        int size = min(hueBreakpoints.length - 1, hues.length);
+        double sourceHue = sourceColorHct.getHue();
+        for (int i = 0; i < size; i++) {
+            if (sourceHue >= hueBreakpoints[i] && sourceHue < hueBreakpoints[i + 1]) {
+                return MathUtils.sanitizeDegreesDouble(hues[i]);
             }
         }
-        // If this statement executes, something is wrong, there should have been a rotation
-        // found using the arrays.
+        // No condition matched, return the source value.
         return sourceHue;
+    }
+
+    /**
+     * Returns a shifted hue based on a piecewise function and input color hue.
+     *
+     * <p>For example, for the following function:
+     *
+     * <pre>
+     * result = hue + 26, if 0 <= hue < 101;
+     * result = hue - 39, if 101 <= hue < 210;
+     * result = hue + 28, if 210 <= hue < 360.
+     * </pre>
+     *
+     * <p>call the function as:
+     *
+     * <pre>
+     * double[] hueBreakpoints = {0, 101, 210, 360};
+     * double[] rotations = {26, -39, 28};
+     * double result = scheme.getRotatedHue(sourceColor, hueBreakpoints, rotations);
+     *
+     * @param sourceColorHct the source color of the theme, in HCT.
+     * @param hueBreakpoints The "breakpoints", i.e. the hues at which a rotation should be apply. No
+     * default lower or upper bounds are assumed.
+     * @param rotations The rotation that should be applied when source color's hue is >= the same
+     *     index in hues array, and < the hue at the next index in hues array. Otherwise, the source
+     *     color's hue is returned.
+     */
+    public static double getRotatedHue(
+            Hct sourceColorHct, double[] hueBreakpoints, double[] rotations) {
+        double rotation = getPiecewiseValue(sourceColorHct, hueBreakpoints, rotations);
+        if (min(hueBreakpoints.length - 1, rotations.length) <= 0) {
+            // No condition matched, return the source hue.
+            rotation = 0;
+        }
+        return MathUtils.sanitizeDegreesDouble(sourceColorHct.getHue() + rotation);
     }
 
     public Hct getHct(DynamicColor dynamicColor) {
@@ -88,6 +272,18 @@ public class DynamicScheme {
 
     public int getArgb(DynamicColor dynamicColor) {
         return dynamicColor.getArgb(this);
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Scheme: variant=%s, mode=%s, platform=%s, contrastLevel=%s, seed=%s, specVersion=%s",
+                variant.name(),
+                isDark ? "dark" : "light",
+                platform.name().toLowerCase(Locale.ENGLISH),
+                new DecimalFormat("0.0").format(contrastLevel),
+                sourceColorHct,
+                specVersion);
     }
 
     public int getPrimaryPaletteKeyColor() {

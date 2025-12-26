@@ -43,17 +43,13 @@ public final class Hct {
     private double tone;
     private int argb;
 
-    private Hct(int argb) {
-        setInternalState(argb);
-    }
-
     /**
      * Create an HCT color from hue, chroma, and tone.
      *
-     * @param hue    0 <= hue < 360; invalid values are corrected.
+     * @param hue 0 <= hue < 360; invalid values are corrected.
      * @param chroma 0 <= chroma < ?; Informally, colorfulness. The color returned may be lower than
-     *               the requested chroma. Chroma has a different maximum for any given hue and tone.
-     * @param tone   0 <= tone <= 100; invalid values are corrected.
+     *     the requested chroma. Chroma has a different maximum for any given hue and tone.
+     * @param tone 0 <= tone <= 100; invalid values are corrected.
      * @return HCT representation of a color in default viewing conditions.
      */
     public static Hct from(double hue, double chroma, double tone) {
@@ -71,8 +67,24 @@ public final class Hct {
         return new Hct(argb);
     }
 
+    private Hct(int argb) {
+        setInternalState(argb);
+    }
+
     public double getHue() {
         return hue;
+    }
+
+    public double getChroma() {
+        return chroma;
+    }
+
+    public double getTone() {
+        return tone;
+    }
+
+    public int toInt() {
+        return argb;
     }
 
     /**
@@ -85,10 +97,6 @@ public final class Hct {
         setInternalState(HctSolver.solveToInt(newHue, chroma, tone));
     }
 
-    public double getChroma() {
-        return chroma;
-    }
-
     /**
      * Set the chroma of this color. Chroma may decrease because chroma has a different maximum for
      * any given hue and tone.
@@ -97,10 +105,6 @@ public final class Hct {
      */
     public void setChroma(double newChroma) {
         setInternalState(HctSolver.solveToInt(hue, newChroma, tone));
-    }
-
-    public double getTone() {
-        return tone;
     }
 
     /**
@@ -113,8 +117,27 @@ public final class Hct {
         setInternalState(HctSolver.solveToInt(hue, chroma, newTone));
     }
 
-    public int toInt() {
-        return argb;
+    @Override
+    public String toString() {
+        return "HCT("
+                + (int) Math.round(hue)
+                + ", "
+                + (int) Math.round(chroma)
+                + ", "
+                + (int) Math.round(tone)
+                + ")";
+    }
+
+    public static boolean isBlue(double hue) {
+        return hue >= 250 && hue < 270;
+    }
+
+    public static boolean isYellow(double hue) {
+        return hue >= 105 && hue < 125;
+    }
+
+    public static boolean isCyan(double hue) {
+        return hue >= 170 && hue < 207;
     }
 
     /**
@@ -136,12 +159,15 @@ public final class Hct {
         double[] viewedInVc = cam16.xyzInViewingConditions(vc, null);
 
         // 2. Create CAM16 of those XYZ coordinates in default VC.
-        Cam16 recastInVc = Cam16.fromXyzInViewingConditions(viewedInVc[0], viewedInVc[1], viewedInVc[2], ViewingConditions.DEFAULT);
+        Cam16 recastInVc =
+                Cam16.fromXyzInViewingConditions(
+                        viewedInVc[0], viewedInVc[1], viewedInVc[2], ViewingConditions.DEFAULT);
 
         // 3. Create HCT from:
         // - CAM16 using default VC with XYZ coordinates in specified VC.
         // - L* converted from Y in XYZ coordinates in specified VC.
-        return Hct.from(recastInVc.getHue(), recastInVc.getChroma(), ColorUtils.lstarFromY(viewedInVc[1]));
+        return Hct.from(
+                recastInVc.getHue(), recastInVc.getChroma(), ColorUtils.lstarFromY(viewedInVc[1]));
     }
 
     private void setInternalState(int argb) {

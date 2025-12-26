@@ -120,7 +120,7 @@ public final class Contrast {
      * Returns T in HCT, L* in L*a*b* >= tone parameter that ensures ratio with input T/L*. Returns -1
      * if ratio cannot be achieved.
      *
-     * @param tone  Tone return value must contrast with.
+     * @param tone Tone return value must contrast with.
      * @param ratio Desired contrast ratio of return value and tone parameter.
      */
     public static double lighter(double tone, double ratio) {
@@ -153,7 +153,7 @@ public final class Contrast {
      * <p>This method is unsafe because the returned value is guaranteed to be in bounds, but, the in
      * bounds return value may not reach the desired ratio.
      *
-     * @param tone  Tone return value must contrast with.
+     * @param tone Tone return value must contrast with.
      * @param ratio Desired contrast ratio of return value and tone parameter.
      */
     public static double lighterUnsafe(double tone, double ratio) {
@@ -165,7 +165,7 @@ public final class Contrast {
      * Returns T in HCT, L* in L*a*b* <= tone parameter that ensures ratio with input T/L*. Returns -1
      * if ratio cannot be achieved.
      *
-     * @param tone  Tone return value must contrast with.
+     * @param tone Tone return value must contrast with.
      * @param ratio Desired contrast ratio of return value and tone parameter.
      */
     public static double darker(double tone, double ratio) {
@@ -199,7 +199,7 @@ public final class Contrast {
      * <p>This method is unsafe because the returned value is guaranteed to be in bounds, but, the in
      * bounds return value may not reach the desired ratio.
      *
-     * @param tone  Tone return value must contrast with.
+     * @param tone Tone return value must contrast with.
      * @param ratio Desired contrast ratio of return value and tone parameter.
      */
     public static double darkerUnsafe(double tone, double ratio) {
