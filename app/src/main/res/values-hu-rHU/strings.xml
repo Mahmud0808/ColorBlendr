@@ -105,6 +105,8 @@
     <string name="screen_off_update_desc">Frissíti a színeket a képernyő kikapcsolása után 15 másodperccel; hasznos az élő háttérképekhez</string>
     <string name="screen_off_update_title">Színek frissítése a képernyő kikapcsolt állapotában</string>
     <string name="mode_specific_theme_desc">Különböző telítettség és világosság alkalmazása világos és sötét üzemmódokhoz</string>
+    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">Sötétebb indító ikonok</string>
     <string name="darker_launcher_icons_desc">Sötétebb háttér alkalmazása a pixel launcher monokróm ikonjaira</string>
     <string name="semitransparent_launcher_title">Félig átlátszó indító</string>
