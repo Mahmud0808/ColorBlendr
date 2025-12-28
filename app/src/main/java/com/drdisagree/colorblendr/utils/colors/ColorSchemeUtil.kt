@@ -23,6 +23,7 @@ import com.drdisagree.colorblendr.utils.monet.scheme.SchemeTonalSpot
 import com.drdisagree.colorblendr.utils.monet.scheme.SchemeVibrant
 
 object ColorSchemeUtil {
+
     private val tones: IntArray = intArrayOf(100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0)
 
     fun generateColorPalette(
@@ -53,7 +54,8 @@ object ColorSchemeUtil {
             dynamicScheme.secondaryPalette,
             dynamicScheme.tertiaryPalette,
             dynamicScheme.neutralPalette,
-            dynamicScheme.neutralVariantPalette
+            dynamicScheme.neutralVariantPalette,
+            dynamicScheme.errorPalette
         )
 
         for (tonalPalette in tonalPalettes) {

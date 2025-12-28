@@ -208,7 +208,8 @@ object ColorUtil {
             "system_accent2",
             "system_accent3",
             "system_neutral1",
-            "system_neutral2"
+            "system_neutral2",
+            "system_error"
         )
         val values = arrayOf(
             "0",

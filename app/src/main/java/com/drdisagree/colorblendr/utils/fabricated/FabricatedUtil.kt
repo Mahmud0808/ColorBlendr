@@ -404,6 +404,7 @@ object FabricatedUtil {
         }
     }
 
+    // Source: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/packages/SystemUI/src/com/android/systemui/common/shared/colors/SurfaceEffectColors.kt
     fun FabricatedOverlayResource.generateSurfaceEffectColors(isDark: Boolean) {
         val colorResNames = listOf(
             "surface_effect_0_color",

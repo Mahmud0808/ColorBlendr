@@ -40,8 +40,8 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 @Suppress("unused")
 object OverlayManager {
@@ -200,7 +200,6 @@ object OverlayManager {
                             }
                         }
                         // SurfaceEffectColors
-                        // Source: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/packages/SystemUI/src/com/android/systemui/common/shared/colors/SurfaceEffectColors.kt
                         generateSurfaceEffectColors(isDarkMode)
 
                         // Dynamic colors
@@ -234,6 +233,24 @@ object OverlayManager {
                             setColor("text_color_secondary_device_default_dark", -0x4c000001)
                             setColor("text_color_primary_device_default_light", Color.BLACK)
                             setColor("text_color_secondary_device_default_light", -0x4d000000)
+                        }
+
+                        // Material error colors
+                        setColor("system_error_light", getColor("system_error_600"))
+                        setColor("system_error_container_light", getColor("system_error_100"))
+                        setColor("system_error_dark", getColor("system_error_200"))
+                        setColor("system_error_container_dark", getColor("system_error_700"))
+
+                        if (tintedTextEnabled()) {
+                            setColor("system_on_error_light", getColor("system_error_100"))
+                            setColor("system_on_error_container_light", getColor("system_error_600"))
+                            setColor("system_on_error_dark", getColor("system_error_700"))
+                            setColor("system_on_error_container_dark", getColor("system_error_200"))
+                        } else {
+                            setColor("system_on_error_light", Color.WHITE)
+                            setColor("system_on_error_container_light", Color.BLACK)
+                            setColor("system_on_error_dark", Color.BLACK)
+                            setColor("system_on_error_container_dark", Color.WHITE)
                         }
                     }
                 }
