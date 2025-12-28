@@ -105,6 +105,8 @@
     <string name="screen_off_update_desc">Обновляет цвета после 15-ти секунд отключения экрана; полезно для живых обоев</string>
     <string name="screen_off_update_title">Обновить цвета при выключенном экране</string>
     <string name="mode_specific_theme_desc">Применить различную насыщенность и яркость для светлых и темных режимов</string>
+    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">Значки Darker launcher</string>
     <string name="darker_launcher_icons_desc">Применить более темный фон к монохромным иконкам Pixel Launcher</string>
     <string name="semitransparent_launcher_title">Полупрозрачный лаунчер</string>
