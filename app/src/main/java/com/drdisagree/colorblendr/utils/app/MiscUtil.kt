@@ -17,6 +17,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -38,13 +39,17 @@ object MiscUtil {
         toolbar: MaterialToolbar?
     ) {
         (context as AppCompatActivity).setSupportActionBar(toolbar)
-        val actionBar = context.supportActionBar
-        if (actionBar != null) {
-            context.supportActionBar!!.setTitle(title)
-            context.supportActionBar!!.setDisplayHomeAsUpEnabled(showBackButton)
-            context.supportActionBar!!.setDisplayShowHomeEnabled(showBackButton)
-            context.supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_toolbar_chevron)
-            if (showBackButton) toolbar?.setNavigationIcon(R.drawable.ic_toolbar_chevron)
+        toolbar?.overflowIcon = ContextCompat.getDrawable(context, R.drawable.ic_toolbar_overflow)
+
+        context.supportActionBar?.apply {
+            setTitle(title)
+            setDisplayHomeAsUpEnabled(showBackButton)
+            setDisplayShowHomeEnabled(showBackButton)
+            setHomeAsUpIndicator(R.drawable.ic_toolbar_chevron)
+        }
+
+        if (showBackButton) {
+            toolbar?.setNavigationIcon(R.drawable.ic_toolbar_chevron)
         }
     }
 
