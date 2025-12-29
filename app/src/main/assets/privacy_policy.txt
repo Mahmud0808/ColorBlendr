@@ -29,25 +29,25 @@ Permissions Used and Justifications
 The app requests the following permissions only to enable essential functionality:
 
 1. **Query All Packages**
-   - Purpose: To list installed apps for per-app theming functionality.
-   - Justification: Required for selecting which apps to apply themes to.
-   - Access is entirely local and is never shared or transmitted.
+	• Purpose: To list installed apps for per-app theming functionality.
+	• Justification: Required for selecting which apps to apply themes to.
+	• Access is entirely local and is never shared or transmitted.
 
 2. **Post Notification**
-   - Purpose: To keep the app's background service alive.
-   - ColorBlendr does **not** read or analyze the contents of your notifications.
+	• Purpose: To keep the app's background service alive.
+	• ColorBlendr does **not** read or analyze the contents of your notifications.
 
 3. **Read External Storage / File Access**
-   - Purpose: To read the current wallpaper file for extracting color data.
-   - Accessed locally and not stored or transmitted.
+	• Purpose: To read the current wallpaper file for extracting color data.
+	• Accessed locally and not stored or transmitted.
 
 4. **Photos / Media / Images Permission**
-   - Purpose: To allow the user to pick an image and extract colors from it.
-   - The image is processed locally and not stored or uploaded.
+	• Purpose: To allow the user to pick an image and extract colors from it.
+	• The image is processed locally and not stored or uploaded.
 
 5. **Internet Permission**
-   - Purpose: To load profile pictures of app contributors and translators.
-   - No user data is sent or received beyond basic image display.
+	• Purpose: To load profile pictures of app contributors and translators.
+	• No user data is sent or received beyond basic image display.
 
 External Links
 --------------
