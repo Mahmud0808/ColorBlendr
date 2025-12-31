@@ -1,13 +1,15 @@
 package com.drdisagree.colorblendr.utils.wifiadb
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell.clearEnabled
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell.commandOutput
-import com.topjohnwu.superuser.Shell
 import io.github.muntashirakon.adb.AdbPairingRequiredException
 import io.github.muntashirakon.adb.AdbStream
 import io.github.muntashirakon.adb.LocalServices
@@ -203,6 +205,28 @@ object WifiAdbShell {
         }
     }
 
+    private val outputGeneratorOnlyNew = Runnable {
+        try {
+            BufferedReader(InputStreamReader(adbShellStream!!.openInputStream())).use { reader ->
+                var s: String?
+                while (reader.readLine().also { s = it } != null) {
+                    if (clearEnabled) {
+                        clearEnabled = false
+                        continue // optionally skip this line
+                    }
+
+                    // Post only the new line, trimmed
+                    val line = s?.trim()
+                    if (!line.isNullOrEmpty()) {
+                        commandOutput.postValue(line)
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, "Error reading from adbShellStream", e)
+        }
+    }
+
     fun execute(command: String) {
         if (!isMyDeviceConnected()) {
             Log.e(TAG, "execute: Not connected to any device")
@@ -214,7 +238,7 @@ object WifiAdbShell {
                 if (adbShellStream == null || adbShellStream!!.isClosed) {
                     val manager = AdbConnectionManager.getInstance(appContext)
                     adbShellStream = manager.openStream(LocalServices.SHELL)
-                    Thread(outputGenerator).start()
+                    Thread(outputGeneratorOnlyNew).start()
                 }
                 if (command == "clear") {
                     clearEnabled = true
@@ -230,13 +254,45 @@ object WifiAdbShell {
         }
     }
 
-    fun exec(command: String, callback: (String) -> Unit) {
-        if (!isMyDeviceConnected()) {
-            Log.e(TAG, "exec: Not connected to any device")
-            return
-        }
+    fun executeWithObserver(
+        command: String,
+        contains: String,
+        callback: (String) -> Unit
+    ) {
+        val mainHandler = Handler(Looper.getMainLooper())
 
-        callback.invoke(Shell.cmd(command).exec().out.joinToString(separator = "; "))
+        mainHandler.post {
+            val tempObserver = object : Observer<CharSequence?> {
+                override fun onChanged(value: CharSequence?) {
+                    value?.let { output ->
+                        var result = output.toString()
+
+                        // Remove all shell prompts like "device:/ $"
+                        result = result.replace(Regex("\\S+:/ \\$"), "")
+                        // Remove the command itself
+                        result = result.replace(command, "")
+                        // Trim leading/trailing whitespace and newlines
+                        result = result.trim()
+
+                        if (result.contains(contains)) {
+                            mainHandler.removeCallbacksAndMessages(null)
+                            commandOutput.removeObserver(this)
+                            callback(result)
+                        }
+                    }
+                }
+            }
+
+            commandOutput.observeForever(tempObserver)
+
+            mainHandler.postDelayed({
+                commandOutput.removeObserver(tempObserver)
+                Log.d(TAG, "executeWithObserver: timed out, observer removed")
+                callback("")
+            }, 500)
+
+            execute(command)
+        }
     }
 
     interface IpAddressListener {

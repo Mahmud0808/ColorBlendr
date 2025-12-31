@@ -368,13 +368,25 @@ object OverlayManager {
             }
 
             try {
-                WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES") { currentSettings ->
+                WifiAdbShell.executeWithObserver(
+                    command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
+                    contains = "android.theme.customization"
+                ) { currentSettings ->
                     if (themeJson.isNotEmpty()) {
-                        val jsonString = MiscUtil.mergeJsonStrings(
-                            currentSettings,
-                            themeJson
-                        )
-                        WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                        val samsungPaletteName = "android:SemWT_G_MonetPalette"
+
+                        WifiAdbShell.executeWithObserver(
+                            command = "cmd overlay list | grep \"$samsungPaletteName\"",
+                            contains = samsungPaletteName
+                        ) { output ->
+                            if (output.contains(samsungPaletteName)) {
+                                val isEnabled = output.contains("[x]")
+                                WifiAdbShell.execute("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
+                            }
+
+                            val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                            WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -409,11 +421,26 @@ object OverlayManager {
             }
 
             try {
-                WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES") { currentSettings ->
-                    val jsonString = ThemeOverlayPackage
-                        .getOriginalSettings(currentSettings.ifEmpty { "{}" })
-                        .toString()
-                    WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                WifiAdbShell.executeWithObserver(
+                    command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
+                    contains = "android.theme.customization"
+                ) { currentSettings ->
+                    val samsungPaletteName = "android:SemWT_G_MonetPalette"
+
+                    WifiAdbShell.executeWithObserver(
+                        command = "cmd overlay list | grep \"$samsungPaletteName\"",
+                        contains = samsungPaletteName
+                    ) { output ->
+                        if (output.contains(samsungPaletteName)) {
+                            WifiAdbShell.execute("cmd overlay disable $samsungPaletteName")
+                            WifiAdbShell.execute("cmd overlay enable $samsungPaletteName")
+                        }
+
+                        val jsonString = ThemeOverlayPackage
+                            .getOriginalSettings(currentSettings.ifEmpty { "{}" })
+                            .toString()
+                        WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                    }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
