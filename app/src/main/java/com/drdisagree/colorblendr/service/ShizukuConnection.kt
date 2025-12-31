@@ -103,4 +103,18 @@ class ShizukuConnection : IShizukuConnection.Stub {
             currentSettings
         }
     }
+
+    /**
+     * Runs a specified shell command and returns its output.
+     *
+     * This function executes a given command using the `Shell.cmd()` utility.
+     * It captures the standard output of the command execution and returns it as a list of strings,
+     * where each string is a line from the output.
+     *
+     * @param command The shell command to be executed.
+     * @return A list of strings representing the lines of the command's standard output.
+     */
+    override fun run(command: String): String {
+        return Shell.cmd(command).exec().out.joinToString("\n")
+    }
 }

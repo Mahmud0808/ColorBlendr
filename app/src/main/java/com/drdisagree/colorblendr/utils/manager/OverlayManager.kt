@@ -346,6 +346,7 @@ object OverlayManager {
         if (!isShizukuMode && !isWirelessAdbMode) return false
 
         val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
+        val samsungPaletteName = "android:SemWT_G_MonetPalette"
 
         if (isShizukuMode) {
             if (!ensureShizukuConnection()) return true
@@ -354,6 +355,13 @@ object OverlayManager {
                 val currentSettings = mShizukuConnection.currentSettings
 
                 if (themeJson.isNotEmpty()) {
+                    val output =
+                        mShizukuConnection.run("cmd overlay list | grep \"$samsungPaletteName\"")
+                    if (output.contains(samsungPaletteName)) {
+                        val isEnabled = output.contains("[x]")
+                        mShizukuConnection.run("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
+                    }
+
                     mShizukuConnection.applyFabricatedColors(
                         MiscUtil.mergeJsonStrings(currentSettings, themeJson)
                     )
@@ -373,8 +381,6 @@ object OverlayManager {
                     contains = "android.theme.customization"
                 ) { currentSettings ->
                     if (themeJson.isNotEmpty()) {
-                        val samsungPaletteName = "android:SemWT_G_MonetPalette"
-
                         WifiAdbShell.executeWithObserver(
                             command = "cmd overlay list | grep \"$samsungPaletteName\"",
                             contains = samsungPaletteName
@@ -406,10 +412,20 @@ object OverlayManager {
 
         if (!isShizukuMode && !isWirelessAdbMode) return false
 
+        val samsungPaletteName = "android:SemWT_G_MonetPalette"
+
         if (isShizukuMode) {
             if (!ensureShizukuConnection()) return true
 
             try {
+                if (mShizukuConnection
+                        .run("cmd overlay list | grep \"$samsungPaletteName\"")
+                        .contains(samsungPaletteName)
+                ) {
+                    mShizukuConnection.run("cmd overlay disable $samsungPaletteName")
+                    mShizukuConnection.run("cmd overlay enable $samsungPaletteName")
+                }
+
                 mShizukuConnection.removeFabricatedColors()
             } catch (e: Exception) {
                 Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
@@ -425,8 +441,6 @@ object OverlayManager {
                     command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
                     contains = "android.theme.customization"
                 ) { currentSettings ->
-                    val samsungPaletteName = "android:SemWT_G_MonetPalette"
-
                     WifiAdbShell.executeWithObserver(
                         command = "cmd overlay list | grep \"$samsungPaletteName\"",
                         contains = samsungPaletteName

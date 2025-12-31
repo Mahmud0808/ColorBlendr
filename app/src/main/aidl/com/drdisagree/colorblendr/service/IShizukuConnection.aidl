@@ -6,4 +6,5 @@ interface IShizukuConnection {
     void applyFabricatedColors(String jsonString) = 2;
     void removeFabricatedColors() = 3;
     String getCurrentSettings() = 4;
+    String run(String command) = 5;
 }
