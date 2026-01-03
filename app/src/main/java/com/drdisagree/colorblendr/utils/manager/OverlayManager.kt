@@ -159,6 +159,7 @@ object OverlayManager {
         val monetBackgroundLightness = getBackgroundLightness()
         val pitchBlackTheme = pitchBlackThemeEnabled()
         val accurateShades = accurateShadesEnabled()
+        val isDarkMode = SystemUtil.isDarkMode
 
         val paletteLight = generateModifiedColors(
             style = style,
@@ -188,8 +189,6 @@ object OverlayManager {
                     FABRICATED_OVERLAY_NAME_SYSTEM,
                     FRAMEWORK_PACKAGE
                 ).also { frameworkOverlay ->
-                    val isDarkMode = SystemUtil.isDarkMode
-
                     frameworkOverlay.apply {
                         for (i in systemPaletteNames.indices) {
                             for (j in systemPaletteNames[i].indices) {
@@ -220,9 +219,13 @@ object OverlayManager {
 
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
-                            // QS top part color
+                            // QS top part color below A16
                             setColor("surface_header_dark_sysui", Color.BLACK)
-                            // A14 notification scrim color
+                            if (isDarkMode) {
+                                // QS top part color A16+
+                                setColor("shade_panel_fg_color", Color.BLACK) // with blur
+                            }
+                            // Notification scrim color A14+
                             setColor("system_surface_dim_dark", Color.BLACK)
                             setColor(systemPaletteNames[3][11], Color.BLACK)
                             setColor(systemPaletteNames[4][11], Color.BLACK)
@@ -261,7 +264,18 @@ object OverlayManager {
                     FABRICATED_OVERLAY_NAME_SYSTEMUI,
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
-                    systemuiOverlay.setBoolean("flag_monet", false)
+                    systemuiOverlay.apply {
+                        setBoolean("flag_monet", false)
+
+                        if (isDarkMode && pitchBlackTheme) {
+                            // QS top part color A16+
+                            setColor("shade_panel_base", Color.BLACK) // with blur
+                            setColor("shade_panel_fallback", Color.BLACK) // no blur
+                            // Notification scrim color A16+
+                            setColor("notification_scrim_base", Color.BLACK) // with blur
+                            setColor("notification_scrim_fallback", Color.BLACK) // no blur
+                        }
+                    }
                 }
             )
 
@@ -271,7 +285,7 @@ object OverlayManager {
                 add(
                     getFabricatedColorsPerApp(
                         packageName,
-                        if (SystemUtil.isDarkMode) paletteDark else paletteLight
+                        if (isDarkMode) paletteDark else paletteLight
                     )
                 )
             }
