@@ -8,19 +8,19 @@ import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion2025E
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.monet.dynamiccolor.ColorSpec
-import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
-import com.drdisagree.colorblendr.utils.monet.hct.Hct
-import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeContent
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeExpressive
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeFidelity
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeFruitSalad
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeMonochrome
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeNeutral
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeRainbow
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeTonalSpot
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeVibrant
+import com.drdisagree.materialcolorutilities.dynamiccolor.ColorSpec
+import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
+import com.drdisagree.materialcolorutilities.hct.Hct
+import com.drdisagree.materialcolorutilities.palettes.TonalPalette
+import com.drdisagree.materialcolorutilities.scheme.SchemeContent
+import com.drdisagree.materialcolorutilities.scheme.SchemeExpressive
+import com.drdisagree.materialcolorutilities.scheme.SchemeFidelity
+import com.drdisagree.materialcolorutilities.scheme.SchemeFruitSalad
+import com.drdisagree.materialcolorutilities.scheme.SchemeMonochrome
+import com.drdisagree.materialcolorutilities.scheme.SchemeNeutral
+import com.drdisagree.materialcolorutilities.scheme.SchemeRainbow
+import com.drdisagree.materialcolorutilities.scheme.SchemeTonalSpot
+import com.drdisagree.materialcolorutilities.scheme.SchemeVibrant
 
 object ColorSchemeUtil {
 

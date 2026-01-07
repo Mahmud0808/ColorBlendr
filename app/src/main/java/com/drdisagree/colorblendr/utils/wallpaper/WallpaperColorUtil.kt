@@ -21,8 +21,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.service.BroadcastListener
 import com.drdisagree.colorblendr.utils.app.AppUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
-import com.drdisagree.colorblendr.utils.monet.quantize.QuantizerCelebi
-import com.drdisagree.colorblendr.utils.monet.score.Score
+import com.drdisagree.materialcolorutilities.quantize.QuantizerCelebi
+import com.drdisagree.materialcolorutilities.score.Score
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.min

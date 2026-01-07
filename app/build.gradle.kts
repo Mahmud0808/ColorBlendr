@@ -136,6 +136,7 @@ dependencies {
     compileOnly(project(":systemstubs"))
     implementation(project(":libadb"))
     implementation(project(":colorpickerdialog"))
+    implementation(project(":materialcolorutilities"))
 
     implementation(libs.core.ktx)
     implementation(libs.libsu.core)

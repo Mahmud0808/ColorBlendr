@@ -1,0 +1,1 @@
+-keep,allowoptimization,allowobfuscation class com.drdisagree.materialcolorutilities.** { *; }
