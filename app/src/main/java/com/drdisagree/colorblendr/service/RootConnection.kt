@@ -45,6 +45,16 @@ class RootConnection : RootService() {
          * the Activity Manager to receive notifications about process state changes.
          */
         private val processListener: IProcessObserver.Stub = object : IProcessObserver.Stub() {
+            override fun onProcessStarted(
+                pid: Int,
+                processUid: Int,
+                packageUid: Int,
+                packageName: String?,
+                processName: String?
+            ) {
+                // Do nothing
+            }
+
             @Throws(RemoteException::class)
             override fun onForegroundActivitiesChanged(
                 pid: Int,
