@@ -197,7 +197,7 @@ object MiscUtil {
 
     fun Int.getOriginalString(): String {
         val config = Configuration(appContext.resources.configuration)
-        config.setLocale(Locale("en"))
+        config.setLocale(Locale.ENGLISH)
         return appContext.createConfigurationContext(config).getString(this)
     }
 
