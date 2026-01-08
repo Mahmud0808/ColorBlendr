@@ -105,7 +105,7 @@
     <string name="screen_off_update_desc">স্ক্রিন বন্ধ থাকার ১৫ সেকেন্ড পরে রঙ আপডেট করে; লাইভ ওয়ালপেপারের জন্য উপযোগী</string>
     <string name="screen_off_update_title">স্ক্রিন বন্ধ থাকা অবস্থায় রঙ আপডেট করুন</string>
     <string name="mode_specific_theme_desc">লাইট এবং ডার্ক মোডের জন্য ভিন্ন স্যাচুরেশন এবং হালকাতা প্রয়োগ করুন</string>
-    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_title">ColorSpec version 2025</string>
     <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">গাঢ় লঞ্চার আইকন</string>
     <string name="darker_launcher_icons_desc">পিক্সেল লঞ্চার মনোক্রোম আইকনগুলিতে একটি গাঢ় ব্যাকগ্রাউন্ড প্রয়োগ করুন</string>
