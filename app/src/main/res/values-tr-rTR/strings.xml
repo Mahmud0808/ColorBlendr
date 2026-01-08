@@ -105,7 +105,7 @@
     <string name="screen_off_update_desc">Ekran kapandıktan 15 saniye sonra renkleri günceller; canlı duvar kağıtları için kullanışlıdır</string>
     <string name="screen_off_update_title">Ekran Kapalıyken Renkleri Güncelle</string>
     <string name="mode_specific_theme_desc">Aydınlık ve karanlık modlar için farklı doygunluk ve parlaklık uygular</string>
-    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_title">ColorSpec version 2025</string>
     <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">Daha Koyu Başlatıcı Simgeleri</string>
     <string name="darker_launcher_icons_desc">Pixel Launcher monokrom simgelerine daha koyu bir arka plan uygular</string>

@@ -105,7 +105,7 @@
     <string name="screen_off_update_desc">تحديث الألوان بعد 15 ثانية من إيقاف تشغيل الشاشة؛ مفيد للخلفيات الحية</string>
     <string name="screen_off_update_title">تحديث الألوان على الشاشة المتوقفة</string>
     <string name="mode_specific_theme_desc">تطبيق تشبع وإضاءة مختلفين للوضعين الفاتح والداكن</string>
-    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_title">ColorSpec version 2025</string>
     <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">أيقونات مشغل أغمق</string>
     <string name="darker_launcher_icons_desc">تطبيق خلفية أغمق لأيقونات Pixel Launcher أحادية اللون</string>

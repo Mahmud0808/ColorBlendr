@@ -105,7 +105,7 @@
     <string name="screen_off_update_desc">Aktualizuje kolory po 15 sekundach od wyłączenia ekranu; przydatne dla animowanych tapet</string>
     <string name="screen_off_update_title">Aktualizuj kolory przy wyłączonym ekranie</string>
     <string name="mode_specific_theme_desc">Zastosuj różne nasycenie i jasność dla motywu jasnego i ciemnego</string>
-    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_title">ColorSpec version 2025</string>
     <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">Ciemniejsze ikony w launcherze</string>
     <string name="darker_launcher_icons_desc">Zastosuj ciemniejsze tło dla monochromatycznych ikon w Pixel Launcherze</string>

@@ -105,7 +105,7 @@
     <string name="screen_off_update_desc">Aggiorna i colori dopo 15 secondi dallo spegnimento dello schermo; utile per sfondi live</string>
     <string name="screen_off_update_title">Aggiorna i colori a schermo spento</string>
     <string name="mode_specific_theme_desc">Applica diverse saturazioni e luminosità per le modalità chiaro e scuro</string>
-    <string name="colorspec_title">ColorSpec Version 2025</string>
+    <string name="colorspec_title">ColorSpec version 2025</string>
     <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
     <string name="darker_launcher_icons_title">Scurisci icone del launcher</string>
     <string name="darker_launcher_icons_desc">Applica uno sfondo più scuro alle icone monocromatiche del pixel launcher</string>
