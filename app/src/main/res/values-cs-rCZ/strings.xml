@@ -60,7 +60,15 @@
     <string name="title">Název</string>
     <string name="description">Popis</string>
     <string name="save">Uložit</string>
+    <string name="edit">Upravit</string>
+    <string name="update">Aktualizovat</string>
+    <string name="delete">Odstranit</string>
+    <string name="cancel">Zrušit</string>
     <string name="title_and_desc_cant_be_empty">Název a popis nesmí být prázdný</string>
+    <string name="update_style_confirmation_title">Aktualizovat styl?</string>
+    <string name="update_style_confirmation_desc">Jste si jisti, že chcete aktualizovat tento vlastní styl pomocí vašeho aktuálního motivu?</string>
+    <string name="delete_style_confirmation_title">Smazat styl?</string>
+    <string name="delete_style_confirmation_desc">Opravdu chcete odstranit tento vlastní styl?</string>
     <!-- Settings -->
     <string name="app_service_title">Služba %s</string>
     <string name="app_service_desc_on">Motiv je aktivní</string>
@@ -97,6 +105,8 @@
     <string name="screen_off_update_desc">Aktualizace barev po 15 sekundách vypnuté obrazovky; užitečné pro živé tapety</string>
     <string name="screen_off_update_title">Aktualizovat barvy při vypnuté obrazovce</string>
     <string name="mode_specific_theme_desc">Použít odlišnou sytost a světlost pro světlé a tmavé režimy</string>
+    <string name="colorspec_title">ColorSpec verze 2025</string>
+    <string name="colorspec_desc">Spec 2025 je součástí Material 3 Expressive a v současné době podporuje pouze Tonal Spot, Neutral, Vibrant a Expressive variants.</string>
     <string name="darker_launcher_icons_title">Tmavší ikony launcheru</string>
     <string name="darker_launcher_icons_desc">Použít tmavší pozadí na monochromatické ikony Pixe launcheru</string>
     <string name="semitransparent_launcher_title">Poloprůhledný launcher</string>
@@ -155,7 +165,7 @@
     <string name="file_access_permission_required">Pro generování barev tapety je vyžadován přístup k souborům.</string>
     <string name="choose_method">Vyberte metodu</string>
     <string name="select_method">Vyberte metodu pro pokračování</string>
-    <string name="mode_one_title">Root</string>
+    <string name="mode_one_title">Kořenový adresář</string>
     <string name="mode_one_desc">Použít root přístup pro změnu barev. Všechny možnosti přizpůsobení budou k dispozici.</string>
     <string name="root_service_not_found">Root oprávnění nebylo uděleno.</string>
     <string name="mode_two_title">Shizuku</string>
@@ -169,7 +179,7 @@
     <string name="pairing">Párování</string>
     <string name="enter_pairing_code">Zadejte párovací kód</string>
     <string name="enter_six_digit_pairing_code">Zadejte šestimístný párovací kód</string>
-    <string name="searching_pairing_code">Searching for pairing code…</string>
+    <string name="searching_pairing_code">Vyhledávání kódu pro párování…</string>
     <string name="pairing_notification_hint">Obdržíte oznámení od ColorBlendru, aby vám pomohl s párováním.</string>
     <string name="notification_access_not_granted">Pro dokončení procesu párování budete muset interagovat s oznámením od ColorBlendr. Prosím povolte přístup k upozornění od ColorBlendr.</string>
     <string name="notification_settings">Nastavení upozornění</string>

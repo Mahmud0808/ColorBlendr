@@ -82,6 +82,5 @@ object SystemUtil {
                 Toast.LENGTH_SHORT
             ).show()
         }
-
     }
 }

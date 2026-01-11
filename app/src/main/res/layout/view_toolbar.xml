@@ -12,7 +12,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:paddingEnd="24dp"
+        android:paddingEnd="12dp"
         android:paddingStart="12dp"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"

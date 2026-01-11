@@ -45,6 +45,10 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - Working **Root**, **Shizuku**, or **Wireless ADB** environment
 
+> [!WARNING]
+> 
+> SuperSU root is not supported.
+
 ## How to Use 🚀
 
 - Download and install the apk

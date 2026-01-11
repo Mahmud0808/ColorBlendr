@@ -273,12 +273,14 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-
     private fun backupRestoreSettings(isBackingUp: Boolean) {
         val fileIntent = Intent().apply {
             action = if (isBackingUp) Intent.ACTION_CREATE_DOCUMENT else Intent.ACTION_GET_CONTENT
             type = "*/*"
-            putExtra(Intent.EXTRA_TITLE, "theme_config" + ".colorblendr")
+            putExtra(
+                Intent.EXTRA_TITLE,
+                "theme_config_" + System.currentTimeMillis() + ".colorblendr"
+            )
         }
 
         if (isBackingUp) {

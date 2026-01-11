@@ -12,6 +12,7 @@ import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion2025Enabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
@@ -21,6 +22,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion2025Enabled
 import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
@@ -102,6 +104,15 @@ class SettingsAdvancedFragment : BaseFragment() {
                     }
                 }
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
+        }
+
+        // ColorSpec version 2025
+        binding.colorspecVersion.isEnabled = isRootMode()
+        binding.colorspecVersion.isSwitchChecked = getColorSpecVersion2025Enabled()
+        binding.colorspecVersion.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            resetCustomStyleIfNotNull()
+            setColorSpecVersion2025Enabled(isChecked)
+            updateColors()
         }
 
         // Update colors on screen off

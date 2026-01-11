@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.clearOriginalStyleName
@@ -22,8 +23,10 @@ import com.drdisagree.colorblendr.ui.fragments.StylesFragment
 import com.drdisagree.colorblendr.ui.widgets.StylePreviewWidget
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
+import com.drdisagree.colorblendr.utils.app.MiscUtil.showIcons
 import com.drdisagree.colorblendr.utils.app.MiscUtil.toPx
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -211,6 +214,7 @@ class StylePreviewAdapter(
 
             val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.PopupMenuStyles).apply {
                 menuInflater.inflate(R.menu.custom_style_menu, menu)
+                showIcons()
 
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
@@ -234,9 +238,20 @@ class StylePreviewAdapter(
                             true
                         }
 
+                        R.id.update -> {
+                            fragment.showUpdateConfirmation {
+                                coroutineScope.launch {
+                                    fragment.updateCustomStyle(styleId = customStyle.styleId)
+                                }
+                            }
+                            true
+                        }
+
                         R.id.delete -> {
-                            coroutineScope.launch {
-                                fragment.deleteCustomStyle(styleId = customStyle.styleId)
+                            fragment.showDeleteConfirmation {
+                                coroutineScope.launch {
+                                    fragment.deleteCustomStyle(styleId = customStyle.styleId)
+                                }
                             }
                             true
                         }
@@ -263,6 +278,24 @@ class StylePreviewAdapter(
             // update current selected position
             notifyItemChanged(bindingAdapterPosition)
             selectedPosition = bindingAdapterPosition
+        }
+
+        private fun Fragment.showUpdateConfirmation(onConfirm: () -> Unit) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.update_style_confirmation_title)
+                .setMessage(R.string.update_style_confirmation_desc)
+                .setPositiveButton(R.string.update) { _, _ -> onConfirm() }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+
+        private fun Fragment.showDeleteConfirmation(onConfirm: () -> Unit) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.delete_style_confirmation_title)
+                .setMessage(R.string.delete_style_confirmation_desc)
+                .setPositiveButton(R.string.delete) { _, _ -> onConfirm() }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
     }
 }

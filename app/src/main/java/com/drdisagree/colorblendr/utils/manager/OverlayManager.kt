@@ -40,8 +40,8 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
+import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 @Suppress("unused")
 object OverlayManager {
@@ -159,6 +159,7 @@ object OverlayManager {
         val monetBackgroundLightness = getBackgroundLightness()
         val pitchBlackTheme = pitchBlackThemeEnabled()
         val accurateShades = accurateShadesEnabled()
+        val isDarkMode = SystemUtil.isDarkMode
 
         val paletteLight = generateModifiedColors(
             style = style,
@@ -188,8 +189,6 @@ object OverlayManager {
                     FABRICATED_OVERLAY_NAME_SYSTEM,
                     FRAMEWORK_PACKAGE
                 ).also { frameworkOverlay ->
-                    val isDarkMode = SystemUtil.isDarkMode
-
                     frameworkOverlay.apply {
                         for (i in systemPaletteNames.indices) {
                             for (j in systemPaletteNames[i].indices) {
@@ -200,7 +199,6 @@ object OverlayManager {
                             }
                         }
                         // SurfaceEffectColors
-                        // Source: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/packages/SystemUI/src/com/android/systemui/common/shared/colors/SurfaceEffectColors.kt
                         generateSurfaceEffectColors(isDarkMode)
 
                         // Dynamic colors
@@ -221,9 +219,13 @@ object OverlayManager {
 
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
-                            // QS top part color
+                            // QS top part color below A16
                             setColor("surface_header_dark_sysui", Color.BLACK)
-                            // A14 notification scrim color
+                            if (isDarkMode) {
+                                // QS top part color A16+
+                                setColor("shade_panel_fg_color", Color.BLACK) // with blur
+                            }
+                            // Notification scrim color A14+
                             setColor("system_surface_dim_dark", Color.BLACK)
                             setColor(systemPaletteNames[3][11], Color.BLACK)
                             setColor(systemPaletteNames[4][11], Color.BLACK)
@@ -235,6 +237,24 @@ object OverlayManager {
                             setColor("text_color_primary_device_default_light", Color.BLACK)
                             setColor("text_color_secondary_device_default_light", -0x4d000000)
                         }
+
+                        // Material error colors
+                        setColor("system_error_light", getColor("system_error_600"))
+                        setColor("system_error_container_light", getColor("system_error_100"))
+                        setColor("system_error_dark", getColor("system_error_200"))
+                        setColor("system_error_container_dark", getColor("system_error_700"))
+
+                        if (tintedTextEnabled()) {
+                            setColor("system_on_error_light", getColor("system_error_100"))
+                            setColor("system_on_error_container_light", getColor("system_error_600"))
+                            setColor("system_on_error_dark", getColor("system_error_700"))
+                            setColor("system_on_error_container_dark", getColor("system_error_200"))
+                        } else {
+                            setColor("system_on_error_light", Color.WHITE)
+                            setColor("system_on_error_container_light", Color.BLACK)
+                            setColor("system_on_error_dark", Color.BLACK)
+                            setColor("system_on_error_container_dark", Color.WHITE)
+                        }
                     }
                 }
             )
@@ -244,7 +264,18 @@ object OverlayManager {
                     FABRICATED_OVERLAY_NAME_SYSTEMUI,
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
-                    systemuiOverlay.setBoolean("flag_monet", false)
+                    systemuiOverlay.apply {
+                        setBoolean("flag_monet", false)
+
+                        if (isDarkMode && pitchBlackTheme) {
+                            // QS top part color A16+
+                            setColor("shade_panel_base", Color.BLACK) // with blur
+                            setColor("shade_panel_fallback", Color.BLACK) // no blur
+                            // Notification scrim color A16+
+                            setColor("notification_scrim_base", Color.BLACK) // with blur
+                            setColor("notification_scrim_fallback", Color.BLACK) // no blur
+                        }
+                    }
                 }
             )
 
@@ -254,7 +285,7 @@ object OverlayManager {
                 add(
                     getFabricatedColorsPerApp(
                         packageName,
-                        if (SystemUtil.isDarkMode) paletteDark else paletteLight
+                        if (isDarkMode) paletteDark else paletteLight
                     )
                 )
             }
@@ -329,6 +360,7 @@ object OverlayManager {
         if (!isShizukuMode && !isWirelessAdbMode) return false
 
         val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
+        val samsungPaletteName = "android:SemWT_G_MonetPalette"
 
         if (isShizukuMode) {
             if (!ensureShizukuConnection()) return true
@@ -337,6 +369,13 @@ object OverlayManager {
                 val currentSettings = mShizukuConnection.currentSettings
 
                 if (themeJson.isNotEmpty()) {
+                    val output =
+                        mShizukuConnection.run("cmd overlay list | grep \"$samsungPaletteName\"")
+                    if (output.contains(samsungPaletteName)) {
+                        val isEnabled = output.contains("[x]")
+                        mShizukuConnection.run("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
+                    }
+
                     mShizukuConnection.applyFabricatedColors(
                         MiscUtil.mergeJsonStrings(currentSettings, themeJson)
                     )
@@ -351,13 +390,23 @@ object OverlayManager {
             }
 
             try {
-                WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES") { currentSettings ->
+                WifiAdbShell.executeWithObserver(
+                    command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
+                    contains = "android.theme.customization"
+                ) { currentSettings ->
                     if (themeJson.isNotEmpty()) {
-                        val jsonString = MiscUtil.mergeJsonStrings(
-                            currentSettings,
-                            themeJson
-                        )
-                        WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                        WifiAdbShell.executeWithObserver(
+                            command = "cmd overlay list | grep \"$samsungPaletteName\"",
+                            contains = samsungPaletteName
+                        ) { output ->
+                            if (output.contains(samsungPaletteName)) {
+                                val isEnabled = output.contains("[x]")
+                                WifiAdbShell.execute("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
+                            }
+
+                            val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                            WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -377,10 +426,20 @@ object OverlayManager {
 
         if (!isShizukuMode && !isWirelessAdbMode) return false
 
+        val samsungPaletteName = "android:SemWT_G_MonetPalette"
+
         if (isShizukuMode) {
             if (!ensureShizukuConnection()) return true
 
             try {
+                if (mShizukuConnection
+                        .run("cmd overlay list | grep \"$samsungPaletteName\"")
+                        .contains(samsungPaletteName)
+                ) {
+                    mShizukuConnection.run("cmd overlay disable $samsungPaletteName")
+                    mShizukuConnection.run("cmd overlay enable $samsungPaletteName")
+                }
+
                 mShizukuConnection.removeFabricatedColors()
             } catch (e: Exception) {
                 Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
@@ -392,11 +451,24 @@ object OverlayManager {
             }
 
             try {
-                WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES") { currentSettings ->
-                    val jsonString = ThemeOverlayPackage
-                        .getOriginalSettings(currentSettings.ifEmpty { "{}" })
-                        .toString()
-                    WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                WifiAdbShell.executeWithObserver(
+                    command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
+                    contains = "android.theme.customization"
+                ) { currentSettings ->
+                    WifiAdbShell.executeWithObserver(
+                        command = "cmd overlay list | grep \"$samsungPaletteName\"",
+                        contains = samsungPaletteName
+                    ) { output ->
+                        if (output.contains(samsungPaletteName)) {
+                            WifiAdbShell.execute("cmd overlay disable $samsungPaletteName")
+                            WifiAdbShell.execute("cmd overlay enable $samsungPaletteName")
+                        }
+
+                        val jsonString = ThemeOverlayPackage
+                            .getOriginalSettings(currentSettings.ifEmpty { "{}" })
+                            .toString()
+                        WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                    }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)

@@ -2,15 +2,29 @@ name: Build Release APK
 
 on:
   workflow_dispatch:
-    branches:
-      - fdroid
 
 jobs:
   build:
     name: Build Release APK
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout fdroid branch
+        uses: actions/checkout@v4
+        with:
+          ref: fdroid
+          fetch-depth: 0
+
+      - name: Show Git info
+        run: |
+          echo "Branch:"
+          git branch --show-current
+          echo ""
+          echo "Commit hash:"
+          git rev-parse HEAD
+          echo ""
+          echo "Commit info:"
+          git log -1 --oneline
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4

@@ -16,6 +16,8 @@ import android.view.ViewGroup
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -37,13 +39,17 @@ object MiscUtil {
         toolbar: MaterialToolbar?
     ) {
         (context as AppCompatActivity).setSupportActionBar(toolbar)
-        val actionBar = context.supportActionBar
-        if (actionBar != null) {
-            context.supportActionBar!!.setTitle(title)
-            context.supportActionBar!!.setDisplayHomeAsUpEnabled(showBackButton)
-            context.supportActionBar!!.setDisplayShowHomeEnabled(showBackButton)
-            context.supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_toolbar_chevron)
-            if (showBackButton) toolbar?.setNavigationIcon(R.drawable.ic_toolbar_chevron)
+        toolbar?.overflowIcon = ContextCompat.getDrawable(context, R.drawable.ic_toolbar_overflow)
+
+        context.supportActionBar?.apply {
+            setTitle(title)
+            setDisplayHomeAsUpEnabled(showBackButton)
+            setDisplayShowHomeEnabled(showBackButton)
+            setHomeAsUpIndicator(R.drawable.ic_toolbar_chevron)
+        }
+
+        if (showBackButton) {
+            toolbar?.setNavigationIcon(R.drawable.ic_toolbar_chevron)
         }
     }
 
@@ -191,7 +197,7 @@ object MiscUtil {
 
     fun Int.getOriginalString(): String {
         val config = Configuration(appContext.resources.configuration)
-        config.setLocale(Locale("en"))
+        config.setLocale(Locale.ENGLISH)
         return appContext.createConfigurationContext(config).getString(this)
     }
 
@@ -211,6 +217,22 @@ object MiscUtil {
         val padding = typedArray.getDimensionPixelSize(0, toPx(20))
         typedArray.recycle()
         return padding
+    }
+
+    fun PopupMenu.showIcons() {
+        try {
+            val fields = PopupMenu::class.java.getDeclaredField("mPopup")
+            fields.isAccessible = true
+            val menuPopupHelper = fields.get(this)
+            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+            val setForceIcons = classPopupHelper.getMethod(
+                "setForceShowIcon",
+                Boolean::class.javaPrimitiveType
+            )
+            setForceIcons.invoke(menuPopupHelper, true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
 

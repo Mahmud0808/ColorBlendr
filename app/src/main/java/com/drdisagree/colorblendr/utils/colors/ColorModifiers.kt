@@ -49,7 +49,10 @@ object ColorModifiers {
     ): ArrayList<Int> {
         counter.getAndIncrement()
 
-        val accentPalette = counter.get() <= 3
+        val count = counter.get()
+        val accentPalette = count <= 3
+        val neutralPalette = count in 4..5
+        val errorPalette = count == 6
 
         val accentSaturation = monetAccentSaturation != 100
         val backgroundSaturation = monetBackgroundSaturation != 100
@@ -58,7 +61,7 @@ object ColorModifiers {
         val isMonochrome = style == MONET.MONOCHROMATIC
         val isRainbow = style == MONET.RAINBOW
 
-        if (accentPalette) {
+        if (accentPalette || errorPalette) {
             if (accentSaturation && !isMonochrome) {
                 // Set accent saturation
                 palette.replaceAll { o: Int ->
@@ -68,7 +71,7 @@ object ColorModifiers {
                     )
                 }
             }
-        } else {
+        } else if (neutralPalette) {
             if (backgroundLightness && !isMonochrome) {
                 // Set background lightness
                 for (j in palette.indices) {
@@ -101,7 +104,7 @@ object ColorModifiers {
 
         if (overrideColors) {
             for (j in 0 until palette.size - 1) {
-                val i = counter.get() - 1
+                val i = count - 1
 
                 val overriddenColor = Prefs.getInt(systemPaletteNames[i][j + 1], Int.MIN_VALUE)
 
@@ -113,7 +116,7 @@ object ColorModifiers {
             }
         }
 
-        if (counter.get() >= 5) {
+        if (count >= 6) {
             counter.set(0)
         }
 

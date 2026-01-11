@@ -4,41 +4,58 @@ import android.content.Context
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion2025Enabled
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.monet.dynamiccolor.DynamicScheme
-import com.drdisagree.colorblendr.utils.monet.hct.Hct
-import com.drdisagree.colorblendr.utils.monet.palettes.TonalPalette
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeContent
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeExpressive
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeFidelity
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeFruitSalad
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeMonochrome
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeNeutral
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeRainbow
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeTonalSpot
-import com.drdisagree.colorblendr.utils.monet.scheme.SchemeVibrant
+import com.drdisagree.materialcolorutilities.dynamiccolor.ColorSpec
+import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
+import com.drdisagree.materialcolorutilities.hct.Hct
+import com.drdisagree.materialcolorutilities.palettes.TonalPalette
+import com.drdisagree.materialcolorutilities.scheme.SchemeContent
+import com.drdisagree.materialcolorutilities.scheme.SchemeExpressive
+import com.drdisagree.materialcolorutilities.scheme.SchemeFidelity
+import com.drdisagree.materialcolorutilities.scheme.SchemeFruitSalad
+import com.drdisagree.materialcolorutilities.scheme.SchemeMonochrome
+import com.drdisagree.materialcolorutilities.scheme.SchemeNeutral
+import com.drdisagree.materialcolorutilities.scheme.SchemeRainbow
+import com.drdisagree.materialcolorutilities.scheme.SchemeTonalSpot
+import com.drdisagree.materialcolorutilities.scheme.SchemeVibrant
 
 object ColorSchemeUtil {
+
     private val tones: IntArray = intArrayOf(100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0)
 
     fun generateColorPalette(
         style: MONET,
         @ColorInt color: Int,
         isDark: Boolean = SystemUtil.isDarkMode,
-        contrast: Int = 5
+        contrast: Int = 0
     ): ArrayList<ArrayList<Int>> {
         val palette = ArrayList<ArrayList<Int>>()
+        val specVersion: ColorSpec.SpecVersion = if (getColorSpecVersion2025Enabled()) {
+            ColorSpec.SpecVersion.SPEC_2025
+        } else {
+            ColorSpec.SpecVersion.SPEC_2021
+        }
+        val platform: DynamicScheme.Platform = DynamicScheme.DEFAULT_PLATFORM
 
-        val dynamicScheme = getDynamicScheme(style, color, isDark, contrast)
+        val dynamicScheme = getDynamicScheme(
+            style,
+            color,
+            isDark,
+            contrast,
+            specVersion,
+            platform
+        )
 
         val tonalPalettes = arrayOf(
             dynamicScheme.primaryPalette,
             dynamicScheme.secondaryPalette,
             dynamicScheme.tertiaryPalette,
             dynamicScheme.neutralPalette,
-            dynamicScheme.neutralVariantPalette
+            dynamicScheme.neutralVariantPalette,
+            dynamicScheme.errorPalette
         )
 
         for (tonalPalette in tonalPalettes) {
@@ -52,18 +69,82 @@ object ColorSchemeUtil {
         style: MONET,
         @ColorInt color: Int,
         isDark: Boolean,
-        contrast: Int
+        contrast: Int,
+        specVersion: ColorSpec.SpecVersion,
+        platform: DynamicScheme.Platform
     ): DynamicScheme {
         return when (style) {
-            MONET.SPRITZ -> SchemeNeutral(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.MONOCHROMATIC -> SchemeMonochrome(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.TONAL_SPOT -> SchemeTonalSpot(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.VIBRANT -> SchemeVibrant(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.RAINBOW -> SchemeRainbow(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.EXPRESSIVE -> SchemeExpressive(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.FIDELITY -> SchemeFidelity(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.CONTENT -> SchemeContent(Hct.fromInt(color), isDark, contrast.toDouble())
-            MONET.FRUIT_SALAD -> SchemeFruitSalad(Hct.fromInt(color), isDark, contrast.toDouble())
+            MONET.SPRITZ -> SchemeNeutral(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.MONOCHROMATIC -> SchemeMonochrome(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.TONAL_SPOT -> SchemeTonalSpot(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.VIBRANT -> SchemeVibrant(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.RAINBOW -> SchemeRainbow(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.EXPRESSIVE -> SchemeExpressive(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.FIDELITY -> SchemeFidelity(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.CONTENT -> SchemeContent(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
+
+            MONET.FRUIT_SALAD -> SchemeFruitSalad(
+                Hct.fromInt(color),
+                isDark,
+                contrast.toDouble(),
+                specVersion,
+                platform
+            )
         }
     }
 

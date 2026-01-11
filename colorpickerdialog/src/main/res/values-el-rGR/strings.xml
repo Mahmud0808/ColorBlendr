@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="colorPickerDialog_dialogName">Color Picker</string>
-    <string name="colorPickerDialog_preset">Preset</string>
-    <string name="colorPickerDialog_image">Image</string>
-    <string name="colorPickerDialog_imageColorPicker">Pick Color from Image</string>
-    <string name="colorPickerDialog_grant_permissions">Grant Permissions</string>
-    <string name="colorPickerDialog_msg_grant_permissions">Please grant the \'External Storage\' permissions to continue.</string>
-    <string name="colorPickerDialog_msg_image_invalid">Couldn\'t use this image.</string>
-    <string name="colorPickerDialog_title_all_photos">All Photos</string>
+    <string name="colorPickerDialog_dialogName">Επιλογή χρώματος</string>
+    <string name="colorPickerDialog_preset">Προεπιλογή</string>
+    <string name="colorPickerDialog_image">Εικόνα</string>
+    <string name="colorPickerDialog_imageColorPicker">Επιλογή χρώματος από εικόνα</string>
+    <string name="colorPickerDialog_grant_permissions">Εκχώρηση Δικαιωμάτων</string>
+    <string name="colorPickerDialog_msg_grant_permissions">Παρακαλούμε εκχωρήστε τα δικαιώματα \'Εξωτερικού Χώρου\' για να συνεχίσετε.</string>
+    <string name="colorPickerDialog_msg_image_invalid">Δεν ήταν δυνατή η χρήση της εικόνας.</string>
+    <string name="colorPickerDialog_title_all_photos">Όλες οι φωτογραφίες</string>
 </resources>
