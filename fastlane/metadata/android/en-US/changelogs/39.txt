@@ -1,0 +1,11 @@
+Changelog:
+
+• Introduced Material You Expressive color generation. [Root]
+• Added support for updating custom styles. [Root]
+• Added Material error color generation support. [Root]
+• Fixed pitch-black Quick Settings theme on Android 16. [Root]
+• Fixed color updates not applying correctly on OneUI 8. [Rootless]
+• Resolved binder crash requiring force stop on Android 16 QPR1+. [Root]
+• Improved UI elements and updated translations.
+
+Translation credit goes to all the contributors on our Crowdin platform.
