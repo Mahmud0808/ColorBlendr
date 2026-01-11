@@ -275,7 +275,7 @@ class SeekbarWidget : RelativeLayout {
 
         override fun writeToParcel(dest: Parcel, flags: Int) {
             super.writeToParcel(dest, flags)
-            dest.writeFloat(seekbarProgress.toFloat())
+            dest.writeInt(seekbarProgress)
         }
 
         companion object CREATOR : Parcelable.Creator<SavedState> {
