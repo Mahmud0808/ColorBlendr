@@ -1,0 +1,6 @@
+Changelog:
+
+• Fixed a crash related to seekbar views.
+• Removed unnecessary permissions.
+
+Translation credit goes to all the contributors on our Crowdin platform.
