@@ -57,6 +57,9 @@ class SeekbarWidget : RelativeLayout {
         valueFormat = typedArray.getString(R.styleable.SeekbarWidget_progressFormat)
         defaultValue =
             typedArray.getInt(R.styleable.SeekbarWidget_seekbarDefaultProgress, Int.MAX_VALUE)
+        isDecimalFormat = typedArray.getBoolean(R.styleable.SeekbarWidget_isDecimalFormat, false)
+        decimalFormat = typedArray.getString(R.styleable.SeekbarWidget_decimalFormat)
+        outputScale = typedArray.getFloat(R.styleable.SeekbarWidget_outputScale, 1f)
         setTitle(typedArray.getString(R.styleable.SeekbarWidget_titleText))
         setSeekbarMinProgress(typedArray.getInt(R.styleable.SeekbarWidget_seekbarMinProgress, 0))
         setSeekbarMaxProgress(typedArray.getInt(R.styleable.SeekbarWidget_seekbarMaxProgress, 100))
@@ -64,9 +67,6 @@ class SeekbarWidget : RelativeLayout {
             R.styleable.SeekbarWidget_seekbarProgress,
             typedArray.getInt(R.styleable.SeekbarWidget_seekbarDefaultProgress, 50)
         )
-        isDecimalFormat = typedArray.getBoolean(R.styleable.SeekbarWidget_isDecimalFormat, false)
-        decimalFormat = typedArray.getString(R.styleable.SeekbarWidget_decimalFormat)
-        outputScale = typedArray.getFloat(R.styleable.SeekbarWidget_outputScale, 1f)
         val position = typedArray.getInt(R.styleable.SeekbarWidget_position, 0)
         typedArray.recycle()
 
@@ -119,7 +119,11 @@ class SeekbarWidget : RelativeLayout {
     var seekbarProgress: Int
         get() = seekBar!!.progress
         set(value) {
-            seekBar!!.progress = value
+            val min = seekBar?.min ?: 0
+            val max = seekBar?.max ?: 100
+            val safeValue = value.coerceIn(min, max)
+
+            seekBar?.progress = safeValue
             setSelectedProgress()
             handleResetVisibility()
         }

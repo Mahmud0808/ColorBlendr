@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 36
+    compileSdk = 36
     namespace "me.jfenn.colorpickerdialog"
 
     defaultConfig {
-        minSdk 31
-        targetSdk 36
+        minSdk = 31
+        targetSdk = 36
         aarMetadata {
             minCompileSdk = 31
         }

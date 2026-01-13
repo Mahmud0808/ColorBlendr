@@ -17,8 +17,11 @@
 <p align="center">
 Elevate your creativity with effortless material customization. Instantly tweak colors for a personalized touch in just a few taps.
 </p>
+<br>
 <div align="center">
-  <a href="https://f-droid.org/en/packages/com.drdisagree.colorblendr/"><img src="https://f-droid.org/badge/get-it-on.png" width="34.4%" alt="Get it on F-Droid" /></a>
+  <a href="https://f-droid.org/en/packages/com.drdisagree.colorblendr/"><img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/fdroid-button.png" width="30%" alt="Get it on F-Droid" /></a>
+  <br>
+  <a href="https://apt.izzysoft.de/packages/com.drdisagree.colorblendr/"><img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/izzyondroid-button.png" width="30%" alt="Get it on IzzyOnDroid" /></a>
   <br>
   <a href="https://www.buymeacoffee.com/DrDisagree"><img src="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/bmc-button.png" width="30%" alt="Buy me a coffee" /></a>
   <br><br>
