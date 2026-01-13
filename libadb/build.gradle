@@ -8,12 +8,12 @@ group = 'io.github.muntashirakon'
 version = '3.1.0'
 
 android {
-    compileSdk 35
+    compileSdk = 35
     namespace "io.github.muntashirakon.adb"
 
     defaultConfig {
-        minSdk 1
-        targetSdk 35
+        minSdk = 1
+        targetSdk = 35
         aarMetadata {
             minCompileSdk = 1
         }
