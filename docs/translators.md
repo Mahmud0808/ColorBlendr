@@ -405,7 +405,7 @@ Thanks to these translators and proofreaders, this project exists:
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/krvstek"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16861093/medium/0cc5f28c3e01927ce62ce44b03d8c5dd.png" />
           <br />
-          <sub><b>krvstek. (krvstek)</b></sub></a>
+          <sub><b>krvstek</b></sub></a>
         <br />
         <sub><b>4 words</b></sub>
       </td>
