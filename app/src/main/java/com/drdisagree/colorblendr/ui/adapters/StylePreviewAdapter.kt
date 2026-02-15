@@ -215,10 +215,13 @@ class StylePreviewAdapter(
             val popupMenu = PopupMenu(context, this, Gravity.END, 0, R.style.PopupMenuStyles).apply {
                 menuInflater.inflate(R.menu.custom_style_menu, menu)
                 showIcons()
+                val editId = R.id.edit
+                val updateId = R.id.update
+                val deleteId = R.id.delete
 
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-                        R.id.edit -> {
+                        editId -> {
                             fragment.showNewStyleDialog(
                                 title = customStyle.styleName,
                                 desc = customStyle.description,
@@ -238,7 +241,7 @@ class StylePreviewAdapter(
                             true
                         }
 
-                        R.id.update -> {
+                        updateId -> {
                             fragment.showUpdateConfirmation {
                                 coroutineScope.launch {
                                     fragment.updateCustomStyle(styleId = customStyle.styleId)
@@ -247,7 +250,7 @@ class StylePreviewAdapter(
                             true
                         }
 
-                        R.id.delete -> {
+                        deleteId -> {
                             fragment.showDeleteConfirmation {
                                 coroutineScope.launch {
                                     fragment.deleteCustomStyle(styleId = customStyle.styleId)

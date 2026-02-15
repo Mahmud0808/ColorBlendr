@@ -249,13 +249,16 @@ class SettingsFragment : BaseFragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                val advancedSettingsId = R.id.advanced_settings
+                val privacyPolicyId = R.id.privacy_policy
+
                 return when (menuItem.itemId) {
-                    R.id.advanced_settings -> {
+                    advancedSettingsId -> {
                         HomeFragment.replaceFragment(SettingsAdvancedFragment())
                         true
                     }
 
-                    R.id.privacy_policy -> {
+                    privacyPolicyId -> {
                         HomeFragment.replaceFragment(PrivacyPolicyFragment())
                         true
                     }

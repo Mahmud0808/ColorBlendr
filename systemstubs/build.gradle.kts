@@ -4,6 +4,7 @@ plugins {
 
 android {
     namespace = "com.drdisagree.colorblendr.systemstubs"
+    //noinspection GradleDependency
     compileSdk = 34
 
     defaultConfig {

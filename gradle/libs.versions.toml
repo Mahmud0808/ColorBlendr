@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.2"
+agp = "9.0.1"
 androidUtils = "0.0.5"
 annotation = "1.9.1"
 appcompat = "1.7.1"
@@ -13,11 +13,9 @@ flexbox = "3.0.0"
 glide = "5.0.5"
 gson = "2.13.2"
 hiddenapibypassVersion = "6.1"
-junit = "4.13.2"
-ksp = "2.3.0"
-kotlin = "2.3.0"
+ksp = "2.3.5"
 libsuVersion = "6.0.0"
-material = "1.14.0-alpha08"
+material = "1.14.0-alpha09"
 palette = "1.0.0"
 preferenceKtx = "1.2.1"
 recyclerview = "1.4.0"
@@ -27,14 +25,13 @@ roomVersion = "2.8.4"
 shizuku = "13.1.5"
 spake2Android = "-SNAPSHOT"
 sunSecurityAndroid = "1.1"
-workRuntime = "2.11.0"
+workRuntime = "2.11.1"
 lifecycleCommonJvm = "2.10.0"
-zip4j = "2.11.5"
+zip4j = "2.11.6"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
@@ -51,7 +48,6 @@ core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = 
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-junit = { module = "junit:junit", version.ref = "junit" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuVersion" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsuVersion" }
 lsposed-hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypassVersion" }

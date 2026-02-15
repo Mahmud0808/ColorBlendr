@@ -110,20 +110,25 @@ class HomeFragment : Fragment() {
         }
 
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
+            val navColorsId = R.id.nav_colors
+            val navThemesId = R.id.nav_themes
+            val navStylesId = R.id.nav_styles
+            val navSettingsId = R.id.nav_settings
+
             when (item.itemId) {
-                R.id.nav_colors -> {
+                navColorsId -> {
                     replaceFragment(ColorsFragment())
                 }
 
-                R.id.nav_themes -> {
+                navThemesId -> {
                     replaceFragment(ThemeFragment())
                 }
 
-                R.id.nav_styles -> {
+                navStylesId -> {
                     replaceFragment(StylesFragment())
                 }
 
-                R.id.nav_settings -> {
+                navSettingsId -> {
                     replaceFragment(SettingsFragment())
                 }
 

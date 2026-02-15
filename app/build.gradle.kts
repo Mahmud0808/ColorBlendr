@@ -1,15 +1,17 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.agp.app)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.ksp)
 }
 
-android {
+configure<ApplicationExtension> {
     namespace = "com.drdisagree.colorblendr"
     compileSdk = 36
 
@@ -63,16 +65,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
-            applicationVariants.all {
-                val variant = this
-                variant.outputs
-                    .map { it as BaseVariantOutputImpl }
-                    .forEach { output ->
-                        val outputFileName = "ColorBlendr ${variant.versionName}.apk"
-                        output.outputFileName = outputFileName
-                    }
-            }
         }
     }
 
@@ -87,19 +79,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-    }
-
     lint {
         abortOnError = true
         checkReleaseBuilds = false
-    }
-
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
     }
 
     dependenciesInfo {
@@ -129,6 +111,47 @@ android {
             "/*.bin",
             "/*.json"
         )
+    }
+}
+
+base {
+    archivesName = "ColorBlendr ${android.defaultConfig.versionName}"
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
+    compilerOptions {
+        languageVersion = KotlinVersion.KOTLIN_2_3
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
+tasks.register("renameReleaseApk") {
+    dependsOn("assembleRelease")
+
+    doLast {
+        val apkDir = layout.buildDirectory.dir("outputs/apk/release").get().asFile
+        val originalApk = apkDir.listFiles()
+            ?.firstOrNull { it.name.endsWith(".apk") }
+            ?: throw GradleException("Release APK not found")
+
+        val newName = "ColorBlendr-${android.defaultConfig.versionName}.apk"
+        val renamedApk = File(apkDir, newName)
+
+        originalApk.renameTo(renamedApk)
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            if (output is VariantOutputImpl) {
+                output.outputFileName = "ColorBlendr ${android.defaultConfig.versionName}.apk"
+            }
+        }
     }
 }
 
