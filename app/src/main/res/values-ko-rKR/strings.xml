@@ -27,7 +27,7 @@
     <string name="cannot_override_color">이 색상은 재정의할 수 없습니다</string>
     <!-- Per app theme -->
     <string name="per_app_theme">앱별 테마</string>
-    <string name="per_app_theme_warn">특정 앱이 시스템 테마를 따르지 않는 것을 눈치채셨을 수도 있습니다. 이는 재료 구성 요소 업데이트(v1.11.0+)의 결과입니다. 테마를 적용하려면 여기에서 해당 앱을 수동으로 선택하고, 변경 사항이 적용되려면 해당 앱을 닫았다가 다시 여는 것을 잊지 마세요.</string>
+    <string name="per_app_theme_warn">MaterialComponents 업데이트(v1.11.0 이상) 이후 일부 앱이 시스템 테마를 따르지 않는 것을 발견하셨을 수 있습니다. 여기에서 해당 앱을 수동으로 선택하여 테마를 적용하고, 변경 사항이 적용되도록 앱을 닫았다가 다시 실행하세요.</string>
     <string name="filter_app_category">앱 카테고리 선택</string>
     <string name="filter_system_apps">시스템 앱</string>
     <string name="filter_user_apps">유저 앱</string>
@@ -60,15 +60,15 @@
     <string name="title">제목</string>
     <string name="description">설명</string>
     <string name="save">저장</string>
-    <string name="edit">Edit</string>
-    <string name="update">Update</string>
-    <string name="delete">Delete</string>
-    <string name="cancel">Cancel</string>
-    <string name="title_and_desc_cant_be_empty">제목과 설명이 비어있습니다</string>
-    <string name="update_style_confirmation_title">Update style?</string>
-    <string name="update_style_confirmation_desc">Are you sure you want to update this custom style using your current theme?</string>
-    <string name="delete_style_confirmation_title">Delete style?</string>
-    <string name="delete_style_confirmation_desc">Are you sure you want to delete this custom style?</string>
+    <string name="edit">수정</string>
+    <string name="update">업데이트</string>
+    <string name="delete">제거</string>
+    <string name="cancel">닫기</string>
+    <string name="title_and_desc_cant_be_empty">제목과 설명은 비워둘 수 없습니다.</string>
+    <string name="update_style_confirmation_title">스타일을 업데이트 하시겠습니까?</string>
+    <string name="update_style_confirmation_desc">현재 테마를 사용하여 이 사용자 지정 스타일을 업데이트하시겠습니까?</string>
+    <string name="delete_style_confirmation_title">스타일을 삭제하시겠습니까?</string>
+    <string name="delete_style_confirmation_desc">이 사용자 지정 스타일을 정말로 삭제하시겠습니까?</string>
     <!-- Settings -->
     <string name="app_service_title">%s 서비스</string>
     <string name="app_service_desc_on">테마가 활성화되어 있습니다</string>
@@ -91,7 +91,7 @@
     <string name="backup_success">백업 성공</string>
     <string name="backup_fail">백업 실패</string>
     <string name="restore_fail">복원 실패</string>
-    <string name="confirmation_title">확실한가요?</string>
+    <string name="confirmation_title">정말 확실해요?</string>
     <string name="confirmation_desc">이것은 현재 테마와 구성을 재정의할 것입니다.</string>
     <string name="about_this_app_title">이앱에 대해서</string>
     <string name="about_this_app_desc">이 앱과 개발자에 대한 정보</string>
@@ -106,13 +106,13 @@
     <string name="screen_off_update_title">화면 꺼짐 시 색상 업데이트</string>
     <string name="mode_specific_theme_desc">밝은 모드와 어두운 모드에 대해 다양한 채도와 밝기 적용합니다</string>
     <string name="colorspec_title">ColorSpec version 2025</string>
-    <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
+    <string name="colorspec_desc">2025 사양은 Material 3 Expressive의 일부이며 현재 Tonal Spot, Neutral, Vibrant 및 Expressive 변형만 지원합니다.</string>
     <string name="darker_launcher_icons_title">어두운 런처 아이콘</string>
     <string name="darker_launcher_icons_desc">픽셀 런처 모노크롬 아이콘에 어두운 배경 적용합니다</string>
     <string name="semitransparent_launcher_title">반투명 런처</string>
     <string name="semitransparent_launcher_desc">픽셀 런처에 반투명 스타일 적용합니다</string>
     <string name="pitch_black_settings_workaround_title">피치 블랙 설정 해결 방법</string>
-    <string name="pitch_black_settings_workaround_desc">설정 배경색을 어둡게 하고 부작용을 일으킵니다</string>
+    <string name="pitch_black_settings_workaround_desc">설정 배경색을 어둡게 하면 부작용이 발생합니다.</string>
     <!-- Privacy policy -->
     <string name="privacy_policy">개인정보 보호정책</string>
     <!-- About -->
@@ -136,7 +136,7 @@
     <string name="back">뒤로</string>
     <string name="override">덮어쓰기</string>
     <string name="copy">복사</string>
-    <string name="something_went_wrong">알수 없는 오류가 발생했습니다.</string>
+    <string name="something_went_wrong">뭔가 잘못되었습니다.</string>
     <string name="search_hint">여기에 검색…</string>
     <string name="note_title">참고:</string>
     <string name="long_press_to_reset">길게 눌러 초기화</string>
@@ -146,7 +146,7 @@
     <string name="color_picker_preview">색 선택 미리보기</string>
     <!-- Notifications -->
     <string name="background_service_notification_title">백그라운드 서비스</string>
-    <string name="background_service_notification_text">쓸잘떼기없는 알림. 비활성화하려면 탭하세요.</string>
+    <string name="background_service_notification_text">필요없는 알림. 알림을 비활성화하려면 여기를 탭하세요.</string>
     <string name="background_service_notification_channel_title">백그라운드 서비스</string>
     <string name="background_service_notification_channel_text">이 알림을 끌 수 있습니다.</string>
     <!-- Permissions -->
@@ -179,13 +179,13 @@
     <string name="pairing">페어링</string>
     <string name="enter_pairing_code">페어링 코드 입력</string>
     <string name="enter_six_digit_pairing_code">여섯 자리 페어링 코드 입력</string>
-    <string name="searching_pairing_code">Searching for pairing code…</string>
+    <string name="searching_pairing_code">페어링코드 검색 중… </string>
     <string name="pairing_notification_hint">ColorBlendr로부터 페어링을 도와달라는 알림을 받게 됩니다.</string>
     <string name="notification_access_not_granted">페어링 프로세스를 완료하려면 ColorBlendr의 알림과 상호 작용해야 합니다. ColorBlendr에 대한 알림 액세스를 허용해 주세요.</string>
     <string name="notification_settings">알림 설정</string>
     <string name="notification_style_error">알림에서 페어링 코드를 입력할 수 없는 경우 알림 음영을 Android로 변경해야 할 수도 있습니다. 알림 설정 ~ 알림 스타일로 이동하여 알림 스타일을 변경하세요. 그렇지 않으면 알림에서 페어링 코드를 입력할 수 없을 수도 있습니다.</string>
     <string name="wifi_connection_required">무선 디버깅 기능을 사용하려면 기기가 Wi-Fi 네트워크에 연결되어 있어야 합니다. Wi-Fi 연결에 인터넷 액세스가 없는 경우 모바일 데이터를 끄면 견고한 Wi-Fi 연결이 가능합니다.</string>
-    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
+    <string name="wireless_debugging_guide_1">\"개발자 옵션\" > \"무선 디버깅\"으로 이동하세요. \"페어링 코드로 장치 페어링\"을 탭하면 6자리 코드가 표시됩니다. </string>
     <string name="wireless_debugging_guide_2">ColorBlendr가 보낸 알림에 여섯 자리 페어링 코드를 입력합니다.</string>
     <string name="wireless_debugging_guide_3">앱으로 돌아와서 이전 화면에서 \"시작\" 버튼을 클릭하세요.</string>
     <string name="wireless_debugging_important_notice">무선 디버깅 옵션의 왼쪽 부분은 클릭할 수 있습니다. 이 옵션을 탭하면 무선 디버깅 페어링 메뉴가 열립니다.</string>

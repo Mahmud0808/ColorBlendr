@@ -35,27 +35,27 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>1348 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/VexoVX1"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
+          <br />
+          <sub><b>VexoVX (VexoVX1)</b></sub></a>
+        <br />
+        <sub><b>1249 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/anaelle.dev"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16271182/medium/5bf6a630acd692aa55fed444852f28ff.png" />
           <br />
           <sub><b>Anaëlle (anaelle.dev)</b></sub></a>
         <br />
         <sub><b>1179 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/kouzelnik3"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14254180/medium/8439fcdaec8fb0a9e7e7041f7c37b882_default.png" />
           <br />
           <sub><b>Jakub K. (kouzelnik3)</b></sub></a>
         <br />
         <sub><b>1144 words</b></sub>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/VexoVX1"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
-          <br />
-          <sub><b>VexoVX (VexoVX1)</b></sub></a>
-        <br />
-        <sub><b>956 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/guiq79043"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16732343/medium/3961a1b8d478eb6c59ca7386b2965f99.jpeg" />
@@ -255,12 +255,21 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>87 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/KaffuChino"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17287504/medium/3d1a9b4cedfa89caba97b16e59d82ac0.png" />
+          <br />
+          <sub><b>KaffuChino</b></sub></a>
+        <br />
+        <sub><b>80 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Cccc_"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14589232/medium/cc59e13f7da4c4db7bde651a92f98805.png" />
           <br />
           <sub><b>Cccc_owo (Cccc_)</b></sub></a>
         <br />
         <sub><b>78 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/tugaia56"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/34554/medium/13a9069eceb68ca3660733fafd962241.png" />
           <br />
@@ -268,10 +277,8 @@ Thanks to these translators and proofreaders, this project exists:
         <br />
         <sub><b>77 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/Shiitake79"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15310478/medium/b09db54d6f14dfd837fc8aff05b92908.png" />
+        <a href="https://crowdin.com/profile/Shiitake79"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15310478/medium/02de9141c3d24c8ded33c1b4a3e5128b.png" />
           <br />
           <sub><b>しいたけ (Shiitake79)</b></sub></a>
         <br />
@@ -305,6 +312,8 @@ Thanks to these translators and proofreaders, this project exists:
         <br />
         <sub><b>51 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/acidml"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16295486/medium/71771ea5ee825f8a312e0d369d9ae38e.jpeg" />
           <br />
@@ -312,8 +321,6 @@ Thanks to these translators and proofreaders, this project exists:
         <br />
         <sub><b>50 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Baturax"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15503338/medium/84e6393daad44746e6f870fd1a19bcb6.png" />
           <br />
@@ -341,13 +348,6 @@ Thanks to these translators and proofreaders, this project exists:
           <sub><b>Edixon Gómez (edixonmiguelg)</b></sub></a>
         <br />
         <sub><b>23 words</b></sub>
-      </td>
-      <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/KaffuChino"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17287504/medium/3d1a9b4cedfa89caba97b16e59d82ac0.png" />
-          <br />
-          <sub><b>KaffuChino</b></sub></a>
-        <br />
-        <sub><b>20 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/tomaszk8266"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16295066/medium/0557e862b1d4184f750faff782281509.png" />
@@ -403,7 +403,7 @@ Thanks to these translators and proofreaders, this project exists:
     </tr>
     <tr>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/krvstek"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16861093/medium/0cc5f28c3e01927ce62ce44b03d8c5dd.png" />
+        <a href="https://crowdin.com/profile/krvstek"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16861093/medium/af1ae07d901a1e7e6311eb7f1fac2b3a.png" />
           <br />
           <sub><b>krvstek</b></sub></a>
         <br />
