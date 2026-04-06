@@ -58,6 +58,13 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>1144 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/AlejandroMoc"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15175038/medium/d8ddd9948d0a952bff7713e558dcc152.png" />
+          <br />
+          <sub><b>Alejandro Moctezuma (AlejandroMoc)</b></sub></a>
+        <br />
+        <sub><b>792 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/guiq79043"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16732343/medium/3961a1b8d478eb6c59ca7386b2965f99.jpeg" />
           <br />
           <sub><b>3 guiq7904 (guiq79043)</b></sub></a>
@@ -85,6 +92,8 @@ Thanks to these translators and proofreaders, this project exists:
         <br />
         <sub><b>643 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/flammer99"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16243440/medium/585cfd5dc9256dcfaa21c14d2f2b9ccd.png" />
           <br />
@@ -92,8 +101,6 @@ Thanks to these translators and proofreaders, this project exists:
         <br />
         <sub><b>642 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/gyah4"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16087198/medium/00dc1723a463123bdd30b2e296a2cf66.jpg" />
           <br />
@@ -121,13 +128,6 @@ Thanks to these translators and proofreaders, this project exists:
           <sub><b>🅼🅸🅺🅰🅼🅴 (NORIMIKAME)</b></sub></a>
         <br />
         <sub><b>607 words</b></sub>
-      </td>
-      <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/AlejandroMoc"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15175038/medium/d8ddd9948d0a952bff7713e558dcc152.png" />
-          <br />
-          <sub><b>Alejandro Moctezuma (AlejandroMoc)</b></sub></a>
-        <br />
-        <sub><b>596 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Hexak"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16301244/medium/e8321064b7d3969d36f838e37c471fe0.jpeg" />
