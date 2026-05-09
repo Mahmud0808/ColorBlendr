@@ -70,7 +70,7 @@ private constructor(
     val red = ((red1 + red2) / 2f).roundToInt()
     val green = ((green1 + green2) / 2f).roundToInt()
     val blue = ((blue1 + blue2) / 2f).roundToInt()
-    return 255 shl 24 or (red and 255) shl 16 or (green and 255) shl 8 or (blue and 255)
+    return (255 shl 24) or ((red and 255) shl 16) or ((green and 255) shl 8) or (blue and 255)
   }
 
   /** Key color is a color that represents the hue and chroma of a tonal palette. */
