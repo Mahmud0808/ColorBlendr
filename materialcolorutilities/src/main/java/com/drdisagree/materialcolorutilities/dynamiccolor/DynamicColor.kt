@@ -19,7 +19,6 @@ import com.drdisagree.materialcolorutilities.contrast.Contrast
 import com.drdisagree.materialcolorutilities.dynamiccolor.ColorSpec.SpecVersion
 import com.drdisagree.materialcolorutilities.hct.Hct
 import com.drdisagree.materialcolorutilities.palettes.TonalPalette
-import com.drdisagree.materialcolorutilities.utils.MathUtils
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -100,7 +99,7 @@ data class DynamicColor(
     return if (opacityPercentage == null) {
       argb
     } else {
-      val alpha = MathUtils.clampInt(0, 255, (opacityPercentage * 255).roundToInt())
+      val alpha = (opacityPercentage * 255).roundToInt().coerceIn(0, 255)
       (argb and 0x00ffffff) or (alpha shl 24)
     }
   }
@@ -232,43 +231,43 @@ fun DynamicColor.extendSpecVersion(
   validateExtendedColor(specVersion, extendedColor)
   return copy(
     palette = { scheme ->
-      (if (scheme.specVersion == specVersion) extendedColor.palette else this.palette).invoke(
+      (if (scheme.specVersion >= specVersion) extendedColor.palette else this.palette).invoke(
         scheme
       )
     },
     tone = { scheme ->
-      (if (scheme.specVersion == specVersion) extendedColor.tone else this.tone).invoke(scheme)
+      (if (scheme.specVersion >= specVersion) extendedColor.tone else this.tone).invoke(scheme)
     },
     chromaMultiplier = { scheme ->
-      (if (scheme.specVersion == specVersion) {
-          extendedColor.chromaMultiplier
-        } else {
-          this.chromaMultiplier
-        })
+      (if (scheme.specVersion >= specVersion) {
+        extendedColor.chromaMultiplier
+      } else {
+        this.chromaMultiplier
+      })
         ?.invoke(scheme) ?: 1.0
     },
     background = { scheme ->
-      (if (scheme.specVersion == specVersion) extendedColor.background else this.background)
+      (if (scheme.specVersion >= specVersion) extendedColor.background else this.background)
         ?.invoke(scheme)
     },
     secondBackground = { scheme ->
-      (if (scheme.specVersion == specVersion) {
-          extendedColor.secondBackground
-        } else {
-          this.secondBackground
-        })
+      (if (scheme.specVersion >= specVersion) {
+        extendedColor.secondBackground
+      } else {
+        this.secondBackground
+      })
         ?.invoke(scheme)
     },
     contrastCurve = { scheme ->
-      (if (scheme.specVersion == specVersion) extendedColor.contrastCurve else this.contrastCurve)
+      (if (scheme.specVersion >= specVersion) extendedColor.contrastCurve else this.contrastCurve)
         ?.invoke(scheme)
     },
     toneDeltaPair = { scheme ->
-      (if (scheme.specVersion == specVersion) extendedColor.toneDeltaPair else this.toneDeltaPair)
+      (if (scheme.specVersion >= specVersion) extendedColor.toneDeltaPair else this.toneDeltaPair)
         ?.invoke(scheme)
     },
     opacity = { scheme ->
-      (if (scheme.specVersion == specVersion) extendedColor.opacity else this.opacity)?.invoke(
+      (if (scheme.specVersion >= specVersion) extendedColor.opacity else this.opacity)?.invoke(
         scheme
       )
     },

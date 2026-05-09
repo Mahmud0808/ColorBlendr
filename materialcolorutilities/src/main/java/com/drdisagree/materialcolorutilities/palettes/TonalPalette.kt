@@ -57,15 +57,18 @@ private constructor(
 
   /** Given a tone, use hue and chroma of palette to create a color, and return it as HCT. */
   fun getHct(tone: Double): Hct {
+    if (tone == 99.0 && Hct.isYellow(hue)) {
+      return Hct.fromInt(tone(99))
+    }
     return Hct.from(hue, chroma, tone)
   }
 
   private fun averageArgb(argb1: Int, argb2: Int): Int {
-    val red1 = argb1 ushr 16 and 0xff
-    val green1 = argb1 ushr 8 and 0xff
+    val red1 = (argb1 ushr 16) and 0xff
+    val green1 = (argb1 ushr 8) and 0xff
     val blue1 = argb1 and 0xff
-    val red2 = argb2 ushr 16 and 0xff
-    val green2 = argb2 ushr 8 and 0xff
+    val red2 = (argb2 ushr 16) and 0xff
+    val green2 = (argb2 ushr 8) and 0xff
     val blue2 = argb2 and 0xff
     val red = ((red1 + red2) / 2f).roundToInt()
     val green = ((green1 + green2) / 2f).roundToInt()

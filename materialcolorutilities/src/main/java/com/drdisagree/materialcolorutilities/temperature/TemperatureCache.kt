@@ -18,9 +18,7 @@ package com.drdisagree.materialcolorutilities.temperature
 import com.drdisagree.materialcolorutilities.hct.Hct
 import com.drdisagree.materialcolorutilities.utils.ColorUtils
 import com.drdisagree.materialcolorutilities.utils.MathUtils
-import java.util.ArrayList
 import java.util.Collections
-import java.util.HashMap
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -287,7 +285,7 @@ class TemperatureCache(val input: Hct) {
       val hue = MathUtils.sanitizeDegreesDouble(Math.toDegrees(atan2(lab[2], lab[1])))
       val chroma = hypot(lab[1], lab[2])
       return -0.5 +
-        0.02 * chroma.pow(1.07) * cos(Math.toRadians(MathUtils.sanitizeDegreesDouble(hue - 50.0)))
+              0.02 * chroma.pow(1.07) * cos(Math.toRadians(MathUtils.sanitizeDegreesDouble(hue - 50.0)))
     }
 
     /** Determines if an angle is between two other angles, rotating clockwise. */

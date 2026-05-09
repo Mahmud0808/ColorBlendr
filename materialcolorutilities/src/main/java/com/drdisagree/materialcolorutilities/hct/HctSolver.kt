@@ -25,6 +25,7 @@ import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
+import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -331,7 +332,7 @@ object HctSolver {
 
   internal fun chromaticAdaptation(component: Double): Double {
     val af = abs(component).pow(0.42)
-    return MathUtils.signum(component) * 400.0 * af / (af + 27.13)
+    return sign(component) * 400.0 * af / (af + 27.13)
   }
 
   /**
@@ -417,32 +418,36 @@ object HctSolver {
     val kB = Y_FROM_LINRGB[2]
     val coordA = if (n % 4 <= 1) 0.0 else 100.0
     val coordB = if (n % 2 == 0) 0.0 else 100.0
-    if (n < 4) {
-      val g = coordA
-      val b = coordB
-      val r = (y - g * kG - b * kB) / kR
-      return if (isBounded(r)) {
-        doubleArrayOf(r, g, b)
-      } else {
-        null
+    return when {
+      n < 4 -> {
+        val g = coordA
+        val b = coordB
+        val r = (y - g * kG - b * kB) / kR
+        if (isBounded(r)) {
+          doubleArrayOf(r, g, b)
+        } else {
+          null
+        }
       }
-    } else if (n < 8) {
-      val b = coordA
-      val r = coordB
-      val g = (y - r * kR - b * kB) / kG
-      return if (isBounded(g)) {
-        doubleArrayOf(r, g, b)
-      } else {
-        null
+      n < 8 -> {
+        val b = coordA
+        val r = coordB
+        val g = (y - r * kR - b * kB) / kG
+        if (isBounded(g)) {
+          doubleArrayOf(r, g, b)
+        } else {
+          null
+        }
       }
-    } else {
-      val r = coordA
-      val g = coordB
-      val b = (y - r * kR - g * kG) / kB
-      return if (isBounded(b)) {
-        doubleArrayOf(r, g, b)
-      } else {
-        null
+      else -> {
+        val r = coordA
+        val g = coordB
+        val b = (y - r * kR - g * kG) / kB
+        if (isBounded(b)) {
+          doubleArrayOf(r, g, b)
+        } else {
+          null
+        }
       }
     }
   }
@@ -551,7 +556,7 @@ object HctSolver {
   internal fun inverseChromaticAdaptation(adapted: Double): Double {
     val adaptedAbs = abs(adapted)
     val base = Math.max(0.0, 27.13 * adaptedAbs / (400.0 - adaptedAbs))
-    return MathUtils.signum(adapted) * base.pow(1.0 / 0.42)
+    return sign(adapted) * base.pow(1.0 / 0.42)
   }
 
   /**

@@ -261,9 +261,9 @@ private constructor(
       val j = 100.0 * (ac / viewingConditions.aw).pow(viewingConditions.c * viewingConditions.z)
       val q =
         4.0 / viewingConditions.c *
-          sqrt(j / 100.0) *
-          (viewingConditions.aw + 4.0) *
-          viewingConditions.flRoot
+                sqrt(j / 100.0) *
+                (viewingConditions.aw + 4.0) *
+                viewingConditions.flRoot
 
       // CAM16 chroma, colorfulness, and saturation.
       val huePrime = if (hue < 20.14) hue + 360 else hue
@@ -307,9 +307,9 @@ private constructor(
     ): Cam16 {
       val q =
         4.0 / viewingConditions.c *
-          sqrt(j / 100.0) *
-          (viewingConditions.aw + 4.0) *
-          viewingConditions.flRoot
+                sqrt(j / 100.0) *
+                (viewingConditions.aw + 4.0) *
+                viewingConditions.flRoot
       val m = c * viewingConditions.flRoot
       val alpha = c / sqrt(j / 100.0)
       val s = 50.0 * sqrt(alpha * viewingConditions.c / (viewingConditions.aw + 4.0))

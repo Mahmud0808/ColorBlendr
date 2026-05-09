@@ -37,16 +37,12 @@ class ContrastCurve(val low: Double, val normal: Double, val medium: Double, val
    * @return The value. For contrast ratios, a number between 1.0 and 21.0.
    */
   fun get(contrastLevel: Double): Double {
-    return if (contrastLevel <= -1.0) {
-      low
-    } else if (contrastLevel < 0.0) {
-      MathUtils.lerp(low, normal, (contrastLevel - -1) / 1)
-    } else if (contrastLevel < 0.5) {
-      MathUtils.lerp(normal, medium, (contrastLevel - 0) / 0.5)
-    } else if (contrastLevel < 1.0) {
-      MathUtils.lerp(medium, high, (contrastLevel - 0.5) / 0.5)
-    } else {
-      high
+    return when {
+      contrastLevel <= -1.0 -> low
+      contrastLevel < 0.0 -> MathUtils.lerp(low, normal, contrastLevel + 1.0)
+      contrastLevel < 0.5 -> MathUtils.lerp(normal, medium, contrastLevel / 0.5)
+      contrastLevel < 1.0 -> MathUtils.lerp(medium, high, (contrastLevel - 0.5) / 0.5)
+      else -> high
     }
   }
 }

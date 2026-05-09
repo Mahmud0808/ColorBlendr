@@ -221,7 +221,7 @@ object ColorUtils {
       } else {
         1.055 * normalized.pow(1.0 / 2.4) - 0.055
       }
-    return MathUtils.clampInt(0, 255, (delinearized * 255.0).roundToInt())
+    return (delinearized * 255.0).roundToInt().coerceIn(0, 255)
   }
 
   /**

@@ -21,55 +21,12 @@ import kotlin.math.abs
 /** Utility methods for mathematical operations. */
 object MathUtils {
   /**
-   * The signum function.
-   *
-   * @return 1 if num > 0, -1 if num < 0, and 0 if num = 0
-   */
-  fun signum(num: Double): Int {
-    return if (num < 0) {
-      -1
-    } else if (num == 0.0) {
-      0
-    } else {
-      1
-    }
-  }
-
-  /**
    * The linear interpolation function.
    *
    * @return start if amount = 0 and stop if amount = 1
    */
   fun lerp(start: Double, stop: Double, amount: Double): Double {
     return (1.0 - amount) * start + amount * stop
-  }
-
-  /**
-   * Clamps an integer between two integers.
-   *
-   * @return input when min <= input <= max, and either min or max otherwise.
-   */
-  fun clampInt(min: Int, max: Int, input: Int): Int {
-    if (input < min) {
-      return min
-    } else if (input > max) {
-      return max
-    }
-    return input
-  }
-
-  /**
-   * Clamps an integer between two floating-point numbers.
-   *
-   * @return input when min <= input <= max, and either min or max otherwise.
-   */
-  fun clampDouble(min: Double, max: Double, input: Double): Double {
-    if (input < min) {
-      return min
-    } else if (input > max) {
-      return max
-    }
-    return input
   }
 
   /**
@@ -96,6 +53,20 @@ object MathUtils {
       degrees += 360.0
     }
     return degrees
+  }
+
+  /**
+   * Clamps an integer between two floating-point numbers.
+   *
+   * @return input when min <= input <= max, and either min or max otherwise.
+   */
+  fun clampDouble(min: Double, max: Double, input: Double): Double {
+    if (input < min) {
+      return min
+    } else if (input > max) {
+      return max
+    }
+    return input
   }
 
   /**
