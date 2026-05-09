@@ -62,6 +62,8 @@
     <string name="monet_fruitsalad_desc">Eclectic blend of colors reminiscent of a vibrant assortment of fresh and juicy fruits.</string>
     <string name="monet_content">Content</string>
     <string name="monet_content_desc">Balanced and calming palette, promoting a sense of tranquility and contentment.</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">Save current style</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
@@ -113,8 +115,13 @@
     <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
     <string name="screen_off_update_title">Update colors on screen off</string>
     <string name="mode_specific_theme_desc">Apply different saturation and lightness for light and dark modes</string>
-    <string name="colorspec_title">ColorSpec version 2025</string>
-    <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
+    <string-array name="colorspec_versions" translatable="false">
+        <item>2021</item>
+        <item>2025</item>
+        <item>2026</item>
+    </string-array>
     <string name="darker_launcher_icons_title">Darker launcher icons</string>
     <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
     <string name="semitransparent_launcher_title">Semi-transparent launcher</string>

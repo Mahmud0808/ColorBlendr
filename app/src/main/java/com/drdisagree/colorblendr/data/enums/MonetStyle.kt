@@ -9,7 +9,8 @@ enum class MONET {
     EXPRESSIVE,
     FIDELITY,
     CONTENT,
-    FRUIT_SALAD;
+    FRUIT_SALAD,
+    CMF;
 
     override fun toString(): String {
         return name

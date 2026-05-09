@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion2025Enabled
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.app.SystemUtil
@@ -12,6 +12,7 @@ import com.drdisagree.materialcolorutilities.dynamiccolor.ColorSpec
 import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
 import com.drdisagree.materialcolorutilities.hct.Hct
 import com.drdisagree.materialcolorutilities.palettes.TonalPalette
+import com.drdisagree.materialcolorutilities.scheme.SchemeCmf
 import com.drdisagree.materialcolorutilities.scheme.SchemeContent
 import com.drdisagree.materialcolorutilities.scheme.SchemeExpressive
 import com.drdisagree.materialcolorutilities.scheme.SchemeFidelity
@@ -33,10 +34,11 @@ object ColorSchemeUtil {
         contrast: Int = 0
     ): ArrayList<ArrayList<Int>> {
         val palette = ArrayList<ArrayList<Int>>()
-        val specVersion: ColorSpec.SpecVersion = if (getColorSpecVersion2025Enabled()) {
-            ColorSpec.SpecVersion.SPEC_2025
-        } else {
-            ColorSpec.SpecVersion.SPEC_2021
+        val specVersion: ColorSpec.SpecVersion = when (Utilities.getColorSpecVersion()) {
+            0 -> ColorSpec.SpecVersion.SPEC_2021
+            1 -> ColorSpec.SpecVersion.SPEC_2025
+            2 -> ColorSpec.SpecVersion.SPEC_2026
+            else -> ColorSpec.SpecVersion.SPEC_2021
         }
         val platform: DynamicScheme.Platform = DynamicScheme.DEFAULT_PLATFORM
 
@@ -75,75 +77,83 @@ object ColorSchemeUtil {
     ): DynamicScheme {
         return when (style) {
             MONET.SPRITZ -> SchemeNeutral(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.MONOCHROMATIC -> SchemeMonochrome(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.TONAL_SPOT -> SchemeTonalSpot(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.VIBRANT -> SchemeVibrant(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.RAINBOW -> SchemeRainbow(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.EXPRESSIVE -> SchemeExpressive(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.FIDELITY -> SchemeFidelity(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.CONTENT -> SchemeContent(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
 
             MONET.FRUIT_SALAD -> SchemeFruitSalad(
-                Hct.fromInt(color),
-                isDark,
-                contrast.toDouble(),
-                specVersion,
-                platform
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
+            )
+
+            MONET.CMF -> SchemeCmf(
+                sourceColorHct = Hct.fromInt(color),
+                isDark = isDark,
+                contrastLevel = contrast.toDouble(),
+                specVersion = specVersion,
+                platform = platform
             )
         }
     }

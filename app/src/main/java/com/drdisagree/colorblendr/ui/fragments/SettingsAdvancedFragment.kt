@@ -7,12 +7,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion2025Enabled
+import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
@@ -22,7 +24,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion2025Enabled
+import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
+import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
@@ -32,6 +35,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApp
 import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.SystemUtil
@@ -106,13 +111,30 @@ class SettingsAdvancedFragment : BaseFragment() {
                 .show(getChildFragmentManager(), "tertiaryColorPicker")
         }
 
-        // ColorSpec version 2025
+        // ColorSpec version
+        val colorSpecVersions = resources.getStringArray(R.array.colorspec_versions)
         binding.colorspecVersion.isEnabled = isRootMode()
-        binding.colorspecVersion.isSwitchChecked = getColorSpecVersion2025Enabled()
-        binding.colorspecVersion.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            resetCustomStyleIfNotNull()
-            setColorSpecVersion2025Enabled(isChecked)
-            updateColors()
+        binding.colorspecVersion.setOnClickListener {
+            val currentVersion = getColorSpecVersion()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.colorspec_title)
+                .setSingleChoiceItems(colorSpecVersions, currentVersion) { dialog, which ->
+                    if (currentVersion != which) {
+                        resetCustomStyleIfNotNull()
+                        setColorSpecVersion(which)
+
+                        // Disable Monet CMF style if ColorSpec 2026 is disabled
+                        if (which != 2 && getCurrentMonetStyle() == MONET.CMF) {
+                            setCurrentMonetStyle(MONET.TONAL_SPOT)
+                        }
+
+                        RefreshCoordinator.triggerRefresh()
+                        updateColors()
+                    }
+                    dialog.dismiss()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
 
         // Update colors on screen off

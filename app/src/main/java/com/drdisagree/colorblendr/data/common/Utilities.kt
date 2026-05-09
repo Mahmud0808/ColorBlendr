@@ -2,7 +2,7 @@ package com.drdisagree.colorblendr.data.common
 
 import android.graphics.Color
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
-import com.drdisagree.colorblendr.data.common.Constant.COLORSPEC_VERSION_2025
+import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_APPS_STATE
@@ -156,12 +156,12 @@ object Utilities {
         putBoolean(SCREEN_OFF_UPDATE_COLORS, enabled)
     }
 
-    fun getColorSpecVersion2025Enabled(): Boolean {
-        return getBoolean(COLORSPEC_VERSION_2025, false)
+    fun getColorSpecVersion(): Int {
+        return getInt(COLOR_SPEC_VERSION, 0)
     }
 
-    fun setColorSpecVersion2025Enabled(enabled: Boolean) {
-        putBoolean(COLORSPEC_VERSION_2025, enabled)
+    fun setColorSpecVersion(version: Int) {
+        putInt(COLOR_SPEC_VERSION, version)
     }
 
     fun darkerLauncherIconsEnabled(): Boolean {

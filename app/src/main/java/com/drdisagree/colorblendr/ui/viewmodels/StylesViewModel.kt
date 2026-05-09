@@ -143,6 +143,12 @@ class StylesViewModel : ViewModel() {
                 descriptionResId = R.string.monet_fruitsalad_desc,
                 isEnabled = isAtleastA13,
                 monetStyle = MONET.FRUIT_SALAD
+            ),
+            StyleModel(
+                titleResId = R.string.monet_cmf,
+                descriptionResId = R.string.monet_cmf_desc,
+                isEnabled = isRootMode() && Utilities.getColorSpecVersion() == 2,
+                monetStyle = MONET.CMF
             )
         ).apply {
             if (!isRootMode()) return@apply

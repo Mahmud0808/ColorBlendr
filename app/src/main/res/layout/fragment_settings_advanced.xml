@@ -42,7 +42,7 @@
                 app:summaryText="@string/custom_tertiary_color_desc"
                 app:titleText="@string/custom_tertiary_color_title" />
 
-            <com.drdisagree.colorblendr.ui.widgets.SwitchWidget
+            <com.drdisagree.colorblendr.ui.widgets.MenuWidget
                 android:id="@+id/colorspec_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
