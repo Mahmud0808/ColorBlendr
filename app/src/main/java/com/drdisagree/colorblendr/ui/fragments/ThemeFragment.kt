@@ -89,6 +89,7 @@ class ThemeFragment : BaseFragment() {
                 true
             }
             accentSaturation.setEnabled(isRootMode())
+            if (!isRootMode()) accentSaturation.setDisabledReason(R.string.root_required)
 
             // Monet background saturation
             backgroundSaturation.seekbarProgress = monetBackgroundSaturation
@@ -120,6 +121,7 @@ class ThemeFragment : BaseFragment() {
                 true
             }
             backgroundSaturation.setEnabled(isRootMode())
+            if (!isRootMode()) backgroundSaturation.setDisabledReason(R.string.root_required)
 
             // Monet background lightness
             backgroundLightness.seekbarProgress = monetBackgroundLightness
@@ -151,6 +153,7 @@ class ThemeFragment : BaseFragment() {
                 true
             }
             backgroundLightness.setEnabled(isRootMode())
+            if (!isRootMode()) backgroundLightness.setDisabledReason(R.string.root_required)
         }
 
         return binding.getRoot()

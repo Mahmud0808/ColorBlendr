@@ -135,6 +135,7 @@ class ColorsFragment : BaseFragment() {
             HomeFragment.replaceFragment(PerAppThemeFragment())
         }
         binding.perAppTheme.setEnabled(isRootMode())
+        if (!isRootMode()) binding.perAppTheme.setDisabledReason(R.string.root_required)
     }
 
     private fun updateColorContainers() {

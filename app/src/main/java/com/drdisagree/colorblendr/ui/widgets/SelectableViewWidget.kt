@@ -7,6 +7,8 @@ import android.content.res.TypedArray
 import android.graphics.PorterDuff
 import android.os.Parcel
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.Spanned
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -17,6 +19,9 @@ import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getErrorContainer
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getOnErrorContainer
+import com.drdisagree.colorblendr.utils.ui.RoundedBackgroundSpan
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 
@@ -27,6 +32,8 @@ class SelectableViewWidget : RelativeLayout {
     private var descriptionTextView: TextView? = null
     private var iconImageView: ImageView? = null
     private var onClickListener: OnClickListener? = null
+    private var baseTitle: String? = null
+    private var disabledReason: String? = null
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -69,11 +76,37 @@ class SelectableViewWidget : RelativeLayout {
     }
 
     fun setTitle(titleResId: Int) {
-        titleTextView!!.setText(titleResId)
+        setTitle(context?.getString(titleResId))
     }
 
     fun setTitle(title: String?) {
-        titleTextView!!.text = title
+        this.baseTitle = title
+        updateTitle()
+    }
+
+    private fun updateTitle() {
+        if (baseTitle == null) return
+
+        if (disabledReason.isNullOrEmpty()) {
+            titleTextView!!.text = baseTitle
+        } else {
+            val badgeText = disabledReason!!
+            val spannable = SpannableString("$baseTitle $badgeText")
+            val start = baseTitle!!.length + 1
+            val end = start + badgeText.length
+
+            spannable.setSpan(
+                RoundedBackgroundSpan(
+                    backgroundColor = context.getErrorContainer(),
+                    textColor = context.getOnErrorContainer()
+                ),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            titleTextView!!.text = spannable
+        }
     }
 
     fun setDescription(descriptionResId: Int) {
@@ -82,6 +115,15 @@ class SelectableViewWidget : RelativeLayout {
 
     fun setDescription(description: String?) {
         descriptionTextView!!.text = description
+    }
+
+    fun setDisabledReason(reason: String?) {
+        this.disabledReason = reason
+        updateTitle()
+    }
+
+    fun setDisabledReason(reasonResId: Int) {
+        setDisabledReason(if (reasonResId != 0) context?.getString(reasonResId) else null)
     }
 
     override fun isSelected(): Boolean {
@@ -129,6 +171,11 @@ class SelectableViewWidget : RelativeLayout {
         iconImageView!!.isEnabled = enabled
         titleTextView!!.isEnabled = enabled
         descriptionTextView!!.isEnabled = enabled
+
+        if (enabled) {
+            disabledReason = null
+            updateTitle()
+        }
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view

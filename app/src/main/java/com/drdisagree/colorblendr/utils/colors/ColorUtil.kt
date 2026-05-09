@@ -2,10 +2,12 @@ package com.drdisagree.colorblendr.utils.colors
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.annotation.StyleableRes
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
@@ -710,5 +712,31 @@ object ColorUtil {
         } else {
             newColor
         }
+    }
+
+    fun Context.getErrorContainer(): Int {
+        return ContextCompat.getColor(
+            this,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (SystemUtil.isDarkMode) android.R.color.system_error_container_dark
+                else android.R.color.system_error_container_light
+            } else {
+                if (SystemUtil.isDarkMode) android.R.color.system_error_700
+                else android.R.color.system_error_100
+            }
+        )
+    }
+
+    fun Context.getOnErrorContainer(): Int {
+        return ContextCompat.getColor(
+            this,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (SystemUtil.isDarkMode) android.R.color.system_on_error_container_dark
+                else android.R.color.system_on_error_container_light
+            } else {
+                if (SystemUtil.isDarkMode) android.R.color.system_error_200
+                else android.R.color.system_error_600
+            }
+        )
     }
 }

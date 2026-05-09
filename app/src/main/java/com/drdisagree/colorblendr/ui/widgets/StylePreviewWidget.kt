@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.os.Parcel
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.Spanned
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
@@ -12,10 +14,12 @@ import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.ui.views.ColorPreview
-import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
 import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getErrorContainer
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getOnErrorContainer
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.drdisagree.colorblendr.utils.ui.RoundedBackgroundSpan
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +34,8 @@ class StylePreviewWidget : RelativeLayout {
     private var titleTextView: TextView? = null
     private var descriptionTextView: TextView? = null
     private var colorContainer: ColorPreview? = null
+    private var baseTitle: String? = null
+    private var disabledReason: String? = null
     private var isSelected: Boolean = false
     private var onClickListener: OnClickListener? = null
     private var onLongClickListener: OnLongClickListener? = null
@@ -86,13 +92,37 @@ class StylePreviewWidget : RelativeLayout {
     }
 
     fun setTitle(titleResId: Int) {
-        styleName = titleResId.getOriginalString()
-        titleTextView!!.setText(titleResId)
+        setTitle(context?.getString(titleResId))
     }
 
     fun setTitle(title: String?) {
-        styleName = title
-        titleTextView!!.text = title
+        this.baseTitle = title
+        updateTitle()
+    }
+
+    private fun updateTitle() {
+        if (baseTitle == null) return
+
+        if (disabledReason.isNullOrEmpty()) {
+            titleTextView!!.text = baseTitle
+        } else {
+            val badgeText = disabledReason!!
+            val spannable = SpannableString("$baseTitle $badgeText")
+            val start = baseTitle!!.length + 1
+            val end = start + badgeText.length
+
+            spannable.setSpan(
+                RoundedBackgroundSpan(
+                    backgroundColor = context!!.getErrorContainer(),
+                    textColor = context!!.getOnErrorContainer()
+                ),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            titleTextView!!.text = spannable
+        }
     }
 
     fun setDescription(summaryResId: Int) {
@@ -101,6 +131,15 @@ class StylePreviewWidget : RelativeLayout {
 
     fun setDescription(summary: String?) {
         descriptionTextView!!.text = summary
+    }
+
+    fun setDisabledReason(reason: String?) {
+        this.disabledReason = reason
+        updateTitle()
+    }
+
+    fun setDisabledReason(reasonResId: Int) {
+        setDisabledReason(if (reasonResId != 0) context?.getString(reasonResId) else null)
     }
 
     fun setPreviewColors(colorList: List<List<Int>>) {
@@ -233,6 +272,11 @@ class StylePreviewWidget : RelativeLayout {
         } else {
             titleTextView!!.setAlpha(0.6f)
             descriptionTextView!!.setAlpha(0.4f)
+        }
+
+        if (enabled) {
+            disabledReason = null
+            updateTitle()
         }
 
         container!!.setEnabled(enabled)

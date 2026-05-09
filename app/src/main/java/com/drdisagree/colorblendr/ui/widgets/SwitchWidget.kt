@@ -5,6 +5,8 @@ import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.text.SpannableString
+import android.text.Spanned
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -16,6 +18,9 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getErrorContainer
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getOnErrorContainer
+import com.drdisagree.colorblendr.utils.ui.RoundedBackgroundSpan
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -28,6 +33,8 @@ class SwitchWidget : RelativeLayout {
     private var summaryTextView: TextView? = null
     private var iconImageView: ImageView? = null
     private var materialSwitch: MaterialSwitch? = null
+    private var baseTitle: String? = null
+    private var disabledReason: String? = null
     private var switchChangeListener: CompoundButton.OnCheckedChangeListener? = null
     private var beforeSwitchChangeListener: BeforeSwitchChangeListener? = null
     private var isMasterSwitch: Boolean = false
@@ -109,11 +116,37 @@ class SwitchWidget : RelativeLayout {
     }
 
     fun setTitle(titleResId: Int) {
-        titleTextView!!.setText(titleResId)
+        setTitle(context?.getString(titleResId))
     }
 
     fun setTitle(title: String?) {
-        titleTextView!!.text = title
+        this.baseTitle = title
+        updateTitle()
+    }
+
+    private fun updateTitle() {
+        if (baseTitle == null) return
+
+        if (disabledReason.isNullOrEmpty()) {
+            titleTextView!!.text = baseTitle
+        } else {
+            val badgeText = disabledReason!!
+            val spannable = SpannableString("$baseTitle $badgeText")
+            val start = baseTitle!!.length + 1
+            val end = start + badgeText.length
+
+            spannable.setSpan(
+                RoundedBackgroundSpan(
+                    backgroundColor = context!!.getErrorContainer(),
+                    textColor = context!!.getOnErrorContainer()
+                ),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            titleTextView!!.text = spannable
+        }
     }
 
     fun setSummary(summaryResId: Int) {
@@ -136,6 +169,15 @@ class SwitchWidget : RelativeLayout {
 
     fun setIconVisibility(visibility: Int) {
         iconImageView!!.setVisibility(visibility)
+    }
+
+    fun setDisabledReason(reason: String?) {
+        this.disabledReason = reason
+        updateTitle()
+    }
+
+    fun setDisabledReason(reasonResId: Int) {
+        setDisabledReason(if (reasonResId != 0) context?.getString(reasonResId) else null)
     }
 
     var isSwitchChecked: Boolean
@@ -231,6 +273,11 @@ class SwitchWidget : RelativeLayout {
         titleTextView!!.setEnabled(enabled)
         summaryTextView!!.setEnabled(enabled)
         materialSwitch!!.setEnabled(enabled)
+
+        if (enabled) {
+            disabledReason = null
+            updateTitle()
+        }
     }
 
     // to avoid listener bug, we need to re-generate unique id for each view

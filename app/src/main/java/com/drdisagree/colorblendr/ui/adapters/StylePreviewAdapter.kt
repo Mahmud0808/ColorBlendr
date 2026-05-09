@@ -149,6 +149,7 @@ class StylePreviewAdapter(
             setTitle(styleData.titleResId)
             setDescription(styleData.descriptionResId)
             isEnabled = styleData.isEnabled
+            setDisabledReason(styleData.disabledReason)
             isSelected = styleData.monetStyle == selectedStyle && selectedCustomStyle == null
 
             if (isSelected) {
@@ -187,6 +188,7 @@ class StylePreviewAdapter(
             setTitle(customStyle.styleName)
             setDescription(customStyle.description)
             isEnabled = styleData.isEnabled
+            setDisabledReason(styleData.disabledReason)
             isSelected = customStyle.styleId == selectedCustomStyle
 
             if (isSelected) {

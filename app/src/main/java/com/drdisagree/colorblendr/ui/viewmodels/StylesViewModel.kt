@@ -94,12 +94,14 @@ class StylesViewModel : ViewModel() {
                 titleResId = R.string.monet_neutral,
                 descriptionResId = R.string.monet_neutral_desc,
                 isEnabled = isAtleastA13,
+                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
                 monetStyle = MONET.SPRITZ
             ),
             StyleModel(
                 titleResId = R.string.monet_monochrome,
                 descriptionResId = R.string.monet_monochrome_desc,
                 isEnabled = isAtleastA14,
+                disabledReason = if (!isAtleastA14) R.string.android_14_required else 0,
                 monetStyle = MONET.MONOCHROMATIC
             ),
             StyleModel(
@@ -112,42 +114,49 @@ class StylesViewModel : ViewModel() {
                 titleResId = R.string.monet_vibrant,
                 descriptionResId = R.string.monet_vibrant_desc,
                 isEnabled = isAtleastA13,
+                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
                 monetStyle = MONET.VIBRANT
             ),
             StyleModel(
                 titleResId = R.string.monet_rainbow,
                 descriptionResId = R.string.monet_rainbow_desc,
                 isEnabled = isAtleastA13,
+                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
                 monetStyle = MONET.RAINBOW
             ),
             StyleModel(
                 titleResId = R.string.monet_expressive,
                 descriptionResId = R.string.monet_expressive_desc,
                 isEnabled = isAtleastA13,
+                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
                 monetStyle = MONET.EXPRESSIVE
             ),
             StyleModel(
                 titleResId = R.string.monet_fidelity,
                 descriptionResId = R.string.monet_fidelity_desc,
                 isEnabled = isRootMode(),
+                disabledReason = if (!isRootMode()) R.string.root_required else 0,
                 monetStyle = MONET.FIDELITY
             ),
             StyleModel(
                 titleResId = R.string.monet_content,
                 descriptionResId = R.string.monet_content_desc,
                 isEnabled = isRootMode(),
+                disabledReason = if (!isRootMode()) R.string.root_required else 0,
                 monetStyle = MONET.CONTENT
             ),
             StyleModel(
                 titleResId = R.string.monet_fruitsalad,
                 descriptionResId = R.string.monet_fruitsalad_desc,
                 isEnabled = isAtleastA13,
+                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
                 monetStyle = MONET.FRUIT_SALAD
             ),
             StyleModel(
                 titleResId = R.string.monet_cmf,
                 descriptionResId = R.string.monet_cmf_desc,
                 isEnabled = isRootMode() && Utilities.getColorSpecVersion() == 2,
+                disabledReason = if (!isRootMode()) R.string.root_required else if (Utilities.getColorSpecVersion() != 2) R.string.colorspec_2026_required else 0,
                 monetStyle = MONET.CMF
             )
         ).apply {

@@ -3,6 +3,8 @@ package com.drdisagree.colorblendr.ui.widgets
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.Spanned
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
@@ -13,6 +15,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setCardCornerRadius
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getErrorContainer
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.getOnErrorContainer
+import com.drdisagree.colorblendr.utils.ui.RoundedBackgroundSpan
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import java.text.DecimalFormat
@@ -25,6 +30,8 @@ class SeekbarWidget : RelativeLayout {
     private var summaryTextView: TextView? = null
     private var seekBar: SeekBar? = null
     private var resetIcon: ImageView? = null
+    private var baseTitle: String? = null
+    private var disabledReason: String? = null
     private var valueFormat: String? = null
     private var defaultValue = 0
     private var outputScale = 1f
@@ -86,11 +93,46 @@ class SeekbarWidget : RelativeLayout {
     }
 
     fun setTitle(titleResId: Int) {
-        titleTextView!!.setText(titleResId)
+        setTitle(context?.getString(titleResId))
     }
 
     fun setTitle(title: String?) {
-        titleTextView!!.text = title
+        this.baseTitle = title
+        updateTitle()
+    }
+
+    private fun updateTitle() {
+        if (baseTitle == null) return
+
+        if (disabledReason.isNullOrEmpty()) {
+            titleTextView!!.text = baseTitle
+        } else {
+            val badgeText = disabledReason!!
+            val spannable = SpannableString("$baseTitle $badgeText")
+            val start = baseTitle!!.length + 1
+            val end = start + badgeText.length
+
+            spannable.setSpan(
+                RoundedBackgroundSpan(
+                    backgroundColor = context.getErrorContainer(),
+                    textColor = context.getOnErrorContainer()
+                ),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            titleTextView!!.text = spannable
+        }
+    }
+
+    fun setDisabledReason(reason: String?) {
+        this.disabledReason = reason
+        updateTitle()
+    }
+
+    fun setDisabledReason(reasonResId: Int) {
+        setDisabledReason(if (reasonResId != 0) context?.getString(reasonResId) else null)
     }
 
     fun setSelectedProgress() {
@@ -228,6 +270,11 @@ class SeekbarWidget : RelativeLayout {
             titleTextView!!.alpha = 0.5f
             summaryTextView!!.alpha = 0.3f
             resetIcon!!.alpha = 0.5f
+        }
+
+        if (enabled) {
+            disabledReason = null
+            updateTitle()
         }
     }
 

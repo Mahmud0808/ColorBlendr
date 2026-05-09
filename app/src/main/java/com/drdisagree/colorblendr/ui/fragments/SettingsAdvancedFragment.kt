@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -41,6 +40,7 @@ import com.drdisagree.colorblendr.databinding.FragmentSettingsAdvancedBinding
 import com.drdisagree.colorblendr.utils.app.MiscUtil.setToolbarTitle
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -66,6 +66,8 @@ class SettingsAdvancedFragment : BaseFragment() {
         // Secondary color
         var monetSecondaryColor = getSecondaryColorValue()
         binding.secondaryColorPicker.isEnabled = customColorEnabled() && isRootMode()
+        if (!isRootMode()) binding.secondaryColorPicker.setDisabledReason(R.string.root_required)
+        else if (!customColorEnabled()) binding.secondaryColorPicker.setDisabledReason(R.string.custom_primary_color_required)
         binding.secondaryColorPicker.previewColor = monetSecondaryColor
         binding.secondaryColorPicker.setOnClickListener {
             ColorPickerDialog()
@@ -90,6 +92,8 @@ class SettingsAdvancedFragment : BaseFragment() {
         // Tertiary color
         var monetTertiaryColor = getTertiaryColorValue()
         binding.tertiaryColorPicker.isEnabled = customColorEnabled() && isRootMode()
+        if (!isRootMode()) binding.tertiaryColorPicker.setDisabledReason(R.string.root_required)
+        else if (!customColorEnabled()) binding.tertiaryColorPicker.setDisabledReason(R.string.custom_primary_color_required)
         binding.tertiaryColorPicker.previewColor = monetTertiaryColor
         binding.tertiaryColorPicker.setOnClickListener {
             ColorPickerDialog()
@@ -114,6 +118,7 @@ class SettingsAdvancedFragment : BaseFragment() {
         // ColorSpec version
         val colorSpecVersions = resources.getStringArray(R.array.colorspec_versions)
         binding.colorspecVersion.isEnabled = isRootMode()
+        if (!isRootMode()) binding.colorspecVersion.setDisabledReason(R.string.root_required)
         binding.colorspecVersion.setOnClickListener {
             val currentVersion = getColorSpecVersion()
             MaterialAlertDialogBuilder(requireContext())
@@ -149,6 +154,7 @@ class SettingsAdvancedFragment : BaseFragment() {
 
         // Mode specific themes
         binding.modeSpecificThemes.isEnabled = isRootMode()
+        if (!isRootMode()) binding.modeSpecificThemes.setDisabledReason(R.string.root_required)
         binding.modeSpecificThemes.isSwitchChecked = modeSpecificThemesEnabled()
         binding.modeSpecificThemes.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             resetCustomStyleIfNotNull()
@@ -158,6 +164,8 @@ class SettingsAdvancedFragment : BaseFragment() {
 
         // Darker launcher icons
         binding.darkerLauncherIcons.isEnabled = isRootMode() && hasPixelLauncher
+        if (!isRootMode()) binding.darkerLauncherIcons.setDisabledReason(R.string.root_required)
+        else if (!hasPixelLauncher) binding.darkerLauncherIcons.setDisabledReason(R.string.pixel_launcher_required)
         binding.darkerLauncherIcons.isSwitchChecked = darkerLauncherIconsEnabled()
         binding.darkerLauncherIcons.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
@@ -169,6 +177,8 @@ class SettingsAdvancedFragment : BaseFragment() {
 
         // Semi-transparent launcher icons
         binding.semitransparentLauncher.isEnabled = isRootMode() && hasPixelLauncher
+        if (!isRootMode()) binding.semitransparentLauncher.setDisabledReason(R.string.root_required)
+        else if (!hasPixelLauncher) binding.semitransparentLauncher.setDisabledReason(R.string.pixel_launcher_required)
         binding.semitransparentLauncher.isSwitchChecked = semiTransparentLauncherIconsEnabled()
         binding.semitransparentLauncher.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
@@ -180,6 +190,8 @@ class SettingsAdvancedFragment : BaseFragment() {
 
         // Semi-transparent launcher icons
         binding.pitchBlackSettingsWorkaround.isEnabled = isRootMode() && pitchBlackThemeEnabled()
+        if (!isRootMode()) binding.pitchBlackSettingsWorkaround.setDisabledReason(R.string.root_required)
+        else if (!pitchBlackThemeEnabled()) binding.pitchBlackSettingsWorkaround.setDisabledReason(R.string.pitch_black_theme_required)
         binding.pitchBlackSettingsWorkaround.visibility =
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) View.VISIBLE else View.GONE
         binding.pitchBlackSettingsWorkaround.isSwitchChecked = forcePitchBlackSettingsEnabled()

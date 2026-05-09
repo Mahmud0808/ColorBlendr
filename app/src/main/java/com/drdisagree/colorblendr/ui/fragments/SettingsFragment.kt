@@ -148,6 +148,7 @@ class SettingsFragment : BaseFragment() {
             updateColors()
         }
         binding.accurateShades.setEnabled(isRootMode())
+        if (!isRootMode()) binding.accurateShades.setDisabledReason(R.string.root_required)
 
         // Pitch black theme
         binding.pitchBlackTheme.isSwitchChecked = pitchBlackThemeEnabled()
@@ -157,6 +158,7 @@ class SettingsFragment : BaseFragment() {
             updateColors()
         }
         binding.pitchBlackTheme.setEnabled(isRootMode())
+        if (!isRootMode()) binding.pitchBlackTheme.setDisabledReason(R.string.root_required)
 
         // Custom primary color
         binding.customPrimaryColor.isSwitchChecked = customColorEnabled()
@@ -185,6 +187,7 @@ class SettingsFragment : BaseFragment() {
             updateColors()
         }
         binding.tintTextColor.setEnabled(isRootMode())
+        if (!isRootMode()) binding.tintTextColor.setDisabledReason(R.string.root_required)
 
         // Override colors manually
         binding.overrideColorsManually.isSwitchChecked = manualColorOverrideEnabled()
@@ -219,6 +222,7 @@ class SettingsFragment : BaseFragment() {
             }
         }
         binding.overrideColorsManually.setEnabled(isRootMode())
+        if (!isRootMode()) binding.overrideColorsManually.setDisabledReason(R.string.root_required)
 
         binding.backupRestore.container.setOnClickListener {
             binding.backupRestore.backupRestoreButtons.crossfade()

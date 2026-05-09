@@ -15,6 +15,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:paddingHorizontal="22dp"
         android:paddingVertical="16dp">
 
@@ -36,6 +38,8 @@
             android:layout_marginEnd="16dp"
             android:layout_toStartOf="@id/color_widget"
             android:layout_toEndOf="@id/icon"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
