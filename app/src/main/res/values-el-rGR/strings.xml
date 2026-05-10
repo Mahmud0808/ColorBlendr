@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">Εκλεκτικό μείγμα χρωμάτων που θυμίζει μια ζωντανή ποικιλία από φρέσκα και ζουμερά φρούτα.</string>
     <string name="monet_content">Περιεχόμενο</string>
     <string name="monet_content_desc">Ισορροπημένη και κατευναστική παλέτα, προωθώντας μια αίσθηση ηρεμίας και ικανοποίησης.</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">Αποθήκευση τρέχοντος στυλ</string>
     <string name="title">Τίτλος</string>
     <string name="description">Περιγραφή</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">Ενημερώνει τα χρώματα μετά από 15 δευτερόλεπτα με οθόνη σβηστή· χρήσιμο για ζωντανές ταπετσαρίες</string>
     <string name="screen_off_update_title">Ενημέρωση χρωμάτων όταν η οθόνη είναι σβηστή</string>
     <string name="mode_specific_theme_desc">Εφαρμογή διαφορετικού κορεσμού και φωτεινότητας για ανοιχτή και σκοτεινή λειτουργία</string>
-    <string name="colorspec_title">ColorSpec έκδοση 2025</string>
-    <string name="colorspec_desc">Η προδιαγραφή του 2025 ColorSpec αποτελεί μέρος του Material 3 Expressive και προς το παρόν υποστηρίζει μόνο τις παραλλαγές Tonal Spot, Neutral, Vibrant και Expressive.</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">Πιο σκούρα εικονίδια εκκινητή</string>
     <string name="darker_launcher_icons_desc">Εφαρμογή πιο σκούρου φόντου σε μονόχρωμα εικονίδια pixel launcher</string>
     <string name="semitransparent_launcher_title">Ημιδιαφανής εκκινητής</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">Η άδεια Shizuku δεν παραχωρήθηκε.</string>
     <string name="grant_all_permissions">Παρακαλώ παραχωρήστε όλες τις άδειες για συνέχεια</string>
     <string name="wireless_adb_not_connected">Ασύρματο ADB δεν είναι συνδεδεμένο.</string>
+    <!-- Requirements -->
+    <string name="root_required">Root required</string>
+    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="pitch_black_theme_required">Pitch black required</string>
+    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="android_13_required">Android 13+</string>
+    <string name="android_14_required">Android 14+</string>
+    <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">Σύζευξη</string>
     <string name="enter_pairing_code">Εισαγωγή κωδικού σύζευξης</string>
