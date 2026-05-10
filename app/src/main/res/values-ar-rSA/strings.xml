@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">مزيج دينيكي من الألوان يذكرنا بمجموعة متنوعة من الفواكه الطازجة والعصرية.</string>
     <string name="monet_content">محتوى</string>
     <string name="monet_content_desc">لوح متوازن ومهدئ يعزز الإحساس بالهدوء والمحتوى.</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">حفظ النمط الحالي</string>
     <string name="title">العنوان</string>
     <string name="description">الوصف</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">تحديث الألوان بعد 15 ثانية من إيقاف تشغيل الشاشة؛ مفيد للخلفيات الحية</string>
     <string name="screen_off_update_title">تحديث الألوان على الشاشة المتوقفة</string>
     <string name="mode_specific_theme_desc">تطبيق تشبع وإضاءة مختلفين للوضعين الفاتح والداكن</string>
-    <string name="colorspec_title">ColorSpec version 2025</string>
-    <string name="colorspec_desc">The 2025 spec is part of Material 3 Expressive and currently only supports Tonal Spot, Neutral, Vibrant and Expressive variants.</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">أيقونات مشغل أغمق</string>
     <string name="darker_launcher_icons_desc">تطبيق خلفية أغمق لأيقونات Pixel Launcher أحادية اللون</string>
     <string name="semitransparent_launcher_title">مشغل شبه شفاف</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">لم يتم منح صلاحيات Shizuku.</string>
     <string name="grant_all_permissions">يرجى منح جميع الصلاحيات للمتابعة</string>
     <string name="wireless_adb_not_connected">Wireless ADB not connected.</string>
+    <!-- Requirements -->
+    <string name="root_required">Root required</string>
+    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="pitch_black_theme_required">Pitch black required</string>
+    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="android_13_required">Android 13+</string>
+    <string name="android_14_required">Android 14+</string>
+    <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">Pairing</string>
     <string name="enter_pairing_code">Enter pairing code</string>

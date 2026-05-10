@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">不拘一格的色彩混合让人联想到各种新鲜多汁的水果。</string>
     <string name="monet_content">内容</string>
     <string name="monet_content_desc">平衡和平静的调色板，促进宁静和满足感。</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">保存当前样式</string>
     <string name="title">标题</string>
     <string name="description">描述</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">屏幕关闭 15 秒后更新颜色；对于动态壁纸很有用</string>
     <string name="screen_off_update_title">在屏幕关闭时更新颜色</string>
     <string name="mode_specific_theme_desc">为浅色和深色模式应用不同的饱和度和亮度</string>
-    <string name="colorspec_title">ColorSpec 版本 2025</string>
-    <string name="colorspec_desc">2025 spec是 Material 3 Expressive的一部分，目前仅支持Tonal Spot、Neutral、Vibrant以及 Expressive变体。</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">较暗的启动器图标</string>
     <string name="darker_launcher_icons_desc">为 Pixel 启动器的单色图标应用更暗的背景</string>
     <string name="semitransparent_launcher_title">半透明启动器</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">Shizuku 权限未被授予。</string>
     <string name="grant_all_permissions">请授予所有权限以继续</string>
     <string name="wireless_adb_not_connected">Wireless ADB not connected.</string>
+    <!-- Requirements -->
+    <string name="root_required">Root required</string>
+    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="pitch_black_theme_required">Pitch black required</string>
+    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="android_13_required">Android 13+</string>
+    <string name="android_14_required">Android 14+</string>
+    <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">Pairing</string>
     <string name="enter_pairing_code">Enter pairing code</string>

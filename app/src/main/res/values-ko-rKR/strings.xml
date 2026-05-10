@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">Eclectic blend of colors reminiscent of a vibrant assortment of fresh and juicy fruits.</string>
     <string name="monet_content">Content</string>
     <string name="monet_content_desc">Balanced and calming palette, promoting a sense of tranquility and contentment.</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">현재 스타일 저장</string>
     <string name="title">제목</string>
     <string name="description">설명</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">화면이 꺼진 후 15초 후 색상 업데이트, 라이브 배경화면에 유용합니다</string>
     <string name="screen_off_update_title">화면 꺼짐 시 색상 업데이트</string>
     <string name="mode_specific_theme_desc">밝은 모드와 어두운 모드에 대해 다양한 채도와 밝기 적용합니다</string>
-    <string name="colorspec_title">ColorSpec version 2025</string>
-    <string name="colorspec_desc">2025 사양은 Material 3 Expressive의 일부이며 현재 Tonal Spot, Neutral, Vibrant 및 Expressive 변형만 지원합니다.</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">어두운 런처 아이콘</string>
     <string name="darker_launcher_icons_desc">픽셀 런처 모노크롬 아이콘에 어두운 배경 적용합니다</string>
     <string name="semitransparent_launcher_title">반투명 런처</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">시즈쿠 권한이 부여되지 않았습니다.</string>
     <string name="grant_all_permissions">진행할 수 있는 모든 권한을 부여해 주세요</string>
     <string name="wireless_adb_not_connected">무선 ADB가 연결되지 않았습니다.</string>
+    <!-- Requirements -->
+    <string name="root_required">Root required</string>
+    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="pitch_black_theme_required">Pitch black required</string>
+    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="android_13_required">Android 13+</string>
+    <string name="android_14_required">Android 14+</string>
+    <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">페어링</string>
     <string name="enter_pairing_code">페어링 코드 입력</string>

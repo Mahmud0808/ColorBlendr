@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">新鮮でジューシーなフルーツの鮮やかな組み合わせを思わせる、多彩でブレンドされた色彩です。</string>
     <string name="monet_content">コンテンツ</string>
     <string name="monet_content_desc">バランスのとれた落ち着いたパレットで、平穏と満足感をもたらします。</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">二つの色から生み出すリッチで表現力豊か、そして現代的な美学のために補色を融合させるパレット。</string>
     <string name="save_current_style">現在のスタイルを保存</string>
     <string name="title">タイトル</string>
     <string name="description">説明</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">画面がオフになってから 15 秒後に色を更新します、ライブ壁紙の使用時に役立ちます</string>
     <string name="screen_off_update_title">画面オフで色を更新</string>
     <string name="mode_specific_theme_desc">ライトモードとダークモードで異なる彩度と明度を適用します</string>
-    <string name="colorspec_title">2025年版のカラースペック</string>
-    <string name="colorspec_desc">2025年版のスペックはMaterial 3 Expressiveの一部であり、現在トーンスポット、ニュートラル、バイブラント、エクスプレッシブのバリエーションのみ対応しています。</string>
+    <string name="colorspec_title">カラースペックのバージョン</string>
+    <string name="colorspec_desc">パレットの生成に用いるマテリアルカラー仕様のバージョンを選択します。</string>
     <string name="darker_launcher_icons_title">より暗いランチャーアイコン</string>
     <string name="darker_launcher_icons_desc">Pixel Launcher のモノクロアイコンに暗い背景を適用します</string>
     <string name="semitransparent_launcher_title">半透明なランチャー</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">Shizuku の権限が許可されていません。</string>
     <string name="grant_all_permissions">続行するにはすべての権限を許可してください</string>
     <string name="wireless_adb_not_connected">ワイヤレスADBが接続されていません。</string>
+    <!-- Requirements -->
+    <string name="root_required">ルートが必要</string>
+    <string name="pixel_launcher_required">Pixel Launcherが必要</string>
+    <string name="pitch_black_theme_required">ピッチブラックが必要</string>
+    <string name="custom_primary_color_required">カスタムプライマリカラーが必要</string>
+    <string name="android_13_required">Android 13以上</string>
+    <string name="android_14_required">Android 14以上</string>
+    <string name="colorspec_2026_required">カラースペック 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">ペアリング</string>
     <string name="enter_pairing_code">ペアリングコードを入力</string>

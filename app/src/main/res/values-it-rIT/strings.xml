@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">Miscela eclettica di colori che ricordano un vivace assortimento di frutta fresca e succosa.</string>
     <string name="monet_content">Contenuto</string>
     <string name="monet_content_desc">Tavolozza equilibrata e calmante, promuovendo un senso di tranquillità e soddisfazione.</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">Salva lo stile corrente</string>
     <string name="title">Titolo</string>
     <string name="description">Descrizione</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">Aggiorna i colori dopo 15 secondi dallo spegnimento dello schermo; utile per sfondi live</string>
     <string name="screen_off_update_title">Aggiorna i colori a schermo spento</string>
     <string name="mode_specific_theme_desc">Applica diverse saturazioni e luminosità per le modalità chiaro e scuro</string>
-    <string name="colorspec_title">ColorSpec Versione 2025</string>
-    <string name="colorspec_desc">La specifica 2025 fa parte di Material 3 Expressive e attualmente supporta solo varianti Tonal Spot, Neutral, Vibrant ed Expressive.</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">Scurisci icone del launcher</string>
     <string name="darker_launcher_icons_desc">Applica uno sfondo più scuro alle icone monocromatiche del pixel launcher</string>
     <string name="semitransparent_launcher_title">Launcher semi-trasparente</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">Autorizzazione Shizuku non concessa.</string>
     <string name="grant_all_permissions">Si prega di concedere tutte le autorizzazioni per procedere</string>
     <string name="wireless_adb_not_connected">Wireless ADB non connesso.</string>
+    <!-- Requirements -->
+    <string name="root_required">Root required</string>
+    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="pitch_black_theme_required">Pitch black required</string>
+    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="android_13_required">Android 13+</string>
+    <string name="android_14_required">Android 14+</string>
+    <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">Accoppiamento</string>
     <string name="enter_pairing_code">Inserisci codice di accoppiamento</string>

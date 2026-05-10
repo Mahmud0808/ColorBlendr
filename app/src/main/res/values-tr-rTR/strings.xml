@@ -56,6 +56,8 @@
     <string name="monet_fruitsalad_desc">Taze ve sulu meyvelerin canlı çeşitliliğini anımsatan eklektik renk karışımı.</string>
     <string name="monet_content">Huzurlu</string>
     <string name="monet_content_desc">Sakinlik ve memnuniyet hissini destekleyen dengeli ve dinlendirici bir palet.</string>
+    <string name="monet_cmf">CMF</string>
+    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
     <string name="save_current_style">Mevcut stili kaydet</string>
     <string name="title">Başlık</string>
     <string name="description">Açıklama</string>
@@ -105,8 +107,8 @@
     <string name="screen_off_update_desc">Ekran kapandıktan 15 saniye sonra renkleri günceller; canlı duvar kağıtları için kullanışlıdır</string>
     <string name="screen_off_update_title">Ekran Kapalıyken Renkleri Güncelle</string>
     <string name="mode_specific_theme_desc">Aydınlık ve karanlık modlar için farklı doygunluk ve parlaklık uygular</string>
-    <string name="colorspec_title">ColorSpec sürüm 2025</string>
-    <string name="colorspec_desc">2025 spesifikasyonu, Material 3 Expressive\'in (Dışavurumcu) bir parçasıdır ve şu an için yalnızca Tonal Spot, Neutral (Nötr), Vibrant (Canlı) ve Expressive (Dışavurumcu) varyantlarını desteklemektedir.</string>
+    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">Daha Koyu Başlatıcı Simgeleri</string>
     <string name="darker_launcher_icons_desc">Pixel Launcher monokrom simgelerine daha koyu bir arka plan uygular</string>
     <string name="semitransparent_launcher_title">Yarı Saydam Başlatıcı</string>
@@ -175,6 +177,14 @@
     <string name="shizuku_service_not_found">Shizuku izni verilmemiş.</string>
     <string name="grant_all_permissions">Devam etmek için lütfen tüm izinleri verin</string>
     <string name="wireless_adb_not_connected">Kablosuz ADB bağlı değil.</string>
+    <!-- Requirements -->
+    <string name="root_required">Root required</string>
+    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="pitch_black_theme_required">Pitch black required</string>
+    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="android_13_required">Android 13+</string>
+    <string name="android_14_required">Android 14+</string>
+    <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
     <string name="pairing">Eşleştirme</string>
     <string name="enter_pairing_code">Eşleştirme kodunu girin</string>
