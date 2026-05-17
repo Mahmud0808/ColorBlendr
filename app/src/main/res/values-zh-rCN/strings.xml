@@ -116,7 +116,7 @@
     <string name="pitch_black_settings_workaround_title">漆黑设置的临时解决方案</string>
     <string name="pitch_black_settings_workaround_desc">调暗设置背景颜色；可能引发副作用</string>
     <!-- Privacy policy -->
-    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy">隐私政策</string>
     <!-- About -->
     <string name="news">新闻</string>
     <string name="support">支持</string>
@@ -172,43 +172,43 @@
     <string name="root_service_not_found">未授予 Root 权限。</string>
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">在没有 root 的情况下使用 Shizuku 工作。只有部分自定义选项是可用的。</string>
-    <string name="mode_three_title">Wireless ADB</string>
+    <string name="mode_three_title">无线 ADB</string>
     <string name="mode_three_desc">Use ADB via Wireless Debugging. Limited customization options will be available.</string>
     <string name="shizuku_service_not_found">Shizuku 权限未被授予。</string>
     <string name="grant_all_permissions">请授予所有权限以继续</string>
-    <string name="wireless_adb_not_connected">Wireless ADB not connected.</string>
+    <string name="wireless_adb_not_connected">无线ADB未连接。</string>
     <!-- Requirements -->
-    <string name="root_required">Root required</string>
-    <string name="pixel_launcher_required">Pixel launcher required</string>
+    <string name="root_required">需要 Root 权限</string>
+    <string name="pixel_launcher_required">需要 Pixel 启动器</string>
     <string name="pitch_black_theme_required">Pitch black required</string>
     <string name="custom_primary_color_required">Custom primary required</string>
     <string name="android_13_required">Android 13+</string>
     <string name="android_14_required">Android 14+</string>
     <string name="colorspec_2026_required">ColorSpec 2026</string>
     <!-- Wireless ADB -->
-    <string name="pairing">Pairing</string>
-    <string name="enter_pairing_code">Enter pairing code</string>
-    <string name="enter_six_digit_pairing_code">Enter six digit pairing code</string>
-    <string name="searching_pairing_code">Searching for pairing code…</string>
-    <string name="pairing_notification_hint">You will receive a notification from ColorBlendr to help you with pairing.</string>
+    <string name="pairing">配对中</string>
+    <string name="enter_pairing_code">请输入配对码</string>
+    <string name="enter_six_digit_pairing_code">请输入六位配对码</string>
+    <string name="searching_pairing_code">正在搜索配对代码…</string>
+    <string name="pairing_notification_hint">您将收到ColorBlendr的通知，帮助您进行配对。</string>
     <string name="notification_access_not_granted">To complete the pairing process you will need to interact with a notification from ColorBlendr. Please allow notification access to ColorBlendr.</string>
-    <string name="notification_settings">Notification settings</string>
+    <string name="notification_settings">通知设置</string>
     <string name="notification_style_error">If you cannot enter the Pairing Code from the notification, then you might need to change the Notification Shade to Android. Go to Notification Settings ~ Notification Style to change the Notification Style.  Otherwise you might not be able to enter the pairing code from the notification.</string>
     <string name="wifi_connection_required">To use the Wireless Debugging feature, your device must be connected to a Wi-Fi network. If your Wi-Fi connection has no Internet access then turn off mobile data for a solid Wi-Fi connection.</string>
     <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
-    <string name="wireless_debugging_guide_2">Enter the six digit Pairing Code into the notification sent by ColorBlendr.</string>
-    <string name="wireless_debugging_guide_3">Come back to the app and click on the \"Start\" button in the previous screen.</string>
-    <string name="wireless_debugging_important_notice">Please note that the left part of the Wireless Debugging option is clickable. Tapping on it will open the Wireless Debugging Pairing menu.</string>
-    <string name="adb_detection_timeout">ADB detection timeout</string>
-    <string name="grant_permission">Grant permission</string>
-    <string name="developer_options">Developer options</string>
-    <string name="developer_options_not_available">Developer options not available!</string>
-    <string name="enable_wifi">Enable Wi-Fi</string>
-    <string name="adb_connection_success_title">ADB pairing successful</string>
-    <string name="adb_connection_success_message">Your device is now connected via ADB.</string>
-    <string name="adb_connection_failed_title">ADB pairing unsuccessful</string>
+    <string name="wireless_debugging_guide_2">请在ColorBlendr发送的通知中输入六位数字配对码。</string>
+    <string name="wireless_debugging_guide_3">回到应用，然后点击上一屏幕中的“开始”按钮。</string>
+    <string name="wireless_debugging_important_notice">注意无线调试选项左侧是可以点的。点击会打开无线调试配对菜单。</string>
+    <string name="adb_detection_timeout">ADB 检测超时</string>
+    <string name="grant_permission">授予权限</string>
+    <string name="developer_options">开发者选项</string>
+    <string name="developer_options_not_available">开发者选项不可用！</string>
+    <string name="enable_wifi">启用 Wi-Fi</string>
+    <string name="adb_connection_success_title">ADB 配对成功</string>
+    <string name="adb_connection_success_message">您的设备现已通过 ADB 连接。</string>
+    <string name="adb_connection_failed_title">ADB 配对失败</string>
     <string name="adb_connection_failed_message">ADB 连接失败。验证是否启用配对且代码是否正确。</string>
-    <string name="submit">Submit</string>
-    <string name="close">Close</string>
+    <string name="submit">提交</string>
+    <string name="close">关闭</string>
     <string name="ok">确定</string>
 </resources>
