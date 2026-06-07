@@ -170,7 +170,7 @@
     <string name="mode_one_title">Root</string>
     <string name="mode_one_desc">Использовать root доступ для смены цветов. Все возможности кастомизации будут доступны.</string>
     <string name="root_service_not_found">Рут права не предоставлены.</string>
-    <string name="mode_two_title">Шизуку</string>
+    <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">Использовать shizuku для работы без root. Некоторые возможности кастомизации не будут доступны.</string>
     <string name="mode_three_title">Беспроводной ADB</string>
     <string name="mode_three_desc">Используйте ADB через беспроводную отладку. Доступны ограниченные возможности настройки.</string>
@@ -178,7 +178,7 @@
     <string name="grant_all_permissions">Пожалуйста, предоставьте все разрешения для приложения</string>
     <string name="wireless_adb_not_connected">Беспроводной ADB не подключен.</string>
     <!-- Requirements -->
-    <string name="root_required">Root необходим</string>
+    <string name="root_required">Требуется root</string>
     <string name="pixel_launcher_required">Требуется программа запуска Pixel</string>
     <string name="pitch_black_theme_required">Требуется кромешная тьма</string>
     <string name="custom_primary_color_required">Требуется основной пользователь</string>

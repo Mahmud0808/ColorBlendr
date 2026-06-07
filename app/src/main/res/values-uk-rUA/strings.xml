@@ -57,7 +57,7 @@
     <string name="monet_content">Вміст</string>
     <string name="monet_content_desc">Збалансована й заспокійлива палітра, що сприяє відчуттю спокою і задоволеності.</string>
     <string name="monet_cmf">CMF</string>
-    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
+    <string name="monet_cmf_desc">Динамічна палітра з двох джерел, яка поєднує додаткові кольори для створення багатої, виразної та сучасної естетики.</string>
     <string name="save_current_style">Зберегти поточний стиль</string>
     <string name="title">Назва</string>
     <string name="description">Опис</string>
