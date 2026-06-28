@@ -189,7 +189,7 @@
     <string name="pairing">페어링</string>
     <string name="enter_pairing_code">페어링 코드 입력</string>
     <string name="enter_six_digit_pairing_code">여섯 자리 페어링 코드 입력</string>
-    <string name="searching_pairing_code">페어링코드 검색 중… </string>
+    <string name="searching_pairing_code">페어링코드 찾는 중…</string>
     <string name="pairing_notification_hint">ColorBlendr로부터 페어링을 도와달라는 알림을 받게 됩니다.</string>
     <string name="notification_access_not_granted">페어링 프로세스를 완료하려면 ColorBlendr의 알림과 상호 작용해야 합니다. ColorBlendr에 대한 알림 액세스를 허용해 주세요.</string>
     <string name="notification_settings">알림 설정</string>
