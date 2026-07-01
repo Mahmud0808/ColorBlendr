@@ -57,7 +57,7 @@
     <string name="monet_content">Contenu</string>
     <string name="monet_content_desc">Palette équilibrée et apaisante, favorisant un sentiment de tranquillité et de détente.</string>
     <string name="monet_cmf">CMF</string>
-    <string name="monet_cmf_desc">Dynamic dual-source palette that fuses complementary colors for a rich, expressive, and modern aesthetic.</string>
+    <string name="monet_cmf_desc">Une palette dynamique à double source qui associe des couleurs complémentaires pour créer une esthétique riche, expressive et moderne.</string>
     <string name="save_current_style">Sauvegarder le style actuel</string>
     <string name="title">Titre</string>
     <string name="description">Description</string>
@@ -107,8 +107,8 @@
     <string name="screen_off_update_desc">Actualise les couleurs après 15 secondes d\'extinction de l\'écran ; utile pour les fonds d\'écran live</string>
     <string name="screen_off_update_title">Mettre à jour les couleurs à l\'extinction d\'écran</string>
     <string name="mode_specific_theme_desc">Appliquer une saturation et une luminosité différentes pour les modes clair et foncé</string>
-    <string name="colorspec_title">ColorSpec version</string>
-    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
+    <string name="colorspec_title">Version ColorSpec</string>
+    <string name="colorspec_desc">Sélectionnez la version de la spécification de couleur Material design à utiliser pour la génération de la palette.</string>
     <string name="darker_launcher_icons_title">Icônes du launcher plus sombres</string>
     <string name="darker_launcher_icons_desc">Appliquer un arrière-plan plus sombre aux icônes monochromes du pixel launcher</string>
     <string name="semitransparent_launcher_title">Launcher semi-transparent</string>
@@ -178,10 +178,10 @@
     <string name="grant_all_permissions">Veuillez accorder toutes les permissions pour continuer</string>
     <string name="wireless_adb_not_connected">ADB sans fil non connecté.</string>
     <!-- Requirements -->
-    <string name="root_required">Root required</string>
-    <string name="pixel_launcher_required">Pixel launcher required</string>
-    <string name="pitch_black_theme_required">Pitch black required</string>
-    <string name="custom_primary_color_required">Custom primary required</string>
+    <string name="root_required">Root requis</string>
+    <string name="pixel_launcher_required">Pixel launcher requis</string>
+    <string name="pitch_black_theme_required">Noir absolu requis</string>
+    <string name="custom_primary_color_required">Couleur primaire personnalisée requise</string>
     <string name="android_13_required">Android 13+</string>
     <string name="android_14_required">Android 14+</string>
     <string name="colorspec_2026_required">ColorSpec 2026</string>
