@@ -107,7 +107,7 @@
     <string name="screen_off_update_desc">屏幕关闭 15 秒后更新颜色；对于动态壁纸很有用</string>
     <string name="screen_off_update_title">在屏幕关闭时更新颜色</string>
     <string name="mode_specific_theme_desc">为浅色和深色模式应用不同的饱和度和亮度</string>
-    <string name="colorspec_title">ColorSpec version</string>
+    <string name="colorspec_title">ColorSpec 版本</string>
     <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
     <string name="darker_launcher_icons_title">较暗的启动器图标</string>
     <string name="darker_launcher_icons_desc">为 Pixel 启动器的单色图标应用更暗的背景</string>
@@ -173,7 +173,7 @@
     <string name="mode_two_title">Shizuku</string>
     <string name="mode_two_desc">在没有 root 的情况下使用 Shizuku 工作。只有部分自定义选项是可用的。</string>
     <string name="mode_three_title">无线 ADB</string>
-    <string name="mode_three_desc">Use ADB via Wireless Debugging. Limited customization options will be available.</string>
+    <string name="mode_three_desc">通过无线调试使用 ADB ，部分自定义选项将可用。</string>
     <string name="shizuku_service_not_found">Shizuku 权限未被授予。</string>
     <string name="grant_all_permissions">请授予所有权限以继续</string>
     <string name="wireless_adb_not_connected">无线ADB未连接。</string>
