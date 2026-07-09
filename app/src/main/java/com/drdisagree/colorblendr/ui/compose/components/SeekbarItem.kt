@@ -44,6 +44,7 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import java.text.DecimalFormat
+import android.R as AndroidR
 
 // Mirrors SeekbarWidget: the whole card is the track; the progress fill is a
 // 24dp rounded rect clipped horizontally, exactly like seekbar_track.xml.
@@ -76,7 +77,7 @@ fun SeekbarItem(
     val fillColor = if (enabled) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.30f)
     } else {
-        themeAttrColor(android.R.attr.textColorPrimary).copy(alpha = 0.05f)
+        themeAttrColor(AndroidR.attr.textColorPrimary).copy(alpha = 0.05f)
     }
     val textIconColor = if (enabled) {
         MaterialTheme.colorScheme.onPrimaryContainer

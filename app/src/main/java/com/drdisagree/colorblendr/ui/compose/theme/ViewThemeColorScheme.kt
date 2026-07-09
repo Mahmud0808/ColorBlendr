@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.material.color.MaterialColors
+import android.R as AndroidR
 import androidx.appcompat.R as AppCompatR
 import com.google.android.material.R as MaterialR
 
@@ -39,7 +40,7 @@ fun viewThemeColorScheme(): ColorScheme {
         onTertiary = context.themeColor(MaterialR.attr.colorOnTertiary),
         tertiaryContainer = context.themeColor(MaterialR.attr.colorTertiaryContainer),
         onTertiaryContainer = context.themeColor(MaterialR.attr.colorOnTertiaryContainer),
-        background = context.themeColor(android.R.attr.colorBackground),
+        background = context.themeColor(AndroidR.attr.colorBackground),
         onBackground = context.themeColor(MaterialR.attr.colorOnBackground),
         surface = context.themeColor(MaterialR.attr.colorSurface),
         onSurface = context.themeColor(MaterialR.attr.colorOnSurface),
