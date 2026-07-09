@@ -47,7 +47,8 @@ fun ColorPickerItem(
 
     PositionedCard(
         position = position,
-        onClick = { if (enabled) onClick() },
+        enabled = enabled,
+        onClick = onClick,
         modifier = modifier
     ) {
         Row(

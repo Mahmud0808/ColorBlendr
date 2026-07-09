@@ -32,6 +32,7 @@ fun PositionedCard(
     position: WidgetPosition,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -56,6 +57,7 @@ fun PositionedCard(
         bottomMargin = bottomMargin,
         modifier = modifier,
         backgroundColor = backgroundColor,
+        enabled = enabled,
         onClick = onClick,
         content = content
     )
@@ -67,6 +69,7 @@ fun PositionedCardBase(
     bottomMargin: Dp,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -83,7 +86,7 @@ fun PositionedCardBase(
     ) {
         Column(
             modifier = if (onClick != null) {
-                Modifier.clickable(onClick = onClick)
+                Modifier.clickable(enabled = enabled, onClick = onClick)
             } else {
                 Modifier
             }

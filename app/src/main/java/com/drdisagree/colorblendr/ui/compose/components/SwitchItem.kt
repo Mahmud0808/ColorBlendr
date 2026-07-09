@@ -81,14 +81,16 @@ fun SwitchItem(
             shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius_round)),
             bottomMargin = dimensionResource(R.dimen.container_margin_bottom) * 2,
             backgroundColor = masterBackground,
-            onClick = { if (enabled) onCheckedChange(!checked) },
+            enabled = enabled,
+            onClick = { onCheckedChange(!checked) },
             modifier = modifier,
             content = content
         )
     } else {
         PositionedCard(
             position = position,
-            onClick = { if (enabled) onCheckedChange(!checked) },
+            enabled = enabled,
+            onClick = { onCheckedChange(!checked) },
             modifier = modifier,
             content = content
         )
