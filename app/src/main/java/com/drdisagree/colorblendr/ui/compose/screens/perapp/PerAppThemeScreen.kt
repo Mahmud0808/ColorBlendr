@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -69,6 +69,7 @@ import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
+import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
@@ -238,10 +239,19 @@ fun PerAppThemeScreen() {
                             .fillMaxSize()
                             .hazeSource(hazeState)
                     ) {
-                        items(filteredList, key = { it.packageName }) { app ->
+                        itemsIndexed(
+                            filteredList,
+                            key = { _, app -> app.packageName }
+                        ) { index, app ->
                             AppListItem(
                                 app = app,
                                 selected = selections[app.packageName] == true,
+                                position = when {
+                                    filteredList.size == 1 -> WidgetPosition.Single
+                                    index == 0 -> WidgetPosition.Top
+                                    index == filteredList.lastIndex -> WidgetPosition.Bottom
+                                    else -> WidgetPosition.Middle
+                                },
                                 onClick = { toggleApp(app) }
                             )
                         }
@@ -268,6 +278,7 @@ fun PerAppThemeScreen() {
 private fun AppListItem(
     app: AppInfoModel,
     selected: Boolean,
+    position: WidgetPosition,
     onClick: () -> Unit
 ) {
     val contentColor = if (selected) {
@@ -280,8 +291,17 @@ private fun AppListItem(
         app.appIcon?.toBitmap()?.asImageBitmap()
     }
 
+    val radius = dimensionResource(R.dimen.container_corner_radius)
+    val radiusSmall = dimensionResource(R.dimen.container_corner_radius_small)
+    val (topRadius, bottomRadius) = when (position) {
+        WidgetPosition.Single -> radius to radius
+        WidgetPosition.Top -> radius to radiusSmall
+        WidgetPosition.Middle -> radiusSmall to radiusSmall
+        WidgetPosition.Bottom -> radiusSmall to radius
+    }
+
     Surface(
-        shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
+        shape = RoundedCornerShape(topRadius, topRadius, bottomRadius, bottomRadius),
         color = if (selected) {
             MaterialTheme.colorScheme.primaryContainer
         } else {
@@ -298,7 +318,15 @@ private fun AppListItem(
             .padding(
                 start = dimensionResource(R.dimen.container_margin_horizontal),
                 end = dimensionResource(R.dimen.container_margin_horizontal),
-                bottom = dimensionResource(R.dimen.container_margin_bottom)
+                bottom = dimensionResource(
+                    when (position) {
+                        WidgetPosition.Single, WidgetPosition.Bottom ->
+                            R.dimen.container_margin_bottom
+
+                        WidgetPosition.Top, WidgetPosition.Middle ->
+                            R.dimen.container_margin_bottom_small
+                    }
+                )
             )
     ) {
         Row(
