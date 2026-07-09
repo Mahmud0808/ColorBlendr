@@ -273,7 +273,7 @@ fun HomeScreen(
 
                     SettingsScreen(
                         restoreUri = if (!restoreConsumed) {
-                            restoreUriArg?.let { Uri.parse(Uri.decode(it)) }
+                            restoreUriArg?.let { Uri.parse(it) }
                         } else {
                             null
                         },
