@@ -2,8 +2,10 @@ package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -84,8 +86,12 @@ fun BackupRestoreCard(
 
             AnimatedVisibility(
                 visible = buttonsVisible,
-                enter = fadeIn(tween(mediumAnimTime)),
-                exit = fadeOut(tween(mediumAnimTime))
+                enter = expandVertically(
+                    MaterialTheme.motionScheme.defaultSpatialSpec()
+                ) + fadeIn(tween(mediumAnimTime)),
+                exit = shrinkVertically(
+                    MaterialTheme.motionScheme.defaultSpatialSpec()
+                ) + fadeOut(tween(mediumAnimTime))
             ) {
                 Row(modifier = Modifier.padding(top = 12.dp)) {
                     Button(
