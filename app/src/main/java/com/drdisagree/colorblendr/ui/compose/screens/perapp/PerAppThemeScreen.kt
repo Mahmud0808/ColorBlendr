@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,7 +68,6 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
-import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
@@ -258,7 +255,7 @@ fun PerAppThemeScreen() {
                     }
 
                     if (isLoading) {
-                        LoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                        ContainedLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                     }
 
                     SearchBar(
@@ -286,7 +283,6 @@ private fun AppListItem(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val strokeWidth = with(LocalDensity.current) { 2.toDp() }
     val appIcon = remember(app.packageName) {
         app.appIcon?.toBitmap()?.asImageBitmap()
     }
@@ -306,11 +302,6 @@ private fun AppListItem(
             MaterialTheme.colorScheme.primaryContainer
         } else {
             MaterialTheme.colorScheme.surfaceContainer
-        },
-        border = if (selected) {
-            null
-        } else {
-            BorderStroke(strokeWidth, AppCardDefaults.outlinedBorder().brush)
         },
         onClick = onClick,
         modifier = Modifier
