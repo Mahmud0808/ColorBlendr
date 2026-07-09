@@ -6,6 +6,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.view.View
 import android.graphics.Color as AndroidColor
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -148,6 +153,7 @@ fun ColorsScreen(
         setCustomColorEnabled(!isWallpaperColor)
         seedColor = color
         customColor = !isWallpaperColor
+        seedPickerVisible = !isWallpaperColor
 
         scope.launch {
             updateColorAppliedTimestamp()
@@ -263,7 +269,15 @@ fun ColorsScreen(
                     }
                 }
 
-                if (seedPickerVisible) {
+                AnimatedVisibility(
+                    visible = seedPickerVisible,
+                    enter = expandVertically(
+                        MaterialTheme.motionScheme.defaultSpatialSpec()
+                    ) + fadeIn(MaterialTheme.motionScheme.defaultEffectsSpec()),
+                    exit = shrinkVertically(
+                        MaterialTheme.motionScheme.defaultSpatialSpec()
+                    ) + fadeOut(MaterialTheme.motionScheme.defaultEffectsSpec())
+                ) {
                     ColorPickerItem(
                         title = stringResource(R.string.seed_color_picker_title),
                         summary = stringResource(R.string.seed_color_picker_desc),
