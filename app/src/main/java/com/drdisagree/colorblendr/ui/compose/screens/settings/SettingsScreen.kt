@@ -16,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -39,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
@@ -68,12 +65,12 @@ import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimest
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
-import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
+import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
@@ -260,7 +257,7 @@ fun SettingsScreen(
                                 onDismissRequest = { overflowExpanded = false },
                                 shape = RoundedCornerShape(16.dp),
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                offset = DpOffset((-16).dp, 0.dp)
+                                offset = DpOffset(0.dp, 4.dp)
                             ) {
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(R.string.advanced_settings)) },

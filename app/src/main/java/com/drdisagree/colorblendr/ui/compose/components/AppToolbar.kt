@@ -61,7 +61,7 @@ fun AppToolbar(
             .background(containerColor)
             .statusBarsPadding()
             .height(64.dp)
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 16.dp)
     ) {
         if (showBackButton) {
             ToolbarIconPill(
@@ -70,7 +70,7 @@ fun AppToolbar(
                 width = 40.dp,
                 onClick = { backDispatcher?.onBackPressed() }
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(8.dp))
         }
         Text(
             text = title,
