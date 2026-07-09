@@ -72,6 +72,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
+import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
@@ -257,13 +258,7 @@ fun SettingsScreen(
                     lifted = scrollState.value > 0,
                     actions = {
                         Box {
-                            IconButton(onClick = { overflowExpanded = true }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_toolbar_overflow),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
+                            ToolbarOverflowButton(onClick = { overflowExpanded = true })
                             DropdownMenu(
                                 expanded = overflowExpanded,
                                 onDismissRequest = { overflowExpanded = false },
