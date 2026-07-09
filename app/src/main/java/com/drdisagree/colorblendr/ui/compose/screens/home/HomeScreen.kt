@@ -70,7 +70,6 @@ import com.drdisagree.colorblendr.ui.compose.screens.theme.ThemeScreen
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.AppUtil
 import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
@@ -102,8 +101,7 @@ fun HomeScreen(
     onRestoreUriHandled: () -> Unit,
     colorsViewModel: ColorsViewModel,
     stylesViewModel: StylesViewModel,
-    colorPaletteViewModel: ColorPaletteViewModel,
-    sharedViewModel: SharedViewModel
+    colorPaletteViewModel: ColorPaletteViewModel
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
@@ -256,7 +254,6 @@ fun HomeScreen(
                     }
                     ColorsScreen(
                         colorsViewModel = colorsViewModel,
-                        sharedViewModel = sharedViewModel,
                         fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
                         onNavigateToColorPalette = {
                             nestedNavController.navigate(Routes.COLOR_PALETTE)
@@ -283,7 +280,6 @@ fun HomeScreen(
                     val restoreUriArg = entry.arguments?.getString("restoreUri")
 
                     SettingsScreen(
-                        sharedViewModel = sharedViewModel,
                         restoreUri = if (!restoreConsumed) {
                             restoreUriArg?.let { Uri.parse(Uri.decode(it)) }
                         } else {
@@ -302,7 +298,6 @@ fun HomeScreen(
                 composable(Routes.COLOR_PALETTE) {
                     ColorPaletteScreen(
                         colorPaletteViewModel = colorPaletteViewModel,
-                        sharedViewModel = sharedViewModel,
                         fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
                     )
                 }
@@ -362,8 +357,7 @@ private fun HomeScreenPreview() {
             onRestoreUriHandled = {},
             colorsViewModel = ColorsViewModel(),
             stylesViewModel = StylesViewModel(Utilities.getCustomStyleRepository()),
-            colorPaletteViewModel = ColorPaletteViewModel(),
-            sharedViewModel = SharedViewModel()
+            colorPaletteViewModel = ColorPaletteViewModel()
         )
     }
 }

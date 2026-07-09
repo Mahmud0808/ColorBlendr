@@ -34,7 +34,6 @@ import com.drdisagree.colorblendr.ui.compose.screens.onboarding.OnboardingScreen
 import com.drdisagree.colorblendr.ui.compose.screens.pairing.PairingScreen
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
@@ -51,8 +50,7 @@ fun AppNavHost(
     restoreUri: Uri?,
     colorsViewModel: ColorsViewModel,
     stylesViewModel: StylesViewModel,
-    colorPaletteViewModel: ColorPaletteViewModel,
-    sharedViewModel: SharedViewModel
+    colorPaletteViewModel: ColorPaletteViewModel
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
@@ -172,8 +170,7 @@ fun AppNavHost(
                 onRestoreUriHandled = { pendingRestoreUri = null },
                 colorsViewModel = colorsViewModel,
                 stylesViewModel = stylesViewModel,
-                colorPaletteViewModel = colorPaletteViewModel,
-                sharedViewModel = sharedViewModel
+                colorPaletteViewModel = colorPaletteViewModel
             )
         }
     }

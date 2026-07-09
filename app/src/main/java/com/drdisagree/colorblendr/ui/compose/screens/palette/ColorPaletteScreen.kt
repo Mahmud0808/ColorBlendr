@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
@@ -47,7 +46,6 @@ import com.drdisagree.colorblendr.ui.compose.components.ColorTable
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -64,7 +62,6 @@ private val colorCodes = intArrayOf(0, 10, 50, 100, 200, 300, 400, 500, 600, 700
 @Composable
 fun ColorPaletteScreen(
     colorPaletteViewModel: ColorPaletteViewModel,
-    sharedViewModel: SharedViewModel?,
     fragmentManager: FragmentManager?
 ) {
     val context = LocalContext.current
@@ -73,16 +70,11 @@ fun ColorPaletteScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val colorPalette by colorPaletteViewModel.colorPalette.collectAsStateWithLifecycle()
-    val booleanStates by (sharedViewModel?.booleanStates?.collectAsStateWithLifecycle()
-        ?: remember { mutableStateOf(emptyMap<String, Boolean>()) })
-
-    // Recompose the table when accurate shades toggles, like updateBooleanStates did.
-    val accurateShadesState = booleanStates[MONET_ACCURATE_SHADES]
 
     val isOverrideAvailable = remember { isRootMode() && manualColorOverrideEnabled() }
     var overrideRevision by remember { mutableIntStateOf(0) }
 
-    val cellColors = remember(colorPalette, overrideRevision, accurateShadesState) {
+    val cellColors = remember(colorPalette, overrideRevision) {
         colorPalette.mapIndexed { column, colors ->
             colors.mapIndexed { row, color ->
                 val overridden = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
@@ -233,7 +225,6 @@ private fun ColorPaletteScreenPreview() {
     ColorBlendrTheme {
         ColorPaletteScreen(
             colorPaletteViewModel = ColorPaletteViewModel(),
-            sharedViewModel = null,
             fragmentManager = null
         )
     }

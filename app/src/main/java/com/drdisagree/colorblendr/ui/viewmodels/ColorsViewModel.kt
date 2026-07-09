@@ -9,8 +9,10 @@ import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.app.SystemUtil
@@ -42,6 +44,12 @@ class ColorsViewModel @Inject constructor() : ViewModel() {
     val basicColorPalettes: StateFlow<Map<Int, List<List<Int>>>> =
         _basicColorPalettes.asStateFlow()
 
+    private val _customColorEnabled = MutableStateFlow(customColorEnabled())
+    val customColorEnabled: StateFlow<Boolean> = _customColorEnabled.asStateFlow()
+
+    private val _seedColor = MutableStateFlow(getSeedColorValue(0))
+    val seedColor: StateFlow<Int> = _seedColor.asStateFlow()
+
     init {
         refreshData()
 
@@ -53,8 +61,16 @@ class ColorsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun refreshData() {
+        _customColorEnabled.value = customColorEnabled()
+        _seedColor.value = getSeedColorValue(0)
         loadBasicColors()
         loadWallpaperColors()
+    }
+
+    // Keeps the flows in sync when the screen writes the prefs directly.
+    fun onSeedColorSelected(color: Int, customColor: Boolean) {
+        _seedColor.value = color
+        _customColorEnabled.value = customColor
     }
 
     fun loadWallpaperColors() {

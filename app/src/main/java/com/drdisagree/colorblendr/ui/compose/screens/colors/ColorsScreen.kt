@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.view.View
 import android.graphics.Color as AndroidColor
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -51,7 +50,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
@@ -68,7 +66,6 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewCanvas
 import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewColors
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +79,6 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 @Composable
 fun ColorsScreen(
     colorsViewModel: ColorsViewModel,
-    sharedViewModel: SharedViewModel?,
     fragmentManager: FragmentManager?,
     onNavigateToColorPalette: () -> Unit,
     onNavigateToPerAppTheme: () -> Unit
@@ -97,8 +93,7 @@ fun ColorsScreen(
     val basicColors by colorsViewModel.basicColors.collectAsStateWithLifecycle()
     val wallpaperPalettes by colorsViewModel.wallpaperColorPalettes.collectAsStateWithLifecycle()
     val basicPalettes by colorsViewModel.basicColorPalettes.collectAsStateWithLifecycle()
-    val visibilityStates by (sharedViewModel?.visibilityStates?.collectAsStateWithLifecycle()
-        ?: remember { mutableStateOf(emptyMap<String, Int>()) })
+    val customColorPref by colorsViewModel.customColorEnabled.collectAsStateWithLifecycle()
 
     var seedColor by remember { mutableIntStateOf(getSeedColorValue(0)) }
     var customColor by remember { mutableStateOf(customColorEnabled()) }
@@ -109,20 +104,17 @@ fun ColorsScreen(
     }
     var seedPickerVisible by remember { mutableStateOf(customColorEnabled()) }
 
-    // Mirrors ColorsFragment.updateViewVisibility for the Settings toggle.
-    val seedVisibilityState = visibilityStates[MONET_SEED_COLOR_ENABLED]
-    LaunchedEffect(seedVisibilityState) {
-        if (seedVisibilityState == null) return@LaunchedEffect
-
-        val visible = seedVisibilityState == View.VISIBLE
-        if (seedPickerVisible != visible) {
-            seedPickerVisible = visible
+    // Mirrors ColorsFragment.updateViewVisibility: react when the Settings
+    // custom-color switch changes the pref (via RefreshCoordinator).
+    LaunchedEffect(customColorPref) {
+        if (seedPickerVisible != customColorPref) {
+            seedPickerVisible = customColorPref
 
             val wallpaperColorList = getWallpaperColorList()
             val wallpaperColor =
                 if (wallpaperColorList.isNotEmpty()) wallpaperColorList[0] else AndroidColor.BLUE
-            seedColor = if (!visible) wallpaperColor else getSeedColorValue(wallpaperColor)
-            customColor = customColorEnabled()
+            seedColor = if (!customColorPref) wallpaperColor else getSeedColorValue(wallpaperColor)
+            customColor = customColorPref
         }
     }
 
@@ -151,6 +143,7 @@ fun ColorsScreen(
 
         setSeedColorValue(color)
         setCustomColorEnabled(!isWallpaperColor)
+        colorsViewModel.onSeedColorSelected(color, !isWallpaperColor)
         seedColor = color
         customColor = !isWallpaperColor
         seedPickerVisible = !isWallpaperColor
@@ -339,7 +332,6 @@ private fun ColorsScreenPreview() {
     ColorBlendrTheme {
         ColorsScreen(
             colorsViewModel = ColorsViewModel(),
-            sharedViewModel = null,
             fragmentManager = null,
             onNavigateToColorPalette = {},
             onNavigateToPerAppTheme = {}

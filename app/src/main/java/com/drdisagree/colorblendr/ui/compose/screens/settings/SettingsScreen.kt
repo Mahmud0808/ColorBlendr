@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,8 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -68,6 +65,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
@@ -77,7 +75,6 @@ import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -93,7 +90,6 @@ import android.R as AndroidR
 
 @Composable
 fun SettingsScreen(
-    sharedViewModel: SharedViewModel?,
     restoreUri: Uri?,
     onRestoreUriConsumed: () -> Unit,
     onNavigateToAbout: () -> Unit,
@@ -350,7 +346,7 @@ fun SettingsScreen(
                             accurateShades = isChecked
                             resetCustomStyleIfNotNull()
                             setAccurateShadesEnabled(isChecked)
-                            sharedViewModel?.setBooleanState(MONET_ACCURATE_SHADES, isChecked)
+                            RefreshCoordinator.triggerRefresh()
                             updateColors()
                         }
                     )
@@ -379,10 +375,7 @@ fun SettingsScreen(
                             customPrimaryColor = isChecked
                             resetCustomStyleIfNotNull()
                             setCustomColorEnabled(isChecked)
-                            sharedViewModel?.setVisibilityState(
-                                MONET_SEED_COLOR_ENABLED,
-                                if (isChecked) View.VISIBLE else View.GONE
-                            )
+                            RefreshCoordinator.triggerRefresh()
                             if (!isChecked) {
                                 val wallpaperColorList = getWallpaperColorList()
                                 setSeedColorValue(
@@ -479,7 +472,6 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     ColorBlendrTheme {
         SettingsScreen(
-            sharedViewModel = null,
             restoreUri = null,
             onRestoreUriConsumed = {},
             onNavigateToAbout = {},

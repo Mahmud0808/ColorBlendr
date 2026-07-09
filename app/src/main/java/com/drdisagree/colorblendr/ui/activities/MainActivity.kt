@@ -32,7 +32,6 @@ import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
-import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
@@ -47,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     private val colorsViewModel: ColorsViewModel by viewModels()
     private val stylesViewModel: StylesViewModel by viewModels()
     private val colorPaletteViewModel: ColorPaletteViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,8 +63,7 @@ class MainActivity : AppCompatActivity() {
                     restoreUri = restoreUri,
                     colorsViewModel = colorsViewModel,
                     stylesViewModel = stylesViewModel,
-                    colorPaletteViewModel = colorPaletteViewModel,
-                    sharedViewModel = sharedViewModel
+                    colorPaletteViewModel = colorPaletteViewModel
                 )
             }
         }
