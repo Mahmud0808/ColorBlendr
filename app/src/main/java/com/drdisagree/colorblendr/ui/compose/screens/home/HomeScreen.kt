@@ -1,0 +1,354 @@
+package com.drdisagree.colorblendr.ui.compose.screens.home
+
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.activity.compose.LocalActivity
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
+import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
+import com.drdisagree.colorblendr.ui.compose.navigation.Routes
+import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
+import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
+import com.drdisagree.colorblendr.ui.compose.screens.colors.ColorsScreen
+import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorPaletteScreen
+import com.drdisagree.colorblendr.ui.compose.screens.perapp.PerAppThemeScreen
+import com.drdisagree.colorblendr.ui.compose.screens.privacypolicy.PrivacyPolicyScreen
+import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsAdvancedScreen
+import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsScreen
+import com.drdisagree.colorblendr.ui.compose.screens.styles.StylesScreen
+import com.drdisagree.colorblendr.ui.compose.screens.theme.ThemeScreen
+import com.drdisagree.colorblendr.ui.compose.theme.DecelerateEasing
+import com.drdisagree.colorblendr.ui.compose.theme.shortAnimTime
+import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
+import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
+import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
+import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
+import com.drdisagree.colorblendr.utils.app.AppUtil
+import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
+import com.drdisagree.colorblendr.utils.app.AppUtil.openAppSettings
+import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
+import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+private data class TabItem(
+    val route: String,
+    val group: Int,
+    val labelResId: Int,
+    val filledIconResId: Int,
+    val outlineIconResId: Int
+)
+
+private val tabs = listOf(
+    TabItem(Routes.COLORS, 1, R.string.colors, R.drawable.ic_nav_colors_filled, R.drawable.ic_nav_colors_outline),
+    TabItem(Routes.THEME, 2, R.string.theme, R.drawable.ic_nav_theme_filled, R.drawable.ic_nav_theme_outline),
+    TabItem(Routes.STYLES, 3, R.string.styles, R.drawable.ic_nav_styles_filled, R.drawable.ic_nav_styles_outline),
+    TabItem(Routes.SETTINGS_BASE, 4, R.string.settings, R.drawable.ic_nav_settings_filled, R.drawable.ic_nav_settings_outline)
+)
+
+@Composable
+fun HomeScreen(
+    success: Boolean,
+    pendingRestoreUri: Uri?,
+    onRestoreUriHandled: () -> Unit,
+    colorsViewModel: ColorsViewModel,
+    stylesViewModel: StylesViewModel,
+    colorPaletteViewModel: ColorPaletteViewModel,
+    sharedViewModel: SharedViewModel
+) {
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+    val scope = rememberCoroutineScope()
+    val nestedNavController = rememberNavController()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val backStackEntry by nestedNavController.currentBackStackEntryAsState()
+    val currentGroup = tabGroup(backStackEntry?.destination?.route)
+
+    val permissionMustBeGrantedText = stringResource(R.string.permission_must_be_granted)
+    val fileAccessText = stringResource(R.string.file_access_permission_required)
+    val grantText = stringResource(R.string.grant)
+
+    var permissionToRetry by remember { mutableStateOf<String?>(null) }
+
+    fun showStoragePermissionSnackbar() {
+        scope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = fileAccessText,
+                actionLabel = grantText,
+                duration = SnackbarDuration.Indefinite
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                requestStoragePermission(context)
+            }
+        }
+    }
+
+    val requestPermissionsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        for ((permission, granted) in result) {
+            if (!granted) {
+                val permanentlyDenied = activity != null &&
+                        !ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
+                scope.launch {
+                    val snackResult = snackbarHostState.showSnackbar(
+                        message = permissionMustBeGrantedText,
+                        actionLabel = grantText,
+                        duration = SnackbarDuration.Indefinite
+                    )
+                    if (snackResult == SnackbarResult.ActionPerformed) {
+                        if (!permanentlyDenied) {
+                            permissionToRetry = permission
+                        } else {
+                            openAppSettings(context)
+                        }
+                    }
+                }
+                return@rememberLauncherForActivityResult
+            }
+        }
+
+        if (!hasStoragePermission()) {
+            showStoragePermissionSnackbar()
+            return@rememberLauncherForActivityResult
+        }
+
+        if (isServiceNotRunning && success) {
+            scheduleJob(context)
+        }
+    }
+
+    LaunchedEffect(permissionToRetry) {
+        permissionToRetry?.let {
+            permissionToRetry = null
+            requestPermissionsLauncher.launch(arrayOf(it))
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(2000)
+        try {
+            if (permissionsGranted(context)) {
+                if (isServiceNotRunning && success) {
+                    scheduleJob(context)
+                }
+            } else {
+                requestPermissionsLauncher.launch(AppUtil.REQUIRED_PERMISSIONS)
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    LaunchedEffect(pendingRestoreUri) {
+        pendingRestoreUri?.let { uri ->
+            nestedNavController.navigate(
+                "${Routes.SETTINGS_BASE}?restoreUri=${Uri.encode(uri.toString())}"
+            ) {
+                popUpTo(nestedNavController.graph.findStartDestination().id)
+                launchSingleTop = true
+            }
+            onRestoreUriHandled()
+        }
+    }
+
+    val animTime = shortAnimTime()
+
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(pop: Boolean): EnterTransition {
+        val fromGroup = tabGroup(initialState.destination.route)
+        val toGroup = tabGroup(targetState.destination.route)
+        return when {
+            fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
+                fadeIn(tween(animTime)) + scaleIn(tween(animTime), initialScale = 0.96f)
+
+            (toGroup > fromGroup) != pop ->
+                slideInHorizontally(tween(animTime, easing = DecelerateEasing)) { it }
+
+            else ->
+                slideInHorizontally(tween(animTime, easing = DecelerateEasing)) { -it }
+        }
+    }
+
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(pop: Boolean): ExitTransition {
+        val fromGroup = tabGroup(initialState.destination.route)
+        val toGroup = tabGroup(targetState.destination.route)
+        return when {
+            fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
+                fadeOut(tween(animTime))
+
+            (toGroup > fromGroup) != pop ->
+                slideOutHorizontally(tween(animTime, easing = DecelerateEasing)) { -it }
+
+            else ->
+                slideOutHorizontally(tween(animTime, easing = DecelerateEasing)) { it }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            NavHost(
+                navController = nestedNavController,
+                startDestination = Routes.COLORS,
+                enterTransition = { enter(pop = false) },
+                exitTransition = { exit(pop = false) },
+                popEnterTransition = { enter(pop = true) },
+                popExitTransition = { exit(pop = true) },
+                modifier = Modifier.weight(1f)
+            ) {
+                composable(Routes.COLORS) {
+                    LaunchedEffect(Unit) {
+                        if (isShizukuMode()) {
+                            clearAllOverriddenColors()
+                        }
+                    }
+                    ColorsScreen(
+                        colorsViewModel = colorsViewModel,
+                        sharedViewModel = sharedViewModel,
+                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
+                        onNavigateToColorPalette = {
+                            nestedNavController.navigate(Routes.COLOR_PALETTE)
+                        },
+                        onNavigateToPerAppTheme = {
+                            nestedNavController.navigate(Routes.PER_APP_THEME)
+                        }
+                    )
+                }
+                composable(Routes.THEME) { ThemeScreen() }
+                composable(Routes.STYLES) {
+                    StylesScreen(stylesViewModel = stylesViewModel)
+                }
+                composable(
+                    route = Routes.SETTINGS,
+                    arguments = listOf(
+                        navArgument("restoreUri") {
+                            nullable = true
+                            defaultValue = null
+                        }
+                    )
+                ) { entry ->
+                    var restoreConsumed by rememberSaveable { mutableStateOf(false) }
+                    val restoreUriArg = entry.arguments?.getString("restoreUri")
+
+                    SettingsScreen(
+                        sharedViewModel = sharedViewModel,
+                        restoreUri = if (!restoreConsumed) {
+                            restoreUriArg?.let { Uri.parse(Uri.decode(it)) }
+                        } else {
+                            null
+                        },
+                        onRestoreUriConsumed = { restoreConsumed = true },
+                        onNavigateToAbout = { nestedNavController.navigate(Routes.ABOUT) },
+                        onNavigateToAdvanced = {
+                            nestedNavController.navigate(Routes.SETTINGS_ADVANCED)
+                        },
+                        onNavigateToPrivacyPolicy = {
+                            nestedNavController.navigate(Routes.PRIVACY_POLICY)
+                        }
+                    )
+                }
+                composable(Routes.COLOR_PALETTE) {
+                    ColorPaletteScreen(
+                        colorPaletteViewModel = colorPaletteViewModel,
+                        sharedViewModel = sharedViewModel,
+                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
+                    )
+                }
+                composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
+                composable(Routes.SETTINGS_ADVANCED) {
+                    SettingsAdvancedScreen(
+                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
+                    )
+                }
+                composable(Routes.ABOUT) { AboutScreen() }
+                composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
+            }
+
+            NavigationBar(modifier = Modifier.fillMaxWidth()) {
+                tabs.forEach { tab ->
+                    val selected = currentGroup == tab.group
+                    NavigationBarItem(
+                        selected = selected,
+                        alwaysShowLabel = false,
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    if (selected) tab.filledIconResId else tab.outlineIconResId
+                                ),
+                                contentDescription = null
+                            )
+                        },
+                        label = { Text(text = stringResource(tab.labelResId)) },
+                        onClick = {
+                            nestedNavController.navigate(tab.route) {
+                                popUpTo(nestedNavController.graph.findStartDestination().id) {
+                                    inclusive = tab.route == Routes.COLORS
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) { data ->
+            Snackbar(
+                snackbarData = data,
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                actionColor = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}

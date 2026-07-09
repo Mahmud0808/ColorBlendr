@@ -1,23 +1,21 @@
 package com.drdisagree.colorblendr.ui.activities
 
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
@@ -28,74 +26,56 @@ import com.drdisagree.colorblendr.data.common.Constant.ADB_IP
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIRING_PORT
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIR_NOTIFICATION
 import com.drdisagree.colorblendr.data.common.Constant.ADB_SEARCH_NOTIFICATION
-import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
-import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.databinding.ActivityMainBinding
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
-import com.drdisagree.colorblendr.ui.fragments.HomeFragment
-import com.drdisagree.colorblendr.ui.fragments.onboarding.OnboardingFragment
+import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
+import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
+import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.shape.MaterialShapeDrawable
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
     private val timeoutHandler: Handler = Handler(Looper.getMainLooper())
     private var timeoutRunnable: Runnable? = null
     private val colorsViewModel: ColorsViewModel by viewModels()
     private val stylesViewModel: StylesViewModel by viewModels()
     private val colorPaletteViewModel: ColorPaletteViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.getRoot())
         setupEdgeToEdge()
 
-        myFragmentManager = supportFragmentManager
+        val success = intent?.getBooleanExtra("success", false) ?: false
+        val restoreUri = intent?.parcelable<Uri>("data")
+        intent?.removeExtra("success")
+        intent?.removeExtra("data")
 
-        if (savedInstanceState == null) {
-            if (isFirstRun() || isWorkMethodUnknown() ||
-                intent?.getBooleanExtra("success", false) == false
-            ) {
-                replaceFragment(OnboardingFragment(), false)
-            } else {
-                replaceFragment(
-                    HomeFragment().apply {
-                        arguments = Bundle().apply {
-                            putBoolean("success", true)
-                            if (intent?.hasExtra("data") == true) {
-                                putParcelable("data", intent.parcelable("data"))
-                            }
-                        }
-                    },
-                    false
+        setContent {
+            ColorBlendrTheme {
+                AppNavHost(
+                    success = success,
+                    restoreUri = restoreUri,
+                    colorsViewModel = colorsViewModel,
+                    stylesViewModel = stylesViewModel,
+                    colorPaletteViewModel = colorPaletteViewModel,
+                    sharedViewModel = sharedViewModel
                 )
             }
-            intent?.removeExtra("success")
-            intent?.removeExtra("data")
         }
     }
 
     private fun setupEdgeToEdge() {
-        try {
-            (findViewById<View>(R.id.appBarLayout) as AppBarLayout).statusBarForeground =
-                MaterialShapeDrawable.createWithElevationOverlay(applicationContext)
-        } catch (_: Exception) {
-        }
-
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        if (getResources().configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             val viewGroup: ViewGroup = window.decorView.findViewById(android.R.id.content)
             ViewCompat.setOnApplyWindowInsetsListener(viewGroup) { v: View, windowInsets: WindowInsetsCompat ->
                 val insets: Insets =
@@ -185,14 +165,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressedDispatcher.onBackPressed()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onResume() {
         super.onResume()
 
@@ -217,42 +189,6 @@ class MainActivity : AppCompatActivity() {
             colorsViewModel.refreshData()
             stylesViewModel.refreshData()
             colorPaletteViewModel.refreshData()
-        }
-    }
-
-    companion object {
-        private lateinit var myFragmentManager: FragmentManager
-
-        fun replaceFragment(fragment: Fragment, animate: Boolean) {
-            val tag: String = fragment.javaClass.simpleName
-            val existing = myFragmentManager.findFragmentByTag(tag)
-
-            if (existing != null && existing.isVisible) {
-                return // already showing, don’t replace
-            }
-
-            val fragmentTransaction: FragmentTransaction = myFragmentManager.beginTransaction()
-
-            if (animate) {
-                fragmentTransaction.setCustomAnimations(
-                    R.anim.slide_in_right,
-                    R.anim.slide_out_left,
-                    R.anim.slide_in_left,
-                    R.anim.slide_out_right
-                )
-            }
-            fragmentTransaction.replace(
-                R.id.fragmentContainer,
-                fragment
-            )
-
-            if (tag == HomeFragment::class.java.simpleName) {
-                myFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            } else if (tag != OnboardingFragment::class.java.simpleName) {
-                fragmentTransaction.addToBackStack(tag)
-            }
-
-            fragmentTransaction.commit()
         }
     }
 }
