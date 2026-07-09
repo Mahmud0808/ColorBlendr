@@ -65,8 +65,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.ColorPalettePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
-import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewCanvas
@@ -326,11 +326,9 @@ fun ColorsScreen(
                     )
                 }
 
-                MenuItem(
+                ColorPalettePreviewCard(
                     title = stringResource(R.string.color_palette_title),
                     summary = stringResource(R.string.color_palette_desc),
-                    icon = painterResource(R.drawable.ic_table_view),
-                    showEndArrow = true,
                     onClick = onNavigateToColorPalette
                 )
             }

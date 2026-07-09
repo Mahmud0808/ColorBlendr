@@ -39,6 +39,9 @@ object PreviewController {
     private val _previewColors = MutableStateFlow<PreviewColors?>(null)
     val previewColors = _previewColors.asStateFlow()
 
+    private val _isApplying = MutableStateFlow(false)
+    val isApplying = _isApplying.asStateFlow()
+
     val isPreviewActive: Boolean
         get() = Prefs.isStagingActive || _previewColors.value != null
 
@@ -96,6 +99,7 @@ object PreviewController {
 
     fun applyChanges() {
         controllerScope.launch {
+            _isApplying.value = true
             Prefs.commitStaged()
             updateColorAppliedTimestamp()
             try {
@@ -104,6 +108,7 @@ object PreviewController {
                 Log.e(TAG, "Error applying preview colors", e)
             }
             _previewColors.value = null
+            _isApplying.value = false
         }
     }
 

@@ -62,6 +62,7 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
+import com.drdisagree.colorblendr.ui.compose.components.LoadingOverlay
 import com.drdisagree.colorblendr.ui.compose.components.PreviewActionButtons
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
@@ -106,6 +107,7 @@ fun HomeScreen(
     val backStackEntry by nestedNavController.currentBackStackEntryAsState()
 
     val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     var lastGroup by rememberSaveable { mutableIntStateOf(1) }
     val routeGroup = tabGroup(backStackEntry?.destination?.route)
     val currentGroup = if (routeGroup != 0) routeGroup else lastGroup
@@ -321,7 +323,7 @@ fun HomeScreen(
                     label = "previewFabSnackbarPush"
                 )
                 PreviewActionButtons(
-                    visible = previewColors != null,
+                    visible = previewColors != null && !isApplying,
                     onApply = { scope.launch { PreviewController.applyChanges() } },
                     onDiscard = { scope.launch { PreviewController.discardChanges() } },
                     modifier = Modifier
@@ -363,6 +365,11 @@ fun HomeScreen(
         AppSnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
+        LoadingOverlay(
+            visible = isApplying,
+            text = stringResource(R.string.preview_applying)
         )
     }
 }
