@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.activities
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -60,6 +61,8 @@ class SplashActivity : AppCompatActivity() {
                         putExtra("success", success.get())
                         intent.data?.let { uri ->
                             putExtra("data", uri)
+                            clipData = ClipData.newRawUri(null, uri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             intent.removeExtra("data")
                         }
                     }
