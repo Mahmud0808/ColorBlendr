@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +49,15 @@ fun SwitchItem(
     isMasterSwitch: Boolean = false,
     position: WidgetPosition = WidgetPosition.Single
 ) {
+    val haptics = LocalHapticFeedback.current
+
+    fun toggle(newValue: Boolean) {
+        haptics.performHapticFeedback(
+            if (newValue) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
+        )
+        onCheckedChange(newValue)
+    }
+
     val masterBackground = if (checked) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
@@ -62,7 +73,7 @@ fun SwitchItem(
         SwitchItemContent(
             title = title,
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            onCheckedChange = ::toggle,
             summary = when {
                 summaryOn != null && summaryOff != null -> if (checked) summaryOn else summaryOff
                 else -> summary
@@ -82,7 +93,7 @@ fun SwitchItem(
             bottomMargin = dimensionResource(R.dimen.container_margin_bottom) * 2,
             backgroundColor = masterBackground,
             enabled = enabled,
-            onClick = { onCheckedChange(!checked) },
+            onClick = { toggle(!checked) },
             modifier = modifier,
             content = content
         )
@@ -90,7 +101,7 @@ fun SwitchItem(
         PositionedCard(
             position = position,
             enabled = enabled,
-            onClick = { onCheckedChange(!checked) },
+            onClick = { toggle(!checked) },
             modifier = modifier,
             content = content
         )

@@ -30,7 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,6 +70,7 @@ import android.R as AndroidR
 @Composable
 fun StylesScreen(stylesViewModel: StylesViewModel) {
     val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val toolbarLifted by remember {
@@ -157,6 +160,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                                 style.customStyle.styleId == selectedCustomStyle
                             },
                             onSelect = {
+                                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
                                 if (style.customStyle == null) {
                                     selectedStyle = style.monetStyle
                                     selectedCustomStyle = null

@@ -1,7 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,10 +18,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +71,14 @@ fun SelectableCard(
     }
     val strokeWidth = with(LocalDensity.current) { 2.toDp() }
 
+    val haptics = LocalHapticFeedback.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f,
+        label = "selectableCardPress"
+    )
+
     Surface(
         shape = RoundedCornerShape(topRadius, topRadius, bottomRadius, bottomRadius),
         color = if (selected) {
@@ -75,10 +91,20 @@ fun SelectableCard(
         } else {
             BorderStroke(strokeWidth, AppCardDefaults.outlinedBorder().brush)
         },
-        onClick = { if (!selected) onSelect() },
+        onClick = {
+            if (!selected) {
+                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                onSelect()
+            }
+        },
+        interactionSource = interactionSource,
         modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = minHeight)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

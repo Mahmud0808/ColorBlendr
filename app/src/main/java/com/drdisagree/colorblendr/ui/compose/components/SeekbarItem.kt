@@ -31,6 +31,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +70,7 @@ fun SeekbarItem(
     position: WidgetPosition = WidgetPosition.Single
 ) {
     val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
     val fraction = if (maxValue > minValue) {
         (value.coerceIn(minValue, maxValue) - minValue).toFloat() / (maxValue - minValue)
     } else {
@@ -137,6 +140,7 @@ fun SeekbarItem(
                     if (!enabled) return@pointerInput
                     detectTapGestures(
                         onTap = { offset ->
+                            haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
                             onValueChange(progressAt(offset.x))
                             onValueChangeFinished?.invoke()
                         }
@@ -144,12 +148,23 @@ fun SeekbarItem(
                 }
                 .pointerInput(enabled, minValue, maxValue) {
                     if (!enabled) return@pointerInput
+                    var lastTickBucket = Int.MIN_VALUE
                     detectHorizontalDragGestures(
                         onDragEnd = { onValueChangeFinished?.invoke() },
                         onDragCancel = { onValueChangeFinished?.invoke() }
                     ) { change, _ ->
                         change.consume()
-                        onValueChange(progressAt(change.position.x))
+                        val newValue = progressAt(change.position.x)
+                        val tickBucket = newValue / 10
+                        if (tickBucket != lastTickBucket) {
+                            if (lastTickBucket != Int.MIN_VALUE) {
+                                haptics.performHapticFeedback(
+                                    HapticFeedbackType.SegmentFrequentTick
+                                )
+                            }
+                            lastTickBucket = tickBucket
+                        }
+                        onValueChange(newValue)
                     }
                 }
                 .drawBehind {
@@ -208,6 +223,7 @@ fun SeekbarItem(
                                     ).show()
                                 },
                                 onLongClick = {
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onValueChange(defaultValue)
                                     onReset?.invoke()
                                 }

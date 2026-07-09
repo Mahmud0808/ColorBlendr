@@ -8,10 +8,13 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,7 +48,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -92,6 +98,7 @@ import com.google.android.material.R as MaterialR
 @Composable
 fun PerAppThemeScreen() {
     val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val toolbarLifted by remember {
@@ -188,6 +195,9 @@ fun PerAppThemeScreen() {
 
     fun toggleApp(app: AppInfoModel) {
         val isSelected = selections[app.packageName] == true
+        haptics.performHapticFeedback(
+            if (!isSelected) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
+        )
         selections[app.packageName] = !isSelected
         app.isSelected = !isSelected
 
@@ -303,6 +313,13 @@ private fun AppListItem(
         WidgetPosition.Bottom -> radiusSmall to radius
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f,
+        label = "appItemPress"
+    )
+
     Surface(
         shape = RoundedCornerShape(topRadius, topRadius, bottomRadius, bottomRadius),
         color = if (selected) {
@@ -311,8 +328,13 @@ private fun AppListItem(
             MaterialTheme.colorScheme.surfaceContainer
         },
         onClick = onClick,
+        interactionSource = interactionSource,
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .padding(
                 start = dimensionResource(R.dimen.container_margin_horizontal),
                 end = dimensionResource(R.dimen.container_margin_horizontal),

@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,6 +30,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
@@ -50,6 +52,7 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.ui.compose.views.ColorPreviewCanvas
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import kotlinx.coroutines.Dispatchers
@@ -64,9 +67,9 @@ fun ThemeScreen() {
     val isDark = isSystemInDarkTheme()
     val rootMode = remember { isRootMode() }
 
-    var accentSaturation by remember { mutableIntStateOf(getAccentSaturation()) }
-    var backgroundSaturation by remember { mutableIntStateOf(getBackgroundSaturation()) }
-    var backgroundLightness by remember { mutableIntStateOf(getBackgroundLightness()) }
+    var accentSaturation by rememberPrefState(MONET_ACCENT_SATURATION) { getAccentSaturation() }
+    var backgroundSaturation by rememberPrefState(MONET_BACKGROUND_SATURATION) { getBackgroundSaturation() }
+    var backgroundLightness by rememberPrefState(MONET_BACKGROUND_LIGHTNESS) { getBackgroundLightness() }
 
     var colorPalette by remember {
         mutableStateOf(

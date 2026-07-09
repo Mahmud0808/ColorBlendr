@@ -43,7 +43,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -85,6 +87,7 @@ fun ColorsScreen(
     onNavigateToColorPalette: () -> Unit
 ) {
     val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
@@ -209,7 +212,12 @@ fun ColorsScreen(
                         ) {
                             ToggleButton(
                                 checked = showWallpaperColors,
-                                onCheckedChange = { if (it) showWallpaperColors = true }
+                                onCheckedChange = {
+                                    if (it && !showWallpaperColors) {
+                                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                        showWallpaperColors = true
+                                    }
+                                }
                             ) {
                                 Text(
                                     text = stringResource(R.string.wallpaper_colors),
@@ -218,7 +226,12 @@ fun ColorsScreen(
                             }
                             ToggleButton(
                                 checked = !showWallpaperColors,
-                                onCheckedChange = { if (it) showWallpaperColors = false }
+                                onCheckedChange = {
+                                    if (it && showWallpaperColors) {
+                                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                        showWallpaperColors = false
+                                    }
+                                }
                             ) {
                                 Text(
                                     text = stringResource(R.string.basic_colors),

@@ -16,7 +16,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,6 +88,7 @@ fun SettingsAdvancedScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val haptics = LocalHapticFeedback.current
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
 
@@ -216,6 +219,7 @@ fun SettingsAdvancedScreen(
                             .setTitle(R.string.colorspec_title)
                             .setSingleChoiceItems(colorSpecVersions, currentVersion) { dialog, which ->
                                 if (currentVersion != which) {
+                                    haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                     PreviewController.beginPreview()
                                     resetCustomStyleIfNotNull()
                                     setColorSpecVersion(which)

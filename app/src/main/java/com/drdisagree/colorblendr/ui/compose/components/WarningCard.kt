@@ -14,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +34,8 @@ fun WarningCard(
     modifier: Modifier = Modifier,
     onClose: (() -> Unit)? = null
 ) {
+    val haptics = LocalHapticFeedback.current
+
     Surface(
         shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -55,7 +59,10 @@ fun WarningCard(
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable(onClick = onClose)
+                            .clickable {
+                                haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onClose()
+                            }
                     )
                 }
             }

@@ -3,6 +3,10 @@ package com.drdisagree.colorblendr.ui.compose.screens.palette
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +18,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -25,7 +32,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +74,7 @@ fun ColorPaletteScreen(
     fragmentManager: FragmentManager?
 ) {
     val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
@@ -169,6 +179,7 @@ fun ColorPaletteScreen(
             return
         }
 
+        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         PreviewController.beginPreview()
         resetCustomStyleIfNotNull()
         clearPref(systemPaletteNames[column][row])
@@ -192,18 +203,43 @@ fun ColorPaletteScreen(
                         .verticalScroll(scrollState)
                         .padding(top = 12.dp)
                 ) {
-                    WarningCard(
-                        warningText = stringResource(
-                            if (isOverrideAvailable) {
-                                R.string.color_palette_root_warn
-                            } else {
-                                R.string.color_palette_rootless_warn
+                    // Swipe to dismiss; state is intentionally not persisted,
+                    // the warning returns on the next screen launch.
+                    var warningVisible by remember { mutableStateOf(true) }
+                    AnimatedVisibility(
+                        visible = warningVisible,
+                        exit = shrinkVertically(
+                            animationSpec = tween(durationMillis = 250)
+                        ) + fadeOut()
+                    ) {
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { value ->
+                                if (value != SwipeToDismissBoxValue.Settled) {
+                                    haptics.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                                    warningVisible = false
+                                }
+                                true
                             }
-                        ),
-                        modifier = Modifier.padding(
-                            bottom = dimensionResource(R.dimen.container_margin_bottom)
                         )
-                    )
+
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            backgroundContent = {}
+                        ) {
+                            WarningCard(
+                                warningText = stringResource(
+                                    if (isOverrideAvailable) {
+                                        R.string.color_palette_root_warn
+                                    } else {
+                                        R.string.color_palette_rootless_warn
+                                    }
+                                ),
+                                modifier = Modifier.padding(
+                                    bottom = dimensionResource(R.dimen.container_margin_bottom)
+                                )
+                            )
+                        }
+                    }
                     if (cellColors.isNotEmpty()) {
                         ColorTable(
                             colors = cellColors,

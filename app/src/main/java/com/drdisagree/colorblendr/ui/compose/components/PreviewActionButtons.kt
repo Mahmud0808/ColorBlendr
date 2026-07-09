@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +32,8 @@ fun PreviewActionButtons(
     onDiscard: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val haptics = LocalHapticFeedback.current
+
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically { it * 2 } + fadeIn(),
@@ -41,7 +45,10 @@ fun PreviewActionButtons(
             verticalAlignment = Alignment.CenterVertically
         ) {
             FloatingActionButton(
-                onClick = onDiscard,
+                onClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDiscard()
+                },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer
             ) {
@@ -51,7 +58,10 @@ fun PreviewActionButtons(
                 )
             }
             ExtendedFloatingActionButton(
-                onClick = onApply,
+                onClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                    onApply()
+                },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 icon = {
