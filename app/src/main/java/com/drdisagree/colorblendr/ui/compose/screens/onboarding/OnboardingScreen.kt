@@ -35,7 +35,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -460,16 +461,18 @@ private fun OnboardingPage3() {
                     .height(100.dp)
                     .padding(bottom = 24.dp)
             ) {
-                Icon(
+                Image(
                     painter = painterResource(R.drawable.ic_battery_landscape_bg),
                     contentDescription = null,
-                    tint = batteryBackground,
+                    contentScale = ContentScale.FillHeight,
+                    colorFilter = ColorFilter.tint(batteryBackground),
                     modifier = Modifier.fillMaxHeight()
                 )
-                Icon(
+                Image(
                     painter = painterResource(R.drawable.ic_battery_landscape_fg),
                     contentDescription = null,
-                    tint = batteryForeground,
+                    contentScale = ContentScale.FillHeight,
+                    colorFilter = ColorFilter.tint(batteryForeground),
                     modifier = Modifier.fillMaxHeight()
                 )
             }
