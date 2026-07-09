@@ -1,32 +1,26 @@
 package com.drdisagree.colorblendr.ui.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class SharedViewModel : ViewModel() {
+@HiltViewModel
+class SharedViewModel @Inject constructor() : ViewModel() {
 
-    private val booleanStates: MutableLiveData<MutableMap<String, Boolean>> = MutableLiveData()
-
-    fun getBooleanStates(): LiveData<MutableMap<String, Boolean>> {
-        return booleanStates
-    }
+    private val _booleanStates = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    val booleanStates: StateFlow<Map<String, Boolean>> = _booleanStates.asStateFlow()
 
     fun setBooleanState(viewId: String, state: Boolean) {
-        val currentStates: MutableMap<String, Boolean> = booleanStates.getValue() ?: HashMap()
-        currentStates[viewId] = state
-        booleanStates.value = currentStates
+        _booleanStates.value = _booleanStates.value + (viewId to state)
     }
 
-    private val visibilityStates: MutableLiveData<MutableMap<String, Int>> = MutableLiveData()
-
-    fun getVisibilityStates(): LiveData<MutableMap<String, Int>> {
-        return visibilityStates
-    }
+    private val _visibilityStates = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val visibilityStates: StateFlow<Map<String, Int>> = _visibilityStates.asStateFlow()
 
     fun setVisibilityState(viewId: String, visibility: Int) {
-        val currentStates: MutableMap<String, Int> = visibilityStates.getValue() ?: HashMap()
-        currentStates[viewId] = visibility
-        visibilityStates.value = currentStates
+        _visibilityStates.value = _visibilityStates.value + (viewId to visibility)
     }
 }

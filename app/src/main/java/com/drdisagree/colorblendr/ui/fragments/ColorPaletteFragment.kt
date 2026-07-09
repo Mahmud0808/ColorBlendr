@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
@@ -83,10 +84,11 @@ class ColorPaletteFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel.getBooleanStates()
-            .observe(getViewLifecycleOwner()) { stringBooleanMap: Map<String, Boolean> ->
-                this.updateBooleanStates(stringBooleanMap)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.booleanStates.collect { stringBooleanMap ->
+                updateBooleanStates(stringBooleanMap)
             }
+        }
 
         // Color table preview
         colorPaletteViewModel.colorPalette.observe(viewLifecycleOwner) { palette ->

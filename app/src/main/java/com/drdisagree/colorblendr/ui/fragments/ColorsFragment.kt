@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
@@ -78,10 +79,11 @@ class ColorsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel.getVisibilityStates()
-            .observe(getViewLifecycleOwner()) { visibilityStates: Map<String, Int> ->
-                this.updateViewVisibility(visibilityStates)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.visibilityStates.collect { visibilityStates ->
+                updateViewVisibility(visibilityStates)
             }
+        }
 
         // Inflate color containers
         colorsViewModel.wallpaperColorPalettes.observe(viewLifecycleOwner) { colorPalettes ->
