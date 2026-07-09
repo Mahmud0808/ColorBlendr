@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.compose.screens.home
 
 import android.net.Uri
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -29,10 +30,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,15 +48,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.compose.runtime.saveable.rememberSaveable
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
-import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.navigation.Routes
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
 import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
@@ -329,6 +329,8 @@ fun HomeScreen(
                         },
                         label = { Text(text = stringResource(tab.labelResId)) },
                         onClick = {
+                            if (selected) return@NavigationBarItem
+
                             nestedNavController.navigate(tab.route) {
                                 popUpTo(nestedNavController.graph.findStartDestination().id) {
                                     inclusive = tab.route == Routes.COLORS
