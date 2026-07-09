@@ -1,8 +1,6 @@
 package com.drdisagree.colorblendr.ui.viewmodels
 
 import androidx.core.graphics.toColorInt
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
@@ -18,23 +16,31 @@ import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ColorsViewModel : ViewModel() {
+@HiltViewModel
+class ColorsViewModel @Inject constructor() : ViewModel() {
 
-    private val _wallpaperColors = MutableLiveData<List<Int>>(emptyList())
-    val wallpaperColors: LiveData<List<Int>> = _wallpaperColors
+    private val _wallpaperColors = MutableStateFlow<List<Int>>(emptyList())
+    val wallpaperColors: StateFlow<List<Int>> = _wallpaperColors.asStateFlow()
 
-    private val _basicColors = MutableLiveData<List<Int>>(emptyList())
-    val basicColors: LiveData<List<Int>> = _basicColors
+    private val _basicColors = MutableStateFlow<List<Int>>(emptyList())
+    val basicColors: StateFlow<List<Int>> = _basicColors.asStateFlow()
 
-    private val _wallpaperColorPalettes = MutableLiveData<Map<Int, List<List<Int>>>>(emptyMap())
-    val wallpaperColorPalettes: LiveData<Map<Int, List<List<Int>>>> = _wallpaperColorPalettes
+    private val _wallpaperColorPalettes = MutableStateFlow<Map<Int, List<List<Int>>>>(emptyMap())
+    val wallpaperColorPalettes: StateFlow<Map<Int, List<List<Int>>>> =
+        _wallpaperColorPalettes.asStateFlow()
 
-    private val _basicColorPalettes = MutableLiveData<Map<Int, List<List<Int>>>>(emptyMap())
-    val basicColorPalettes: LiveData<Map<Int, List<List<Int>>>> = _basicColorPalettes
+    private val _basicColorPalettes = MutableStateFlow<Map<Int, List<List<Int>>>>(emptyMap())
+    val basicColorPalettes: StateFlow<Map<Int, List<List<Int>>>> =
+        _basicColorPalettes.asStateFlow()
 
     init {
         refreshData()
@@ -55,12 +61,12 @@ class ColorsViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperColors = getWallpaperColors()
             if (wallpaperColors != _wallpaperColors.value) {
-                _wallpaperColors.postValue(wallpaperColors)
+                _wallpaperColors.value = wallpaperColors
             }
 
             val colorPalettes = loadPreviewColorPalettes(wallpaperColors)
             if (colorPalettes != _wallpaperColorPalettes.value) {
-                _wallpaperColorPalettes.postValue(colorPalettes)
+                _wallpaperColorPalettes.value = colorPalettes
             }
         }
     }
@@ -71,12 +77,12 @@ class ColorsViewModel : ViewModel() {
                 .getStringArray(R.array.basic_color_codes)
                 .map { it.toColorInt() }
             if (basicColors != _basicColors.value) {
-                _basicColors.postValue(basicColors)
+                _basicColors.value = basicColors
             }
 
             val colorPalettes = loadPreviewColorPalettes(basicColors)
             if (colorPalettes != _basicColorPalettes.value) {
-                _basicColorPalettes.postValue(colorPalettes)
+                _basicColorPalettes.value = colorPalettes
             }
         }
     }
