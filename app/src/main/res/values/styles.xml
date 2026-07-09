@@ -25,8 +25,16 @@
         <item name="buttonBarNeutralButtonStyle">@style/DialogNegativeButton</item>
     </style>
 
-    <style name="DialogPositiveButton" parent="Widget.Material3Expressive.Button" />
+    <style name="DialogPositiveButton" parent="Widget.Material3Expressive.Button">
+        <item name="android:minWidth">@dimen/m3_btn_dialog_btn_min_width</item>
+        <item name="android:layout_marginStart">@dimen/m3_btn_dialog_btn_spacing</item>
+        <item name="android:layout_marginLeft">@dimen/m3_btn_dialog_btn_spacing</item>
+    </style>
 
-    <style name="DialogNegativeButton" parent="Widget.Material3Expressive.Button.OutlinedButton" />
+    <style name="DialogNegativeButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
+        <item name="android:minWidth">@dimen/m3_btn_dialog_btn_min_width</item>
+        <item name="android:layout_marginStart">@dimen/m3_btn_dialog_btn_spacing</item>
+        <item name="android:layout_marginLeft">@dimen/m3_btn_dialog_btn_spacing</item>
+    </style>
 
 </resources>

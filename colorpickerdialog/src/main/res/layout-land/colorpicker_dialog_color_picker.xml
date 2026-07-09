@@ -86,7 +86,7 @@
             android:paddingHorizontal="16dp">
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.TextButton"
+                style="@style/Widget.Material3Expressive.Button.OutlinedButton"
                 android:id="@+id/cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,12 +98,12 @@
                 android:text="@android:string/cancel" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.TextButton"
+                style="@style/Widget.Material3Expressive.Button"
                 android:id="@+id/confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="8dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
                 android:minWidth="0dp"
