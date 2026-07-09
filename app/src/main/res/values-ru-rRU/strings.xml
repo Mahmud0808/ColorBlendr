@@ -179,7 +179,7 @@
     <string name="wireless_adb_not_connected">Беспроводной ADB не подключен.</string>
     <!-- Requirements -->
     <string name="root_required">Требуется root</string>
-    <string name="pixel_launcher_required">Требуется программа запуска Pixel</string>
+    <string name="pixel_launcher_required">Требуется Pixel launcher</string>
     <string name="pitch_black_theme_required">Требуется кромешная тьма</string>
     <string name="custom_primary_color_required">Требуется основной пользователь</string>
     <string name="android_13_required">Android 13+</string>
