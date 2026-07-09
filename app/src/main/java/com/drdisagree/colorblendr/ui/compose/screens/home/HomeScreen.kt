@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -38,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavBackStackEntry
@@ -68,8 +68,6 @@ import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.styles.StylesScreen
 import com.drdisagree.colorblendr.ui.compose.screens.theme.ThemeScreen
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
-import com.drdisagree.colorblendr.ui.compose.theme.DecelerateEasing
-import com.drdisagree.colorblendr.ui.compose.theme.shortAnimTime
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
@@ -203,20 +201,24 @@ fun HomeScreen(
         }
     }
 
-    val animTime = shortAnimTime()
+    // M3 Expressive motion: spatial springs for slides, effects springs for
+    // fades — smoother and interruptible compared to the old 200ms tweens.
+    val spatialSpec = MaterialTheme.motionScheme.defaultSpatialSpec<IntOffset>()
+    val scaleSpec = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
+    val effectsSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
 
     fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(pop: Boolean): EnterTransition {
         val fromGroup = tabGroup(initialState.destination.route)
         val toGroup = tabGroup(targetState.destination.route)
         return when {
             fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
-                fadeIn(tween(animTime)) + scaleIn(tween(animTime), initialScale = 0.96f)
+                fadeIn(effectsSpec) + scaleIn(scaleSpec, initialScale = 0.96f)
 
             (toGroup > fromGroup) != pop ->
-                slideInHorizontally(tween(animTime, easing = DecelerateEasing)) { it }
+                slideInHorizontally(spatialSpec) { it }
 
             else ->
-                slideInHorizontally(tween(animTime, easing = DecelerateEasing)) { -it }
+                slideInHorizontally(spatialSpec) { -it }
         }
     }
 
@@ -225,13 +227,13 @@ fun HomeScreen(
         val toGroup = tabGroup(targetState.destination.route)
         return when {
             fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
-                fadeOut(tween(animTime))
+                fadeOut(effectsSpec)
 
             (toGroup > fromGroup) != pop ->
-                slideOutHorizontally(tween(animTime, easing = DecelerateEasing)) { -it }
+                slideOutHorizontally(spatialSpec) { -it }
 
             else ->
-                slideOutHorizontally(tween(animTime, easing = DecelerateEasing)) { it }
+                slideOutHorizontally(spatialSpec) { it }
         }
     }
 

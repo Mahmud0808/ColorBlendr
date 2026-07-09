@@ -2,9 +2,9 @@ package com.drdisagree.colorblendr.ui.compose.navigation
 
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,8 +32,6 @@ import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.ui.compose.screens.home.HomeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.onboarding.OnboardingScreen
 import com.drdisagree.colorblendr.ui.compose.screens.pairing.PairingScreen
-import com.drdisagree.colorblendr.ui.compose.theme.DecelerateEasing
-import com.drdisagree.colorblendr.ui.compose.theme.shortAnimTime
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.SharedViewModel
@@ -59,7 +58,7 @@ fun AppNavHost(
     val activity = LocalActivity.current
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
-    val animTime = shortAnimTime()
+    val spatialSpec = MaterialTheme.motionScheme.defaultSpatialSpec<IntOffset>()
 
     var pendingRestoreUri by remember { mutableStateOf(restoreUri) }
 
@@ -138,16 +137,16 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination,
         enterTransition = {
-            slideInHorizontally(tween(animTime, easing = DecelerateEasing)) { it }
+            slideInHorizontally(spatialSpec) { it }
         },
         exitTransition = {
-            slideOutHorizontally(tween(animTime, easing = DecelerateEasing)) { -it }
+            slideOutHorizontally(spatialSpec) { -it }
         },
         popEnterTransition = {
-            slideInHorizontally(tween(animTime, easing = DecelerateEasing)) { -it }
+            slideInHorizontally(spatialSpec) { -it }
         },
         popExitTransition = {
-            slideOutHorizontally(tween(animTime, easing = DecelerateEasing)) { it }
+            slideOutHorizontally(spatialSpec) { it }
         }
     ) {
         composable(Routes.ONBOARDING) {
