@@ -59,7 +59,11 @@ fun AppNavHost(
     val navController = rememberNavController()
     val spatialSpec = MaterialTheme.motionScheme.defaultSpatialSpec<IntOffset>()
 
-    var pendingRestoreUri by remember { mutableStateOf(restoreUri) }
+    // Saveable so recreation does not re-trigger the restore navigation.
+    var pendingRestoreUri by rememberSaveable { mutableStateOf(restoreUri) }
+
+    // Onboarding hands off with success=true, like the old HomeFragment args.
+    var onboardedSuccess by rememberSaveable { mutableStateOf(false) }
 
     val startDestination = rememberSaveable {
         if (isFirstRun() || isWorkMethodUnknown() || !success) {
@@ -77,6 +81,7 @@ fun AppNavHost(
 
                 setFirstRunCompleted()
                 setWorkingMethod(WORKING_METHOD)
+                onboardedSuccess = true
 
                 navController.navigate(Routes.HOME) {
                     popUpTo(0) { inclusive = true }
@@ -166,7 +171,7 @@ fun AppNavHost(
         }
         composable(Routes.HOME) {
             HomeScreen(
-                success = success,
+                success = success || onboardedSuccess,
                 pendingRestoreUri = pendingRestoreUri,
                 onRestoreUriHandled = { pendingRestoreUri = null },
                 colorsViewModel = colorsViewModel,

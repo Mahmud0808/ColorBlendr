@@ -12,10 +12,15 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.graphics.Insets
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
@@ -26,17 +31,36 @@ import com.drdisagree.colorblendr.data.common.Constant.ADB_IP
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIRING_PORT
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIR_NOTIFICATION
 import com.drdisagree.colorblendr.data.common.Constant.ADB_SEARCH_NOTIFICATION
+import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
+import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
+import com.drdisagree.colorblendr.provider.RootConnectionProvider
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
+import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
+import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
+import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
+import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicBoolean
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -46,17 +70,28 @@ class MainActivity : AppCompatActivity() {
     private val colorsViewModel: ColorsViewModel by viewModels()
     private val stylesViewModel: StylesViewModel by viewModels()
     private val colorPaletteViewModel: ColorPaletteViewModel by viewModels()
+    private var initSuccess by mutableStateOf<Boolean?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        DynamicColors.applyToActivityIfAvailable(this)
         setupEdgeToEdge()
 
-        val success = intent?.getBooleanExtra("success", false) ?: false
-        val restoreUri = intent?.parcelable<Uri>("data")
-        intent?.removeExtra("success")
+        val restoreUri = intent?.data ?: intent?.parcelable<Uri>("data")
         intent?.removeExtra("data")
 
+        splashScreen.setKeepOnScreenCondition { initSuccess == null }
+
+        if (savedInstanceState?.containsKey(KEY_INIT_SUCCESS) == true) {
+            initSuccess = savedInstanceState.getBoolean(KEY_INIT_SUCCESS)
+        } else {
+            bootstrap()
+        }
+
         setContent {
+            val success = initSuccess ?: return@setContent
+
             ColorBlendrTheme {
                 AppNavHost(
                     success = success,
@@ -66,6 +101,96 @@ class MainActivity : AppCompatActivity() {
                     colorPaletteViewModel = colorPaletteViewModel
                 )
             }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        initSuccess?.let { outState.putBoolean(KEY_INIT_SUCCESS, it) }
+    }
+
+    private fun bootstrap() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val success = AtomicBoolean(false)
+            val countDownLatch = CountDownLatch(1)
+
+            handleInitialization(success, countDownLatch)
+
+            try {
+                countDownLatch.await()
+            } catch (_: InterruptedException) {
+            }
+
+            withContext(Dispatchers.Main) {
+                initSuccess = success.get()
+            }
+        }
+    }
+
+    private fun handleInitialization(
+        success: AtomicBoolean,
+        countDownLatch: CountDownLatch
+    ) {
+        if (!isFirstRun() && !isWorkMethodUnknown()) {
+            when {
+                isRootMode() -> {
+                    RootConnectionProvider.builder(applicationContext)
+                        .onSuccess {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                updateWallpaperColorList(applicationContext)
+                                updateFabricatedAppList(applicationContext)
+                                success.set(true)
+                                countDownLatch.countDown()
+                            }
+                        }
+                        .onFailure {
+                            success.set(false)
+                            countDownLatch.countDown()
+                        }
+                        .run()
+                }
+
+                isShizukuMode() -> {
+                    if (isShizukuAvailable && hasShizukuPermission()) {
+                        ShizukuUtil.bindUserService(
+                            getUserServiceArgs(ShizukuConnection::class.java),
+                            ShizukuConnectionProvider.serviceConnection
+                        )
+                        success.set(true)
+                    } else {
+                        success.set(false)
+                    }
+                    countDownLatch.countDown()
+                }
+
+                isWirelessAdbMode() -> {
+                    if (WifiAdbShell.isMyDeviceConnected()) {
+                        success.set(true)
+                        countDownLatch.countDown()
+                    } else {
+                        WifiAdbShell.autoConnect(object : WifiAdbShell.ConnectionListener {
+                            override fun onConnectionSuccess() {
+                                success.set(true)
+                                countDownLatch.countDown()
+                            }
+
+                            override fun onConnectionFailed() {
+                                success.set(false)
+                                countDownLatch.countDown()
+                            }
+                        })
+                    }
+                }
+
+                else -> {
+                    success.set(false)
+                    countDownLatch.countDown()
+                }
+            }
+        } else {
+            success.set(false)
+            countDownLatch.countDown()
         }
     }
 
@@ -162,14 +287,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        if (intent?.getBooleanExtra("success", false) == true) {
-            scheduleJob(applicationContext)
-        }
-    }
-
     override fun onDestroy() {
         cancelTimeout()
 
@@ -187,5 +304,9 @@ class MainActivity : AppCompatActivity() {
             stylesViewModel.refreshData()
             colorPaletteViewModel.refreshData()
         }
+    }
+
+    companion object {
+        private const val KEY_INIT_SUCCESS = "initSuccess"
     }
 }
