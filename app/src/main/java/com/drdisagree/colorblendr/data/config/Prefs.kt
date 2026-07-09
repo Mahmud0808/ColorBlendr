@@ -58,6 +58,12 @@ object Prefs {
     fun String.toPrefs(): Map<String, Any> =
         Constant.GSON.fromJson(this, object : TypeToken<Map<String, Any>>() {}.type)
 
+    fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+
+    fun unregisterChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
+        prefs.unregisterOnSharedPreferenceChangeListener(listener)
+
     fun clearPref(key: String) = editor.remove(key).apply()
 
     fun clearPrefs(vararg keys: String) = keys.forEach { key -> editor.remove(key).apply() }

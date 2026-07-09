@@ -36,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
+import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearOriginalStyleName
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentCustomStyle
@@ -53,6 +55,7 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
@@ -79,8 +82,8 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
     val stylePalettes by stylesViewModel.stylePalettes.collectAsStateWithLifecycle()
 
     val rootMode = remember { isRootMode() }
-    var selectedStyle by remember { mutableStateOf(getCurrentMonetStyle()) }
-    var selectedCustomStyle by remember { mutableStateOf(getCurrentCustomStyle()) }
+    var selectedStyle by rememberPrefState(MONET_STYLE) { getCurrentMonetStyle() }
+    var selectedCustomStyle by rememberPrefState(CUSTOM_MONET_STYLE) { getCurrentCustomStyle() }
     var dialogState by remember { mutableStateOf<StyleDialogState?>(null) }
 
     LaunchedEffect(styleList) {

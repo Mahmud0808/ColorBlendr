@@ -54,6 +54,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
+import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
 import com.drdisagree.colorblendr.data.common.Utilities.getAppListFilteringMethod
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
@@ -70,6 +71,7 @@ import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
@@ -101,7 +103,7 @@ fun PerAppThemeScreen() {
     var appList by remember { mutableStateOf<List<AppInfoModel>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var query by remember { mutableStateOf("") }
-    var warningVisible by remember { mutableStateOf(showPerAppThemeWarning()) }
+    var warningVisible by rememberPrefState(SHOW_PER_APP_THEME_WARN) { showPerAppThemeWarning() }
     var reloadTrigger by remember { mutableIntStateOf(0) }
     val selections = remember { mutableStateMapOf<String, Boolean>() }
     val selectedApps = remember { HashMap<String, Boolean>() }

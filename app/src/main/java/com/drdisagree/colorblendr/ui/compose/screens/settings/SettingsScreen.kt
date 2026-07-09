@@ -40,6 +40,14 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
+import com.drdisagree.colorblendr.data.common.Constant.MANUAL_OVERRIDE_COLORS
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
+import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -73,6 +81,7 @@ import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -101,18 +110,20 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val rootMode = remember { isRootMode() }
-    var masterChecked by remember {
-        mutableStateOf(
-            (isThemingEnabled() && isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM))
-                    || isShizukuThemingEnabled()
-                    || isWirelessAdbThemingEnabled()
-        )
+    var masterChecked by rememberPrefState(
+        THEMING_ENABLED,
+        SHIZUKU_THEMING_ENABLED,
+        WIRELESS_ADB_THEMING_ENABLED
+    ) {
+        (isThemingEnabled() && isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM))
+                || isShizukuThemingEnabled()
+                || isWirelessAdbThemingEnabled()
     }
-    var accurateShades by remember { mutableStateOf(accurateShadesEnabled()) }
-    var pitchBlack by remember { mutableStateOf(pitchBlackThemeEnabled()) }
-    var customPrimaryColor by remember { mutableStateOf(customColorEnabled()) }
-    var tintTextColor by remember { mutableStateOf(tintedTextEnabled()) }
-    var overrideManually by remember { mutableStateOf(manualColorOverrideEnabled()) }
+    var accurateShades by rememberPrefState(MONET_ACCURATE_SHADES) { accurateShadesEnabled() }
+    var pitchBlack by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
+    var customPrimaryColor by rememberPrefState(MONET_SEED_COLOR_ENABLED) { customColorEnabled() }
+    var tintTextColor by rememberPrefState(TINT_TEXT_COLOR) { tintedTextEnabled() }
+    var overrideManually by rememberPrefState(MANUAL_OVERRIDE_COLORS) { manualColorOverrideEnabled() }
     var overflowExpanded by remember { mutableStateOf(false) }
 
     val backupSuccessText = stringResource(R.string.backup_success)

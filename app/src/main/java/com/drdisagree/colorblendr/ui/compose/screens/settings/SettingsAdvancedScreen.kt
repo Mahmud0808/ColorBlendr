@@ -11,8 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -25,7 +23,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
+import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
+import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
+import com.drdisagree.colorblendr.data.common.Constant.MONET_SECONDARY_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
+import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
@@ -59,6 +66,7 @@ import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -81,17 +89,17 @@ fun SettingsAdvancedScreen(
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
 
     val rootMode = remember { isRootMode() }
-    val customColor = remember { customColorEnabled() }
+    val customColor by rememberPrefState(MONET_SEED_COLOR_ENABLED) { customColorEnabled() }
     val hasPixelLauncher = remember { SystemUtil.isAppInstalled(PIXEL_LAUNCHER) }
-    val pitchBlackEnabled = remember { pitchBlackThemeEnabled() }
+    val pitchBlackEnabled by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
 
-    var secondaryColor by remember { mutableIntStateOf(getSecondaryColorValue()) }
-    var tertiaryColor by remember { mutableIntStateOf(getTertiaryColorValue()) }
-    var screenOffUpdate by remember { mutableStateOf(screenOffColorUpdateEnabled()) }
-    var modeSpecificThemes by remember { mutableStateOf(modeSpecificThemesEnabled()) }
-    var darkerIcons by remember { mutableStateOf(darkerLauncherIconsEnabled()) }
-    var semiTransparentIcons by remember { mutableStateOf(semiTransparentLauncherIconsEnabled()) }
-    var pitchBlackWorkaround by remember { mutableStateOf(forcePitchBlackSettingsEnabled()) }
+    var secondaryColor by rememberPrefState(MONET_SECONDARY_COLOR) { getSecondaryColorValue() }
+    var tertiaryColor by rememberPrefState(MONET_TERTIARY_COLOR) { getTertiaryColorValue() }
+    var screenOffUpdate by rememberPrefState(SCREEN_OFF_UPDATE_COLORS) { screenOffColorUpdateEnabled() }
+    var modeSpecificThemes by rememberPrefState(MODE_SPECIFIC_THEMES) { modeSpecificThemesEnabled() }
+    var darkerIcons by rememberPrefState(DARKER_LAUNCHER_ICONS) { darkerLauncherIconsEnabled() }
+    var semiTransparentIcons by rememberPrefState(SEMI_TRANSPARENT_LAUNCHER_ICONS) { semiTransparentLauncherIconsEnabled() }
+    var pitchBlackWorkaround by rememberPrefState(FORCE_PITCH_BLACK_SETTINGS) { forcePitchBlackSettingsEnabled() }
 
     fun updateColors() {
         scope.launch {
