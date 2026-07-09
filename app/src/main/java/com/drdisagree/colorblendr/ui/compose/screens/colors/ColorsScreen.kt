@@ -317,6 +317,8 @@ fun ColorsScreen(
     }
 }
 
+
+@Suppress("ViewModelConstructorInComposable")
 @Preview
 @Composable
 private fun ColorsScreenPreview() {

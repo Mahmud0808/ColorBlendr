@@ -31,9 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearOriginalStyleName
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentCustomStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
@@ -49,6 +51,7 @@ import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
+import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
@@ -301,6 +304,17 @@ private fun StyleListItem(
             onEdit = onEdit,
             onUpdate = onUpdate,
             onDelete = onDelete
+        )
+    }
+}
+
+@Suppress("ViewModelConstructorInComposable")
+@Preview
+@Composable
+private fun StylesScreenPreview() {
+    ColorBlendrTheme {
+        StylesScreen(
+            stylesViewModel = StylesViewModel(Utilities.getCustomStyleRepository())
         )
     }
 }

@@ -232,6 +232,8 @@ fun ColorPaletteScreen(
     }
 }
 
+
+@Suppress("ViewModelConstructorInComposable")
 @Preview
 @Composable
 private fun ColorPaletteScreenPreview() {

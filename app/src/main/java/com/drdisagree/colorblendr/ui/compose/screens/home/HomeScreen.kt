@@ -39,6 +39,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavBackStackEntry
@@ -50,6 +51,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
@@ -65,6 +67,7 @@ import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsAdvancedSc
 import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.styles.StylesScreen
 import com.drdisagree.colorblendr.ui.compose.screens.theme.ThemeScreen
+import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.DecelerateEasing
 import com.drdisagree.colorblendr.ui.compose.theme.shortAnimTime
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
@@ -350,5 +353,22 @@ fun HomeScreen(
                 actionColor = MaterialTheme.colorScheme.primary
             )
         }
+    }
+}
+
+@Suppress("ViewModelConstructorInComposable")
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    ColorBlendrTheme {
+        HomeScreen(
+            success = true,
+            pendingRestoreUri = null,
+            onRestoreUriHandled = {},
+            colorsViewModel = ColorsViewModel(),
+            stylesViewModel = StylesViewModel(Utilities.getCustomStyleRepository()),
+            colorPaletteViewModel = ColorPaletteViewModel(),
+            sharedViewModel = SharedViewModel()
+        )
     }
 }
