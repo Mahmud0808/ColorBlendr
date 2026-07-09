@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.platform.LocalContext
@@ -60,7 +61,7 @@ fun AppNavHost(
 
     var pendingRestoreUri by remember { mutableStateOf(restoreUri) }
 
-    val startDestination = remember {
+    val startDestination = rememberSaveable {
         if (isFirstRun() || isWorkMethodUnknown() || !success) {
             Routes.ONBOARDING
         } else {

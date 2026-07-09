@@ -21,11 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -110,19 +111,23 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
         }
     }
 
-    // Mirrors HideViewOnScrollBehavior: FAB hides while scrolling down.
-    var previousIndex by remember { mutableIntStateOf(0) }
-    var previousOffset by remember { mutableIntStateOf(0) }
-    val scrollingDown by remember {
-        derivedStateOf {
-            val down = if (listState.firstVisibleItemIndex != previousIndex) {
-                listState.firstVisibleItemIndex > previousIndex
-            } else {
-                listState.firstVisibleItemScrollOffset > previousOffset
+    var fabHidden by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(listState) {
+        var previousIndex = listState.firstVisibleItemIndex
+        var previousOffset = listState.firstVisibleItemScrollOffset
+
+        snapshotFlow {
+            listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+        }.collect { (index, offset) ->
+            if (listState.isScrollInProgress) {
+                fabHidden = if (index != previousIndex) {
+                    index > previousIndex
+                } else {
+                    offset > previousOffset
+                }
             }
-            previousIndex = listState.firstVisibleItemIndex
-            previousOffset = listState.firstVisibleItemScrollOffset
-            down
+            previousIndex = index
+            previousOffset = offset
         }
     }
 
@@ -209,7 +214,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
             }
 
             AnimatedVisibility(
-                visible = rootMode && dialogState == null && !scrollingDown,
+                visible = rootMode && dialogState == null && !fabHidden,
                 enter = scaleIn(),
                 exit = scaleOut(),
                 modifier = Modifier

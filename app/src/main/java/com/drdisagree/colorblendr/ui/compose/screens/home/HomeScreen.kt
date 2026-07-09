@@ -26,7 +26,9 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -110,7 +112,13 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val backStackEntry by nestedNavController.currentBackStackEntryAsState()
-    val currentGroup = tabGroup(backStackEntry?.destination?.route)
+
+    var lastGroup by rememberSaveable { mutableIntStateOf(1) }
+    val routeGroup = tabGroup(backStackEntry?.destination?.route)
+    val currentGroup = if (routeGroup != 0) routeGroup else lastGroup
+    SideEffect {
+        if (routeGroup != 0) lastGroup = routeGroup
+    }
 
     val permissionMustBeGrantedText = stringResource(R.string.permission_must_be_granted)
     val fileAccessText = stringResource(R.string.file_access_permission_required)
