@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color as AndroidColor
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
@@ -45,6 +48,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentManager
@@ -218,6 +222,20 @@ fun ColorsScreen(
                             }
                         }
 
+                        val gridFadeSpec =
+                            MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
+                        val gridSizeSpec =
+                            MaterialTheme.motionScheme.defaultSpatialSpec<IntSize>()
+
+                        AnimatedContent(
+                            targetState = showWallpaperColors,
+                            transitionSpec = {
+                                fadeIn(gridFadeSpec)
+                                    .togetherWith(fadeOut(gridFadeSpec))
+                                    .using(SizeTransform(clip = true) { _, _ -> gridSizeSpec })
+                            },
+                            label = "colorGrid"
+                        ) { showWallpaper ->
                         FlowRow(
                             horizontalArrangement = Arrangement.Center,
                             modifier = Modifier
@@ -229,13 +247,13 @@ fun ColorsScreen(
                                     bottom = 24.dp
                                 )
                         ) {
-                            val colors = if (showWallpaperColors) wallpaperColors else basicColors
-                            val palettes = if (showWallpaperColors) wallpaperPalettes else basicPalettes
+                            val colors = if (showWallpaper) wallpaperColors else basicColors
+                            val palettes = if (showWallpaper) wallpaperPalettes else basicPalettes
 
                             colors.forEach { color ->
                                 val palette = palettes[color]
                                 val selected = color == seedColor &&
-                                        if (showWallpaperColors) !customColor else true
+                                        if (showWallpaper) !customColor else true
 
                                 if (palette != null) {
                                     val textColor = calculateTextColor(color)
@@ -252,7 +270,7 @@ fun ColorsScreen(
                                         ),
                                         selected = selected,
                                         onClick = {
-                                            applyColor(color, showWallpaperColors, selected)
+                                            applyColor(color, showWallpaper, selected)
                                         },
                                         modifier = Modifier
                                             .padding(12.dp)
@@ -260,6 +278,7 @@ fun ColorsScreen(
                                     )
                                 }
                             }
+                        }
                         }
                     }
                 }
