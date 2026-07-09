@@ -11,11 +11,22 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+
+// Tracks whether any snackbar is currently shown, so overlapping UI (e.g.
+// the preview apply/discard buttons) can move out of the way.
+object SnackbarVisibility {
+    var count by mutableIntStateOf(0)
+    val visible: Boolean get() = count > 0
+}
 
 // Snackbar host matching the old SnackBarStyle theme styles, dismissable by
 // swiping horizontally.
@@ -24,6 +35,16 @@ fun AppSnackbarHost(
     hostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
+    val currentData = hostState.currentSnackbarData
+    DisposableEffect(currentData) {
+        if (currentData != null) {
+            SnackbarVisibility.count++
+            onDispose { SnackbarVisibility.count-- }
+        } else {
+            onDispose { }
+        }
+    }
+
     SnackbarHost(hostState = hostState, modifier = modifier) { data ->
         key(data) {
             val dismissState = rememberSwipeToDismissBoxState(

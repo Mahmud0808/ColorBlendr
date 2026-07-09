@@ -37,6 +37,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
@@ -46,6 +47,7 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
+import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
@@ -57,6 +59,8 @@ import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CountDownLatch
@@ -87,6 +91,17 @@ class MainActivity : AppCompatActivity() {
             initSuccess = savedInstanceState.getBoolean(KEY_INIT_SUCCESS)
         } else {
             bootstrap()
+        }
+
+        // View-based UI (MDC dialogs, color picker) follows the preview via
+        // runtime resource overrides.
+        lifecycleScope.launch {
+            PreviewController.previewColors.collectLatest { preview ->
+                // Debounced: rebuilding the resources table on every slider
+                // tick is expensive and dialogs only need the settled value.
+                if (preview != null) delay(150)
+                PreviewResourcesOverride.apply(this@MainActivity, preview)
+            }
         }
 
         setContent {

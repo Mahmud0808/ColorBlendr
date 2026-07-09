@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,8 +48,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentCustomStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setOriginalStyleName
-import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -60,11 +61,8 @@ import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
-import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import android.R as AndroidR
 
 @Composable
@@ -101,12 +99,16 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
 
     fun applyColorScheme() {
         scope.launch {
-            updateColorAppliedTimestamp()
-            withContext(Dispatchers.IO) {
-                applyFabricatedColors()
-            }
+            PreviewController.updatePreview()
         }
     }
+
+    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val fabBottomPadding by animateDpAsState(
+        targetValue = if (previewColors != null) 84.dp else 12.dp,
+        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+        label = "fabPreviewPush"
+    )
 
     var fabHidden by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(listState) {
@@ -159,6 +161,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                                     selectedStyle = style.monetStyle
                                     selectedCustomStyle = null
                                     scope.launch {
+                                        PreviewController.beginPreview()
                                         setCurrentMonetStyle(style.monetStyle)
                                         resetCustomStyle()
                                         setOriginalStyleName(style.titleResId.getStyleNameForRootless())
@@ -167,6 +170,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                                 } else {
                                     selectedCustomStyle = style.customStyle.styleId
                                     scope.launch {
+                                        PreviewController.beginPreview()
                                         BackupRestore.restorePrefsMap(style.customStyle.prefsGson.toPrefs())
                                         setCurrentCustomStyle(style.customStyle.styleId)
                                         clearOriginalStyleName()
@@ -216,7 +220,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 exit = scaleOut(),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 12.dp)
+                    .padding(end = 16.dp, bottom = fabBottomPadding)
             ) {
                 FloatingActionButton(
                     onClick = { dialogState = StyleDialogState() },

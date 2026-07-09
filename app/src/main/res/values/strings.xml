@@ -234,4 +234,6 @@
     <string name="submit">Submit</string>
     <string name="close">Close</string>
     <string name="ok">OK</string>
+    <string name="preview_apply">Apply</string>
+    <string name="preview_discard">Discard changes</string>
 </resources>

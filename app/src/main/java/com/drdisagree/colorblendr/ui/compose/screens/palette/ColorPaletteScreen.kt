@@ -15,6 +15,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,10 +37,11 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
-import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
+import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
@@ -50,11 +52,8 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
@@ -76,6 +75,12 @@ fun ColorPaletteScreen(
     val isOverrideAvailable = remember { isRootMode() && manualColorOverrideEnabled() }
     var overrideRevision by remember { mutableIntStateOf(0) }
 
+    // Re-merge override prefs when a preview is discarded (or anything else
+    // refreshes the data), since the staged overrides are gone by then.
+    LaunchedEffect(Unit) {
+        RefreshCoordinator.refreshEvent.collect { overrideRevision++ }
+    }
+
     val cellColors = remember(colorPalette, overrideRevision) {
         colorPalette.mapIndexed { column, colors ->
             colors.mapIndexed { row, color ->
@@ -87,11 +92,7 @@ fun ColorPaletteScreen(
 
     fun updateColors(delayMillis: Long) {
         scope.launch {
-            updateColorAppliedTimestamp()
-            delay(delayMillis)
-            withContext(Dispatchers.IO) {
-                applyFabricatedColors()
-            }
+            PreviewController.updatePreview()
             colorPaletteViewModel.refreshData()
             overrideRevision++
         }
@@ -104,13 +105,18 @@ fun ColorPaletteScreen(
 
     fun showOverridePicker(column: Int, row: Int, currentColor: Int) {
         val manager = fragmentManager ?: return
+        // Resolve the (possibly staged) override at open time so the picker
+        // always seeds the color currently shown in the table.
+        val initialColor = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
+            .takeIf { it != Int.MIN_VALUE } ?: currentColor
         ColorPickerDialog()
             .withCornerRadius(24f)
-            .withColor(currentColor)
+            .withColor(initialColor)
             .withAlphaEnabled(false)
             .withPicker(ImagePickerView::class.java)
             .withListener { _: ColorPickerDialog?, color: Int ->
-                if (currentColor != color) {
+                if (initialColor != color) {
+                    PreviewController.beginPreview()
                     resetCustomStyleIfNotNull()
                     putInt(systemPaletteNames[column][row], color)
                     updateColors(200)
@@ -163,6 +169,7 @@ fun ColorPaletteScreen(
             return
         }
 
+        PreviewController.beginPreview()
         resetCustomStyleIfNotNull()
         clearPref(systemPaletteNames[column][row])
         updateColors(0)

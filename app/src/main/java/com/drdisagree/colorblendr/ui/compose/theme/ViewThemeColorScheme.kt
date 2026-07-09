@@ -7,9 +7,13 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.google.android.material.color.MaterialColors
 import android.R as AndroidR
 import androidx.appcompat.R as AppCompatR
@@ -19,6 +23,9 @@ import com.google.android.material.R as MaterialR
 // so Compose and remaining views read identical colors on every API level.
 @Composable
 fun viewThemeColorScheme(): ColorScheme {
+    // Re-resolve when the preview resources loader is added or removed.
+    PreviewResourcesOverride.revision
+
     val context = LocalContext.current
     val base = if (isSystemInDarkTheme()) {
         dynamicDarkColorScheme(context)
@@ -69,5 +76,38 @@ private fun Context.themeColor(@AttrRes attr: Int): Color =
     Color(MaterialColors.getColor(this, attr, Color.Magenta.toArgb()))
 
 // For legacy MDC attrs with no ColorScheme slot (e.g. colorPrimaryVariant).
+// Preview-aware: while color changes are being previewed, resolves from the
+// locally computed role map instead of the applied overlay.
 @Composable
-fun themeAttrColor(@AttrRes attr: Int): Color = LocalContext.current.themeColor(attr)
+fun themeAttrColor(@AttrRes attr: Int): Color {
+    PreviewResourcesOverride.revision
+
+    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val isDark = isSystemInDarkTheme()
+
+    return previewColors?.let { previewAttrColor(attr, it, isDark) }
+        ?: LocalContext.current.themeColor(attr)
+}
+
+private fun previewAttrColor(
+    @AttrRes attr: Int,
+    previewColors: PreviewController.PreviewColors,
+    isDark: Boolean
+): Color? {
+    val map = if (isDark) previewColors.darkMap else previewColors.lightMap
+    val suffix = if (isDark) "_dark" else "_light"
+
+    // Theme.Material3 resolves colorPrimaryVariant to colorPrimary; the M3
+    // text colors are selectors over colorOnSurface(Variant), which is also
+    // what colorControlNormal falls back to.
+    val roleName = when (attr) {
+        MaterialR.attr.colorPrimaryVariant -> "primary"
+        AndroidR.attr.textColorPrimary -> "on_surface"
+        AndroidR.attr.textColorSecondary,
+        AppCompatR.attr.colorControlNormal -> "on_surface_variant"
+
+        else -> return null
+    }
+
+    return map["system_$roleName$suffix"]?.let { Color(it) }
+}

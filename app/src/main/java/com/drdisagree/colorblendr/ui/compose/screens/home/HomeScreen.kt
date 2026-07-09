@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -41,7 +43,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -54,9 +58,12 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
+import com.drdisagree.colorblendr.ui.compose.components.PreviewActionButtons
+import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.navigation.Routes
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
@@ -98,6 +105,7 @@ fun HomeScreen(
 
     val backStackEntry by nestedNavController.currentBackStackEntryAsState()
 
+    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
     var lastGroup by rememberSaveable { mutableIntStateOf(1) }
     val routeGroup = tabGroup(backStackEntry?.destination?.route)
     val currentGroup = if (routeGroup != 0) routeGroup else lastGroup
@@ -232,78 +240,94 @@ fun HomeScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            NavHost(
-                navController = nestedNavController,
-                startDestination = Routes.COLORS,
-                enterTransition = { enter() },
-                exitTransition = { exit() },
-                popEnterTransition = { enter() },
-                popExitTransition = { exit() },
-                modifier = Modifier.weight(1f)
-            ) {
-                composable(Routes.COLORS) {
-                    LaunchedEffect(Unit) {
-                        if (isShizukuMode()) {
-                            clearAllOverriddenColors()
+            Box(modifier = Modifier.weight(1f)) {
+                NavHost(
+                    navController = nestedNavController,
+                    startDestination = Routes.COLORS,
+                    enterTransition = { enter() },
+                    exitTransition = { exit() },
+                    popEnterTransition = { enter() },
+                    popExitTransition = { exit() },
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    composable(Routes.COLORS) {
+                        LaunchedEffect(Unit) {
+                            if (isShizukuMode()) {
+                                clearAllOverriddenColors()
+                            }
                         }
+                        ColorsScreen(
+                            colorsViewModel = colorsViewModel,
+                            fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
+                            onNavigateToColorPalette = {
+                                nestedNavController.navigate(Routes.COLOR_PALETTE)
+                            }
+                        )
                     }
-                    ColorsScreen(
-                        colorsViewModel = colorsViewModel,
-                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
-                        onNavigateToColorPalette = {
-                            nestedNavController.navigate(Routes.COLOR_PALETTE)
-                        }
-                    )
-                }
-                composable(Routes.THEME) { ThemeScreen() }
-                composable(Routes.STYLES) {
-                    StylesScreen(stylesViewModel = stylesViewModel)
-                }
-                composable(
-                    route = Routes.SETTINGS,
-                    arguments = listOf(
-                        navArgument("restoreUri") {
-                            nullable = true
-                            defaultValue = null
-                        }
-                    )
-                ) { entry ->
-                    var restoreConsumed by rememberSaveable { mutableStateOf(false) }
-                    val restoreUriArg = entry.arguments?.getString("restoreUri")
+                    composable(Routes.THEME) { ThemeScreen() }
+                    composable(Routes.STYLES) {
+                        StylesScreen(stylesViewModel = stylesViewModel)
+                    }
+                    composable(
+                        route = Routes.SETTINGS,
+                        arguments = listOf(
+                            navArgument("restoreUri") {
+                                nullable = true
+                                defaultValue = null
+                            }
+                        )
+                    ) { entry ->
+                        var restoreConsumed by rememberSaveable { mutableStateOf(false) }
+                        val restoreUriArg = entry.arguments?.getString("restoreUri")
 
-                    SettingsScreen(
-                        restoreUri = if (!restoreConsumed) {
-                            restoreUriArg?.let { Uri.parse(it) }
-                        } else {
-                            null
-                        },
-                        onRestoreUriConsumed = { restoreConsumed = true },
-                        onNavigateToAbout = { nestedNavController.navigate(Routes.ABOUT) },
-                        onNavigateToAdvanced = {
-                            nestedNavController.navigate(Routes.SETTINGS_ADVANCED)
-                        },
-                        onNavigateToPrivacyPolicy = {
-                            nestedNavController.navigate(Routes.PRIVACY_POLICY)
-                        }
-                    )
+                        SettingsScreen(
+                            restoreUri = if (!restoreConsumed) {
+                                restoreUriArg?.let { Uri.parse(it) }
+                            } else {
+                                null
+                            },
+                            onRestoreUriConsumed = { restoreConsumed = true },
+                            onNavigateToAbout = { nestedNavController.navigate(Routes.ABOUT) },
+                            onNavigateToAdvanced = {
+                                nestedNavController.navigate(Routes.SETTINGS_ADVANCED)
+                            },
+                            onNavigateToPrivacyPolicy = {
+                                nestedNavController.navigate(Routes.PRIVACY_POLICY)
+                            }
+                        )
+                    }
+                    composable(Routes.COLOR_PALETTE) {
+                        ColorPaletteScreen(
+                            colorPaletteViewModel = colorPaletteViewModel,
+                            fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
+                        )
+                    }
+                    composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
+                    composable(Routes.SETTINGS_ADVANCED) {
+                        SettingsAdvancedScreen(
+                            fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
+                            onNavigateToPerAppTheme = {
+                                nestedNavController.navigate(Routes.PER_APP_THEME)
+                            }
+                        )
+                    }
+                    composable(Routes.ABOUT) { AboutScreen() }
+                    composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
                 }
-                composable(Routes.COLOR_PALETTE) {
-                    ColorPaletteScreen(
-                        colorPaletteViewModel = colorPaletteViewModel,
-                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
-                    )
-                }
-                composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
-                composable(Routes.SETTINGS_ADVANCED) {
-                    SettingsAdvancedScreen(
-                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
-                        onNavigateToPerAppTheme = {
-                            nestedNavController.navigate(Routes.PER_APP_THEME)
-                        }
-                    )
-                }
-                composable(Routes.ABOUT) { AboutScreen() }
-                composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
+
+                val fabBottomPadding by animateDpAsState(
+                    targetValue = if (SnackbarVisibility.visible) 76.dp else 12.dp,
+                    animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+                    label = "previewFabSnackbarPush"
+                )
+                PreviewActionButtons(
+                    visible = previewColors != null,
+                    onApply = { scope.launch { PreviewController.applyChanges() } },
+                    onDiscard = { scope.launch { PreviewController.discardChanges() } },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = fabBottomPadding)
+                )
             }
 
             NavigationBar(modifier = Modifier.fillMaxWidth()) {

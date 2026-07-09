@@ -110,20 +110,22 @@ object FabricatedUtil {
         resourceName: String,
         colorValue: Int
     ) {
+        setColor(resourceName, computeTintlessFrameworkTextColor(resourceName, colorValue))
+    }
+
+    fun computeTintlessFrameworkTextColor(resourceName: String, colorValue: Int): Int {
         val isDark = resourceName.endsWith("_dark")
         val isLight = resourceName.endsWith("_light")
         val isError = resourceName.contains("on_error")
         val isErrorContainer = resourceName.contains("on_error_container")
 
-        val adjustedColor = when {
+        return when {
             isDark && (!isError || isErrorContainer) -> Color.WHITE
             isLight && (!isError || isErrorContainer) -> Color.BLACK
             isDark -> Color.BLACK
             isLight -> Color.WHITE
             else -> convertToMonochrome(colorValue)
         }
-
-        setColor(resourceName, adjustedColor)
     }
 
     private fun FabricatedOverlayResource.assignFixedColorsToOverlay(
@@ -240,7 +242,7 @@ object FabricatedUtil {
                 if (selectedApps[packageName] != java.lang.Boolean.TRUE &&
                     isAppInstalled(packageName)
                 ) {
-                    selectedApps.put(packageName, true)
+                    selectedApps[packageName] = true
                 }
             }
         }
@@ -248,7 +250,7 @@ object FabricatedUtil {
         setSelectedFabricatedApps(selectedApps)
     }
 
-    private fun applyColorAdjustments(
+    fun applyColorAdjustments(
         colorMapping: ColorMapping,
         resourceName: String,
         colorValue: Int,

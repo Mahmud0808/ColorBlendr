@@ -71,6 +71,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -134,6 +135,12 @@ fun SettingsScreen(
 
     fun updateColors() {
         scope.launch {
+            PreviewController.updatePreview()
+        }
+    }
+
+    fun applyColorsNow() {
+        scope.launch {
             updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
@@ -171,11 +178,12 @@ fun SettingsScreen(
             .setMessage(context.getString(R.string.confirmation_desc))
             .setPositiveButton(context.getString(AndroidR.string.ok)) { dialog, _ ->
                 dialog.dismiss()
+                PreviewController.abandonPreview()
                 scope.launch(Dispatchers.IO) {
                     val success = uri.restoreDatabaseAndPrefs()
                     withContext(Dispatchers.Main) {
                         if (success) {
-                            updateColors()
+                            applyColorsNow()
                         } else {
                             scope.launch {
                                 val result = snackbarHostState.showSnackbarReplacing(
@@ -307,6 +315,7 @@ fun SettingsScreen(
                         icon = painterResource(R.drawable.ic_service),
                         isMasterSwitch = true,
                         onCheckedChange = { isChecked ->
+                            PreviewController.abandonPreview()
                             masterChecked = isChecked
                             setThemingEnabled(isChecked)
                             setShizukuThemingEnabled(isChecked)
@@ -354,6 +363,7 @@ fun SettingsScreen(
                         position = WidgetPosition.Top,
                         onCheckedChange = { isChecked ->
                             accurateShades = isChecked
+                            PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setAccurateShadesEnabled(isChecked)
                             RefreshCoordinator.triggerRefresh()
@@ -370,6 +380,7 @@ fun SettingsScreen(
                         position = WidgetPosition.Middle,
                         onCheckedChange = { isChecked ->
                             pitchBlack = isChecked
+                            PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setPitchBlackThemeEnabled(isChecked)
                             updateColors()
@@ -383,6 +394,7 @@ fun SettingsScreen(
                         position = WidgetPosition.Middle,
                         onCheckedChange = { isChecked ->
                             customPrimaryColor = isChecked
+                            PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setCustomColorEnabled(isChecked)
                             RefreshCoordinator.triggerRefresh()
@@ -406,6 +418,7 @@ fun SettingsScreen(
                         position = WidgetPosition.Middle,
                         onCheckedChange = { isChecked ->
                             tintTextColor = isChecked
+                            PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setTintedTextEnabled(isChecked)
                             updateColors()
@@ -422,7 +435,9 @@ fun SettingsScreen(
                         onCheckedChange = { isChecked ->
                             if (isChecked) {
                                 overrideManually = true
+                                PreviewController.beginPreview()
                                 setManualColorOverrideEnabled(true)
+                                updateColors()
                             } else {
                                 if (numColorsOverridden() > 5) {
                                     MaterialAlertDialogBuilder(context)
@@ -431,6 +446,7 @@ fun SettingsScreen(
                                         .setPositiveButton(context.getString(AndroidR.string.ok)) { dialog, _ ->
                                             dialog.dismiss()
                                             overrideManually = false
+                                            PreviewController.beginPreview()
                                             setManualColorOverrideEnabled(false)
                                             if (numColorsOverridden() != 0) {
                                                 clearAllOverriddenColors()
@@ -444,6 +460,7 @@ fun SettingsScreen(
                                         .show()
                                 } else {
                                     overrideManually = false
+                                    PreviewController.beginPreview()
                                     setManualColorOverrideEnabled(false)
                                     if (numColorsOverridden() != 0) {
                                         clearAllOverriddenColors()

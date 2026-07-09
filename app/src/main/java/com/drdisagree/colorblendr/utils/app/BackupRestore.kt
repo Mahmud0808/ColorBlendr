@@ -12,6 +12,8 @@ import com.drdisagree.colorblendr.data.common.Constant.SAVED_CUSTOM_MONET_STYLES
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Utilities
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.config.Prefs.getAllPrefs
 import com.drdisagree.colorblendr.data.config.Prefs.preferenceEditor
 import com.drdisagree.colorblendr.data.database.AppDatabase
@@ -92,6 +94,9 @@ object BackupRestore {
     suspend fun Uri.restoreDatabaseAndPrefs(): Boolean {
         return withContext(Dispatchers.IO) {
             try {
+                // A file restore replaces everything; drop any staged preview.
+                PreviewController.abandonPreview()
+
                 val inputStreamLegacy = appContext.contentResolver
                     .openInputStream(this@restoreDatabaseAndPrefs)
 
@@ -226,7 +231,9 @@ object BackupRestore {
                 )?.contains(seedColor) ?: false
             } else false
 
-            preferenceEditor.clear()
+            val staging = Prefs.isStagingActive
+
+            if (staging) Prefs.clearAllPrefs() else preferenceEditor.clear()
 
             /*
              * Migrate previously saved custom styles from preferences to database
@@ -255,22 +262,26 @@ object BackupRestore {
                 newPrefs.remove(SAVED_CUSTOM_MONET_STYLES)
             }
 
+            fun put(key: String, value: Any) {
+                if (staging) Prefs.putAny(key, value) else putObject(key, value)
+            }
+
             // Restore excluded prefs
             for ((key, value) in excludedPrefs) {
-                putObject(key, value)
+                put(key, value)
             }
 
             // Restore non-excluded prefs
             for ((key, value) in newPrefs) {
                 if (EXCLUDED_PREFS_FROM_BACKUP.contains(key)) continue
 
-                putObject(key, value)
+                put(key, value)
             }
 
             // Set basic color if seed color is not listed in wallpaper colors
-            putObject(MONET_SEED_COLOR_ENABLED, !colorAvailable)
+            put(MONET_SEED_COLOR_ENABLED, !colorAvailable)
 
-            preferenceEditor.commit()
+            if (!staging) preferenceEditor.commit()
         }
     }
 

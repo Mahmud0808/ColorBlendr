@@ -62,7 +62,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
@@ -72,11 +73,7 @@ import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewCanvas
 import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewColors
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
-import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 
@@ -123,6 +120,20 @@ fun ColorsScreen(
         }
     }
 
+    // Re-sync local selection state when a preview is discarded (or any other
+    // external pref restore) so the selected tick returns to the saved color.
+    LaunchedEffect(Unit) {
+        RefreshCoordinator.refreshEvent.collect {
+            val customColorPref = customColorEnabled()
+            customColor = customColorPref
+            seedPickerVisible = customColorPref
+            seedColor = getSeedColorValue(0)
+            showWallpaperColors =
+                !customColorPref && getWallpaperColorList().contains(getSeedColorValue())
+            colorsViewModel.refreshData()
+        }
+    }
+
     DisposableEffect(Unit) {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -142,6 +153,7 @@ fun ColorsScreen(
     }
 
     fun applyColor(color: Int, isWallpaperColor: Boolean, alreadySelected: Boolean) {
+        PreviewController.beginPreview()
         if (!alreadySelected) {
             resetCustomStyleIfNotNull()
         }
@@ -154,13 +166,7 @@ fun ColorsScreen(
         seedPickerVisible = !isWallpaperColor
 
         scope.launch {
-            updateColorAppliedTimestamp()
-            withContext(Dispatchers.IO) {
-                try {
-                    applyFabricatedColors()
-                } catch (_: Exception) {
-                }
-            }
+            PreviewController.updatePreview()
         }
     }
 
@@ -305,15 +311,12 @@ fun ColorsScreen(
                                 .withPicker(ImagePickerView::class.java)
                                 .withListener { _: ColorPickerDialog?, color: Int ->
                                     if (seedColor != color) {
+                                        PreviewController.beginPreview()
                                         seedColor = color
                                         setSeedColorValue(color)
 
                                         scope.launch {
-                                            updateColorAppliedTimestamp()
-                                            delay(300)
-                                            withContext(Dispatchers.IO) {
-                                                applyFabricatedColors()
-                                            }
+                                            PreviewController.updatePreview()
                                             colorsViewModel.refreshData()
                                         }
                                     }

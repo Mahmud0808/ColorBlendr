@@ -58,6 +58,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApp
 import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -102,6 +103,12 @@ fun SettingsAdvancedScreen(
     var pitchBlackWorkaround by rememberPrefState(FORCE_PITCH_BLACK_SETTINGS) { forcePitchBlackSettingsEnabled() }
 
     fun updateColors() {
+        scope.launch {
+            PreviewController.updatePreview()
+        }
+    }
+
+    fun applyColorsNow() {
         scope.launch {
             updateColorAppliedTimestamp()
             delay(300)
@@ -160,6 +167,7 @@ fun SettingsAdvancedScreen(
                     onClick = {
                         showColorPicker("secondaryColorPicker", secondaryColor) { color ->
                             if (secondaryColor != color) {
+                                PreviewController.beginPreview()
                                 secondaryColor = color
                                 resetCustomStyleIfNotNull()
                                 setSecondaryColorValue(color)
@@ -183,6 +191,7 @@ fun SettingsAdvancedScreen(
                     onClick = {
                         showColorPicker("tertiaryColorPicker", tertiaryColor) { color ->
                             if (tertiaryColor != color) {
+                                PreviewController.beginPreview()
                                 tertiaryColor = color
                                 resetCustomStyleIfNotNull()
                                 setTertiaryColorValue(color)
@@ -207,6 +216,7 @@ fun SettingsAdvancedScreen(
                             .setTitle(R.string.colorspec_title)
                             .setSingleChoiceItems(colorSpecVersions, currentVersion) { dialog, which ->
                                 if (currentVersion != which) {
+                                    PreviewController.beginPreview()
                                     resetCustomStyleIfNotNull()
                                     setColorSpecVersion(which)
 
@@ -233,7 +243,7 @@ fun SettingsAdvancedScreen(
                         screenOffUpdate = isChecked
                         setScreenOffColorUpdateEnabled(isChecked)
                         if (!isChecked) {
-                            updateColors()
+                            applyColorsNow()
                         }
                     }
                 )
@@ -249,7 +259,7 @@ fun SettingsAdvancedScreen(
                         modeSpecificThemes = isChecked
                         resetCustomStyleIfNotNull()
                         setModeSpecificThemesEnabled(isChecked)
-                        updateColors()
+                        applyColorsNow()
                     }
                 )
 
@@ -281,7 +291,7 @@ fun SettingsAdvancedScreen(
                             savePixelLauncherInPerAppTheme()
                         }
                         setDarkerLauncherIconsEnabled(isChecked)
-                        updateColors()
+                        applyColorsNow()
                     }
                 )
                 SwitchItem(
@@ -302,7 +312,7 @@ fun SettingsAdvancedScreen(
                             savePixelLauncherInPerAppTheme()
                         }
                         setSemiTransparentLauncherIconsEnabled(isChecked)
-                        updateColors()
+                        applyColorsNow()
                     }
                 )
 
@@ -321,7 +331,7 @@ fun SettingsAdvancedScreen(
                         onCheckedChange = { isChecked ->
                             pitchBlackWorkaround = isChecked
                             setForcePitchBlackSettingsEnabled(isChecked)
-                            updateColors()
+                            applyColorsNow()
                         }
                     )
                 }

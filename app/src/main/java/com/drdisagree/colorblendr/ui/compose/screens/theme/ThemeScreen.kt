@@ -15,9 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -43,16 +45,14 @@ import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNul
 import com.drdisagree.colorblendr.data.common.Utilities.setAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.views.ColorPreviewCanvas
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
-import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -68,24 +68,34 @@ fun ThemeScreen() {
     var backgroundSaturation by remember { mutableIntStateOf(getBackgroundSaturation()) }
     var backgroundLightness by remember { mutableIntStateOf(getBackgroundLightness()) }
 
-    val colorPalette = remember(accentSaturation, backgroundSaturation, backgroundLightness) {
-        ColorUtil.generateModifiedColors(
-            getCurrentMonetStyle(),
-            accentSaturation,
-            backgroundSaturation,
-            backgroundLightness,
-            pitchBlackThemeEnabled(),
-            accurateShadesEnabled()
+    var colorPalette by remember {
+        mutableStateOf(
+            ColorUtil.generateModifiedColors(
+                getCurrentMonetStyle(),
+                accentSaturation,
+                backgroundSaturation,
+                backgroundLightness,
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
+            )
         )
+    }
+    LaunchedEffect(accentSaturation, backgroundSaturation, backgroundLightness) {
+        colorPalette = withContext(Dispatchers.Default) {
+            ColorUtil.generateModifiedColors(
+                getCurrentMonetStyle(),
+                accentSaturation,
+                backgroundSaturation,
+                backgroundLightness,
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
+            )
+        }
     }
 
     fun updateColors() {
         scope.launch {
-            updateColorAppliedTimestamp()
-            delay(200)
-            withContext(Dispatchers.IO) {
-                applyFabricatedColors()
-            }
+            PreviewController.updatePreview()
         }
     }
 
@@ -160,13 +170,20 @@ fun ThemeScreen() {
                     title = stringResource(R.string.accent_saturation),
                     value = accentSaturation,
                     enabled = rootMode,
-                    onValueChange = { accentSaturation = it },
+                    onValueChange = {
+                        accentSaturation = it
+                        PreviewController.beginPreview()
+                        setAccentSaturation(it)
+                        PreviewController.updatePreview(refreshOthers = false)
+                    },
                     onValueChangeFinished = {
+                        PreviewController.beginPreview()
                         resetCustomStyleIfNotNull()
                         setAccentSaturation(accentSaturation)
                         updateColors()
                     },
                     onReset = {
+                        PreviewController.beginPreview()
                         resetCustomStyleIfNotNull()
                         accentSaturation = 100
                         resetAccentSaturation()
@@ -177,13 +194,20 @@ fun ThemeScreen() {
                     title = stringResource(R.string.background_saturation),
                     value = backgroundSaturation,
                     enabled = rootMode,
-                    onValueChange = { backgroundSaturation = it },
+                    onValueChange = {
+                        backgroundSaturation = it
+                        PreviewController.beginPreview()
+                        setBackgroundSaturation(it)
+                        PreviewController.updatePreview(refreshOthers = false)
+                    },
                     onValueChangeFinished = {
+                        PreviewController.beginPreview()
                         resetCustomStyleIfNotNull()
                         setBackgroundSaturation(backgroundSaturation)
                         updateColors()
                     },
                     onReset = {
+                        PreviewController.beginPreview()
                         resetCustomStyleIfNotNull()
                         backgroundSaturation = 100
                         resetBackgroundSaturation()
@@ -194,13 +218,20 @@ fun ThemeScreen() {
                     title = stringResource(R.string.background_lightness),
                     value = backgroundLightness,
                     enabled = rootMode,
-                    onValueChange = { backgroundLightness = it },
+                    onValueChange = {
+                        backgroundLightness = it
+                        PreviewController.beginPreview()
+                        setBackgroundLightness(it)
+                        PreviewController.updatePreview(refreshOthers = false)
+                    },
                     onValueChangeFinished = {
+                        PreviewController.beginPreview()
                         resetCustomStyleIfNotNull()
                         setBackgroundLightness(backgroundLightness)
                         updateColors()
                     },
                     onReset = {
+                        PreviewController.beginPreview()
                         resetCustomStyleIfNotNull()
                         backgroundLightness = 100
                         resetBackgroundLightness()
