@@ -85,8 +85,7 @@ import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
 fun ColorsScreen(
     colorsViewModel: ColorsViewModel,
     fragmentManager: FragmentManager?,
-    onNavigateToColorPalette: () -> Unit,
-    onNavigateToPerAppTheme: () -> Unit
+    onNavigateToColorPalette: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -331,15 +330,6 @@ fun ColorsScreen(
                     showEndArrow = true,
                     onClick = onNavigateToColorPalette
                 )
-                MenuItem(
-                    title = stringResource(R.string.force_per_app_theme_title),
-                    summary = stringResource(R.string.force_per_app_theme_desc),
-                    icon = painterResource(R.drawable.ic_app_widgets),
-                    showEndArrow = true,
-                    enabled = rootMode,
-                    disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
-                    onClick = onNavigateToPerAppTheme
-                )
             }
         }
     }
@@ -354,8 +344,7 @@ private fun ColorsScreenPreview() {
         ColorsScreen(
             colorsViewModel = ColorsViewModel(),
             fragmentManager = null,
-            onNavigateToColorPalette = {},
-            onNavigateToPerAppTheme = {}
+            onNavigateToColorPalette = {}
         )
     }
 }

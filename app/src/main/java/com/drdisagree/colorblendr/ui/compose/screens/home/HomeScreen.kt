@@ -252,9 +252,6 @@ fun HomeScreen(
                         fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
                         onNavigateToColorPalette = {
                             nestedNavController.navigate(Routes.COLOR_PALETTE)
-                        },
-                        onNavigateToPerAppTheme = {
-                            nestedNavController.navigate(Routes.PER_APP_THEME)
                         }
                     )
                 }
@@ -299,7 +296,10 @@ fun HomeScreen(
                 composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
                 composable(Routes.SETTINGS_ADVANCED) {
                     SettingsAdvancedScreen(
-                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
+                        fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
+                        onNavigateToPerAppTheme = {
+                            nestedNavController.navigate(Routes.PER_APP_THEME)
+                        }
                     )
                 }
                 composable(Routes.ABOUT) { AboutScreen() }

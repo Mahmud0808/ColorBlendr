@@ -20,9 +20,10 @@ object Routes {
 // Mirrors FragmentUtil group 1-4 mapping used for slide directions and
 // bottom bar highlighting.
 fun tabGroup(route: String?): Int = when (route?.substringBefore("?")) {
-    Routes.COLORS, Routes.PER_APP_THEME, Routes.COLOR_PALETTE -> 1
+    Routes.COLORS, Routes.COLOR_PALETTE -> 1
     Routes.THEME -> 2
     Routes.STYLES -> 3
-    Routes.SETTINGS_BASE, Routes.SETTINGS_ADVANCED, Routes.ABOUT, Routes.PRIVACY_POLICY -> 4
+    Routes.SETTINGS_BASE, Routes.SETTINGS_ADVANCED, Routes.ABOUT, Routes.PRIVACY_POLICY,
+    Routes.PER_APP_THEME -> 4
     else -> 0
 }
