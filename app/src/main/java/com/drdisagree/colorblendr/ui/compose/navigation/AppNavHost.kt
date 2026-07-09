@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.navigation
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +18,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
@@ -32,6 +30,7 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.ui.compose.screens.home.HomeScreen
+import com.drdisagree.colorblendr.ui.compose.screens.onboarding.OnboardingActionState
 import com.drdisagree.colorblendr.ui.compose.screens.onboarding.OnboardingScreen
 import com.drdisagree.colorblendr.ui.compose.screens.pairing.PairingScreen
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
@@ -66,6 +65,10 @@ fun AppNavHost(
     // Onboarding hands off with success=true, like the old HomeFragment args.
     var onboardedSuccess by rememberSaveable { mutableStateOf(false) }
 
+    var onboardingAction by remember {
+        mutableStateOf<OnboardingActionState>(OnboardingActionState.Idle)
+    }
+
     val startDestination = rememberSaveable {
         if (isFirstRun() || isWorkMethodUnknown() || !success) {
             Routes.ONBOARDING
@@ -97,15 +100,22 @@ fun AppNavHost(
     }
 
     fun checkRootConnection() {
+        onboardingAction = OnboardingActionState.Connecting
         RootConnectionProvider
             .builder(context)
             .onSuccess { goToHome() }
+            .onFailure {
+                onboardingAction = OnboardingActionState.Error(
+                    context.getString(R.string.root_service_not_found)
+                )
+            }
             .run()
     }
 
     fun checkShizukuConnection() {
         if (isShizukuAvailable) {
             val fragmentActivity = activity as? FragmentActivity ?: return
+            onboardingAction = OnboardingActionState.Connecting
             requestShizukuPermission(fragmentActivity) { granted ->
                 if (granted) {
                     bindUserService(
@@ -114,31 +124,26 @@ fun AppNavHost(
                     )
                     goToHome()
                 } else {
-                    Toast.makeText(
-                        appContext,
-                        R.string.shizuku_service_not_found,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    onboardingAction = OnboardingActionState.Error(
+                        context.getString(R.string.shizuku_service_not_found)
+                    )
                 }
             }
         } else {
-            Toast.makeText(
-                appContext,
-                R.string.shizuku_service_not_found,
-                Toast.LENGTH_LONG
-            ).show()
+            onboardingAction = OnboardingActionState.Error(
+                context.getString(R.string.shizuku_service_not_found)
+            )
         }
     }
 
     fun checkAdbConnection() {
         if (WifiAdbShell.isMyDeviceConnected()) {
+            onboardingAction = OnboardingActionState.Connecting
             goToHome()
         } else {
-            Toast.makeText(
-                context,
-                R.string.wireless_adb_not_connected,
-                Toast.LENGTH_SHORT
-            ).show()
+            onboardingAction = OnboardingActionState.Error(
+                context.getString(R.string.wireless_adb_not_connected)
+            )
         }
     }
 
@@ -160,6 +165,9 @@ fun AppNavHost(
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
+                actionState = onboardingAction,
+                onError = { onboardingAction = OnboardingActionState.Error(it) },
+                onErrorDismissed = { onboardingAction = OnboardingActionState.Idle },
                 onCheckRootConnection = ::checkRootConnection,
                 onCheckShizukuConnection = ::checkShizukuConnection,
                 onCheckAdbConnection = ::checkAdbConnection,

@@ -9,14 +9,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -31,13 +33,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -82,10 +89,20 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import kotlinx.coroutines.launch
+import android.R as AndroidR
 import com.google.android.material.R as MaterialR
+
+sealed interface OnboardingActionState {
+    data object Idle : OnboardingActionState
+    data object Connecting : OnboardingActionState
+    data class Error(val message: String) : OnboardingActionState
+}
 
 @Composable
 fun OnboardingScreen(
+    actionState: OnboardingActionState,
+    onError: (String) -> Unit,
+    onErrorDismissed: () -> Unit,
     onCheckRootConnection: () -> Unit,
     onCheckShizukuConnection: () -> Unit,
     onCheckAdbConnection: () -> Unit,
@@ -147,24 +164,19 @@ fun OnboardingScreen(
                 }
             }
 
+            val connecting = actionState is OnboardingActionState.Connecting
+
             Button(
                 onClick = {
                     if (pagerState.currentPage == 3) {
                         if (!permissionsGranted(context)) {
-                            Toast.makeText(
-                                context,
-                                R.string.grant_all_permissions,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            onError(context.getString(R.string.grant_all_permissions))
                             return@Button
                         }
 
                         when (WORKING_METHOD) {
-                            WorkMethod.NULL -> Toast.makeText(
-                                context,
-                                R.string.select_method,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            WorkMethod.NULL ->
+                                onError(context.getString(R.string.select_method))
 
                             WorkMethod.ROOT -> onCheckRootConnection()
                             WorkMethod.SHIZUKU -> onCheckShizukuConnection()
@@ -177,20 +189,86 @@ fun OnboardingScreen(
                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     }
                 },
+                enabled = !connecting,
                 shapes = ButtonDefaults.shapes(),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
-                Text(
-                    text = stringResource(
-                        if (pagerState.currentPage == 3) R.string.start else R.string.btn_continue
-                    ),
-                    maxLines = 1
+                AnimatedContent(
+                    targetState = when {
+                        connecting -> ContinueButtonState.LOADING
+                        pagerState.currentPage == 3 -> ContinueButtonState.START
+                        else -> ContinueButtonState.CONTINUE
+                    },
+                    transitionSpec = {
+                        (fadeIn(tween(220)) togetherWith fadeOut(tween(90)))
+                            .using(SizeTransform(clip = false))
+                    },
+                    label = "continueButton"
+                ) { state ->
+                    when (state) {
+                        ContinueButtonState.LOADING -> LoadingIndicator(
+                            modifier = Modifier.size(24.dp)
+                        )
+
+                        ContinueButtonState.START -> Text(
+                            text = stringResource(R.string.start),
+                            maxLines = 1
+                        )
+
+                        ContinueButtonState.CONTINUE -> Text(
+                            text = stringResource(R.string.btn_continue),
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+
+            if (actionState is OnboardingActionState.Error) {
+                OnboardingErrorDialog(
+                    message = actionState.message,
+                    onDismiss = onErrorDismissed
                 )
             }
         }
     }
+}
+
+private enum class ContinueButtonState { CONTINUE, START, LOADING }
+
+@Composable
+private fun OnboardingErrorDialog(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_warning),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        text = {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            OutlinedButton(
+                onClick = onDismiss,
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Text(text = stringResource(AndroidR.string.ok))
+            }
+        }
+    )
 }
 
 // Mirrors the portrait/landscape guideline scaffolds of the onboarding pages.
@@ -428,6 +506,7 @@ private fun OnboardingPage2() {
     }
 }
 
+@Suppress("BatteryLife")
 @Composable
 private fun OnboardingPage3() {
     val context = LocalContext.current
@@ -599,6 +678,9 @@ private fun OnboardingPage4(onNavigateToPairing: () -> Unit) {
 private fun OnboardingScreenPreview() {
     ColorBlendrTheme {
         OnboardingScreen(
+            actionState = OnboardingActionState.Idle,
+            onError = {},
+            onErrorDismissed = {},
             onCheckRootConnection = {},
             onCheckShizukuConnection = {},
             onCheckAdbConnection = {},
