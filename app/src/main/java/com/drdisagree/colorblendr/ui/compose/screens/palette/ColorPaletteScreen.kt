@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -42,7 +40,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimest
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.components.ColorTable
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -130,7 +130,7 @@ fun ColorPaletteScreen(
         val manualOverride = manualColorOverrideEnabled()
 
         scope.launch {
-            val result = snackbarHostState.showSnackbar(
+            val result = snackbarHostState.showSnackbarReplacing(
                 message = context.getString(R.string.color_code, intToHexColor(cellColor)),
                 actionLabel = if (manualOverride) overrideText else copyText,
                 duration = SnackbarDuration.Indefinite
@@ -150,7 +150,7 @@ fun ColorPaletteScreen(
             }
 
             if (row == 0 || row == 12) {
-                snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbarReplacing(
                     message = cannotOverrideText,
                     actionLabel = dismissText,
                     duration = SnackbarDuration.Short
@@ -217,17 +217,10 @@ fun ColorPaletteScreen(
                 }
             }
 
-            SnackbarHost(
+            AppSnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter)
-            ) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    actionColor = MaterialTheme.colorScheme.primary
-                )
-            }
+            )
         }
     }
 }

@@ -20,9 +20,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -70,7 +68,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
@@ -172,7 +172,7 @@ fun SettingsScreen(
                             updateColors()
                         } else {
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
+                                val result = snackbarHostState.showSnackbarReplacing(
                                     message = restoreFailText,
                                     actionLabel = retryText,
                                     duration = SnackbarDuration.Indefinite
@@ -203,12 +203,12 @@ fun SettingsScreen(
                 withContext(Dispatchers.Main) {
                     scope.launch {
                         if (success) {
-                            snackbarHostState.showSnackbar(
+                            snackbarHostState.showSnackbarReplacing(
                                 message = backupSuccessText,
                                 actionLabel = dismissText
                             )
                         } else {
-                            val snackResult = snackbarHostState.showSnackbar(
+                            val snackResult = snackbarHostState.showSnackbarReplacing(
                                 message = backupFailText,
                                 actionLabel = retryText,
                                 duration = SnackbarDuration.Indefinite
@@ -466,17 +466,10 @@ fun SettingsScreen(
                 }
             }
 
-            SnackbarHost(
+            AppSnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter)
-            ) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    actionColor = MaterialTheme.colorScheme.primary
-                )
-            }
+            )
         }
     }
 }

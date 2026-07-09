@@ -20,9 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -51,6 +49,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
@@ -124,7 +124,7 @@ fun HomeScreen(
 
     fun showStoragePermissionSnackbar() {
         scope.launch {
-            val result = snackbarHostState.showSnackbar(
+            val result = snackbarHostState.showSnackbarReplacing(
                 message = fileAccessText,
                 actionLabel = grantText,
                 duration = SnackbarDuration.Indefinite
@@ -143,7 +143,7 @@ fun HomeScreen(
                 val permanentlyDenied = activity != null &&
                         !ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
                 scope.launch {
-                    val snackResult = snackbarHostState.showSnackbar(
+                    val snackResult = snackbarHostState.showSnackbarReplacing(
                         message = permissionMustBeGrantedText,
                         actionLabel = grantText,
                         duration = SnackbarDuration.Indefinite
@@ -342,17 +342,10 @@ fun HomeScreen(
             }
         }
 
-        SnackbarHost(
+        AppSnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
-        ) { data ->
-            Snackbar(
-                snackbarData = data,
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                actionColor = MaterialTheme.colorScheme.primary
-            )
-        }
+        )
     }
 }
 
