@@ -64,6 +64,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setShowPerAppThemeWarnin
 import com.drdisagree.colorblendr.data.common.Utilities.showPerAppThemeWarning
 import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.models.AppInfoModel
+import com.drdisagree.colorblendr.ui.compose.components.AnimatedCheckIcon
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
@@ -352,16 +353,13 @@ private fun AppListItem(
                     modifier = Modifier.padding(top = 2.dp)
                 )
             }
-            Icon(
-                painter = painterResource(
-                    if (selected) R.drawable.ic_checked_filled else R.drawable.ic_checked_outline
-                ),
-                contentDescription = null,
+            AnimatedCheckIcon(
+                selected = selected,
                 tint = if (selected) {
                     themeAttrColor(MaterialR.attr.colorPrimaryVariant)
                 } else {
                     MaterialTheme.colorScheme.onSurface
-                }.copy(alpha = if (selected) 1f else 0.2f)
+                }
             )
         }
     }

@@ -87,12 +87,9 @@ fun SelectableCard(
                 .defaultMinSize(minHeight = minHeight)
                 .padding(horizontal = 22.dp, vertical = 16.dp)
         ) {
-            Icon(
-                painter = painterResource(
-                    if (selected) R.drawable.ic_checked_filled else R.drawable.ic_checked_outline
-                ),
-                contentDescription = null,
-                tint = contentColor.copy(alpha = if (selected) 1f else 0.2f)
+            AnimatedCheckIcon(
+                selected = selected,
+                tint = contentColor
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
