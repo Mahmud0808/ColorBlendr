@@ -18,15 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Mirrors MiscUtil.setCardCornerRadius positions 0-3 and the
-// bg_container_top/mid/bottom grouped-row shapes.
-enum class WidgetPosition {
-    Single,
-    Top,
-    Middle,
-    Bottom
-}
-
 @Composable
 fun PositionedCard(
     position: WidgetPosition,

@@ -18,15 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-data class WallColorPreviewColors(
-    val halfCircle: Color,
-    val firstQuarterCircle: Color,
-    val secondQuarterCircle: Color,
-    val square: Color,
-    val centerCircle: Color,
-    val tick: Color
-)
-
 // Verbatim port of WallColorPreview.onDraw: 12dp rounded square, arcs inset
 // 6dp, 10dp center circle over a clear circle, 4px round-cap tick when selected.
 @Composable

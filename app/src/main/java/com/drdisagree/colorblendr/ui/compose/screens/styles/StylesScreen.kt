@@ -64,12 +64,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.R as AndroidR
 
-private data class StyleDialogState(
-    val styleId: String? = null,
-    val initialTitle: String = "",
-    val initialDescription: String = ""
-)
-
 @Composable
 fun StylesScreen(stylesViewModel: StylesViewModel) {
     val context = LocalContext.current

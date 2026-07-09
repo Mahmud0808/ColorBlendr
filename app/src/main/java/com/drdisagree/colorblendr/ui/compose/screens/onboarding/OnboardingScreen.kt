@@ -92,12 +92,6 @@ import kotlinx.coroutines.launch
 import android.R as AndroidR
 import com.google.android.material.R as MaterialR
 
-sealed interface OnboardingActionState {
-    data object Idle : OnboardingActionState
-    data object Connecting : OnboardingActionState
-    data class Error(val message: String) : OnboardingActionState
-}
-
 @Composable
 fun OnboardingScreen(
     actionState: OnboardingActionState,
@@ -234,8 +228,6 @@ fun OnboardingScreen(
         }
     }
 }
-
-private enum class ContinueButtonState { CONTINUE, START, LOADING }
 
 @Composable
 private fun OnboardingErrorDialog(
