@@ -3,8 +3,10 @@ package com.drdisagree.colorblendr.ui.compose.views
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -35,7 +37,9 @@ fun WallColorPreviewCanvas(
     onClick: (() -> Unit)? = null
 ) {
     val clickModifier = if (onClick != null) {
-        modifier.clickable(onClick = onClick)
+        modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
     } else {
         modifier
     }
