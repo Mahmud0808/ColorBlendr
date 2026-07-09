@@ -227,6 +227,7 @@ private fun ErrorActionCard(
                 )
                 Button(
                     onClick = onButtonClick,
+                    shapes = ButtonDefaults.shapes(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onErrorContainer,
                         contentColor = MaterialTheme.colorScheme.errorContainer
@@ -279,7 +280,10 @@ private fun GuideCard(
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
-                    Button(onClick = onDeveloperOptionsClick) {
+                    Button(
+                        onClick = onDeveloperOptionsClick,
+                        shapes = ButtonDefaults.shapes()
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_open_in_new),
                             contentDescription = null,

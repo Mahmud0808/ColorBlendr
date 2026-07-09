@@ -36,6 +36,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -139,7 +140,8 @@ fun OnboardingScreen(
                         scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage - 1)
                         }
-                    }
+                    },
+                    shapes = ButtonDefaults.shapes()
                 ) {
                     Text(text = stringResource(R.string.back), maxLines = 1)
                 }
@@ -175,6 +177,7 @@ fun OnboardingScreen(
                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     }
                 },
+                shapes = ButtonDefaults.shapes(),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(horizontal = 24.dp, vertical = 24.dp)
