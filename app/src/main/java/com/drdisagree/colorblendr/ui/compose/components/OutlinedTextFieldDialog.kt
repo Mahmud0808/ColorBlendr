@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,12 +63,18 @@ fun OutlinedTextFieldDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(firstValue, secondValue) }) {
+            Button(
+                onClick = { onConfirm(firstValue, secondValue) },
+                shapes = ButtonDefaults.shapes()
+            ) {
                 Text(text = confirmText)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            OutlinedButton(
+                onClick = onDismiss,
+                shapes = ButtonDefaults.shapes()
+            ) {
                 Text(text = dismissText)
             }
         },

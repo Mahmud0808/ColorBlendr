@@ -19,4 +19,14 @@
         <item name="android:windowSplashScreenBrandingImage">@drawable/ic_branding_image</item>
     </style>
 
+    <style name="AppMaterialAlertDialog" parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/DialogPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogNegativeButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogNegativeButton</item>
+    </style>
+
+    <style name="DialogPositiveButton" parent="Widget.Material3Expressive.Button" />
+
+    <style name="DialogNegativeButton" parent="Widget.Material3Expressive.Button.OutlinedButton" />
+
 </resources>
