@@ -42,6 +42,12 @@ class ColorBlendr : Application() {
                 return contextReference.get()!!
             }
 
+        fun initializeForPreview(context: Context) {
+            if (!this::contextReference.isInitialized || contextReference.get() == null) {
+                contextReference = WeakReference(context.applicationContext ?: context)
+            }
+        }
+
         private fun getInstance(): ColorBlendr {
             if (!this::instance.isInitialized) {
                 instance = ColorBlendr()
