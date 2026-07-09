@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.compose.interop
+package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape

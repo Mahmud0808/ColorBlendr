@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,14 +49,13 @@ import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.AboutAppModel
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.interop.Avatar
+import com.drdisagree.colorblendr.ui.compose.components.Avatar
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.utils.app.parseContributors
 import com.drdisagree.colorblendr.utils.app.parseTranslators
 
 @Composable
 fun AboutScreen() {
-    val context = LocalContext.current
     val listState = rememberLazyListState()
     val toolbarLifted by remember {
         derivedStateOf {
