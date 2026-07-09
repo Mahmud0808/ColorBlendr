@@ -9,11 +9,13 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
 }
 
 configure<ApplicationExtension> {
     namespace = "com.drdisagree.colorblendr"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 31
@@ -72,6 +74,7 @@ configure<ApplicationExtension> {
         viewBinding = true
         buildConfig = true
         aidl = true
+        compose = true
     }
 
     compileOptions {
@@ -126,6 +129,10 @@ tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         languageVersion = KotlinVersion.KOTLIN_2_3
         jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.addAll(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3ExpressiveApi"
+        )
     }
 }
 
@@ -191,4 +198,19 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.zip4j)
     implementation(libs.sun.security.android)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.activity.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.haze)
 }
