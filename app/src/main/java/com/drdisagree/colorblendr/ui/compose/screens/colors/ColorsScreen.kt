@@ -30,6 +30,7 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -86,6 +87,7 @@ fun ColorsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
     val isDark = isSystemInDarkTheme()
     val rootMode = remember { isRootMode() }
 
@@ -166,7 +168,7 @@ fun ColorsScreen(
         Column {
             AppToolbar(
                 title = stringResource(R.string.app_name),
-                lifted = scrollState.value > 0
+                lifted = toolbarLifted
             )
             Column(
                 modifier = Modifier

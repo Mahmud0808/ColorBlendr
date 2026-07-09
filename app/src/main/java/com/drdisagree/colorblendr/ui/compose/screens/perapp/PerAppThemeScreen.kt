@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -90,6 +91,11 @@ fun PerAppThemeScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val toolbarLifted by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
     val hazeState = remember { HazeState() }
 
     var filterMethod by remember { mutableIntStateOf(getAppListFilteringMethod()) }
@@ -204,8 +210,7 @@ fun PerAppThemeScreen() {
             AppToolbar(
                 title = stringResource(R.string.per_app_theme),
                 showBackButton = true,
-                lifted = listState.firstVisibleItemIndex > 0 ||
-                    listState.firstVisibleItemScrollOffset > 0
+                lifted = toolbarLifted
             )
             Column {
                 AnimatedVisibility(

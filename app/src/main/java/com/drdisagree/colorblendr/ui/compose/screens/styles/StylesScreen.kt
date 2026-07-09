@@ -74,6 +74,11 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val toolbarLifted by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
 
     val styleList by stylesViewModel.styleList.collectAsStateWithLifecycle()
     val stylePalettes by stylesViewModel.stylePalettes.collectAsStateWithLifecycle()
@@ -130,8 +135,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 AppToolbar(
                     title = stringResource(R.string.styles),
                     showBackButton = true,
-                    lifted = listState.firstVisibleItemIndex > 0 ||
-                        listState.firstVisibleItemScrollOffset > 0
+                    lifted = toolbarLifted
                 )
                 LazyColumn(
                     state = listState,

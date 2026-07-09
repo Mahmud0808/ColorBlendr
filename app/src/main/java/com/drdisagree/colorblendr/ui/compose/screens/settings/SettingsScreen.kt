@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,6 +97,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
     val snackbarHostState = remember { SnackbarHostState() }
 
     val rootMode = remember { isRootMode() }
@@ -248,7 +250,7 @@ fun SettingsScreen(
                 AppToolbar(
                     title = stringResource(R.string.settings),
                     showBackButton = true,
-                    lifted = scrollState.value > 0,
+                    lifted = toolbarLifted,
                     actions = {
                         Box {
                             ToolbarOverflowButton(onClick = { overflowExpanded = true })

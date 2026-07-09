@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +40,7 @@ private const val TAG = "PrivacyPolicyScreen"
 fun PrivacyPolicyScreen() {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
     val policyText = remember(context) {
         markdownToBold(loadPrivacyPolicyFromAssets(context))
     }
@@ -50,7 +53,7 @@ fun PrivacyPolicyScreen() {
             AppToolbar(
                 title = stringResource(R.string.privacy_policy),
                 showBackButton = true,
-                lifted = scrollState.value > 0
+                lifted = toolbarLifted
             )
             Column(
                 modifier = Modifier

@@ -28,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +59,11 @@ import com.drdisagree.colorblendr.utils.app.parseTranslators
 fun AboutScreen() {
     val context = LocalContext.current
     val listState = rememberLazyListState()
+    val toolbarLifted by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
     val contributors = remember { parseContributors() }
     val translators = remember { parseTranslators() }
     val contributorsHeader = stringResource(R.string.contributors)
@@ -70,8 +77,7 @@ fun AboutScreen() {
             AppToolbar(
                 title = stringResource(R.string.about_this_app_title),
                 showBackButton = true,
-                lifted = listState.firstVisibleItemIndex > 0 ||
-                    listState.firstVisibleItemScrollOffset > 0
+                lifted = toolbarLifted
             )
             LazyColumn(
                 state = listState,

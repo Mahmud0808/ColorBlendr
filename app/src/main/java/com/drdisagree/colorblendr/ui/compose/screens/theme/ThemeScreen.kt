@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ import kotlinx.coroutines.withContext
 fun ThemeScreen() {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
     val isDark = isSystemInDarkTheme()
     val rootMode = remember { isRootMode() }
 
@@ -95,7 +97,7 @@ fun ThemeScreen() {
             AppToolbar(
                 title = stringResource(R.string.theme),
                 showBackButton = true,
-                lifted = scrollState.value > 0
+                lifted = toolbarLifted
             )
             Column(
                 modifier = Modifier

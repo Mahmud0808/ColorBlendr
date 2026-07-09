@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ fun PairingScreen(
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
 
     var hasNotificationPermission by remember {
         mutableStateOf(AppUtil.hasNotificationPermission(context))
@@ -101,7 +103,7 @@ fun PairingScreen(
             AppToolbar(
                 title = stringResource(R.string.pairing),
                 showBackButton = true,
-                lifted = scrollState.value > 0
+                lifted = toolbarLifted
             )
             Column(
                 modifier = Modifier
