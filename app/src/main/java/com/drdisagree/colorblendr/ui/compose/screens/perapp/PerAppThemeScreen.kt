@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -216,7 +218,9 @@ fun PerAppThemeScreen() {
             Column {
                 AnimatedVisibility(
                     visible = warningVisible,
-                    exit = slideOutHorizontally { it * 2 } + fadeOut()
+                    exit = slideOutHorizontally { it * 2 } + fadeOut() + shrinkVertically(
+                        animationSpec = tween(durationMillis = 250, delayMillis = 200)
+                    )
                 ) {
                     WarningCard(
                         warningText = stringResource(R.string.per_app_theme_warn),
