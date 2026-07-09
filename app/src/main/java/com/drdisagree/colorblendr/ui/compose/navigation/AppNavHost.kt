@@ -26,6 +26,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.setFirstRunCompleted
 import com.drdisagree.colorblendr.data.common.Utilities.setWorkingMethod
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
@@ -82,6 +83,10 @@ fun AppNavHost(
                 setFirstRunCompleted()
                 setWorkingMethod(WORKING_METHOD)
                 onboardedSuccess = true
+
+                // The ViewModels skipped their initial load before
+                // onboarding; load real data now.
+                RefreshCoordinator.triggerRefresh()
 
                 navController.navigate(Routes.HOME) {
                     popUpTo(0) { inclusive = true }

@@ -7,6 +7,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
+import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
@@ -39,6 +41,9 @@ class ColorPaletteViewModel @Inject constructor() : ViewModel() {
     }
 
     fun loadPaletteColors() {
+        // Before onboarding there is no wallpaper color list to generate from.
+        if (isFirstRun() || isWorkMethodUnknown()) return
+
         viewModelScope.launch(Dispatchers.IO) {
             val colorList = generateModifiedColors(
                 getCurrentMonetStyle(),

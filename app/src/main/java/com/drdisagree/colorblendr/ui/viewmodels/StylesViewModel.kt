@@ -11,7 +11,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
@@ -63,6 +65,9 @@ class StylesViewModel @Inject constructor(
     }
 
     fun loadStylePalettes() {
+        // Before onboarding there is no wallpaper color list to generate from.
+        if (isFirstRun() || isWorkMethodUnknown()) return
+
         viewModelScope.launch(Dispatchers.IO) {
             val styleList = getStyleList()
             if (styleList != _styleList.value) {
