@@ -66,3 +66,7 @@ fun viewThemeColorScheme(): ColorScheme {
 
 private fun Context.themeColor(@AttrRes attr: Int): Color =
     Color(MaterialColors.getColor(this, attr, Color.Magenta.toArgb()))
+
+// For legacy MDC attrs with no ColorScheme slot (e.g. colorPrimaryVariant).
+@Composable
+fun themeAttrColor(@AttrRes attr: Int): Color = LocalContext.current.themeColor(attr)
