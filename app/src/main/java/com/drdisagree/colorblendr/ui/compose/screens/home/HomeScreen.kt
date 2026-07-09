@@ -205,14 +205,16 @@ fun HomeScreen(
     val scaleSpec = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
     val effectsSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
 
-    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(pop: Boolean): EnterTransition {
+    // Direction depends only on tab group order (like FragmentUtil), never on
+    // push vs pop: the incoming screen enters from the side of its group.
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition {
         val fromGroup = tabGroup(initialState.destination.route)
         val toGroup = tabGroup(targetState.destination.route)
         return when {
             fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
                 fadeIn(effectsSpec) + scaleIn(scaleSpec, initialScale = 0.96f)
 
-            (toGroup > fromGroup) != pop ->
+            toGroup > fromGroup ->
                 slideInHorizontally(spatialSpec) { it }
 
             else ->
@@ -220,14 +222,14 @@ fun HomeScreen(
         }
     }
 
-    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(pop: Boolean): ExitTransition {
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition {
         val fromGroup = tabGroup(initialState.destination.route)
         val toGroup = tabGroup(targetState.destination.route)
         return when {
             fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
                 fadeOut(effectsSpec)
 
-            (toGroup > fromGroup) != pop ->
+            toGroup > fromGroup ->
                 slideOutHorizontally(spatialSpec) { -it }
 
             else ->
@@ -240,10 +242,10 @@ fun HomeScreen(
             NavHost(
                 navController = nestedNavController,
                 startDestination = Routes.COLORS,
-                enterTransition = { enter(pop = false) },
-                exitTransition = { exit(pop = false) },
-                popEnterTransition = { enter(pop = true) },
-                popExitTransition = { exit(pop = true) },
+                enterTransition = { enter() },
+                exitTransition = { exit() },
+                popEnterTransition = { enter() },
+                popExitTransition = { exit() },
                 modifier = Modifier.weight(1f)
             ) {
                 composable(Routes.COLORS) {
