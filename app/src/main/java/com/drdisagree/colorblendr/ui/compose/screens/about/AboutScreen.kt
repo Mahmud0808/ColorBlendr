@@ -192,21 +192,21 @@ private fun LinkButtonsCard(modifier: Modifier = Modifier) {
         Row(modifier = Modifier.alpha(0.8f)) {
             LinkButton(
                 textResId = R.string.news,
-                iconResId = R.drawable.ic_news_scaled,
+                iconResId = R.drawable.ic_news,
                 onClick = { context.openUrl("https://t.me/DrDsProjects") },
                 modifier = Modifier.weight(1f)
             )
             LinkButtonDivider()
             LinkButton(
                 textResId = R.string.support,
-                iconResId = R.drawable.ic_help_scaled,
+                iconResId = R.drawable.ic_help,
                 onClick = { context.openUrl("https://t.me/DrDsProjectsChat") },
                 modifier = Modifier.weight(1f)
             )
             LinkButtonDivider()
             LinkButton(
                 textResId = R.string.github,
-                iconResId = R.drawable.ic_github_scaled,
+                iconResId = R.drawable.ic_github,
                 onClick = { context.openUrl("https://github.com/Mahmud0808/ColorBlendr") },
                 modifier = Modifier.weight(1f)
             )
@@ -232,7 +232,7 @@ private fun LinkButton(
             painter = painterResource(iconResId),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(dimensionResource(R.dimen.about_button_icon_size))
         )
         Text(
             text = stringResource(textResId),
