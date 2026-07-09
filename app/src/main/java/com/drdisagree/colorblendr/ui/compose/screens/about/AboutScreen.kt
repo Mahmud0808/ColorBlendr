@@ -48,7 +48,7 @@ import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.AboutAppModel
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.interop.GlideAvatar
+import com.drdisagree.colorblendr.ui.compose.interop.Avatar
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.utils.app.parseContributors
 import com.drdisagree.colorblendr.utils.app.parseTranslators
@@ -372,7 +372,7 @@ private fun CreditsItem(
                 .clickable { context.openUrl(model.url) }
                 .padding(horizontal = 22.dp, vertical = 16.dp)
         ) {
-            GlideAvatar(
+            Avatar(
                 url = model.icon,
                 modifier = Modifier.size(48.dp)
             )

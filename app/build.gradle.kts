@@ -71,7 +71,6 @@ configure<ApplicationExtension> {
     }
 
     buildFeatures {
-        viewBinding = true
         buildConfig = true
         aidl = true
         compose = true
@@ -177,22 +176,14 @@ dependencies {
 
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.constraintlayout)
 
     implementation(libs.remotepreferences)
-    implementation(libs.circleimageview)
-    implementation(libs.glide)
     implementation(libs.preference.ktx)
     implementation(libs.core.splashscreen)
     implementation(libs.work.runtime)
     implementation(libs.palette)
-    implementation(libs.flexbox)
     implementation(libs.gson)
-    implementation(libs.recyclerview)
-    implementation(libs.recyclerview.selection)
-    implementation(libs.blurView)
     implementation(libs.lifecycle.common.jvm)
-    ksp(libs.glide.compiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
@@ -213,4 +204,6 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.haze)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }
