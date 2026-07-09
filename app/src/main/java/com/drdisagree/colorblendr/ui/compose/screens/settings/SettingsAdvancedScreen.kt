@@ -1,0 +1,316 @@
+package com.drdisagree.colorblendr.ui.compose.screens.settings
+
+import android.os.Build
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
+import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
+import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setScreenOffColorUpdateEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSecondaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
+import com.drdisagree.colorblendr.ui.compose.components.MenuItem
+import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
+import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
+import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
+
+@Composable
+fun SettingsAdvancedScreen(fragmentManager: FragmentManager?) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+
+    val rootMode = remember { isRootMode() }
+    val customColor = remember { customColorEnabled() }
+    val hasPixelLauncher = remember { SystemUtil.isAppInstalled(PIXEL_LAUNCHER) }
+    val pitchBlackEnabled = remember { pitchBlackThemeEnabled() }
+
+    var secondaryColor by remember { mutableIntStateOf(getSecondaryColorValue()) }
+    var tertiaryColor by remember { mutableIntStateOf(getTertiaryColorValue()) }
+    var screenOffUpdate by remember { mutableStateOf(screenOffColorUpdateEnabled()) }
+    var modeSpecificThemes by remember { mutableStateOf(modeSpecificThemesEnabled()) }
+    var darkerIcons by remember { mutableStateOf(darkerLauncherIconsEnabled()) }
+    var semiTransparentIcons by remember { mutableStateOf(semiTransparentLauncherIconsEnabled()) }
+    var pitchBlackWorkaround by remember { mutableStateOf(forcePitchBlackSettingsEnabled()) }
+
+    fun updateColors() {
+        scope.launch {
+            updateColorAppliedTimestamp()
+            delay(300)
+            withContext(Dispatchers.IO) {
+                applyFabricatedColors()
+            }
+        }
+    }
+
+    fun savePixelLauncherInPerAppTheme() {
+        if (!hasPixelLauncher || !rootMode) return
+        val selectedApps = getSelectedFabricatedApps()
+        selectedApps[PIXEL_LAUNCHER] = true
+        setSelectedFabricatedApps(selectedApps)
+    }
+
+    fun showColorPicker(tag: String, initialColor: Int, onPicked: (Int) -> Unit) {
+        val manager = fragmentManager ?: return
+        ColorPickerDialog()
+            .withCornerRadius(24f)
+            .withColor(initialColor)
+            .withAlphaEnabled(false)
+            .withPicker(ImagePickerView::class.java)
+            .withListener { _: ColorPickerDialog?, color: Int -> onPicked(color) }
+            .show(manager, tag)
+    }
+
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column {
+            AppToolbar(
+                title = stringResource(R.string.advanced_settings),
+                showBackButton = true,
+                lifted = scrollState.value > 0
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(top = 16.dp)
+            ) {
+                ColorPickerItem(
+                    title = stringResource(R.string.custom_secondary_color_desc),
+                    summary = stringResource(R.string.custom_secondary_color_summary),
+                    previewColor = Color(secondaryColor),
+                    icon = painterResource(R.drawable.ic_paint),
+                    enabled = customColor && rootMode,
+                    disabledReason = when {
+                        !rootMode -> stringResource(R.string.root_required)
+                        !customColor -> stringResource(R.string.custom_primary_color_required)
+                        else -> null
+                    },
+                    position = WidgetPosition.Top,
+                    onClick = {
+                        showColorPicker("secondaryColorPicker", secondaryColor) { color ->
+                            if (secondaryColor != color) {
+                                secondaryColor = color
+                                resetCustomStyleIfNotNull()
+                                setSecondaryColorValue(color)
+                                updateColors()
+                            }
+                        }
+                    }
+                )
+                ColorPickerItem(
+                    title = stringResource(R.string.custom_tertiary_color_title),
+                    summary = stringResource(R.string.custom_tertiary_color_desc),
+                    previewColor = Color(tertiaryColor),
+                    icon = painterResource(R.drawable.ic_paint),
+                    enabled = customColor && rootMode,
+                    disabledReason = when {
+                        !rootMode -> stringResource(R.string.root_required)
+                        !customColor -> stringResource(R.string.custom_primary_color_required)
+                        else -> null
+                    },
+                    position = WidgetPosition.Bottom,
+                    onClick = {
+                        showColorPicker("tertiaryColorPicker", tertiaryColor) { color ->
+                            if (tertiaryColor != color) {
+                                tertiaryColor = color
+                                resetCustomStyleIfNotNull()
+                                setTertiaryColorValue(color)
+                                updateColors()
+                            }
+                        }
+                    }
+                )
+
+                MenuItem(
+                    title = stringResource(R.string.colorspec_title),
+                    summary = stringResource(R.string.colorspec_desc),
+                    icon = painterResource(R.drawable.ic_star_shine),
+                    enabled = rootMode,
+                    disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
+                    position = WidgetPosition.Top,
+                    onClick = {
+                        val colorSpecVersions =
+                            context.resources.getStringArray(R.array.colorspec_versions)
+                        val currentVersion = getColorSpecVersion()
+                        MaterialAlertDialogBuilder(context)
+                            .setTitle(R.string.colorspec_title)
+                            .setSingleChoiceItems(colorSpecVersions, currentVersion) { dialog, which ->
+                                if (currentVersion != which) {
+                                    resetCustomStyleIfNotNull()
+                                    setColorSpecVersion(which)
+
+                                    if (which != 2 && getCurrentMonetStyle() == MONET.CMF) {
+                                        setCurrentMonetStyle(MONET.TONAL_SPOT)
+                                    }
+
+                                    RefreshCoordinator.triggerRefresh()
+                                    updateColors()
+                                }
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton(R.string.cancel, null)
+                            .show()
+                    }
+                )
+                SwitchItem(
+                    title = stringResource(R.string.screen_off_update_title),
+                    summary = stringResource(R.string.screen_off_update_desc),
+                    icon = painterResource(R.drawable.ic_update),
+                    checked = screenOffUpdate,
+                    position = WidgetPosition.Middle,
+                    onCheckedChange = { isChecked ->
+                        screenOffUpdate = isChecked
+                        setScreenOffColorUpdateEnabled(isChecked)
+                        if (!isChecked) {
+                            updateColors()
+                        }
+                    }
+                )
+                SwitchItem(
+                    title = stringResource(R.string.mode_specific_theme_title),
+                    summary = stringResource(R.string.mode_specific_theme_desc),
+                    icon = painterResource(R.drawable.ic_light_dark),
+                    checked = modeSpecificThemes,
+                    enabled = rootMode,
+                    disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
+                    position = WidgetPosition.Bottom,
+                    onCheckedChange = { isChecked ->
+                        modeSpecificThemes = isChecked
+                        resetCustomStyleIfNotNull()
+                        setModeSpecificThemesEnabled(isChecked)
+                        updateColors()
+                    }
+                )
+
+                SwitchItem(
+                    title = stringResource(R.string.darker_launcher_icons_title),
+                    summary = stringResource(R.string.darker_launcher_icons_desc),
+                    icon = painterResource(R.drawable.ic_dark_icon),
+                    checked = darkerIcons,
+                    enabled = rootMode && hasPixelLauncher,
+                    disabledReason = when {
+                        !rootMode -> stringResource(R.string.root_required)
+                        !hasPixelLauncher -> stringResource(R.string.pixel_launcher_required)
+                        else -> null
+                    },
+                    position = WidgetPosition.Top,
+                    onCheckedChange = { isChecked ->
+                        darkerIcons = isChecked
+                        if (isChecked) {
+                            savePixelLauncherInPerAppTheme()
+                        }
+                        setDarkerLauncherIconsEnabled(isChecked)
+                        updateColors()
+                    }
+                )
+                SwitchItem(
+                    title = stringResource(R.string.semitransparent_launcher_title),
+                    summary = stringResource(R.string.semitransparent_launcher_desc),
+                    icon = painterResource(R.drawable.ic_semi_transparent),
+                    checked = semiTransparentIcons,
+                    enabled = rootMode && hasPixelLauncher,
+                    disabledReason = when {
+                        !rootMode -> stringResource(R.string.root_required)
+                        !hasPixelLauncher -> stringResource(R.string.pixel_launcher_required)
+                        else -> null
+                    },
+                    position = WidgetPosition.Bottom,
+                    onCheckedChange = { isChecked ->
+                        semiTransparentIcons = isChecked
+                        if (isChecked) {
+                            savePixelLauncherInPerAppTheme()
+                        }
+                        setSemiTransparentLauncherIconsEnabled(isChecked)
+                        updateColors()
+                    }
+                )
+
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    SwitchItem(
+                        title = stringResource(R.string.pitch_black_settings_workaround_title),
+                        summary = stringResource(R.string.pitch_black_settings_workaround_desc),
+                        icon = painterResource(R.drawable.ic_settings_starry),
+                        checked = pitchBlackWorkaround,
+                        enabled = rootMode && pitchBlackEnabled,
+                        disabledReason = when {
+                            !rootMode -> stringResource(R.string.root_required)
+                            !pitchBlackEnabled -> stringResource(R.string.pitch_black_theme_required)
+                            else -> null
+                        },
+                        onCheckedChange = { isChecked ->
+                            pitchBlackWorkaround = isChecked
+                            setForcePitchBlackSettingsEnabled(isChecked)
+                            updateColors()
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SettingsAdvancedScreenPreview() {
+    ColorBlendrTheme {
+        SettingsAdvancedScreen(fragmentManager = null)
+    }
+}
