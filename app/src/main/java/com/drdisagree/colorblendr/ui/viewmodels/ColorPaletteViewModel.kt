@@ -1,7 +1,5 @@
 package com.drdisagree.colorblendr.ui.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
@@ -12,13 +10,19 @@ import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ColorPaletteViewModel : ViewModel() {
+@HiltViewModel
+class ColorPaletteViewModel @Inject constructor() : ViewModel() {
 
-    private val _colorPalette = MutableLiveData<List<List<Int>>>(emptyList())
-    val colorPalette: LiveData<List<List<Int>>> = _colorPalette
+    private val _colorPalette = MutableStateFlow<List<List<Int>>>(emptyList())
+    val colorPalette: StateFlow<List<List<Int>>> = _colorPalette.asStateFlow()
 
     init {
         refreshData()
@@ -45,7 +49,7 @@ class ColorPaletteViewModel : ViewModel() {
                 accurateShadesEnabled()
             )
             if (colorList != _colorPalette.value) {
-                _colorPalette.postValue(colorList)
+                _colorPalette.value = colorList
             }
         }
     }
