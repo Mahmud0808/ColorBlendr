@@ -189,6 +189,7 @@ private fun IconTextCard(
             Spacer(modifier = Modifier.width(20.dp))
             Text(
                 text = text,
+                style = MaterialTheme.typography.bodyMedium,
                 color = contentColor
             )
         }
@@ -220,6 +221,7 @@ private fun ErrorActionCard(
             Column {
                 Text(
                     text = text,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(bottom = 10.dp)
                 )
@@ -268,10 +270,12 @@ private fun GuideCard(
                 Column {
                     Text(
                         text = stringResource(R.string.wireless_debugging_guide_1),
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
                     Text(
                         text = stringResource(R.string.wireless_debugging_important_notice),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
@@ -298,7 +302,10 @@ private fun GuideCard(
                     tint = controlNormal,
                     modifier = Modifier.padding(end = 20.dp)
                 )
-                Text(text = stringResource(R.string.wireless_debugging_guide_2))
+                Text(
+                    text = stringResource(R.string.wireless_debugging_guide_2),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -310,7 +317,10 @@ private fun GuideCard(
                     tint = controlNormal,
                     modifier = Modifier.padding(end = 20.dp)
                 )
-                Text(text = stringResource(R.string.wireless_debugging_guide_3))
+                Text(
+                    text = stringResource(R.string.wireless_debugging_guide_3),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

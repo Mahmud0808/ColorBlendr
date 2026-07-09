@@ -18,6 +18,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +49,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +65,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -359,10 +369,14 @@ private fun OnboardingPage2() {
     }
 
     OnboardingPageScaffold(title = stringResource(R.string.permissions)) {
+        val scrollState = rememberScrollState()
+
         Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalFadingEdges(scrollState)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 12.dp)
                 .padding(top = 16.dp)
         ) {
@@ -448,11 +462,15 @@ private fun OnboardingPage3() {
     val batteryForeground = themeAttrColor(MaterialR.attr.colorPrimaryVariant)
 
     OnboardingPageScaffold(title = stringResource(R.string.optimization)) {
+        val scrollState = rememberScrollState()
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalFadingEdges(scrollState)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 12.dp)
                 .padding(top = 16.dp)
         ) {
@@ -521,10 +539,14 @@ private fun OnboardingPage4(onNavigateToPairing: () -> Unit) {
     }
 
     OnboardingPageScaffold(title = stringResource(R.string.choose_method)) {
+        val scrollState = rememberScrollState()
+
         Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalFadingEdges(scrollState)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 12.dp)
                 .padding(top = 16.dp)
         ) {
@@ -583,3 +605,39 @@ private fun OnboardingScreenPreview() {
         )
     }
 }
+
+// Mirrors requiresFadingEdge="vertical": fade an edge only while more
+// content is scrollable in that direction.
+private fun Modifier.verticalFadingEdges(
+    scrollState: ScrollState,
+    edgeLength: Dp = 16.dp
+): Modifier = this
+    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+    .drawWithContent {
+        drawContent()
+        val edgePx = edgeLength.toPx()
+
+        if (scrollState.value > 0) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Color.Black),
+                    startY = 0f,
+                    endY = edgePx
+                ),
+                size = Size(size.width, edgePx),
+                blendMode = BlendMode.DstIn
+            )
+        }
+        if (scrollState.value < scrollState.maxValue) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Black, Color.Transparent),
+                    startY = size.height - edgePx,
+                    endY = size.height
+                ),
+                topLeft = Offset(0f, size.height - edgePx),
+                size = Size(size.width, edgePx),
+                blendMode = BlendMode.DstIn
+            )
+        }
+    }
