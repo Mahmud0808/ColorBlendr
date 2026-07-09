@@ -43,7 +43,9 @@ import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.shape.MaterialShapeDrawable
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

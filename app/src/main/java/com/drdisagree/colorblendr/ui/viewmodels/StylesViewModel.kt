@@ -1,40 +1,52 @@
 package com.drdisagree.colorblendr.ui.viewmodels
 
 import android.os.Build
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
+import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class StylesViewModel : ViewModel() {
+@HiltViewModel
+class StylesViewModel @Inject constructor(
+    private val customStyleRepository: CustomStyleRepository
+) : ViewModel() {
 
     private val isAtleastA13 = isRootMode() ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     private val isAtleastA14 = isRootMode() ||
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
-    private val _styleList = MutableLiveData<List<StyleModel>>(emptyList())
-    val styleList: LiveData<List<StyleModel>> = _styleList
+    private val _styleList = MutableStateFlow<List<StyleModel>>(emptyList())
+    val styleList: StateFlow<List<StyleModel>> = _styleList.asStateFlow()
 
-    private val _stylePalettes = MutableLiveData<Map<String, List<List<Int>>>>(emptyMap())
-    val stylePalettes: LiveData<Map<String, List<List<Int>>>> = _stylePalettes
+    private val _stylePalettes = MutableStateFlow<Map<String, List<List<Int>>>>(emptyMap())
+    val stylePalettes: StateFlow<Map<String, List<List<Int>>>> = _stylePalettes.asStateFlow()
 
     init {
         refreshData()
@@ -54,7 +66,7 @@ class StylesViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val styleList = getStyleList()
             if (styleList != _styleList.value) {
-                _styleList.postValue(styleList)
+                _styleList.value = styleList
             }
 
             val filteredStyleList = styleList.filter { style ->
@@ -62,9 +74,79 @@ class StylesViewModel : ViewModel() {
             }.map { it.titleResId.getOriginalString() }
             val previewColorPalettes = loadPreviewColorPalettes(filteredStyleList)
             if (previewColorPalettes != _stylePalettes.value) {
-                _stylePalettes.postValue(previewColorPalettes)
+                _stylePalettes.value = previewColorPalettes
             }
         }
+    }
+
+    suspend fun addCustomStyle(title: String, description: String): CustomStyleModel {
+        val allPrefs = Prefs.getAllPrefs()
+        for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
+            allPrefs.remove(excludedPref)
+        }
+
+        val currentMonet = getCurrentMonetStyle()
+        val newStyle = CustomStyleModel(
+            styleName = title.trim(),
+            description = description.trim(),
+            prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
+            monet = currentMonet,
+            palette = generateModifiedColors(
+                currentMonet,
+                getAccentSaturation(),
+                getBackgroundSaturation(),
+                getBackgroundLightness(),
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
+            )
+        )
+
+        customStyleRepository.saveCustomStyle(newStyle)
+        refreshData()
+        return newStyle
+    }
+
+    suspend fun editCustomStyle(title: String, description: String, styleId: String) {
+        val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return
+        val updatedStyle = customStyle.copy(
+            styleName = title.trim(),
+            description = description.trim()
+        )
+
+        customStyleRepository.updateCustomStyle(updatedStyle)
+        refreshData()
+    }
+
+    suspend fun updateCustomStyle(styleId: String) {
+        val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return
+
+        val allPrefs = Prefs.getAllPrefs()
+        for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
+            allPrefs.remove(excludedPref)
+        }
+
+        val currentMonet = getCurrentMonetStyle()
+        val updatedStyle = customStyle.copy(
+            prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
+            monet = currentMonet,
+            palette = generateModifiedColors(
+                currentMonet,
+                getAccentSaturation(),
+                getBackgroundSaturation(),
+                getBackgroundLightness(),
+                pitchBlackThemeEnabled(),
+                accurateShadesEnabled()
+            )
+        )
+
+        customStyleRepository.updateCustomStyle(updatedStyle)
+        refreshData()
+    }
+
+    suspend fun deleteCustomStyle(styleId: String) {
+        val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return
+        customStyleRepository.deleteCustomStyle(customStyle)
+        refreshData()
     }
 
     private suspend fun loadPreviewColorPalettes(styleName: List<String>): Map<String, List<List<Int>>> {
@@ -162,7 +244,7 @@ class StylesViewModel : ViewModel() {
         ).apply {
             if (!isRootMode()) return@apply
 
-            Utilities.getCustomStyleRepository().getCustomStyles().forEach { customStyle ->
+            customStyleRepository.getCustomStyles().forEach { customStyle ->
                 add(
                     StyleModel(
                         isEnabled = true,
