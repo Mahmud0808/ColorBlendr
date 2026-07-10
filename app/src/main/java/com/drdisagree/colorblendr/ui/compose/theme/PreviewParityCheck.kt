@@ -12,9 +12,9 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Debug-only: verifies the locally computed preview scheme matches what the
-// view theme resolves from the applied overlay. Only meaningful while the
-// current prefs equal the applied overlay (i.e. no pending preview).
+// Debug-only: verifies locally computed preview scheme matches what view
+// theme resolves from applied overlay. Only meaningful while current prefs
+// equal applied overlay (no pending preview).
 @Composable
 fun PreviewSchemeParityCheck(viewScheme: ColorScheme) {
     val isDark = isSystemInDarkTheme()

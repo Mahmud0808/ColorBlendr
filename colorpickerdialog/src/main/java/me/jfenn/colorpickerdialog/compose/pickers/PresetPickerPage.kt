@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.jfenn.colorpickerdialog.compose.components.SelectableCircleColor
 
-// PresetPickerView.DEFAULT_PRESETS, verbatim.
+// Default preset swatches.
 internal val DEFAULT_PRESETS = listOf(
     0xfff44336.toInt(),
     0xffe91e63.toInt(),
@@ -35,10 +35,8 @@ internal val DEFAULT_PRESETS = listOf(
     0xff607d8b.toInt()
 )
 
-// Compose port of PresetPickerView + colorpicker_layout_preset_picker.xml:
-// 300dp tall 4-column grid (26dp side padding, 8dp top, 126dp bottom,
-// clipToPadding=false) of selectable circle swatches; the swatch equal to the
-// current color renders selected.
+// 300dp 4-column grid (26dp sides, 8dp top, 126dp bottom) of selectable
+// circle swatches; swatch equal to current color renders selected.
 @Composable
 internal fun PresetPickerPage(
     color: Int,

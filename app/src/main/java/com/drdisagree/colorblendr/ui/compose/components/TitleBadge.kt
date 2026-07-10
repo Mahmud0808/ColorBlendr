@@ -16,8 +16,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Mirrors RoundedBackgroundSpan: badge text at 0.75x title size inside an
-// 8dp-rounded errorContainer pill with 6dp/2dp padding, centered to the line.
+// Badge text at 0.75x title size in 8dp-rounded errorContainer pill,
+// 6dp/2dp padding, centered to line.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TitleWithBadge(

@@ -40,12 +40,11 @@ import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 import java.util.Locale
 import kotlin.math.roundToInt
 
-// DecelerateInterpolator parity for progress animations.
+// Decelerate easing for progress animations.
 internal val DecelerateEasing = Easing { fraction -> 1f - (1f - fraction) * (1f - fraction) }
 
-// Compose port of one hsv/rgb picker slider row: 42dp tall, label(1) :
-// seekbar(4) : value(1) weights, 14sp bold all-caps secondary text, 2dp track
-// (SeekBarDrawable parity) and the 8x24dp pill thumb (color_picker_thumb).
+// Slider row: 42dp tall, label(1) : slider(4) : value(1) weights, 14sp bold
+// all-caps secondary text, 4dp rounded track, pill thumb.
 @Composable
 internal fun PickerSliderRow(
     label: String,
@@ -120,8 +119,7 @@ private fun SliderTrack(
     val currentOnValueChange by rememberUpdatedState(onValueChange)
     val currentOnTrackingChanged by rememberUpdatedState(onTrackingChanged)
 
-    // External color changes animate the thumb (ObjectAnimator +
-    // DecelerateInterpolator parity); user drags snap directly.
+    // External color changes animate thumb; user drags snap directly.
     LaunchedEffect(value) {
         if (isTracking) {
             progress.snapTo(value.toFloat())
@@ -202,7 +200,7 @@ private fun SliderTrack(
 
                 when (thumb) {
                     PickerThumb.Pill -> {
-                        // color_picker_thumb: 8x24dp pill, 12dp corners.
+                        // 8x24dp pill, 12dp corners.
                         val thumbWidth = 8.dp.toPx()
                         val thumbHeight = 24.dp.toPx()
                         val centerX = thumbWidth / 2f +
@@ -219,7 +217,7 @@ private fun SliderTrack(
                     }
 
                     PickerThumb.Circle -> {
-                        // Stock seekbar thumb parity for the alpha row.
+                        // Circle thumb for alpha row.
                         val radius = 8.dp.toPx()
                         val centerX = radius + fraction * (size.width - radius * 2f)
                         drawCircle(
@@ -233,8 +231,7 @@ private fun SliderTrack(
     )
 }
 
-// Alpha row parity (PickerView base): max 255, "%.2f" of progress/255,
-// neutral-colored track and stock thumb.
+// Alpha row: max 255, "%.2f" of progress/255, neutral track, circle thumb.
 @Composable
 internal fun AlphaSliderRow(
     alpha: Int,

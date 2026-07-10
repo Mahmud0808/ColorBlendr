@@ -37,9 +37,8 @@ import kotlin.math.hypot
 import kotlin.math.sin
 import android.graphics.Color as AndroidColor
 
-// Hue/saturation wheel for non-technical picking: hue is the angle around the
-// wheel, saturation the distance from center; brightness stays on a slider
-// below. Same external-change reseeding rules as the HSV page.
+// Hue/saturation wheel: hue = angle, saturation = distance from center;
+// brightness on slider below. Same external-change reseeding as HSV page.
 @Composable
 internal fun WheelPickerPage(
     color: Int,
@@ -127,7 +126,7 @@ internal fun WheelPickerPage(
         ) {
             val radius = size.minDimension / 2f
 
-            // Hue around the wheel, saturation fading to white at the center.
+            // Hue around wheel, saturation fades to white at center.
             drawCircle(brush = Brush.sweepGradient(wheelColors), radius = radius)
             drawCircle(
                 brush = Brush.radialGradient(

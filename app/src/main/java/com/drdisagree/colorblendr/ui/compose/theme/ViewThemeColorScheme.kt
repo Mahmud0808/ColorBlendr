@@ -19,11 +19,12 @@ import android.R as AndroidR
 import androidx.appcompat.R as AppCompatR
 import com.google.android.material.R as MaterialR
 
-// Resolves the color scheme from the MDC view theme instead of dynamicColorScheme()
-// so Compose and remaining views read identical colors on every API level.
+// Resolves color scheme from view theme attrs instead of
+// dynamicColorScheme() so every surface reads identical colors on every API
+// level.
 @Composable
 fun viewThemeColorScheme(): ColorScheme {
-    // Re-resolve when the preview resources loader is added or removed.
+    // Re-resolve when preview resources loader added/removed.
     PreviewResourcesOverride.revision
 
     val context = LocalContext.current
@@ -75,9 +76,9 @@ fun viewThemeColorScheme(): ColorScheme {
 private fun Context.themeColor(@AttrRes attr: Int): Color =
     Color(MaterialColors.getColor(this, attr, Color.Magenta.toArgb()))
 
-// For legacy MDC attrs with no ColorScheme slot (e.g. colorPrimaryVariant).
-// Preview-aware: while color changes are being previewed, resolves from the
-// locally computed role map instead of the applied overlay.
+// For theme attrs with no ColorScheme slot (e.g. colorPrimaryVariant).
+// Preview-aware: while previewing, resolves from locally computed role map
+// instead of applied overlay.
 @Composable
 fun themeAttrColor(@AttrRes attr: Int): Color {
     PreviewResourcesOverride.revision
@@ -97,9 +98,9 @@ private fun previewAttrColor(
     val map = if (isDark) previewColors.darkMap else previewColors.lightMap
     val suffix = if (isDark) "_dark" else "_light"
 
-    // Theme.Material3 resolves colorPrimaryVariant to colorPrimary; the M3
-    // text colors are selectors over colorOnSurface(Variant), which is also
-    // what colorControlNormal falls back to.
+    // Theme.Material3 resolves colorPrimaryVariant to colorPrimary; M3 text
+    // colors = selectors over colorOnSurface(Variant), also the
+    // colorControlNormal fallback.
     val roleName = when (attr) {
         MaterialR.attr.colorPrimaryVariant -> "primary"
         AndroidR.attr.textColorPrimary -> "on_surface"

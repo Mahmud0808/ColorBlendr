@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Mirrors view_toolbar.xml: AppBarLayout(liftOnScroll) + MaterialToolbar with
-// 12dp horizontal padding, zero content inset and TitleLarge title.
+// Lift-on-scroll toolbar: 12dp horizontal padding, zero content inset,
+// TitleLarge title.
 @Composable
 fun AppToolbar(
     title: String,
@@ -84,9 +84,7 @@ fun AppToolbar(
     }
 }
 
-// Mirrors ic_toolbar_chevron/ic_toolbar_overflow ripple drawables: a surface
-// pill (surfaceBright at night) behind a 24dp icon. painterResource cannot
-// load ripple drawables, so the pill is drawn in Compose.
+// Surface pill (surfaceBright at night) behind 24dp icon.
 @Composable
 fun ToolbarIconPill(
     iconResId: Int,

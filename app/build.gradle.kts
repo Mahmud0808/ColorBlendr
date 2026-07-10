@@ -83,8 +83,6 @@ configure<ApplicationExtension> {
     lint {
         abortOnError = true
         checkReleaseBuilds = false
-        // MainActivity recreates on configuration changes, so runtime
-        // context.getString lookups in click handlers cannot go stale.
         disable += "LocalContextGetResourceValueCall"
     }
 

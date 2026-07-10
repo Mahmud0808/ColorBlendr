@@ -48,8 +48,8 @@ import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import java.text.DecimalFormat
 import android.R as AndroidR
 
-// Mirrors SeekbarWidget: the whole card is the track; the progress fill is a
-// 24dp rounded rect clipped horizontally, exactly like seekbar_track.xml.
+// Whole card = track; progress fill = 24dp rounded rect clipped
+// horizontally.
 @Composable
 fun SeekbarItem(
     title: String,

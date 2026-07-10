@@ -32,11 +32,9 @@ import android.graphics.Color as AndroidColor
 
 private val CheckerSquareColor = Color(0xFFCCCCCC) // Color.LTGRAY
 
-// Compose port of colorpicker_item_color.xml + SelectableCircleColorView:
-// square cell with borderless ripple and 8dp margin around a circle swatch;
-// selection scales the circle 0.8 -> 1.0 with decelerate easing; the outline
-// is a 2dp auto-contrast stroke; translucent colors sit on a circular
-// checkerboard.
+// Square cell, borderless ripple, 8dp margin around circle swatch; selection
+// scales circle 0.8 -> 1.0 with decelerate easing; outline = 2dp
+// auto-contrast stroke; translucent colors sit on circular checkerboard.
 @Composable
 internal fun SelectableCircleColor(
     color: Int,
@@ -88,8 +86,7 @@ internal fun SelectableCircleColor(
     )
 }
 
-// SelectableCircleColorView alpha grid: 8dp LTGRAY squares clipped to the
-// swatch circle.
+// Alpha grid: 8dp LTGRAY squares clipped to swatch circle.
 private fun DrawScope.drawCheckerCircle(radius: Float) {
     val square = 8.dp.toPx()
     val circle = Path().apply {

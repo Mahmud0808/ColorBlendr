@@ -202,13 +202,13 @@ fun HomeScreen(
     }
 
     // M3 Expressive motion: spatial springs for slides, effects springs for
-    // fades — smoother and interruptible compared to the old 200ms tweens.
+    // fades.
     val spatialSpec = MaterialTheme.motionScheme.defaultSpatialSpec<IntOffset>()
     val scaleSpec = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
     val effectsSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
 
-    // Direction depends only on tab group order (like FragmentUtil), never on
-    // push vs pop: the incoming screen enters from the side of its group.
+    // Direction depends only on tab group order, never push vs pop: incoming
+    // screen enters from side of its group.
     fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition {
         val fromGroup = tabGroup(initialState.destination.route)
         val toGroup = tabGroup(targetState.destination.route)

@@ -40,10 +40,9 @@ import me.jfenn.colorpickerdialog.compose.components.AllPhotosTile
 import me.jfenn.colorpickerdialog.compose.components.ImageTile
 import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 
-// Compose port of ImagePickerView + colorpicker_layout_image_picker.xml:
-// 300dp tall area showing either the storage-permission gate or a 3-column
-// grid of device images behind an "All Photos" tile that opens the system
-// photo picker; tapping an image hands its uri to the caller for sampling.
+// 300dp area: storage-permission gate or 3-column device image grid behind
+// "All Photos" tile (system photo picker); tapping image hands uri to caller
+// for sampling.
 @Composable
 internal fun ImagePickerPage(
     onImageSelected: (Uri) -> Unit,

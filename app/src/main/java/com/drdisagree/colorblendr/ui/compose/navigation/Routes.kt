@@ -17,8 +17,7 @@ object Routes {
     const val PRIVACY_POLICY = "privacyPolicy"
 }
 
-// Mirrors FragmentUtil group 1-4 mapping used for slide directions and
-// bottom bar highlighting.
+// Group 1-4 mapping for slide directions + bottom bar highlighting.
 fun tabGroup(route: String?): Int = when (route?.substringBefore("?")) {
     Routes.COLORS, Routes.COLOR_PALETTE -> 1
     Routes.THEME -> 2

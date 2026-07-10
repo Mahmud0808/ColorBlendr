@@ -85,8 +85,8 @@ fun ColorPaletteScreen(
     val isOverrideAvailable = remember { isRootMode() && manualColorOverrideEnabled() }
     var overrideRevision by remember { mutableIntStateOf(0) }
 
-    // Re-merge override prefs when a preview is discarded (or anything else
-    // refreshes the data), since the staged overrides are gone by then.
+    // Re-merge override prefs when preview discarded (or anything else
+    // refreshes data); staged overrides gone by then.
     LaunchedEffect(Unit) {
         RefreshCoordinator.refreshEvent.collect { overrideRevision++ }
     }
@@ -113,7 +113,7 @@ fun ColorPaletteScreen(
     val overrideText = stringResource(R.string.override)
     val copyText = stringResource(R.string.copy)
 
-    // Saved as a plain list so the dialog survives rotation.
+    // Saved as plain list so dialog survives rotation.
     var overridePickerRequest by rememberSaveable(
         stateSaver = listSaver(
             save = { request -> request?.toList().orEmpty() },
@@ -124,8 +124,8 @@ fun ColorPaletteScreen(
     ) { mutableStateOf<Triple<Int, Int, Int>?>(null) }
 
     fun showOverridePicker(column: Int, row: Int, currentColor: Int) {
-        // Resolve the (possibly staged) override at open time so the picker
-        // always seeds the color currently shown in the table.
+        // Resolve (possibly staged) override at open time so picker seeds
+        // color currently shown in table.
         val initialColor = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE } ?: currentColor
         overridePickerRequest = Triple(column, row, initialColor)
@@ -223,8 +223,8 @@ fun ColorPaletteScreen(
                         .verticalScroll(scrollState)
                         .padding(top = 12.dp)
                 ) {
-                    // Swipe to dismiss; state is intentionally not persisted,
-                    // the warning returns on the next screen launch.
+                    // Swipe to dismiss; state intentionally not persisted,
+                    // warning returns on next screen launch.
                     var warningVisible by remember { mutableStateOf(true) }
                     AnimatedVisibility(
                         visible = warningVisible,

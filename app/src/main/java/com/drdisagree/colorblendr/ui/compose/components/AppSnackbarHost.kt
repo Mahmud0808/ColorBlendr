@@ -21,15 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Tracks whether any snackbar is currently shown, so overlapping UI (e.g.
-// the preview apply/discard buttons) can move out of the way.
+// Tracks whether any snackbar shows, so overlapping UI (e.g. preview
+// apply/discard buttons) can move out of the way.
 object SnackbarVisibility {
     var count by mutableIntStateOf(0)
     val visible: Boolean get() = count > 0
 }
 
-// Snackbar host matching the old SnackBarStyle theme styles, dismissable by
-// swiping horizontally.
+// Styled snackbar host, dismissable by horizontal swipe.
 @Composable
 fun AppSnackbarHost(
     hostState: SnackbarHostState,
@@ -71,8 +70,7 @@ fun AppSnackbarHost(
     }
 }
 
-// Dismisses the currently shown snackbar before showing the new one instead
-// of queueing behind it.
+// Dismisses current snackbar before showing new one instead of queueing.
 suspend fun SnackbarHostState.showSnackbarReplacing(
     message: String,
     actionLabel: String? = null,
@@ -90,7 +88,7 @@ private fun AppSnackbarHostPreview() {
     ColorBlendrTheme {
         val hostState = remember {
             SnackbarHostState().apply {
-                // Previews cannot suspend; render the styled snackbar directly.
+                // Previews cannot suspend; render styled snackbar directly.
             }
         }
         AppSnackbarHost(hostState = hostState)

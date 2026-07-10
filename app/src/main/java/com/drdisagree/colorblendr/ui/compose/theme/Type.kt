@@ -3,8 +3,8 @@ package com.drdisagree.colorblendr.ui.compose.theme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.PlatformTextStyle
 
-// XML text uses includeFontPadding=true; Compose defaults to false, shifting
-// text metrics by 1-2px. Force the XML behavior for pixel parity.
+// Compose defaults includeFontPadding=false, shifting text metrics 1-2px
+// against platform text layout; force on.
 private val fontPaddingStyle = PlatformTextStyle(includeFontPadding = true)
 
 val AppTypography = Typography().run {

@@ -9,8 +9,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import me.jfenn.colorpickerdialog.R
 
-// Kotlin port of utils/ColorUtils.java + the per-view theme attr fallback
-// chains, so the Compose pickers resolve identical colors to the XML views.
+// Theme attr fallback chains + color helpers for picker components.
 internal object PickerColors {
 
     @ColorInt

@@ -59,10 +59,10 @@ fun AppNavHost(
     val navController = rememberNavController()
     val spatialSpec = MaterialTheme.motionScheme.defaultSpatialSpec<IntOffset>()
 
-    // Saveable so recreation does not re-trigger the restore navigation.
+    // Saveable so recreation doesn't re-trigger restore navigation.
     var pendingRestoreUri by rememberSaveable { mutableStateOf(restoreUri) }
 
-    // Onboarding hands off with success=true, like the old HomeFragment args.
+    // Onboarding hands off with success=true.
     var onboardedSuccess by rememberSaveable { mutableStateOf(false) }
 
     var onboardingAction by remember {
@@ -87,8 +87,8 @@ fun AppNavHost(
                 setWorkingMethod(WORKING_METHOD)
                 onboardedSuccess = true
 
-                // The ViewModels skipped their initial load before
-                // onboarding; load real data now.
+                // ViewModels skipped initial load before onboarding; load
+                // real data now.
                 RefreshCoordinator.triggerRefresh()
 
                 navController.navigate(Routes.HOME) {

@@ -22,10 +22,9 @@ import me.jfenn.colorpickerdialog.compose.components.PickerSliderRow
 import java.util.Locale
 import android.graphics.Color as AndroidColor
 
-// Compose port of HSVPickerView + colorpicker_layout_hsv_picker.xml: hue,
-// saturation and brightness rows (26dp/18dp padding), hue tracked by the
-// color wheel and the other tracks re-derived from the current hue; thumbs
-// tinted neutral; optional alpha row.
+// Hue, saturation, brightness slider rows (26dp/18dp padding); hue track
+// shows color wheel, other tracks re-derive from current hue; neutral thumbs;
+// optional alpha row.
 @Composable
 internal fun HsvPickerPage(
     color: Int,
@@ -51,8 +50,8 @@ internal fun HsvPickerPage(
         return (alpha shl 24) or (rgb and 0x00FFFFFF)
     }
 
-    // External color changes re-seed the sliders (setColor parity); guarded
-    // so our own emissions do not reset the hue on degenerate colors.
+    // External color changes re-seed sliders; guarded so own emissions don't
+    // reset hue on degenerate colors.
     LaunchedEffect(color) {
         if (currentColor() != color) {
             val hsv = FloatArray(3)

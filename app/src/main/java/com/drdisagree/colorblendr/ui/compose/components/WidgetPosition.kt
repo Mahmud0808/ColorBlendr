@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
-// Mirrors MiscUtil.setCardCornerRadius positions 0-3 and the
-// bg_container_top/mid/bottom grouped-row shapes.
+// Widget position inside grouped list; drives which corners round.
 enum class WidgetPosition {
     Single,
     Top,

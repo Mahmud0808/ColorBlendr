@@ -20,8 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Mirrors StylesFragment's dialog built from view_text_field_outlined.xml:
-// two 16dp-rounded outlined fields (RoundedTextInputLayout style).
+// Dialog with two 16dp-rounded outlined text fields.
 @Composable
 fun OutlinedTextFieldDialog(
     title: String,

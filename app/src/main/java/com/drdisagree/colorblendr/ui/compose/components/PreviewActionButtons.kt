@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Apply/discard actions shown while color changes are being previewed.
+// Apply/discard actions shown while color changes previewed.
 @Composable
 fun PreviewActionButtons(
     visible: Boolean,

@@ -263,7 +263,7 @@ private fun OnboardingErrorDialog(
     )
 }
 
-// Mirrors the portrait/landscape guideline scaffolds of the onboarding pages.
+// Portrait/landscape guideline scaffold shared by onboarding pages.
 @Composable
 private fun OnboardingPageScaffold(
     title: String,
@@ -683,8 +683,7 @@ private fun OnboardingScreenPreview() {
     }
 }
 
-// Mirrors requiresFadingEdge="vertical": fade an edge only while more
-// content is scrollable in that direction.
+// Fade edge only while more content scrollable in that direction.
 private fun Modifier.verticalFadingEdges(
     scrollState: ScrollState,
     edgeLength: Dp = 16.dp

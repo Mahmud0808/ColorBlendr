@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.drdisagree.colorblendr.data.config.Prefs
 
-// Snapshot state backed by shared preferences: re-reads whenever one of the
-// given keys changes, or the whole store is rewritten (null key on clear,
-// e.g. during backup restore).
+// Snapshot state backed by shared prefs: re-reads when any given key
+// changes, or whole store rewritten (null key on clear, e.g. backup
+// restore).
 @Composable
 fun <T> rememberPrefState(vararg keys: String, read: () -> T): MutableState<T> {
     val state = remember { mutableStateOf(read()) }

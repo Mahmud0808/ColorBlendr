@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Large tappable entry to the color palette page, previewing the current
+// Large tappable entry to color palette page; previews current
 // primary/secondary/tertiary colors as overlapping gradient circles.
 @Composable
 fun ColorPalettePreviewCard(

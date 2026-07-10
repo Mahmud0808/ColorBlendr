@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Check icon where selecting fills the circle and strokes the tick in like
-// it is being drawn; deselecting reverses the drawing.
+// Check icon: selecting fills circle and strokes tick in like being drawn;
+// deselecting reverses.
 @Composable
 fun AnimatedCheckIcon(
     selected: Boolean,
@@ -45,7 +45,7 @@ fun AnimatedCheckIcon(
         val center = Offset(size.width / 2f, size.height / 2f)
         val radius = size.minDimension / 2f - stroke
 
-        // Outline ring, strengthening toward the filled state.
+        // Outline ring, strengthens toward filled state.
         drawCircle(
             color = tint.copy(alpha = 0.2f + 0.8f * clampedProgress),
             radius = radius,
@@ -62,7 +62,7 @@ fun AnimatedCheckIcon(
             )
         }
 
-        // Tick drawn progressively, cut out of the fill.
+        // Tick drawn progressively, cut out of fill.
         val tickProgress = ((clampedProgress - 0.35f) / 0.65f).coerceIn(0f, 1f)
         if (tickProgress > 0f) {
             val tickPath = Path().apply {

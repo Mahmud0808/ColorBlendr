@@ -36,8 +36,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import android.R as AndroidR
 import com.google.android.material.R as MaterialR
 
-// Mirrors view_backup_restore.xml: tapping the card crossfades the
-// backup/restore button row in and out (config_mediumAnimTime).
+// Tap crossfades backup/restore button row in/out (config_mediumAnimTime).
 @Composable
 fun BackupRestoreCard(
     onBackup: () -> Unit,

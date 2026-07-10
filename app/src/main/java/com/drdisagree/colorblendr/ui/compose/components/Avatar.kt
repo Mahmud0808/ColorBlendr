@@ -16,8 +16,7 @@ import coil3.request.crossfade
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Circle-cropped remote avatar with crossfade, matching the old Glide
-// setRoundImageUrl behavior from AboutAppAdapter.
+// Circle-cropped remote avatar with crossfade.
 @Composable
 fun Avatar(
     url: String,

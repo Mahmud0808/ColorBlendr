@@ -27,8 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Blocking overlay with a rounded box, loading indicator and label; shown
-// while a longer operation (e.g. applying colors) is in progress.
+// Blocking overlay: rounded box, loading indicator, label; shown during
+// longer operations (e.g. applying colors).
 @Composable
 fun LoadingOverlay(
     visible: Boolean,

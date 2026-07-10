@@ -50,9 +50,8 @@ import com.drdisagree.colorblendr.ui.compose.views.ColorPreviewCanvas
 import com.drdisagree.colorblendr.ui.compose.views.defaultSquareColor
 import com.google.android.material.R as MaterialR
 
-// Mirrors StylePreviewWidget: outlined card with 60dp ColorPreview, selected
-// state fills primaryContainer with a 2px stroke, long-press opens the
-// custom-style popup (edit/update/delete) like custom_style_menu.xml.
+// Outlined card with 60dp color preview; selected = primaryContainer fill +
+// 2px stroke; long-press opens custom-style popup (edit/update/delete).
 @Composable
 fun StylePreviewCard(
     title: String,
@@ -184,7 +183,7 @@ fun StylePreviewCard(
                 onDismissRequest = { menuExpanded = false },
                 shape = RoundedCornerShape(16.dp),
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                // Follow the touch x, but keep the popup within the card.
+                // Follow touch x, keep popup within card.
                 offset = DpOffset(
                     pressX.coerceIn(0.dp, (cardWidth - menuWidth).coerceAtLeast(0.dp)),
                     0.dp

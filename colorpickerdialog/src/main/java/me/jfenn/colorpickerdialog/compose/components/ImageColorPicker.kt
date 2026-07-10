@@ -42,11 +42,10 @@ import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 import kotlin.math.roundToInt
 import android.graphics.Color as AndroidColor
 
-// Compose port of ImageColorPickerView, extended with pinch zoom/pan and a
-// floating loupe: while one finger samples, a magnified preview of the pixels
-// under the finger is shown above it (ringed with the sampled color) so the
-// finger never hides the pick; two fingers zoom and pan the image. The color
-// commits on finger up with alpha forced opaque.
+// Touch sampler with pinch zoom/pan + floating loupe: one finger samples,
+// magnified preview shows above finger (ringed with sampled color) so finger
+// never hides pick; two fingers zoom/pan. Color commits on finger up, alpha
+// forced opaque.
 @Composable
 internal fun ImageColorPicker(
     bitmap: Bitmap,
@@ -58,14 +57,14 @@ internal fun ImageColorPicker(
     var scale by remember(bitmap) { mutableFloatStateOf(1f) }
     var offset by remember(bitmap) { mutableStateOf(Offset.Zero) }
     var touchPosition by remember(bitmap) { mutableStateOf<Offset?>(null) }
-    // Content-space position of the last committed pick, so the marker stays
-    // on the same pixel through zoom and pan.
+    // Content-space position of last committed pick; marker stays on same
+    // pixel through zoom/pan.
     var pickedPosition by remember(bitmap) { mutableStateOf<Offset?>(null) }
     var pickedColor by remember(bitmap) { mutableStateOf<Int?>(null) }
     var viewSize by remember(bitmap) { mutableStateOf(IntSize.Zero) }
 
     // Container position -> untransformed content position (graphicsLayer
-    // scales/translates around the center).
+    // scales/translates around center).
     fun toContentPosition(position: Offset): Offset {
         val center = Offset(viewSize.width / 2f, viewSize.height / 2f)
         return center + (position - center - offset) / scale
@@ -114,7 +113,7 @@ internal fun ImageColorPicker(
 
                         when {
                             pressed.size >= 2 -> {
-                                // Pinch: zoom around the centroid and pan.
+                                // Pinch: zoom around centroid + pan.
                                 isTransforming = true
                                 touchPosition = null
 
@@ -162,9 +161,8 @@ internal fun ImageColorPicker(
                 viewSize = IntSize(size.width.toInt(), size.height.toInt())
                 drawContent()
 
-                // Single marker (original ImageColorPickerView circle parity):
-                // follows the finger while sampling, then stays on the picked
-                // pixel through zoom and pan.
+                // Single marker: follows finger while sampling, then stays
+                // on picked pixel through zoom/pan.
                 val touch = touchPosition
                 val markerCenter: Offset?
                 val markerColor: Int?
@@ -223,9 +221,8 @@ internal fun ImageColorPicker(
     }
 }
 
-// Floating magnifier above the finger: a circle previewing the pixels around
-// the sample point at 2x the current zoom, ringed with the sampled color and
-// a contrast outline, plus a small ring marking the exact touch point.
+// Floating magnifier above finger: circle previews pixels around sample
+// point at 2x current zoom, ringed with sampled color + contrast outline.
 private fun DrawScope.drawLoupe(
     image: ImageBitmap,
     bitmap: Bitmap,
@@ -238,7 +235,7 @@ private fun DrawScope.drawLoupe(
     val fingerGap = 84.dp.toPx()
     val contrast = if (PickerColors.isColorDark(sampledColor)) Color.White else Color.Black
 
-    // Above the finger; below it when there is no room.
+    // Above finger; below when no room.
     val rawCenter = if (touch.y - fingerGap - loupeRadius >= 0f) {
         Offset(touch.x, touch.y - fingerGap)
     } else {
@@ -249,8 +246,8 @@ private fun DrawScope.drawLoupe(
         rawCenter.y.coerceIn(loupeRadius, size.height - loupeRadius)
     )
 
-    // Bitmap region shown inside the loupe (2x magnification over the
-    // current on-screen zoom).
+    // Bitmap region shown inside loupe (2x magnification over current
+    // on-screen zoom).
     val magnification = viewScale * 2f
     val srcRadius = (loupeRadius / magnification).coerceAtLeast(2f)
     val bitmapX = contentPosition.x * bitmap.width / size.width
@@ -285,7 +282,7 @@ private fun DrawScope.drawLoupe(
         )
     }
 
-    // Crosshair at the loupe center, sampled-color ring and contrast outline.
+    // Crosshair at loupe center, sampled-color ring, contrast outline.
     drawCircle(
         color = contrast,
         radius = 4.dp.toPx(),

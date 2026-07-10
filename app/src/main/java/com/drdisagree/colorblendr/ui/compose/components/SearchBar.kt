@@ -36,9 +36,8 @@ import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import android.R as AndroidR
 
-// Mirrors view_searchbar.xml: 48dp outlined pill over a BlurView backdrop.
-// The blur is reproduced with Haze; pass the screen's HazeState whose source
-// is the content scrolling underneath.
+// 48dp outlined pill over Haze-blurred backdrop; pass screen's HazeState
+// whose source is content scrolling underneath.
 @Composable
 fun SearchBar(
     query: String,

@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.google.android.material.R as MaterialR
 
-// Verbatim port of ColorPreview.onDraw: 12dp rounded square, half circle at
-// 180deg sweep 180, quarter arcs at 90 and 0 sweeping 90, inset by padding.
+// 12dp rounded square, half circle at 180deg sweep 180, quarter arcs at
+// 90/0 sweeping 90, inset by padding.
 @Composable
 fun ColorPreviewCanvas(
     modifier: Modifier = Modifier,

@@ -6,10 +6,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.drdisagree.colorblendr.data.domain.PreviewController.PreviewColors
 
-// Builds the theme from locally computed overlay colors while a preview is
-// active; role names match the resources the fabricated overlay would set.
-// Inverse roles have no overlay mapping and mirror the framework's static
-// shade references instead.
+// Builds theme from locally computed overlay colors while preview active;
+// role names match resources the fabricated overlay would set. Inverse roles
+// have no overlay mapping; use framework's static shade references.
 fun previewColorScheme(previewColors: PreviewColors, isDark: Boolean): ColorScheme {
     val map = if (isDark) previewColors.darkMap else previewColors.lightMap
     val palette = if (isDark) previewColors.paletteDark else previewColors.paletteLight

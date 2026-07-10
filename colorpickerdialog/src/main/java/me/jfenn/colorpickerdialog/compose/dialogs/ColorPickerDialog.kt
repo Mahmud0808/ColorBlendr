@@ -90,11 +90,9 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import android.graphics.Color as AndroidColor
 
-// Compose port of ColorPickerDialog + colorpicker_dialog_color_picker.xml:
-// color band with the centered hex field, tabbed pickers (tab clicks only,
-// swipe disabled like HeightableViewPager) and the 64dp M3 expressive button
-// bar. Portrait stacks the color band on top (8dp corners); landscape puts a
-// vertical band on the left with scrollable tabs (24dp corners).
+// Color band with centered hex field, tabbed pickers (tab clicks only, no
+// swipe), 64dp M3 expressive button bar. Portrait stacks band on top (8dp
+// corners); landscape puts vertical band on left (24dp corners).
 @Composable
 fun ColorPickerDialog(
     initialColor: Int,
@@ -119,9 +117,8 @@ fun ColorPickerDialog(
         animateHeader = animate
     }
 
-    // PickerDialog window parity: min(500dp portrait / 800dp landscape, 90%
-    // of the screen); the card corner is the max of the requested radius and
-    // the layout's own corner (8dp portrait, 24dp landscape).
+    // Window width: min(500dp portrait / 800dp landscape, 90% of screen);
+    // card corner = max(requested radius, 8dp portrait / 24dp landscape).
     val dialogWidth = min(
         if (isLandscape) 800 else 500,
         (configuration.screenWidthDp * 0.9f).toInt()
@@ -138,9 +135,8 @@ fun ColorPickerDialog(
             modifier = Modifier.width(dialogWidth)
         ) {
             if (isLandscape) {
-                // TabRow forbids intrinsic measurement, so the color band is
-                // sized from the measured picker column instead: its width is
-                // min(200dp, column height) like VerticalSmoothColorView.
+                // Color band sized from measured picker column: width =
+                // min(200dp, column height).
                 Layout(
                     content = {
                         Box(contentAlignment = Alignment.Center) {
@@ -245,9 +241,9 @@ fun ColorPickerDialog(
     }
 }
 
-// The centered hex EditText: 24sp, hash + hex digits only, 7/9 chars by
-// alpha, caps, contrast-colored text and cursor; a complete valid value
-// updates the color, and programmatic color changes rewrite the text.
+// Centered hex field: 24sp, hash + hex digits only, 7/9 chars by alpha,
+// caps, contrast text + cursor; complete valid value updates color;
+// programmatic color changes rewrite text.
 @Composable
 private fun HexField(
     color: Int,
@@ -305,10 +301,9 @@ private fun HexField(
     )
 }
 
-// M3 expressive connected-button tabs: rounded track with a pill that slides
-// behind the selected tab. Tabs get at least an equal share of the track; if
-// labels overflow, the row scrolls and only a side that can still scroll
-// shows a fading edge.
+// M3 expressive connected-button tabs: rounded track, pill slides behind
+// selected tab. Tabs get at least equal share of track; overflowing labels
+// make row scroll, fading edge only on sides that can still scroll.
 @Composable
 private fun PickerTabs(
     pickers: List<ColorPickerType>,
@@ -361,7 +356,7 @@ private fun PickerTabs(
     ) {
         val minTabWidth = maxWidth / pickers.size
 
-        // Keep the selected tab in view when it changes.
+        // Keep selected tab in view on change.
         LaunchedEffect(selectedPage) {
             tabBounds[selectedPage]?.let { (x, width) ->
                 val viewport = constraints.maxWidth.toFloat()
@@ -433,9 +428,8 @@ private fun PickerTabs(
     }
 }
 
-// HeightableViewPager parity: pages slide horizontally on tab clicks, height
-// snaps to the new page, and user swiping is disabled (AnimatedContent has no
-// swipe at all).
+// Pages slide horizontally on tab clicks; height snaps to new page; no
+// swipe.
 @Composable
 private fun PickerPages(
     pickers: List<ColorPickerType>,
@@ -490,8 +484,7 @@ private fun PickerPages(
     }
 }
 
-// The 64dp end-aligned button bar with the Material3 Expressive outlined
-// cancel and filled confirm buttons.
+// 64dp end-aligned bar: M3 expressive outlined cancel + filled confirm.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun DialogButtons(

@@ -34,9 +34,7 @@ import coil3.request.crossfade
 import me.jfenn.colorpickerdialog.R
 import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 
-// Compose port of colorpicker_item_image.xml: 4dp-corner square thumbnail
-// with 4dp margin, center-cropped, crossfaded in (Glide transition parity,
-// loaded with Coil instead).
+// 4dp-corner square thumbnail, 4dp margin, center-cropped, Coil crossfade.
 @Composable
 internal fun ImageTile(
     uri: Uri,
@@ -62,8 +60,7 @@ internal fun ImageTile(
     )
 }
 
-// Compose port of colorpicker_item_image_select.xml: dimmed rounded square
-// with the "add a photo" icon and the All Photos label.
+// Dimmed rounded square with "add a photo" icon and All Photos label.
 @Composable
 internal fun AllPhotosTile(
     onClick: () -> Unit,

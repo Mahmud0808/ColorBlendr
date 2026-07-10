@@ -23,9 +23,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import kotlin.math.min
 
-// Compose port of SmoothColorView + AlphaColorDrawable: draws the color over
-// an 8dp checkered tile pattern while it is translucent; color changes
-// crossfade in 100ms (TransitionDrawable parity), or snap when animate=false.
+// Draws color over 8dp checker tile while translucent; color changes
+// crossfade 100ms, snap when animate=false.
 
 private val CheckerSquare = Color(0xFFCCCCCC) // Color.LTGRAY
 
@@ -48,7 +47,7 @@ fun SmoothColorView(
     )
 }
 
-// Height is always 56.25% of the available width (HorizontalSmoothColorView).
+// Height always 56.25% of available width.
 @Composable
 fun HorizontalSmoothColorView(
     color: Int,
@@ -64,7 +63,7 @@ fun HorizontalSmoothColorView(
     )
 }
 
-// Width matches the available height, capped at 200dp (VerticalSmoothColorView).
+// Width matches available height, capped at 200dp.
 @Composable
 fun VerticalSmoothColorView(
     color: Int,
@@ -87,8 +86,8 @@ fun VerticalSmoothColorView(
     )
 }
 
-// AlphaColorDrawable parity: white base with staggered LTGRAY squares, only
-// visible while the color has transparency.
+// White base with staggered LTGRAY squares, visible only while color has
+// transparency.
 internal fun DrawScope.drawCheckeredColor(color: Color) {
     if (color.alpha < 1f) {
         val tile = 8.dp.toPx()

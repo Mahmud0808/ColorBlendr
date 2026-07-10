@@ -14,13 +14,13 @@ import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 
 object AppCardDefaults {
 
-    // Same overridden m3_card_stroke_color resource MDC outlined cards resolve,
-    // including the app's per-API and night bucket overrides. Preview-aware:
-    // the resource maps to neutral_variant tone 70/20 (palette row 4, shade
-    // 300/800), resolved from the locally computed palette while previewing.
+    // Outlined card stroke from m3_card_stroke_color (per-API + night bucket
+    // overrides). Preview-aware: resource maps to neutral_variant tone 70/20
+    // (palette row 4, shade 300/800), resolved from locally computed palette
+    // while previewing.
     @Composable
     fun outlinedBorder(): BorderStroke {
-        // Re-resolve when the preview resources loader is added or removed.
+        // Re-resolve when preview resources loader added/removed.
         PreviewResourcesOverride.revision
 
         val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()

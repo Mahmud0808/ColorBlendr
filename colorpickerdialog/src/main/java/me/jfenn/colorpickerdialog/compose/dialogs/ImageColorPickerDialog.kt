@@ -40,10 +40,8 @@ import coil3.toBitmap
 import me.jfenn.colorpickerdialog.compose.components.ImageColorPicker
 import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 
-// Compose port of ImageColorPickerDialog + colorpicker_dialog_image_color_picker.xml:
-// a surface-colored 8dp-corner card holding the touch sampler above a 64dp
-// text-button bar; OK confirms the sampled color, the bitmap loads with Coil
-// (Glide replacement).
+// Surface-colored 8dp-corner card: touch sampler above 64dp button bar; OK
+// confirms sampled color; bitmap loads with Coil.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ImageColorPickerDialog(
@@ -75,8 +73,8 @@ fun ImageColorPickerDialog(
                 bitmap?.let {
                     Box(
                         contentAlignment = Alignment.Center,
-                        // fill=false keeps the buttons on screen: the image
-                        // takes at most the remaining height and aspect-fits.
+                        // fill=false keeps buttons on screen: image takes at
+                        // most remaining height, aspect-fits.
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f, fill = false)

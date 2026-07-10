@@ -109,8 +109,8 @@ fun ColorsScreen(
     var seedPickerVisible by remember { mutableStateOf(customColorEnabled()) }
     var showSeedColorPicker by rememberSaveable { mutableStateOf(false) }
 
-    // Mirrors ColorsFragment.updateViewVisibility: react when the Settings
-    // custom-color switch changes the pref (via RefreshCoordinator).
+    // React when Settings custom-color switch changes pref (via
+    // RefreshCoordinator).
     LaunchedEffect(customColorPref) {
         if (seedPickerVisible != customColorPref) {
             seedPickerVisible = customColorPref
@@ -123,8 +123,8 @@ fun ColorsScreen(
         }
     }
 
-    // Re-sync local selection state when a preview is discarded (or any other
-    // external pref restore) so the selected tick returns to the saved color.
+    // Re-sync local selection when preview discarded (or other external pref
+    // restore) so selected tick returns to saved color.
     LaunchedEffect(Unit) {
         RefreshCoordinator.refreshEvent.collect {
             val customColorPref = customColorEnabled()

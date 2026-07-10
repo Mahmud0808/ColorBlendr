@@ -26,11 +26,10 @@ import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import android.graphics.Color as AndroidColor
 
-// Header labels are hardcoded in view_color_table.xml; keep them identical.
 private val columnHeaders = listOf("Accent\n1", "Accent\n2", "Accent\n3", "Neutral\n1", "Neutral\n2")
 
-// Mirrors view_color_table.xml: outlined card, header row on surfaceContainer,
-// then 5 columns x 13 rows of 16dp-tall color cells.
+// Outlined card, header row on surfaceContainer, 5 columns x 13 rows of
+// 16dp-tall color cells.
 @Composable
 fun ColorTable(
     colors: List<List<Int>>,

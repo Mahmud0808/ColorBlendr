@@ -17,9 +17,8 @@ import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 import me.jfenn.colorpickerdialog.compose.components.PickerSliderRow
 import android.graphics.Color as AndroidColor
 
-// Compose port of RGBPickerView + colorpicker_layout_rgb_picker.xml: red,
-// green and blue rows with solid theme-colored tracks and matching thumb
-// tints; optional alpha row.
+// Red, green, blue slider rows with solid theme-colored tracks and matching
+// thumb tints; optional alpha row.
 @Composable
 internal fun RgbPickerPage(
     color: Int,

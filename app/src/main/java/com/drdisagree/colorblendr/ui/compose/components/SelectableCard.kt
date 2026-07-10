@@ -37,9 +37,8 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Mirrors SelectableViewWidget: outlined card that fills primaryContainer when
-// selected, with checked icon fading 0.2 -> 1.0. Margins come from the caller,
-// matching view_widget_selectable.xml which has none of its own.
+// Outlined card, fills primaryContainer when selected, checked icon fades
+// 0.2 -> 1.0. Margins come from caller.
 @Composable
 fun SelectableCard(
     title: String,

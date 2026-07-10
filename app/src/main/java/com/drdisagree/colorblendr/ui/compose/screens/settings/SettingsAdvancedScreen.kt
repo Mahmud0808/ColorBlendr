@@ -131,8 +131,8 @@ fun SettingsAdvancedScreen(
         setSelectedFabricatedApps(selectedApps)
     }
 
-    // Saveable target so the dialog survives rotation (lambdas cannot be
-    // saved in instance state).
+    // Saveable target so dialog survives rotation (lambdas can't go in
+    // instance state).
     var colorPickerTarget by rememberSaveable { mutableStateOf<String?>(null) }
 
     colorPickerTarget?.let { target ->

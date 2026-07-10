@@ -27,8 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Verbatim port of WallColorPreview.onDraw: 12dp rounded square, arcs inset
-// 6dp, 10dp center circle over a clear circle, 4px round-cap tick when selected.
+// 12dp rounded square, arcs inset 6dp, 10dp center circle over a clear
+// circle, 4px round-cap tick when selected.
 @Composable
 fun WallColorPreviewCanvas(
     colors: WallColorPreviewColors,

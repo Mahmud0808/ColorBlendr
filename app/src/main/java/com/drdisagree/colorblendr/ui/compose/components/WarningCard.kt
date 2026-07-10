@@ -26,8 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Mirrors view_per_app_warn.xml / view_color_palette_warn.xml: a
-// primaryContainer note card with bold title and optional close action.
+// primaryContainer note card: bold title, optional close action.
 @Composable
 fun WarningCard(
     warningText: String,
