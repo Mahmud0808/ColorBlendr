@@ -11,8 +11,11 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -209,14 +212,24 @@ fun HomeScreen(
     val scaleSpec = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
     val effectsSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
 
-    // Direction depends only on tab group order, never push vs pop: incoming
-    // screen enters from side of its group.
-    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition {
+    // Tab switches: direction from tab group order, never push vs pop.
+    // Same-group pushes (detail pages): expressive depth motion — detail
+    // rises in scaling up over the parent while the parent recedes behind;
+    // pop reverses.
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(pop: Boolean): EnterTransition {
         val fromGroup = tabGroup(initialState.destination.route)
         val toGroup = tabGroup(targetState.destination.route)
         return when {
-            fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
+            fromGroup == 0 || toGroup == 0 ->
                 fadeIn(effectsSpec) + scaleIn(scaleSpec, initialScale = 0.96f)
+
+            fromGroup == toGroup -> if (pop) {
+                fadeIn(effectsSpec) + scaleIn(scaleSpec, initialScale = 1.08f)
+            } else {
+                fadeIn(effectsSpec) +
+                        scaleIn(scaleSpec, initialScale = 0.9f) +
+                        slideInVertically(spatialSpec) { it / 8 }
+            }
 
             toGroup > fromGroup ->
                 slideInHorizontally(spatialSpec) { it }
@@ -226,12 +239,20 @@ fun HomeScreen(
         }
     }
 
-    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition {
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(pop: Boolean): ExitTransition {
         val fromGroup = tabGroup(initialState.destination.route)
         val toGroup = tabGroup(targetState.destination.route)
         return when {
-            fromGroup == toGroup || fromGroup == 0 || toGroup == 0 ->
+            fromGroup == 0 || toGroup == 0 ->
                 fadeOut(effectsSpec)
+
+            fromGroup == toGroup -> if (pop) {
+                fadeOut(effectsSpec) +
+                        scaleOut(scaleSpec, targetScale = 0.9f) +
+                        slideOutVertically(spatialSpec) { it / 8 }
+            } else {
+                fadeOut(effectsSpec) + scaleOut(scaleSpec, targetScale = 1.08f)
+            }
 
             toGroup > fromGroup ->
                 slideOutHorizontally(spatialSpec) { -it }
@@ -258,10 +279,10 @@ fun HomeScreen(
                     NavHost(
                         navController = nestedNavController,
                         startDestination = Routes.COLORS,
-                        enterTransition = { enter() },
-                        exitTransition = { exit() },
-                        popEnterTransition = { enter() },
-                        popExitTransition = { exit() },
+                        enterTransition = { enter(pop = false) },
+                        exitTransition = { exit(pop = false) },
+                        popEnterTransition = { enter(pop = true) },
+                        popExitTransition = { exit(pop = true) },
                         modifier = Modifier.fillMaxSize()
                     ) {
                         composable(Routes.COLORS) {
