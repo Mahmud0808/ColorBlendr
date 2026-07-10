@@ -1,7 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -28,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -81,6 +86,12 @@ fun StylePreviewCard(
     val strokeWidth = with(LocalDensity.current) { 2.toDp() }
     val hasMenu = onEdit != null || onUpdate != null || onDelete != null
     var menuExpanded by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val pressScale by animateFloatAsState(
+        targetValue = if (pressed && enabled) 0.98f else 1f,
+        label = "styleCardPress"
+    )
     var pressX by remember { mutableStateOf(0.dp) }
     var cardWidth by remember { mutableStateOf(0.dp) }
     var menuWidth by remember { mutableStateOf(0.dp) }
@@ -106,6 +117,10 @@ fun StylePreviewCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .onSizeChanged { cardWidth = with(density) { it.width.toDp() } }
+                .graphicsLayer {
+                    scaleX = pressScale
+                    scaleY = pressScale
+                }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -120,6 +135,8 @@ fun StylePreviewCard(
                         }
                     }
                     .combinedClickable(
+                        interactionSource = interactionSource,
+                        indication = LocalIndication.current,
                         enabled = enabled,
                         onLongClick = if (hasMenu) {
                             { menuExpanded = true }

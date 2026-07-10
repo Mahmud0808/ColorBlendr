@@ -107,8 +107,9 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
     }
 
     val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     val fabBottomPadding by animateDpAsState(
-        targetValue = if (previewColors != null) 84.dp else 12.dp,
+        targetValue = if (previewColors != null && !isApplying) 84.dp else 12.dp,
         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
         label = "fabPreviewPush"
     )
