@@ -102,6 +102,7 @@ object Prefs {
             is Long -> editor.putLong(key, value)
             is Float -> editor.putFloat(key, value)
             is String -> editor.putString(key, value)
+            is Double -> editor.putInt(key, value.toInt())
             else -> throw IllegalArgumentException(
                 "Type ${value.javaClass.simpleName} is unknown"
             )

@@ -100,15 +100,16 @@ object PreviewController {
     fun applyChanges() {
         controllerScope.launch {
             _isApplying.value = true
-            Prefs.commitStaged()
-            updateColorAppliedTimestamp()
             try {
+                Prefs.commitStaged()
+                updateColorAppliedTimestamp()
                 applyFabricatedColors()
             } catch (e: Exception) {
                 Log.e(TAG, "Error applying preview colors", e)
+            } finally {
+                _previewColors.value = null
+                _isApplying.value = false
             }
-            _previewColors.value = null
-            _isApplying.value = false
         }
     }
 

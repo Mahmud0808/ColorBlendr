@@ -263,7 +263,15 @@ object BackupRestore {
             }
 
             fun put(key: String, value: Any) {
-                if (staging) Prefs.putAny(key, value) else putObject(key, value)
+                if (staging) {
+                    when (value) {
+                        is Float -> Prefs.putInt(key, value.toInt())
+                        is Double -> Prefs.putInt(key, value.toInt())
+                        else -> Prefs.putAny(key, value)
+                    }
+                } else {
+                    putObject(key, value)
+                }
             }
 
             // Restore excluded prefs
