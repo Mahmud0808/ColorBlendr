@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -209,23 +210,37 @@ private fun DetailsContent(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Button(
-                        onClick = {
-                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                            CommunityThemeApplier.stageForPreview(theme)
-                            scope.launch { PreviewController.updatePreview() }
-                        },
-                        enabled = rootMode,
-                        shapes = ButtonDefaults.shapes(),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = if (rootMode) {
-                                stringResource(R.string.try_this_creation)
-                            } else {
-                                stringResource(R.string.root_required)
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = {
+                                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                CommunityThemeApplier.stageForPreview(theme)
+                                scope.launch { PreviewController.updatePreview() }
+                            },
+                            enabled = rootMode,
+                            shapes = ButtonDefaults.shapes(),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = stringResource(R.string.try_this_creation))
+                        }
+
+                        if (!rootMode) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 0.dp, y = (-8).dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.root_required),
+                                    color = MaterialTheme.colorScheme.onError,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
                             }
-                        )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
