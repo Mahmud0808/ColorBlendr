@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
@@ -148,7 +149,10 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 LazyColumn(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(top = 12.dp, bottom = 12.dp),
+                    contentPadding = PaddingValues(
+                        top = 12.dp,
+                        bottom = 12.dp + LocalPreviewBottomInset.current
+                    ),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(styleList, key = { it.customStyle?.styleId ?: it.titleResId }) { style ->

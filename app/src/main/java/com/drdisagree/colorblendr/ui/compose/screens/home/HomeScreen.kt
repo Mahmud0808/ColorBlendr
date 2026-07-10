@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
@@ -242,75 +244,87 @@ fun HomeScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
-                NavHost(
-                    navController = nestedNavController,
-                    startDestination = Routes.COLORS,
-                    enterTransition = { enter() },
-                    exitTransition = { exit() },
-                    popEnterTransition = { enter() },
-                    popExitTransition = { exit() },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    composable(Routes.COLORS) {
-                        LaunchedEffect(Unit) {
-                            if (isShizukuMode()) {
-                                clearAllOverriddenColors()
-                            }
-                        }
-                        ColorsScreen(
-                            colorsViewModel = colorsViewModel,
-                            onNavigateToColorPalette = {
-                                nestedNavController.navigate(Routes.COLOR_PALETTE)
-                            }
-                        )
-                    }
-                    composable(Routes.THEME) { ThemeScreen() }
-                    composable(Routes.STYLES) {
-                        StylesScreen(stylesViewModel = stylesViewModel)
-                    }
-                    composable(
-                        route = Routes.SETTINGS,
-                        arguments = listOf(
-                            navArgument("restoreUri") {
-                                nullable = true
-                                defaultValue = null
-                            }
-                        )
-                    ) { entry ->
-                        var restoreConsumed by rememberSaveable { mutableStateOf(false) }
-                        val restoreUriArg = entry.arguments?.getString("restoreUri")
+                // Reserve room above preview FABs: 56dp FAB + 12dp margin + gap.
+                val previewBottomInset by animateDpAsState(
+                    targetValue = if (previewColors != null && !isApplying) 80.dp else 0.dp,
+                    animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+                    label = "previewBottomInset"
+                )
 
-                        SettingsScreen(
-                            restoreUri = if (!restoreConsumed) {
-                                restoreUriArg?.let { Uri.parse(it) }
-                            } else {
-                                null
-                            },
-                            onRestoreUriConsumed = { restoreConsumed = true },
-                            onNavigateToAbout = { nestedNavController.navigate(Routes.ABOUT) },
-                            onNavigateToAdvanced = {
-                                nestedNavController.navigate(Routes.SETTINGS_ADVANCED)
-                            },
-                            onNavigateToPrivacyPolicy = {
-                                nestedNavController.navigate(Routes.PRIVACY_POLICY)
+                CompositionLocalProvider(
+                    // Spatial spring can overshoot below zero; padding forbids it.
+                    LocalPreviewBottomInset provides previewBottomInset.coerceAtLeast(0.dp)
+                ) {
+                    NavHost(
+                        navController = nestedNavController,
+                        startDestination = Routes.COLORS,
+                        enterTransition = { enter() },
+                        exitTransition = { exit() },
+                        popEnterTransition = { enter() },
+                        popExitTransition = { exit() },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        composable(Routes.COLORS) {
+                            LaunchedEffect(Unit) {
+                                if (isShizukuMode()) {
+                                    clearAllOverriddenColors()
+                                }
                             }
-                        )
+                            ColorsScreen(
+                                colorsViewModel = colorsViewModel,
+                                onNavigateToColorPalette = {
+                                    nestedNavController.navigate(Routes.COLOR_PALETTE)
+                                }
+                            )
+                        }
+                        composable(Routes.THEME) { ThemeScreen() }
+                        composable(Routes.STYLES) {
+                            StylesScreen(stylesViewModel = stylesViewModel)
+                        }
+                        composable(
+                            route = Routes.SETTINGS,
+                            arguments = listOf(
+                                navArgument("restoreUri") {
+                                    nullable = true
+                                    defaultValue = null
+                                }
+                            )
+                        ) { entry ->
+                            var restoreConsumed by rememberSaveable { mutableStateOf(false) }
+                            val restoreUriArg = entry.arguments?.getString("restoreUri")
+
+                            SettingsScreen(
+                                restoreUri = if (!restoreConsumed) {
+                                    restoreUriArg?.let { Uri.parse(it) }
+                                } else {
+                                    null
+                                },
+                                onRestoreUriConsumed = { restoreConsumed = true },
+                                onNavigateToAbout = { nestedNavController.navigate(Routes.ABOUT) },
+                                onNavigateToAdvanced = {
+                                    nestedNavController.navigate(Routes.SETTINGS_ADVANCED)
+                                },
+                                onNavigateToPrivacyPolicy = {
+                                    nestedNavController.navigate(Routes.PRIVACY_POLICY)
+                                }
+                            )
+                        }
+                        composable(Routes.COLOR_PALETTE) {
+                            ColorPaletteScreen(
+                                colorPaletteViewModel = colorPaletteViewModel
+                            )
+                        }
+                        composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
+                        composable(Routes.SETTINGS_ADVANCED) {
+                            SettingsAdvancedScreen(
+                                onNavigateToPerAppTheme = {
+                                    nestedNavController.navigate(Routes.PER_APP_THEME)
+                                }
+                            )
+                        }
+                        composable(Routes.ABOUT) { AboutScreen() }
+                        composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
                     }
-                    composable(Routes.COLOR_PALETTE) {
-                        ColorPaletteScreen(
-                            colorPaletteViewModel = colorPaletteViewModel
-                        )
-                    }
-                    composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
-                    composable(Routes.SETTINGS_ADVANCED) {
-                        SettingsAdvancedScreen(
-                            onNavigateToPerAppTheme = {
-                                nestedNavController.navigate(Routes.PER_APP_THEME)
-                            }
-                        )
-                    }
-                    composable(Routes.ABOUT) { AboutScreen() }
-                    composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
                 }
 
                 val fabBottomPadding by animateDpAsState(
