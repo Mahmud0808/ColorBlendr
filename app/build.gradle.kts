@@ -201,4 +201,5 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.haze)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }
