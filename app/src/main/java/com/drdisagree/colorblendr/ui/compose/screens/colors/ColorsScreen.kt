@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
@@ -76,14 +76,13 @@ import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewColors
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import kotlinx.coroutines.launch
-import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
-import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ColorsScreen(
     colorsViewModel: ColorsViewModel,
-    fragmentManager: FragmentManager?,
     onNavigateToColorPalette: () -> Unit
 ) {
     val context = LocalContext.current
@@ -108,6 +107,7 @@ fun ColorsScreen(
         )
     }
     var seedPickerVisible by remember { mutableStateOf(customColorEnabled()) }
+    var showSeedColorPicker by rememberSaveable { mutableStateOf(false) }
 
     // Mirrors ColorsFragment.updateViewVisibility: react when the Settings
     // custom-color switch changes the pref (via RefreshCoordinator).
@@ -171,6 +171,34 @@ fun ColorsScreen(
         scope.launch {
             PreviewController.updatePreview()
         }
+    }
+
+    if (showSeedColorPicker) {
+        ColorPickerDialog(
+            initialColor = seedColor,
+            onDismissRequest = { showSeedColorPicker = false },
+            onColorPicked = { color ->
+                showSeedColorPicker = false
+                if (seedColor != color) {
+                    PreviewController.beginPreview()
+                    seedColor = color
+                    setSeedColorValue(color)
+
+                    scope.launch {
+                        PreviewController.updatePreview()
+                        colorsViewModel.refreshData()
+                    }
+                }
+            },
+            alphaEnabled = false,
+            pickers = listOf(
+                ColorPickerType.WHEEL,
+                ColorPickerType.RGB,
+                ColorPickerType.HSV,
+                ColorPickerType.IMAGE
+            ),
+            cornerRadius = 24.dp
+        )
     }
 
     Surface(
@@ -315,27 +343,7 @@ fun ColorsScreen(
                         summary = stringResource(R.string.seed_color_picker_desc),
                         previewColor = Color(seedColor),
                         icon = painterResource(R.drawable.ic_paint),
-                        onClick = {
-                            val manager = fragmentManager ?: return@ColorPickerItem
-                            ColorPickerDialog()
-                                .withCornerRadius(24f)
-                                .withColor(seedColor)
-                                .withAlphaEnabled(false)
-                                .withPicker(ImagePickerView::class.java)
-                                .withListener { _: ColorPickerDialog?, color: Int ->
-                                    if (seedColor != color) {
-                                        PreviewController.beginPreview()
-                                        seedColor = color
-                                        setSeedColorValue(color)
-
-                                        scope.launch {
-                                            PreviewController.updatePreview()
-                                            colorsViewModel.refreshData()
-                                        }
-                                    }
-                                }
-                                .show(manager, "seedColorPicker")
-                        }
+                        onClick = { showSeedColorPicker = true }
                     )
                 }
 
@@ -357,7 +365,6 @@ private fun ColorsScreenPreview() {
     ColorBlendrTheme {
         ColorsScreen(
             colorsViewModel = ColorsViewModel(),
-            fragmentManager = null,
             onNavigateToColorPalette = {}
         )
     }

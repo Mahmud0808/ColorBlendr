@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -260,7 +259,6 @@ fun HomeScreen(
                         }
                         ColorsScreen(
                             colorsViewModel = colorsViewModel,
-                            fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
                             onNavigateToColorPalette = {
                                 nestedNavController.navigate(Routes.COLOR_PALETTE)
                             }
@@ -300,14 +298,12 @@ fun HomeScreen(
                     }
                     composable(Routes.COLOR_PALETTE) {
                         ColorPaletteScreen(
-                            colorPaletteViewModel = colorPaletteViewModel,
-                            fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
+                            colorPaletteViewModel = colorPaletteViewModel
                         )
                     }
                     composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
                     composable(Routes.SETTINGS_ADVANCED) {
                         SettingsAdvancedScreen(
-                            fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager,
                             onNavigateToPerAppTheme = {
                                 nestedNavController.navigate(Routes.PER_APP_THEME)
                             }

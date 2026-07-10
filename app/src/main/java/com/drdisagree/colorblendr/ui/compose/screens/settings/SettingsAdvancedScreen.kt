@@ -11,7 +11,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -23,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
@@ -78,12 +79,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
-import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
+
+private const val TARGET_SECONDARY = "secondary"
+private const val TARGET_TERTIARY = "tertiary"
 
 @Composable
 fun SettingsAdvancedScreen(
-    fragmentManager: FragmentManager?,
     onNavigateToPerAppTheme: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -128,15 +131,41 @@ fun SettingsAdvancedScreen(
         setSelectedFabricatedApps(selectedApps)
     }
 
-    fun showColorPicker(tag: String, initialColor: Int, onPicked: (Int) -> Unit) {
-        val manager = fragmentManager ?: return
-        ColorPickerDialog()
-            .withCornerRadius(24f)
-            .withColor(initialColor)
-            .withAlphaEnabled(false)
-            .withPicker(ImagePickerView::class.java)
-            .withListener { _: ColorPickerDialog?, color: Int -> onPicked(color) }
-            .show(manager, tag)
+    // Saveable target so the dialog survives rotation (lambdas cannot be
+    // saved in instance state).
+    var colorPickerTarget by rememberSaveable { mutableStateOf<String?>(null) }
+
+    colorPickerTarget?.let { target ->
+        val isSecondary = target == TARGET_SECONDARY
+
+        ColorPickerDialog(
+            initialColor = if (isSecondary) secondaryColor else tertiaryColor,
+            onDismissRequest = { colorPickerTarget = null },
+            onColorPicked = { color ->
+                colorPickerTarget = null
+                val currentColor = if (isSecondary) secondaryColor else tertiaryColor
+                if (currentColor != color) {
+                    PreviewController.beginPreview()
+                    resetCustomStyleIfNotNull()
+                    if (isSecondary) {
+                        secondaryColor = color
+                        setSecondaryColorValue(color)
+                    } else {
+                        tertiaryColor = color
+                        setTertiaryColorValue(color)
+                    }
+                    updateColors()
+                }
+            },
+            alphaEnabled = false,
+            pickers = listOf(
+                ColorPickerType.WHEEL,
+                ColorPickerType.RGB,
+                ColorPickerType.HSV,
+                ColorPickerType.IMAGE
+            ),
+            cornerRadius = 24.dp
+        )
     }
 
     Surface(
@@ -168,15 +197,7 @@ fun SettingsAdvancedScreen(
                     },
                     position = WidgetPosition.Top,
                     onClick = {
-                        showColorPicker("secondaryColorPicker", secondaryColor) { color ->
-                            if (secondaryColor != color) {
-                                PreviewController.beginPreview()
-                                secondaryColor = color
-                                resetCustomStyleIfNotNull()
-                                setSecondaryColorValue(color)
-                                updateColors()
-                            }
-                        }
+                        colorPickerTarget = TARGET_SECONDARY
                     }
                 )
                 ColorPickerItem(
@@ -192,15 +213,7 @@ fun SettingsAdvancedScreen(
                     },
                     position = WidgetPosition.Bottom,
                     onClick = {
-                        showColorPicker("tertiaryColorPicker", tertiaryColor) { color ->
-                            if (tertiaryColor != color) {
-                                PreviewController.beginPreview()
-                                tertiaryColor = color
-                                resetCustomStyleIfNotNull()
-                                setTertiaryColorValue(color)
-                                updateColors()
-                            }
-                        }
+                        colorPickerTarget = TARGET_TERTIARY
                     }
                 )
 
@@ -348,6 +361,6 @@ fun SettingsAdvancedScreen(
 @Composable
 private fun SettingsAdvancedScreenPreview() {
     ColorBlendrTheme {
-        SettingsAdvancedScreen(fragmentManager = null)
+        SettingsAdvancedScreen()
     }
 }

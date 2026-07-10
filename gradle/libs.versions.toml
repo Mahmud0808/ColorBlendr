@@ -1,7 +1,6 @@
 [versions]
 activityCompose = "1.13.0"
 agp = "9.2.1"
-androidUtils = "0.0.5"
 annotation = "1.10.0"
 appcompat = "1.7.1"
 bcprovJdk15to18 = "1.84"
@@ -10,7 +9,6 @@ composeBom = "2026.06.01"
 composePlugin = "2.2.10"
 coreKtx = "1.18.0"
 coreSplashscreen = "1.2.0"
-glide = "5.0.7"
 gson = "2.14.0"
 haze = "1.7.2"
 hiddenapibypassVersion = "6.1"
@@ -41,7 +39,6 @@ kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
-androidUtils = { module = "me.jfenn:AndroidUtils", version.ref = "androidUtils" }
 annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 compose-bom = { module = "androidx.compose:compose-bom-alpha", version.ref = "composeBom" }
@@ -62,7 +59,6 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuVersion" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsuVersion" }

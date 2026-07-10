@@ -28,6 +28,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,7 +41,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
@@ -63,15 +64,14 @@ import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.jfenn.colorpickerdialog.dialogs.ColorPickerDialog
-import me.jfenn.colorpickerdialog.views.picker.ImagePickerView
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
 
 private val colorCodes = intArrayOf(0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000)
 
 @Composable
 fun ColorPaletteScreen(
-    colorPaletteViewModel: ColorPaletteViewModel,
-    fragmentManager: FragmentManager?
+    colorPaletteViewModel: ColorPaletteViewModel
 ) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -113,26 +113,46 @@ fun ColorPaletteScreen(
     val overrideText = stringResource(R.string.override)
     val copyText = stringResource(R.string.copy)
 
+    // Saved as a plain list so the dialog survives rotation.
+    var overridePickerRequest by rememberSaveable(
+        stateSaver = listSaver(
+            save = { request -> request?.toList().orEmpty() },
+            restore = { saved ->
+                if (saved.size == 3) Triple(saved[0], saved[1], saved[2]) else null
+            }
+        )
+    ) { mutableStateOf<Triple<Int, Int, Int>?>(null) }
+
     fun showOverridePicker(column: Int, row: Int, currentColor: Int) {
-        val manager = fragmentManager ?: return
         // Resolve the (possibly staged) override at open time so the picker
         // always seeds the color currently shown in the table.
         val initialColor = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE } ?: currentColor
-        ColorPickerDialog()
-            .withCornerRadius(24f)
-            .withColor(initialColor)
-            .withAlphaEnabled(false)
-            .withPicker(ImagePickerView::class.java)
-            .withListener { _: ColorPickerDialog?, color: Int ->
+        overridePickerRequest = Triple(column, row, initialColor)
+    }
+
+    overridePickerRequest?.let { (column, row, initialColor) ->
+        ColorPickerDialog(
+            initialColor = initialColor,
+            onDismissRequest = { overridePickerRequest = null },
+            onColorPicked = { color ->
+                overridePickerRequest = null
                 if (initialColor != color) {
                     PreviewController.beginPreview()
                     resetCustomStyleIfNotNull()
                     putInt(systemPaletteNames[column][row], color)
                     updateColors(200)
                 }
-            }
-            .show(manager, "overrideColorPicker$column$row")
+            },
+            alphaEnabled = false,
+            pickers = listOf(
+                ColorPickerType.WHEEL,
+                ColorPickerType.RGB,
+                ColorPickerType.HSV,
+                ColorPickerType.IMAGE
+            ),
+            cornerRadius = 24.dp
+        )
     }
 
     fun onCellClick(column: Int, row: Int) {
@@ -269,8 +289,7 @@ fun ColorPaletteScreen(
 private fun ColorPaletteScreenPreview() {
     ColorBlendrTheme {
         ColorPaletteScreen(
-            colorPaletteViewModel = ColorPaletteViewModel(),
-            fragmentManager = null
+            colorPaletteViewModel = ColorPaletteViewModel()
         )
     }
 }
