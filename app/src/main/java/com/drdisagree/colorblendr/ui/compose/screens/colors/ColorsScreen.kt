@@ -330,7 +330,7 @@ fun ColorsScreen(
                             if (!showWallpaper) {
                                 CustomColorTile(
                                     color = seedColor,
-                                    selected = customColor,
+                                    selected = customColor && !colors.contains(seedColor),
                                     onClick = { showSeedColorPicker = true },
                                     modifier = Modifier
                                         .padding(12.dp)
@@ -396,11 +396,11 @@ private fun CustomColorTile(
                 scaleY = pressScale
             }
             .border(
-                BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface),
                 RoundedCornerShape(12.dp)
             )
             .padding(2.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(9.dp))
             .background(tileColor)
             .clickable(
                 interactionSource = interactionSource,
@@ -412,7 +412,7 @@ private fun CustomColorTile(
     ) {
         Icon(
             painter = painterResource(
-                if (selected) R.drawable.ic_tick else R.drawable.ic_add
+                if (selected) R.drawable.ic_tick else R.drawable.ic_color_picker
             ),
             contentDescription = stringResource(R.string.seed_color_picker_title),
             tint = iconTint,
