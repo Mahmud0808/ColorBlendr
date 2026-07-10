@@ -138,6 +138,7 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 tasks.register("renameReleaseApk") {
+    description = "Rename release APK."
     dependsOn("assembleRelease")
 
     doLast {
@@ -180,12 +181,10 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.remotepreferences)
-    implementation(libs.preference.ktx)
     implementation(libs.core.splashscreen)
+    implementation(libs.localbroadcastmanager)
     implementation(libs.work.runtime)
-    implementation(libs.palette)
     implementation(libs.gson)
-    implementation(libs.lifecycle.common.jvm)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
@@ -204,5 +203,4 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.haze)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 }
