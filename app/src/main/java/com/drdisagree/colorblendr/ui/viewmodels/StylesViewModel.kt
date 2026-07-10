@@ -25,17 +25,14 @@ import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.stringToEnumMonetStyle
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class StylesViewModel @Inject constructor(
+class StylesViewModel(
     private val customStyleRepository: CustomStyleRepository
 ) : ViewModel() {
 

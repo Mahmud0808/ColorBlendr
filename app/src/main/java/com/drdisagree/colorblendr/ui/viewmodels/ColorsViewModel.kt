@@ -18,17 +18,14 @@ import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class ColorsViewModel @Inject constructor() : ViewModel() {
+class ColorsViewModel : ViewModel() {
 
     private val _wallpaperColors = MutableStateFlow<List<Int>>(emptyList())
     val wallpaperColors: StateFlow<List<Int>> = _wallpaperColors.asStateFlow()

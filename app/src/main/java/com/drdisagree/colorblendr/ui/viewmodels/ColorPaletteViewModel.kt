@@ -15,16 +15,13 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ColorPaletteViewModel @Inject constructor() : ViewModel() {
+class ColorPaletteViewModel : ViewModel() {
 
     private val _colorPalette = MutableStateFlow<List<List<Int>>>(emptyList())
     val colorPalette: StateFlow<List<List<Int>>> = _colorPalette.asStateFlow()

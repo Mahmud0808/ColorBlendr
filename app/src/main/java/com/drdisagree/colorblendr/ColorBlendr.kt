@@ -7,12 +7,10 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.google.android.material.color.DynamicColors
-import dagger.hilt.android.HiltAndroidApp
 import io.github.muntashirakon.adb.PRNGFixes
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.ref.WeakReference
 
-@HiltAndroidApp
 class ColorBlendr : Application() {
 
     override fun onCreate() {

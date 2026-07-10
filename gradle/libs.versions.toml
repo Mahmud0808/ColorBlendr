@@ -12,8 +12,6 @@ coreSplashscreen = "1.2.0"
 gson = "2.14.0"
 haze = "1.7.2"
 hiddenapibypassVersion = "6.1"
-hilt = "2.60.1"
-hiltNavigationCompose = "1.4.0"
 ksp = "2.3.6"
 lifecycleCompose = "2.10.0"
 navigationCompose = "2.9.8"
@@ -33,7 +31,6 @@ zip4j = "2.11.6"
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composePlugin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
@@ -48,9 +45,6 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleCompose" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleCompose" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt)
 }
 
 configure<ApplicationExtension> {
@@ -203,9 +202,6 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
     implementation(libs.haze)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)

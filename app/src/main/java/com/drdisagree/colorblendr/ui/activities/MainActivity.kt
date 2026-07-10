@@ -21,6 +21,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
@@ -43,6 +45,7 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
@@ -57,7 +60,6 @@ import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallp
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.google.android.material.color.DynamicColors
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -66,13 +68,16 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val timeoutHandler: Handler = Handler(Looper.getMainLooper())
     private var timeoutRunnable: Runnable? = null
     private val colorsViewModel: ColorsViewModel by viewModels()
-    private val stylesViewModel: StylesViewModel by viewModels()
+    private val stylesViewModel: StylesViewModel by viewModels {
+        viewModelFactory {
+            initializer { StylesViewModel(Utilities.getCustomStyleRepository()) }
+        }
+    }
     private val colorPaletteViewModel: ColorPaletteViewModel by viewModels()
     private var initSuccess by mutableStateOf<Boolean?>(null)
 
