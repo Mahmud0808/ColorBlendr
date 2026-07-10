@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
-// Badge text at 0.75x title size in 8dp-rounded errorContainer pill,
+// Badge text at 0.75x title size in 8dp-rounded error pill,
 // 6dp/2dp padding, centered to line.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -41,10 +41,10 @@ fun TitleWithBadge(
             text = badge,
             style = textStyle,
             fontSize = textStyle.fontSize * 0.75f,
-            color = MaterialTheme.colorScheme.onErrorContainer,
+            color = MaterialTheme.colorScheme.onError,
             modifier = Modifier
                 .background(
-                    color = MaterialTheme.colorScheme.errorContainer,
+                    color = MaterialTheme.colorScheme.error,
                     shape = RoundedCornerShape(8.dp)
                 )
                 .padding(horizontal = 6.dp, vertical = 2.dp)
