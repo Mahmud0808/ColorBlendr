@@ -69,6 +69,7 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPalettePreviewCard
+import com.drdisagree.colorblendr.ui.compose.components.CommunityShowcase
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -84,7 +85,9 @@ import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
 @Composable
 fun ColorsScreen(
     colorsViewModel: ColorsViewModel,
-    onNavigateToColorPalette: () -> Unit
+    onNavigateToColorPalette: () -> Unit,
+    onNavigateToCommunity: () -> Unit = {},
+    onNavigateToCommunityTheme: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -330,6 +333,12 @@ fun ColorsScreen(
                         }
                     }
                 }
+
+                CommunityShowcase(
+                    onViewAll = onNavigateToCommunity,
+                    onThemeClick = { onNavigateToCommunityTheme(it.id) },
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
 
                 AnimatedVisibility(
                     visible = seedPickerVisible,

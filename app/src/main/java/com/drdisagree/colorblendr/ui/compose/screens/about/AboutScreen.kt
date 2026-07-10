@@ -1,6 +1,14 @@
 package com.drdisagree.colorblendr.ui.compose.screens.about
 
 import android.content.Context
+import androidx.compose.runtime.setValue
+import com.drdisagree.colorblendr.data.common.Utilities.setDeveloperModeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import android.widget.Toast
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
@@ -154,6 +162,11 @@ private fun AboutAppHeader() {
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
+        // 7 taps on the version unlock developer mode (community theme tester).
+        val context = LocalContext.current
+        val haptics = LocalHapticFeedback.current
+        var versionTaps by remember { mutableIntStateOf(0) }
+
         Text(
             text = stringResource(
                 R.string.version_codes,
@@ -166,6 +179,33 @@ private fun AboutAppHeader() {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 2.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (developerModeEnabled()) {
+                        if (versionTaps == 0) {
+                            Toast.makeText(
+                                context,
+                                R.string.developer_mode_already_enabled,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            versionTaps++
+                        }
+                        return@clickable
+                    }
+
+                    versionTaps++
+                    if (versionTaps >= 7) {
+                        setDeveloperModeEnabled(true)
+                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                        Toast.makeText(
+                            context,
+                            R.string.developer_mode_enabled,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
         )
 
         LinkButtonsCard(

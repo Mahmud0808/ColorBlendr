@@ -149,6 +149,26 @@
         <item quantity="other">%s words</item>
     </plurals>
     <string name="translators">Translators bridging languages</string>
+    <string name="community_themes">Community creations</string>
+    <string name="view_all">View all</string>
+    <string name="sort_upvotes">Top voted</string>
+    <string name="sort_downloads">Most downloaded</string>
+    <string name="sort_latest">Latest</string>
+    <string name="community_empty">Nothing here yet</string>
+    <string name="developer_mode_enabled">Developer mode enabled</string>
+    <string name="developer_mode_already_enabled">Developer mode is already enabled</string>
+    <string name="test_theme">Test a creation</string>
+    <string name="test_theme_hint">Paste creation JSON</string>
+    <string name="invalid_theme_json">Invalid creation JSON</string>
+    <string name="share_theme">Share current creation</string>
+    <string name="theme_name">Creation name</string>
+    <string name="theme_description">Description</string>
+    <string name="author_optional">Author (optional)</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="try_this_creation">Try this creation</string>
+    <string name="theme_submitted">Creation submitted for review</string>
+    <string name="theme_submit_failed">Submission failed, try again later</string>
+    <string name="submitting_theme">Submitting creation…</string>
 
     <!-- General -->
     <string name="icon">Icon</string>

@@ -1,6 +1,8 @@
 package com.drdisagree.colorblendr.data.domain
 
 import android.util.Log
+import com.drdisagree.colorblendr.utils.community.CommunityVotes
+import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
@@ -104,6 +106,13 @@ object PreviewController {
                 Prefs.commitStaged()
                 updateColorAppliedTimestamp()
                 applyFabricatedColors()
+
+                // Count the apply if this preview came from a community
+                // creation; server dedupes per device.
+                CommunityThemeApplier.pendingCreationId?.let { creationId ->
+                    CommunityThemeApplier.pendingCreationId = null
+                    CommunityVotes.reportApply(creationId)
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error applying preview colors", e)
             } finally {
@@ -122,6 +131,7 @@ object PreviewController {
     // Synchronous discard for flows that take over from an active preview
     // (master switch, backup restore).
     fun abandonPreview() {
+        CommunityThemeApplier.pendingCreationId = null
         Prefs.discardStaged()
         _previewColors.value = null
         RefreshCoordinator.triggerRefresh()

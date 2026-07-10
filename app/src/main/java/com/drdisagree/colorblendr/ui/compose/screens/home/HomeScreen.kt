@@ -16,6 +16,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -57,11 +59,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.models.CommunityTheme
+import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
@@ -74,6 +80,8 @@ import com.drdisagree.colorblendr.ui.compose.navigation.Routes
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
 import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
 import com.drdisagree.colorblendr.ui.compose.screens.colors.ColorsScreen
+import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityScreen
+import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityThemeDetailsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorPaletteScreen
 import com.drdisagree.colorblendr.ui.compose.screens.perapp.PerAppThemeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.privacypolicy.PrivacyPolicyScreen
@@ -117,6 +125,26 @@ fun HomeScreen(
     val currentGroup = if (routeGroup != 0) routeGroup else lastGroup
     SideEffect {
         if (routeGroup != 0) lastGroup = routeGroup
+    }
+
+    // While a community theme's details page shows, the bottom bar wears that
+    // theme too (the screen itself is scope-themed internally).
+    val detailsThemeId = if (backStackEntry?.destination?.route == Routes.COMMUNITY_THEME) {
+        backStackEntry?.arguments?.getString("themeId")
+    } else {
+        null
+    }
+    val detailsTheme by produceState<CommunityTheme?>(null, detailsThemeId) {
+        value = when (detailsThemeId) {
+            null -> null
+            TestThemeHolder.TEST_THEME_ID -> TestThemeHolder.theme
+            else -> getCommunityThemeRepository().getThemeById(detailsThemeId)
+        }
+    }
+    val isDark = isSystemInDarkTheme()
+    val baseScheme = MaterialTheme.colorScheme
+    val navBarScheme = remember(detailsTheme, isDark, baseScheme) {
+        detailsTheme?.let { communityColorScheme(it, isDark, baseScheme) } ?: baseScheme
     }
 
     val permissionMustBeGrantedText = stringResource(R.string.permission_must_be_granted)
@@ -295,6 +323,12 @@ fun HomeScreen(
                                 colorsViewModel = colorsViewModel,
                                 onNavigateToColorPalette = {
                                     nestedNavController.navigate(Routes.COLOR_PALETTE)
+                                },
+                                onNavigateToCommunity = {
+                                    nestedNavController.navigate(Routes.COMMUNITY)
+                                },
+                                onNavigateToCommunityTheme = { themeId ->
+                                    nestedNavController.navigate("communityTheme/" + themeId)
                                 }
                             )
                         }
@@ -343,6 +377,18 @@ fun HomeScreen(
                                 }
                             )
                         }
+                        composable(Routes.COMMUNITY) {
+                            CommunityScreen(
+                                onThemeClick = { themeId ->
+                                    nestedNavController.navigate("communityTheme/" + themeId)
+                                }
+                            )
+                        }
+                        composable(Routes.COMMUNITY_THEME) { entry ->
+                            entry.arguments?.getString("themeId")?.let { themeId ->
+                                CommunityThemeDetailsScreen(themeId = themeId)
+                            }
+                        }
                         composable(Routes.ABOUT) { AboutScreen() }
                         composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
                     }
@@ -363,6 +409,7 @@ fun HomeScreen(
                 )
             }
 
+            MaterialTheme(colorScheme = navBarScheme) {
             NavigationBar(modifier = Modifier.fillMaxWidth()) {
                 tabs.forEach { tab ->
                     val selected = currentGroup == tab.group
@@ -390,6 +437,7 @@ fun HomeScreen(
                         }
                     )
                 }
+            }
             }
         }
 
