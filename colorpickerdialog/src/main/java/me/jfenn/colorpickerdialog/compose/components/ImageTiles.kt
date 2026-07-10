@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -42,6 +43,9 @@ internal fun ImageTile(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val placeholderColor = remember(context) {
+        Color(PickerColors.textColorPrimary(context)).copy(alpha = 0.1f)
+    }
 
     AsyncImage(
         model = remember(uri) {
@@ -50,6 +54,7 @@ internal fun ImageTile(
                 .crossfade(true)
                 .build()
         },
+        placeholder = remember(placeholderColor) { ColorPainter(placeholderColor) },
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = modifier
