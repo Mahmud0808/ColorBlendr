@@ -51,8 +51,6 @@ import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
-import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
@@ -62,10 +60,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabl
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.setAccurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setManualColorOverrideEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setPitchBlackThemeEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
@@ -123,7 +119,6 @@ fun SettingsScreen(
     }
     var accurateShades by rememberPrefState(MONET_ACCURATE_SHADES) { accurateShadesEnabled() }
     var pitchBlack by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
-    var customPrimaryColor by rememberPrefState(MONET_SEED_COLOR_ENABLED) { customColorEnabled() }
     var tintTextColor by rememberPrefState(TINT_TEXT_COLOR) { tintedTextEnabled() }
     var overrideManually by rememberPrefState(MANUAL_OVERRIDE_COLORS) { manualColorOverrideEnabled() }
     var overflowExpanded by remember { mutableStateOf(false) }
@@ -386,28 +381,6 @@ fun SettingsScreen(
                             resetCustomStyleIfNotNull()
                             setPitchBlackThemeEnabled(isChecked)
                             updateColors()
-                        }
-                    )
-                    SwitchItem(
-                        title = stringResource(R.string.custom_primary_color_title),
-                        summary = stringResource(R.string.custom_primary_color_desc),
-                        icon = painterResource(R.drawable.ic_color_fill),
-                        checked = customPrimaryColor,
-                        position = WidgetPosition.Middle,
-                        onCheckedChange = { isChecked ->
-                            customPrimaryColor = isChecked
-                            PreviewController.beginPreview()
-                            resetCustomStyleIfNotNull()
-                            setCustomColorEnabled(isChecked)
-                            RefreshCoordinator.triggerRefresh()
-                            if (!isChecked) {
-                                val wallpaperColorList = getWallpaperColorList()
-                                setSeedColorValue(
-                                    if (wallpaperColorList.isNotEmpty()) wallpaperColorList[0]
-                                    else Color.BLUE
-                                )
-                                updateColors()
-                            }
                         }
                     )
                     SwitchItem(
