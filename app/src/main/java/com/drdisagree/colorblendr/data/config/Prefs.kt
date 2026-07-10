@@ -128,35 +128,38 @@ object Prefs {
 
     fun putString(key: String, `val`: String) = putAny(key, `val`)
 
-    fun getBoolean(key: String): Boolean = getBoolean(key, false)
-
-    fun getBoolean(key: String, defValue: Boolean): Boolean =
-        stagedValue(key)?.let { if (it === REMOVED) defValue else it as Boolean }
-            ?: prefs.getBoolean(key, defValue)
+    fun getBoolean(key: String, defValue: Boolean): Boolean {
+        val staged = stagedValue(key) ?: return prefs.getBoolean(key, defValue)
+        return if (staged === REMOVED) defValue else staged as Boolean
+    }
 
     fun getInt(key: String): Int = getInt(key, 0)
 
-    fun getInt(key: String, defValue: Int): Int =
-        stagedValue(key)?.let { if (it === REMOVED) defValue else it as Int }
-            ?: prefs.getInt(key, defValue)
+    fun getInt(key: String, defValue: Int): Int {
+        val staged = stagedValue(key) ?: return prefs.getInt(key, defValue)
+        return if (staged === REMOVED) defValue else (staged as Number).toInt()
+    }
 
     fun getLong(key: String): Long = getLong(key, 0)
 
-    fun getLong(key: String, defValue: Long): Long =
-        stagedValue(key)?.let { if (it === REMOVED) defValue else it as Long }
-            ?: prefs.getLong(key, defValue)
+    fun getLong(key: String, defValue: Long): Long {
+        val staged = stagedValue(key) ?: return prefs.getLong(key, defValue)
+        return if (staged === REMOVED) defValue else (staged as Number).toLong()
+    }
 
     fun getFloat(key: String): Float = getFloat(key, 0f)
 
-    fun getFloat(key: String, defValue: Float): Float =
-        stagedValue(key)?.let { if (it === REMOVED) defValue else it as Float }
-            ?: prefs.getFloat(key, defValue)
+    fun getFloat(key: String, defValue: Float): Float {
+        val staged = stagedValue(key) ?: return prefs.getFloat(key, defValue)
+        return if (staged === REMOVED) defValue else (staged as Number).toFloat()
+    }
 
     fun getString(key: String): String? = getString(key, null)
 
-    fun getString(key: String, defValue: String?): String? =
-        stagedValue(key)?.let { if (it === REMOVED) defValue else it as String }
-            ?: prefs.getString(key, defValue)
+    fun getString(key: String, defValue: String?): String? {
+        val staged = stagedValue(key) ?: return prefs.getString(key, defValue)
+        return if (staged === REMOVED) defValue else staged as String
+    }
 
     fun getAllPrefs(): MutableMap<String, *> {
         val all: MutableMap<String, Any?> = if (stagingActive && stagedClearAll) {
