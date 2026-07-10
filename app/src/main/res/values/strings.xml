@@ -144,6 +144,10 @@
     <string name="buymeacoffee_desc">Consider buying me a coffee</string>
     <string name="contributors">Contributors behind the scene</string>
     <string name="total_contributions">Contributions: %d</string>
+    <plurals name="total_words_translated">
+        <item quantity="one">%s word</item>
+        <item quantity="other">%s words</item>
+    </plurals>
     <string name="translators">Translators bridging languages</string>
 
     <!-- General -->
