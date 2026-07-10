@@ -2,6 +2,8 @@ package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -77,6 +81,10 @@ fun StylePreviewCard(
     val strokeWidth = with(LocalDensity.current) { 2.toDp() }
     val hasMenu = onEdit != null || onUpdate != null || onDelete != null
     var menuExpanded by remember { mutableStateOf(false) }
+    var pressX by remember { mutableStateOf(0.dp) }
+    var cardWidth by remember { mutableStateOf(0.dp) }
+    var menuWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
 
     Box(
         modifier = modifier
@@ -95,12 +103,22 @@ fun StylePreviewCard(
             } else {
                 null
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .onSizeChanged { cardWidth = with(density) { it.width.toDp() } }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .pointerInput(hasMenu) {
+                        if (!hasMenu) return@pointerInput
+
+                        awaitEachGesture {
+                            val down = awaitFirstDown(requireUnconsumed = false)
+                            pressX = with(density) { down.position.x.toDp() }
+                        }
+                    }
                     .combinedClickable(
                         enabled = enabled,
                         onLongClick = if (hasMenu) {
@@ -149,37 +167,47 @@ fun StylePreviewCard(
                 onDismissRequest = { menuExpanded = false },
                 shape = RoundedCornerShape(16.dp),
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                offset = DpOffset((-16).dp, 0.dp)
+                // Follow the touch x, but keep the popup within the card.
+                offset = DpOffset(
+                    pressX.coerceIn(0.dp, (cardWidth - menuWidth).coerceAtLeast(0.dp)),
+                    0.dp
+                )
             ) {
-                if (onEdit != null) {
-                    StyleMenuItem(
-                        textResId = R.string.edit,
-                        iconResId = R.drawable.ic_edit,
-                        onClick = {
-                            menuExpanded = false
-                            onEdit()
-                        }
-                    )
-                }
-                if (onUpdate != null) {
-                    StyleMenuItem(
-                        textResId = R.string.update,
-                        iconResId = R.drawable.ic_renew,
-                        onClick = {
-                            menuExpanded = false
-                            onUpdate()
-                        }
-                    )
-                }
-                if (onDelete != null) {
-                    StyleMenuItem(
-                        textResId = R.string.delete,
-                        iconResId = R.drawable.ic_delete,
-                        onClick = {
-                            menuExpanded = false
-                            onDelete()
-                        }
-                    )
+                Column(
+                    modifier = Modifier.onSizeChanged {
+                        menuWidth = with(density) { it.width.toDp() }
+                    }
+                ) {
+                    if (onEdit != null) {
+                        StyleMenuItem(
+                            textResId = R.string.edit,
+                            iconResId = R.drawable.ic_edit,
+                            onClick = {
+                                menuExpanded = false
+                                onEdit()
+                            }
+                        )
+                    }
+                    if (onUpdate != null) {
+                        StyleMenuItem(
+                            textResId = R.string.update,
+                            iconResId = R.drawable.ic_renew,
+                            onClick = {
+                                menuExpanded = false
+                                onUpdate()
+                            }
+                        )
+                    }
+                    if (onDelete != null) {
+                        StyleMenuItem(
+                            textResId = R.string.delete,
+                            iconResId = R.drawable.ic_delete,
+                            onClick = {
+                                menuExpanded = false
+                                onDelete()
+                            }
+                        )
+                    }
                 }
             }
         }
