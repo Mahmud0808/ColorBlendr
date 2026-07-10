@@ -54,10 +54,10 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.previewCommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
-import com.drdisagree.colorblendr.utils.community.CommunityVotes
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
-import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
+import com.drdisagree.colorblendr.utils.community.CommunityVotes
+import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import kotlinx.coroutines.launch
 
@@ -151,7 +151,7 @@ private fun DetailsContent(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                         .padding(bottom = LocalPreviewBottomInset.current)
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
                     LargeSwatch(palette = palette, isDark = isDark)
 
@@ -243,7 +243,7 @@ private fun DetailsContent(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -256,7 +256,7 @@ private fun LargeSwatch(
     palette: ArrayList<ArrayList<Int>>,
     isDark: Boolean
 ) {
-    val shadeIndices = listOf(2, 4, 6, 8, 10)
+    val shadeIndices = listOf(3, 4, 6, 8, 10)
 
     Surface(
         shape = RoundedCornerShape(24.dp),

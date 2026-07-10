@@ -142,7 +142,7 @@ private fun ShadeCircleRow(
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy((-10).dp),
+        horizontalArrangement = Arrangement.spacedBy((-6).dp),
         modifier = modifier
     ) {
         shades.forEach { shade ->

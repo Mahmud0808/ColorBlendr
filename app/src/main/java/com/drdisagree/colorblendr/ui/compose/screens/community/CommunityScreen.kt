@@ -1,30 +1,8 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
-import androidx.compose.foundation.layout.Arrangement
-import android.graphics.Color as AndroidColor
-import kotlinx.coroutines.launch
-import com.drdisagree.colorblendr.utils.community.CommunityUploader
-import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
-import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
-import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.rememberCoroutineScope
 import android.widget.Toast
-import org.json.JSONObject
-import com.drdisagree.colorblendr.utils.community.TestThemeHolder
-import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
-import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.res.painterResource
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Button
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,34 +15,56 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
+import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
+import com.drdisagree.colorblendr.utils.community.CommunityUploader
+import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import android.graphics.Color as AndroidColor
 
 // All community themes: sort chips (upvotes / downloads / latest) above an
 // adaptive grid of self-themed cards.
@@ -173,7 +173,7 @@ private fun CommunityScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 SortChip(
                     label = stringResource(R.string.sort_upvotes),
@@ -219,10 +219,10 @@ private fun CommunityScreenContent(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(
-                        start = 20.dp,
-                        end = 20.dp,
+                        start = 16.dp,
+                        end = 16.dp,
                         top = 12.dp,
-                        bottom = 20.dp + LocalPreviewBottomInset.current
+                        bottom = 16.dp + LocalPreviewBottomInset.current
                     ),
                     modifier = Modifier.fillMaxSize()
                 ) {
