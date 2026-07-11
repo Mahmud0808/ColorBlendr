@@ -352,9 +352,9 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                         getWallpaperColorList().firstOrNull() ?: AndroidColor.BLUE
                     )
                     val payload = CommunityThemeCodec.currentSettingsToUploadJson(
-                        name = name,
-                        description = description,
-                        author = author,
+                        name = name.trim(),
+                        description = description.trim(),
+                        author = author.trim(),
                         seedColor = seed
                     )
                     val prUrl = CommunityUploader.upload(payload, token)
@@ -430,7 +430,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                     }
                     Button(
                         onClick = { showChallenge = true },
-                        enabled = !submitting && name.isNotBlank(),
+                        enabled = !submitting && name.isNotBlank() && description.isNotBlank(),
                         shapes = ButtonDefaults.shapes(),
                         modifier = Modifier.padding(start = 8.dp)
                     ) {

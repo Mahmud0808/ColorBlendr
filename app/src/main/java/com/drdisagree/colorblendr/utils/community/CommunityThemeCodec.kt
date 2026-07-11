@@ -79,6 +79,7 @@ object CommunityThemeCodec {
         val name = sanitizeText(json.optString("name"), MAX_NAME_LENGTH)
         if (name.isEmpty()) return null
         val description = sanitizeMultiline(json.optString("description"), MAX_DESCRIPTION_LENGTH)
+        if (description.isEmpty()) return null
         val author = sanitizeText(json.optString("author"), MAX_AUTHOR_LENGTH)
 
         val style = MONET.entries.find { it.name == json.optString("style") } ?: return null
