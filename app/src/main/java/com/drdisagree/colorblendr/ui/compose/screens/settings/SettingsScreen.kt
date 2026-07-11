@@ -3,7 +3,6 @@ package com.drdisagree.colorblendr.ui.compose.screens.settings
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -65,8 +64,10 @@ import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
@@ -134,7 +135,8 @@ fun SettingsScreen(
     }
 
     fun applyColorsNow() {
-        scope.launch {
+        // Applying colors can recreate the activity; must outlive the screen.
+        AppScope.launch {
             updateColorAppliedTimestamp()
             delay(300)
             withContext(Dispatchers.IO) {
@@ -173,7 +175,8 @@ fun SettingsScreen(
             .setPositiveButton(context.getString(AndroidR.string.ok)) { dialog, _ ->
                 dialog.dismiss()
                 PreviewController.abandonPreview()
-                scope.launch(Dispatchers.IO) {
+                // Restore must not be cancelled mid-write by recreation.
+                AppScope.launch(Dispatchers.IO) {
                     val success = uri.restoreDatabaseAndPrefs()
                     withContext(Dispatchers.Main) {
                         if (success) {
@@ -317,7 +320,7 @@ fun SettingsScreen(
                             setWirelessAdbThemingEnabled(isChecked)
                             updateColorAppliedTimestamp()
 
-                            scope.launch {
+                            AppScope.launch {
                                 try {
                                     delay(300)
                                     withContext(Dispatchers.IO) {
@@ -336,13 +339,18 @@ fun SettingsScreen(
                                     masterChecked = isOverlayActive
 
                                     if (isChecked != isOverlayActive) {
-                                        Toast.makeText(
-                                            context,
-                                            context.getString(R.string.something_went_wrong),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        // Specific overlay errors are already
+                                        // reported; this is the fallback.
+                                        ThemingErrorReporter.report(
+                                            context.getString(R.string.something_went_wrong)
+                                        )
                                     }
-                                } catch (_: Exception) {
+                                } catch (e: Exception) {
+                                    masterChecked = !isChecked
+                                    ThemingErrorReporter.report(
+                                        e.message?.takeIf { it.isNotBlank() }
+                                            ?: context.getString(R.string.something_went_wrong)
+                                    )
                                 }
                             }
                         }

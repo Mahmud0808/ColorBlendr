@@ -183,6 +183,10 @@
     <string name="override">Override</string>
     <string name="copy">Copy</string>
     <string name="something_went_wrong">Something went wrong.</string>
+    <string name="error_root_unavailable">Root service is not connected. Grant root access and restart the app.</string>
+    <string name="error_shizuku_unavailable">Shizuku is not running or permission is missing.</string>
+    <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
+    <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">Search here…</string>
     <string name="note_title">Note:</string>
     <string name="long_press_to_reset">Long press to reset</string>

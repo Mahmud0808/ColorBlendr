@@ -59,6 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
@@ -205,7 +206,7 @@ fun PerAppThemeScreen() {
         selectedApps[app.packageName] = !isSelected
         setSelectedFabricatedApps(selectedApps)
 
-        scope.launch {
+        AppScope.launch(Dispatchers.IO) {
             if (isSelected) {
                 unregisterFabricatedOverlay(
                     String.format(FABRICATED_OVERLAY_NAME_APPS, app.packageName)

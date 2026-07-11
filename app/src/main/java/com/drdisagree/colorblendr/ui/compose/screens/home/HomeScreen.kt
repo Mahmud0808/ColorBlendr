@@ -61,6 +61,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
+import com.drdisagree.colorblendr.ui.compose.components.ErrorDialog
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
@@ -69,6 +70,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
@@ -450,6 +452,14 @@ fun HomeScreen(
             visible = isApplying,
             text = stringResource(R.string.preview_applying)
         )
+
+        val themingError by ThemingErrorReporter.error.collectAsStateWithLifecycle()
+        themingError?.let { message ->
+            ErrorDialog(
+                message = message,
+                onDismiss = ThemingErrorReporter::dismiss
+            )
+        }
     }
 }
 
