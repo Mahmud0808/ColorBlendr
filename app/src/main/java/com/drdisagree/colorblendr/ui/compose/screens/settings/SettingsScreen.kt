@@ -416,37 +416,16 @@ fun SettingsScreen(
                         onCheckedChange = { isChecked ->
                             if (isChecked) {
                                 overrideManually = true
-                                PreviewController.beginPreview()
                                 setManualColorOverrideEnabled(true)
-                                updateColors()
                             } else {
-                                if (numColorsOverridden() > 5) {
-                                    MaterialAlertDialogBuilder(context)
-                                        .setTitle(context.getString(R.string.confirmation_title))
-                                        .setMessage(context.getString(R.string.this_cannot_be_undone))
-                                        .setPositiveButton(context.getString(AndroidR.string.ok)) { dialog, _ ->
-                                            dialog.dismiss()
-                                            overrideManually = false
-                                            PreviewController.beginPreview()
-                                            setManualColorOverrideEnabled(false)
-                                            if (numColorsOverridden() != 0) {
-                                                clearAllOverriddenColors()
-                                                updateColors()
-                                            }
-                                        }
-                                        .setNegativeButton(context.getString(AndroidR.string.cancel)) { dialog, _ ->
-                                            dialog.dismiss()
-                                            overrideManually = true
-                                        }
-                                        .show()
-                                } else {
-                                    overrideManually = false
+                                overrideManually = false
+                                if (numColorsOverridden() != 0) {
                                     PreviewController.beginPreview()
                                     setManualColorOverrideEnabled(false)
-                                    if (numColorsOverridden() != 0) {
-                                        clearAllOverriddenColors()
-                                        updateColors()
-                                    }
+                                    clearAllOverriddenColors()
+                                    updateColors()
+                                } else {
+                                    setManualColorOverrideEnabled(false)
                                 }
                             }
                         }
