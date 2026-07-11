@@ -1,9 +1,8 @@
 package com.drdisagree.colorblendr.utils.community
 
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
+import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
@@ -13,6 +12,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
 import com.drdisagree.colorblendr.data.common.Utilities.getOverriddenColorFor
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
+import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -38,6 +38,15 @@ object CommunityThemeCodec {
     private val CONTROL_CHARS = Regex("[\\p{Cntrl}]")
     private val CONTROL_CHARS_EXCEPT_NEWLINE = Regex("[\\p{Cntrl}&&[^\n]]")
     private val EXCESS_NEWLINES = Regex("\n{3,}")
+
+    // Raw slider pref keys: dark/default vs light variants (the Constant
+    // getters are mode-dependent — uploads must read both explicitly).
+    internal const val KEY_ACCENT_SATURATION = "monetAccentSaturationValue"
+    internal const val KEY_ACCENT_SATURATION_LIGHT = "monetAccentSaturationValueLight"
+    internal const val KEY_BACKGROUND_SATURATION = "monetBackgroundSaturationValue"
+    internal const val KEY_BACKGROUND_SATURATION_LIGHT = "monetBackgroundSaturationValueLight"
+    internal const val KEY_BACKGROUND_LIGHTNESS = "monetBackgroundLightnessValue"
+    internal const val KEY_BACKGROUND_LIGHTNESS_LIGHT = "monetBackgroundLightnessValueLight"
 
     private val validShadeNames: Set<String> by lazy {
         systemPaletteNames.flatMap { it.asIterable() }.toSet()
@@ -81,6 +90,19 @@ object CommunityThemeCodec {
         val backgroundSaturation = parseSlider(json, "backgroundSaturation") ?: return null
         val backgroundLightness = parseSlider(json, "backgroundLightness") ?: return null
 
+        // Absent = 0 (2021 spec) so old payloads reproduce deterministically.
+        val colorSpecVersion = json.optInt("colorSpecVersion", 0)
+        if (colorSpecVersion !in 0..2) return null
+
+        // Light-mode slider variants; absent = same as the main values.
+        val modeSpecificThemes = json.optBoolean("modeSpecificThemes", false)
+        val accentSaturationLight =
+            parseSliderOr(json, "accentSaturationLight", accentSaturation) ?: return null
+        val backgroundSaturationLight =
+            parseSliderOr(json, "backgroundSaturationLight", backgroundSaturation) ?: return null
+        val backgroundLightnessLight =
+            parseSliderOr(json, "backgroundLightnessLight", backgroundLightness) ?: return null
+
         val colorOverrides = parseColorOverrides(json.optJSONObject("colorOverrides"))
             ?: return null
 
@@ -96,7 +118,12 @@ object CommunityThemeCodec {
             accentSaturation = accentSaturation,
             backgroundSaturation = backgroundSaturation,
             backgroundLightness = backgroundLightness,
+            modeSpecificThemes = modeSpecificThemes,
+            accentSaturationLight = accentSaturationLight,
+            backgroundSaturationLight = backgroundSaturationLight,
+            backgroundLightnessLight = backgroundLightnessLight,
             accurateShades = json.optBoolean("accurateShades", true),
+            colorSpecVersion = colorSpecVersion,
             pitchBlack = json.optBoolean("pitchBlack", false),
             tintText = json.optBoolean("tintText", true),
             colorOverrides = colorOverrides,
@@ -123,10 +150,18 @@ object CommunityThemeCodec {
         put("seedColor", toHex(seedColor))
         if (secondaryColorEnabled()) put("secondaryColor", toHex(getSecondaryColorValue()))
         if (tertiaryColorEnabled()) put("tertiaryColor", toHex(getTertiaryColorValue()))
-        put("accentSaturation", getAccentSaturation())
-        put("backgroundSaturation", getBackgroundSaturation())
-        put("backgroundLightness", getBackgroundLightness())
+        // Raw dark/default keys — the getters return the CURRENT mode's value.
+        put("accentSaturation", Prefs.getInt(KEY_ACCENT_SATURATION, 100))
+        put("backgroundSaturation", Prefs.getInt(KEY_BACKGROUND_SATURATION, 100))
+        put("backgroundLightness", Prefs.getInt(KEY_BACKGROUND_LIGHTNESS, 100))
+        if (modeSpecificThemesEnabled()) {
+            put("modeSpecificThemes", true)
+            put("accentSaturationLight", Prefs.getInt(KEY_ACCENT_SATURATION_LIGHT, 100))
+            put("backgroundSaturationLight", Prefs.getInt(KEY_BACKGROUND_SATURATION_LIGHT, 100))
+            put("backgroundLightnessLight", Prefs.getInt(KEY_BACKGROUND_LIGHTNESS_LIGHT, 100))
+        }
         put("accurateShades", accurateShadesEnabled())
+        put("colorSpecVersion", getColorSpecVersion())
         put("pitchBlack", pitchBlackThemeEnabled())
         put("tintText", tintedTextEnabled())
 
@@ -153,7 +188,14 @@ object CommunityThemeCodec {
         put("accentSaturation", theme.accentSaturation)
         put("backgroundSaturation", theme.backgroundSaturation)
         put("backgroundLightness", theme.backgroundLightness)
+        if (theme.modeSpecificThemes) {
+            put("modeSpecificThemes", true)
+            put("accentSaturationLight", theme.accentSaturationLight)
+            put("backgroundSaturationLight", theme.backgroundSaturationLight)
+            put("backgroundLightnessLight", theme.backgroundLightnessLight)
+        }
         put("accurateShades", theme.accurateShades)
+        put("colorSpecVersion", theme.colorSpecVersion)
         put("pitchBlack", theme.pitchBlack)
         put("tintText", theme.tintText)
         if (theme.colorOverrides.isNotEmpty()) {
@@ -199,6 +241,11 @@ object CommunityThemeCodec {
         val value = json.optInt(key, Int.MIN_VALUE)
         if (value == Int.MIN_VALUE && !json.has(key)) return 100
         return value.takeIf { it in SLIDER_MIN..SLIDER_MAX }
+    }
+
+    private fun parseSliderOr(json: JSONObject, key: String, fallback: Int): Int? {
+        if (!json.has(key)) return fallback
+        return json.optInt(key, Int.MIN_VALUE).takeIf { it in SLIDER_MIN..SLIDER_MAX }
     }
 
     // Keys must be known palette shade names, values strict hex. Anything
