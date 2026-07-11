@@ -25,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.currentStateAsState
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -152,8 +155,13 @@ private fun DriftingCarousel(
     val dragged by listState.interactionSource.collectIsDraggedAsState()
     val driftPerTick = with(LocalDensity.current) { 0.4.dp.toPx() }
 
-    LaunchedEffect(themes, dragged) {
-        if (!infinite || dragged) return@LaunchedEffect
+    // Drift only while the screen is resumed and the user isn't dragging.
+    val lifecycleState by LocalLifecycleOwner.current.lifecycle
+        .currentStateAsState()
+    val resumed = lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
+
+    LaunchedEffect(themes, dragged, resumed) {
+        if (!infinite || dragged || !resumed) return@LaunchedEffect
         while (isActive) {
             listState.scrollBy(driftPerTick)
             delay(16)
