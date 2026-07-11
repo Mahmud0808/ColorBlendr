@@ -151,6 +151,7 @@
     <string name="translators">Translators bridging languages</string>
     <string name="community_themes">Community creations</string>
     <string name="view_all">View all</string>
+    <string name="sort_by">Sort by</string>
     <string name="sort_upvotes">Top voted</string>
     <string name="sort_downloads">Most downloaded</string>
     <string name="sort_latest">Latest</string>

@@ -1,7 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
 import android.widget.Toast
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,7 +23,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,18 +31,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
@@ -55,10 +51,12 @@ import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
+import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
@@ -66,8 +64,8 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import android.graphics.Color as AndroidColor
 
-// All community themes: sort chips (upvotes / downloads / latest) above an
-// adaptive grid of self-themed cards.
+// All community creations: searchable, sortable (upvotes / downloads /
+// latest) adaptive grid of self-themed cards.
 @Composable
 fun CommunityScreen(
     onThemeClick: (String) -> Unit = {}
@@ -107,14 +105,41 @@ private fun CommunityScreenContent(
     onSortChange: (CommunitySort) -> Unit,
     onThemeClick: (String) -> Unit
 ) {
-    val haptics = LocalHapticFeedback.current
+    val context = LocalContext.current
+    val hazeState = remember { HazeState() }
+    var query by remember { mutableStateOf("") }
 
-    val sorted = remember(themes, sort) {
-        when (sort) {
+    val sorted = remember(themes, sort, query) {
+        val base = when (sort) {
             CommunitySort.UPVOTES -> themes?.sortedByDescending { it.upvotes }
             CommunitySort.DOWNLOADS -> themes?.sortedByDescending { it.downloads }
             CommunitySort.LATEST -> themes?.sortedByDescending { it.createdAt }
         }
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) {
+            base
+        } else {
+            base?.filter {
+                it.name.contains(trimmed, ignoreCase = true) ||
+                        it.author.contains(trimmed, ignoreCase = true)
+            }
+        }
+    }
+
+    fun showSortDialog() {
+        val items = arrayOf(
+            context.getString(R.string.sort_upvotes),
+            context.getString(R.string.sort_downloads),
+            context.getString(R.string.sort_latest)
+        )
+        MaterialAlertDialogBuilder(context)
+            .setTitle(context.getString(R.string.sort_by))
+            .setSingleChoiceItems(items, sort.ordinal) { dialog, which ->
+                onSortChange(CommunitySort.entries[which])
+                dialog.dismiss()
+            }
+            .setCancelable(true)
+            .show()
     }
 
     val developerMode = if (LocalInspectionMode.current) {
@@ -168,73 +193,53 @@ private fun CommunityScreenContent(
                 )
             }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-            ) {
-                SortChip(
-                    label = stringResource(R.string.sort_upvotes),
-                    selected = sort == CommunitySort.UPVOTES,
-                    onClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        onSortChange(CommunitySort.UPVOTES)
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    sorted == null || sorted.isEmpty() -> Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (sorted != null) {
+                            Text(
+                                text = stringResource(R.string.community_empty),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
-                )
-                SortChip(
-                    label = stringResource(R.string.sort_downloads),
-                    selected = sort == CommunitySort.DOWNLOADS,
-                    onClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        onSortChange(CommunitySort.DOWNLOADS)
-                    }
-                )
-                SortChip(
-                    label = stringResource(R.string.sort_latest),
-                    selected = sort == CommunitySort.LATEST,
-                    onClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        onSortChange(CommunitySort.LATEST)
-                    }
-                )
-            }
 
-            when {
-                sorted == null || sorted.isEmpty() -> Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if (sorted != null) {
-                        Text(
-                            text = stringResource(R.string.community_empty),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    else -> LazyVerticalGrid(
+                        columns = GridCells.Adaptive(160.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 16.dp,
+                            // Room for the floating search bar (48dp + margins).
+                            top = 84.dp,
+                            bottom = 16.dp + LocalPreviewBottomInset.current
+                        ),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .hazeSource(hazeState)
+                    ) {
+                        items(sorted, key = { it.id }) { theme ->
+                            CommunityThemeCard(
+                                theme = theme,
+                                onClick = { onThemeClick(theme.id) },
+                                modifier = Modifier.fillMaxWidth(),
+                                showDownloads = true
+                            )
+                        }
                     }
                 }
 
-                else -> LazyVerticalGrid(
-                    columns = GridCells.Adaptive(160.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    contentPadding = PaddingValues(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 12.dp,
-                        bottom = 16.dp + LocalPreviewBottomInset.current
-                    ),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(sorted, key = { it.id }) { theme ->
-                        CommunityThemeCard(
-                            theme = theme,
-                            onClick = { onThemeClick(theme.id) },
-                            modifier = Modifier.fillMaxWidth(),
-                            showDownloads = true
-                        )
-                    }
-                }
+                SearchBar(
+                    query = query,
+                    onQueryChange = { query = it },
+                    onFilterClick = ::showSortDialog,
+                    hazeState = hazeState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
             }
         }
     }
@@ -438,24 +443,6 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 }
             }
         }
-    }
-}
-
-// M3 expressive toggle, same treatment as the wallpaper/basic color switch.
-@Composable
-private fun SortChip(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    ToggleButton(
-        checked = selected,
-        onCheckedChange = { if (it && !selected) onClick() }
-    ) {
-        Text(
-            text = label,
-            fontSize = 13.sp
-        )
     }
 }
 
