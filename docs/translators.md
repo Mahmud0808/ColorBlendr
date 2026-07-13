@@ -42,9 +42,9 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>1300 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/anaelle.dev"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16271182/medium/5bf6a630acd692aa55fed444852f28ff.png" />
+        <a href="https://crowdin.com/profile/qnqelle"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16271182/medium/5bf6a630acd692aa55fed444852f28ff.png" />
           <br />
-          <sub><b>Anaëlle (anaelle.dev)</b></sub></a>
+          <sub><b>Anaëlle (qnqelle)</b></sub></a>
         <br />
         <sub><b>1226 words</b></sub>
       </td>
