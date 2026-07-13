@@ -68,6 +68,7 @@ import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.ErrorDialog
 import com.drdisagree.colorblendr.ui.compose.components.LoadingOverlay
@@ -100,6 +101,7 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
@@ -206,6 +208,14 @@ fun HomeScreen(
         permissionToRetry?.let {
             permissionToRetry = null
             requestPermissionsLauncher.launch(arrayOf(it))
+        }
+    }
+
+    // App-wide snackbar channel drains into the root host; collectLatest so
+    // a new message cancels the one still showing instead of queueing.
+    LaunchedEffect(Unit) {
+        AppSnackbar.messages.collectLatest { message ->
+            snackbarHostState.showSnackbarReplacing(message)
         }
     }
 
@@ -408,6 +418,13 @@ fun HomeScreen(
                         .align(Alignment.BottomEnd)
                         .padding(end = 16.dp, bottom = fabBottomPadding)
                 )
+
+                // Inside the content area so snackbars sit above the nav bar,
+                // same spot as screen-local hosts.
+                AppSnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
 
             MaterialTheme(colorScheme = navBarScheme) {
@@ -439,11 +456,6 @@ fun HomeScreen(
             }
             }
         }
-
-        AppSnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
 
         LoadingOverlay(
             visible = isApplying,

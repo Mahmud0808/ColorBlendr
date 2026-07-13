@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.compose.screens.styles
 
-import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -57,7 +56,9 @@ import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.StyleModel
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -111,8 +112,10 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
 
     val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
     val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
+    // Additive push: snackbar lifts the base, preview FABs stack on top.
     val fabBottomPadding by animateDpAsState(
-        targetValue = if (previewColors != null && !isApplying) 84.dp else 12.dp,
+        targetValue = (if (SnackbarVisibility.visible) 76.dp else 12.dp) +
+                (if (previewColors != null && !isApplying) 72.dp else 0.dp),
         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
         label = "fabPreviewPush"
     )
@@ -260,11 +263,9 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 dialogState = null
 
                 if (title.trim().isEmpty() || description.trim().isEmpty()) {
-                    Toast.makeText(
-                        context,
-                        R.string.title_and_desc_cant_be_empty,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    AppSnackbar.show(
+                        context.getString(R.string.title_and_desc_cant_be_empty)
+                    )
                     return@OutlinedTextFieldDialog
                 }
 

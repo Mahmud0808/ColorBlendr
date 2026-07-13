@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
-import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -242,11 +241,9 @@ fun SeekbarItem(
                                 indication = ripple(bounded = false),
                                 enabled = enabled,
                                 onClick = {
-                                    Toast.makeText(
-                                        context,
-                                        R.string.long_press_to_reset,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    AppSnackbar.show(
+                                        context.getString(R.string.long_press_to_reset)
+                                    )
                                 },
                                 onLongClick = {
                                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)

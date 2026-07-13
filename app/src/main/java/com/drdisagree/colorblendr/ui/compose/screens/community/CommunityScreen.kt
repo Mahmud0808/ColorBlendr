@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
-import android.widget.Toast
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
@@ -57,6 +56,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
@@ -381,11 +381,11 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                     )
                     val prUrl = CommunityUploader.upload(payload, token)
                     submitting = false
-                    Toast.makeText(
-                        context,
-                        if (prUrl != null) R.string.theme_submitted else R.string.theme_submit_failed,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    AppSnackbar.show(
+                        context.getString(
+                            if (prUrl != null) R.string.theme_submitted else R.string.theme_submit_failed
+                        )
+                    )
                     if (prUrl != null) onDismiss()
                 }
             },

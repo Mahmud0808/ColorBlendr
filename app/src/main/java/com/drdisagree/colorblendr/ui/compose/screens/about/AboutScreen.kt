@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import android.widget.Toast
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
@@ -69,6 +68,7 @@ import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.AboutAppModel
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.Avatar
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -244,11 +244,9 @@ private fun AboutAppHeader(animatedHeaders: MutableList<String>) {
                 ) {
                     if (developerModeEnabled()) {
                         if (versionTaps == 0) {
-                            Toast.makeText(
-                                context,
-                                R.string.developer_mode_already_enabled,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            AppSnackbar.show(
+                                context.getString(R.string.developer_mode_already_enabled)
+                            )
                             versionTaps++
                         }
                         return@clickable
@@ -258,11 +256,9 @@ private fun AboutAppHeader(animatedHeaders: MutableList<String>) {
                     if (versionTaps >= 7) {
                         setDeveloperModeEnabled(true)
                         haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                        Toast.makeText(
-                            context,
-                            R.string.developer_mode_enabled,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        AppSnackbar.show(
+                            context.getString(R.string.developer_mode_enabled)
+                        )
                     }
                 }
         )
