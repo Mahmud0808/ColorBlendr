@@ -45,6 +45,7 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -147,6 +148,7 @@ private fun CommunityScreenContent(
     } else {
         remember { developerModeEnabled() }
     }
+    val rootMode = if (LocalInspectionMode.current) true else remember { isRootMode() }
     var showTestDialog by remember { mutableStateOf(false) }
     var showShareDialog by remember { mutableStateOf(false) }
 
@@ -168,7 +170,10 @@ private fun CommunityScreenContent(
                             )
                         }
                     }
-                    IconButton(onClick = { showShareDialog = true }) {
+                    IconButton(
+                        onClick = { showShareDialog = true },
+                        enabled = rootMode
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_share),
                             contentDescription = stringResource(R.string.share_theme),
