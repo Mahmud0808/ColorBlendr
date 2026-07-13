@@ -32,12 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -86,17 +87,17 @@ fun CommunityShowcase(
     // Offline first run: nothing cached, nothing fetched — hide the section.
     if (allThemes?.isEmpty() == true) return
 
-    // Cards that span the larger screen dimension (card + gap), plus 3.
-    // max() is rotation-invariant, so no config key needed.
-    val configuration = LocalConfiguration.current
-    val showcaseCount = maxOf(
-        configuration.screenWidthDp,
-        configuration.screenHeightDp
-    ) / (CARD_WIDTH_DP + CARD_GAP_DP) + 3
+    // Cards that span the larger window dimension (card + gap), plus 3.
+    // max() is rotation-invariant, so the count is stable across rotation.
+    val containerSize = LocalWindowInfo.current.containerSize
+    val largerDimDp = with(LocalDensity.current) {
+        maxOf(containerSize.width, containerSize.height).toDp()
+    }
+    val showcaseCount = (largerDimDp.value / (CARD_WIDTH_DP + CARD_GAP_DP)).toInt() + 3
 
     // Latch which cards and in what order, once, so the set stays fixed while
     // shown; a fresh screen entry re-latches from cache.
-    var showcaseIds by remember { mutableStateOf<List<String>?>(null) }
+    var showcaseIds by rememberSaveable { mutableStateOf<List<String>?>(null) }
     LaunchedEffect(allThemes, showcaseCount) {
         if (showcaseIds == null) {
             allThemes?.let {
