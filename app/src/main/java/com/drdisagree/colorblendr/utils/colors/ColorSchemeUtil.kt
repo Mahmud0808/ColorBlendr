@@ -31,10 +31,11 @@ object ColorSchemeUtil {
         style: MONET,
         @ColorInt color: Int,
         isDark: Boolean = SystemUtil.isDarkMode,
-        contrast: Int = 0
+        contrast: Int = 0,
+        colorSpecVersion: Int = Utilities.getColorSpecVersion()
     ): ArrayList<ArrayList<Int>> {
         val palette = ArrayList<ArrayList<Int>>()
-        val specVersion: ColorSpec.SpecVersion = when (Utilities.getColorSpecVersion()) {
+        val specVersion: ColorSpec.SpecVersion = when (colorSpecVersion) {
             0 -> ColorSpec.SpecVersion.SPEC_2021
             1 -> ColorSpec.SpecVersion.SPEC_2025
             2 -> ColorSpec.SpecVersion.SPEC_2026

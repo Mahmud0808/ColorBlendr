@@ -1,11 +1,12 @@
 package com.drdisagree.colorblendr.utils.manager
 
 import android.graphics.Color
-import android.os.Build
 import android.os.RemoteException
 import android.util.Log
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
+import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
@@ -13,7 +14,6 @@ import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
@@ -28,14 +28,15 @@ import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnab
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.drdisagree.colorblendr.utils.app.MiscUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.utils.colors.computeFinalColorOverrides
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
@@ -76,22 +77,32 @@ object OverlayManager {
     }
 
     fun enableOverlay(packageName: String) {
-        if (!isRootMode() || !ensureRootConnection()) return
+        if (!isRootMode()) return
+        if (!ensureRootConnection()) {
+            reportError(appContext.getString(R.string.error_root_unavailable))
+            return
+        }
 
         try {
             mRootConnection.enableOverlay(listOf(packageName))
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to enable overlay: $packageName", e)
+            reportError(overlayError(e))
         }
     }
 
     fun disableOverlay(packageName: String) {
-        if (!isRootMode() || !ensureRootConnection()) return
+        if (!isRootMode()) return
+        if (!ensureRootConnection()) {
+            reportError(appContext.getString(R.string.error_root_unavailable))
+            return
+        }
 
         try {
             mRootConnection.disableOverlay(listOf(packageName))
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to disable overlay: $packageName", e)
+            reportError(overlayError(e))
         }
     }
 
@@ -118,33 +129,48 @@ object OverlayManager {
     }
 
     fun uninstallOverlayUpdates(packageName: String) {
-        if (!isRootMode() || !ensureRootConnection()) return
+        if (!isRootMode()) return
+        if (!ensureRootConnection()) {
+            reportError(appContext.getString(R.string.error_root_unavailable))
+            return
+        }
 
         try {
             mRootConnection.uninstallOverlayUpdates(packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to uninstall overlay updates: $packageName", e)
+            reportError(overlayError(e))
         }
     }
 
     private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (!isRootMode() || !ensureRootConnection()) return
+        if (!isRootMode()) return
+        if (!ensureRootConnection()) {
+            reportError(appContext.getString(R.string.error_root_unavailable))
+            return
+        }
 
         try {
             mRootConnection.registerFabricatedOverlay(fabricatedOverlay)
             mRootConnection.enableOverlayWithIdentifier(listOf(fabricatedOverlay.overlayName))
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to register fabricated overlay: " + fabricatedOverlay.overlayName, e)
+            reportError(overlayError(e))
         }
     }
 
     fun unregisterFabricatedOverlay(packageName: String) {
-        if (!isRootMode() || !ensureRootConnection()) return
+        if (!isRootMode()) return
+        if (!ensureRootConnection()) {
+            reportError(appContext.getString(R.string.error_root_unavailable))
+            return
+        }
 
         try {
             mRootConnection.unregisterFabricatedOverlay(packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to unregister fabricated overlay: $packageName", e)
+            reportError(overlayError(e))
         }
     }
 
@@ -204,19 +230,6 @@ object OverlayManager {
                         // Dynamic colors
                         createDynamicOverlay(paletteLight, paletteDark)
 
-                        // Temporary workaround for Android 15 QPR1 beta 3 background color issue in settings.
-                        // Currently, we set the status bar color to match the background color
-                        // to achieve a uniform appearance when the background lightness is reduced.
-                        // TODO: Remove once the Settings background color issue is resolved.
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                            && pitchBlackTheme && isDarkMode && forcePitchBlackSettingsEnabled()
-                        ) {
-                            setColor(
-                                "system_surface_container_dark",
-                                adjustLightness(getColor("system_surface_container_dark"), -58)
-                            )
-                        }
-
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
                             // QS top part color below A16
@@ -225,8 +238,6 @@ object OverlayManager {
                                 // QS top part color A16+
                                 setColor("shade_panel_fg_color", Color.BLACK) // with blur
                             }
-                            // Notification scrim color A14+
-                            setColor("system_surface_dim_dark", Color.BLACK)
                             setColor(systemPaletteNames[3][11], Color.BLACK)
                             setColor(systemPaletteNames[4][11], Color.BLACK)
                         }
@@ -238,22 +249,14 @@ object OverlayManager {
                             setColor("text_color_secondary_device_default_light", -0x4d000000)
                         }
 
-                        // Material error colors
-                        setColor("system_error_light", getColor("system_error_600"))
-                        setColor("system_error_container_light", getColor("system_error_100"))
-                        setColor("system_error_dark", getColor("system_error_200"))
-                        setColor("system_error_container_dark", getColor("system_error_700"))
-
-                        if (tintedTextEnabled()) {
-                            setColor("system_on_error_light", getColor("system_error_100"))
-                            setColor("system_on_error_container_light", getColor("system_error_600"))
-                            setColor("system_on_error_dark", getColor("system_error_700"))
-                            setColor("system_on_error_container_dark", getColor("system_error_200"))
-                        } else {
-                            setColor("system_on_error_light", Color.WHITE)
-                            setColor("system_on_error_container_light", Color.BLACK)
-                            setColor("system_on_error_dark", Color.BLACK)
-                            setColor("system_on_error_container_dark", Color.WHITE)
+                        // Error, pitch black and A15 workaround role overrides,
+                        // shared with the in-app color preview.
+                        computeFinalColorOverrides(
+                            paletteLight = paletteLight,
+                            paletteDark = paletteDark,
+                            currentSurfaceContainerDark = getColor("system_surface_container_dark")
+                        ).forEach { (resourceName, colorValue) ->
+                            setColor(resourceName, colorValue)
                         }
                     }
                 }
@@ -363,7 +366,10 @@ object OverlayManager {
         val samsungPaletteName = "android:SemWT_G_MonetPalette"
 
         if (isShizukuMode) {
-            if (!ensureShizukuConnection()) return true
+            if (!ensureShizukuConnection()) {
+                reportError(appContext.getString(R.string.error_shizuku_unavailable))
+                return true
+            }
 
             try {
                 val currentSettings = mShizukuConnection.currentSettings
@@ -382,10 +388,12 @@ object OverlayManager {
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+                reportError(overlayError(e))
             }
         } else {
             if (!WifiAdbShell.isMyDeviceConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
+                reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
                 return true
             }
 
@@ -411,6 +419,7 @@ object OverlayManager {
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+                reportError(overlayError(e))
             }
         }
 
@@ -429,7 +438,10 @@ object OverlayManager {
         val samsungPaletteName = "android:SemWT_G_MonetPalette"
 
         if (isShizukuMode) {
-            if (!ensureShizukuConnection()) return true
+            if (!ensureShizukuConnection()) {
+                reportError(appContext.getString(R.string.error_shizuku_unavailable))
+                return true
+            }
 
             try {
                 if (mShizukuConnection
@@ -443,10 +455,12 @@ object OverlayManager {
                 mShizukuConnection.removeFabricatedColors()
             } catch (e: Exception) {
                 Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
+                reportError(overlayError(e))
             }
         } else {
             if (!WifiAdbShell.isMyDeviceConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
+                reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
                 return true
             }
 
@@ -472,9 +486,20 @@ object OverlayManager {
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+                reportError(overlayError(e))
             }
         }
 
         return true
     }
+
+    private fun reportError(message: String) {
+        ThemingErrorReporter.report(message)
+    }
+
+    private fun overlayError(e: Exception): String =
+        appContext.getString(
+            R.string.error_overlay_operation,
+            e.message ?: e.javaClass.simpleName
+        )
 }

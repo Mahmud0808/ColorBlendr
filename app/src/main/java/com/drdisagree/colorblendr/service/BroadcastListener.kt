@@ -19,6 +19,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
@@ -212,6 +213,8 @@ class BroadcastListener : BroadcastReceiver() {
     private fun updateAllColors(force: Boolean = false) {
         if ((!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled())
             || isWorkMethodUnknown()
+            // Never auto-apply while the user is previewing changes.
+            || PreviewController.isPreviewActive
         ) return
 
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {

@@ -13,7 +13,6 @@
     </string-array>
 
     <string-array name="basic_color_codes" translatable="false">
-        <item>#f9d99a</item>
         <item>#fa5f49</item>
         <item>#ff9800</item>
         <item>#59b4bc</item>

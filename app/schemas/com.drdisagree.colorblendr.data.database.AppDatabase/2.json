@@ -1,0 +1,109 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "c85e1420a4e8c9a71df7871fa0412b62",
+    "entities": [
+      {
+        "tableName": "custom_style_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`styleId` TEXT NOT NULL, `styleName` TEXT NOT NULL, `description` TEXT NOT NULL, `prefsGson` TEXT NOT NULL, `monet` TEXT NOT NULL, `palette` TEXT NOT NULL, PRIMARY KEY(`styleId`))",
+        "fields": [
+          {
+            "fieldPath": "styleId",
+            "columnName": "styleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "styleName",
+            "columnName": "styleName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prefsGson",
+            "columnName": "prefsGson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monet",
+            "columnName": "monet",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "palette",
+            "columnName": "palette",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "styleId"
+          ]
+        }
+      },
+      {
+        "tableName": "community_themes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `payloadJson` TEXT NOT NULL, `upvotes` INTEGER NOT NULL, `downloads` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `fetchedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payloadJson",
+            "columnName": "payloadJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "upvotes",
+            "columnName": "upvotes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "downloads",
+            "columnName": "downloads",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fetchedAt",
+            "columnName": "fetchedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c85e1420a4e8c9a71df7871fa0412b62')"
+    ]
+  }
+}

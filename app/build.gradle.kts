@@ -9,11 +9,12 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.compose)
 }
 
 configure<ApplicationExtension> {
     namespace = "com.drdisagree.colorblendr"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 31
@@ -69,9 +70,9 @@ configure<ApplicationExtension> {
     }
 
     buildFeatures {
-        viewBinding = true
         buildConfig = true
         aidl = true
+        compose = true
     }
 
     compileOptions {
@@ -82,6 +83,7 @@ configure<ApplicationExtension> {
     lint {
         abortOnError = true
         checkReleaseBuilds = false
+        disable += "LocalContextGetResourceValueCall"
     }
 
     dependenciesInfo {
@@ -126,10 +128,15 @@ tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         languageVersion = KotlinVersion.KOTLIN_2_3
         jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.addAll(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3ExpressiveApi"
+        )
     }
 }
 
 tasks.register("renameReleaseApk") {
+    description = "Rename release APK."
     dependsOn("assembleRelease")
 
     doLast {
@@ -170,25 +177,31 @@ dependencies {
 
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.constraintlayout)
 
     implementation(libs.remotepreferences)
-    implementation(libs.circleimageview)
-    implementation(libs.glide)
-    implementation(libs.preference.ktx)
     implementation(libs.core.splashscreen)
+    implementation(libs.localbroadcastmanager)
     implementation(libs.work.runtime)
-    implementation(libs.palette)
-    implementation(libs.flexbox)
     implementation(libs.gson)
-    implementation(libs.recyclerview)
-    implementation(libs.recyclerview.selection)
-    implementation(libs.blurView)
-    implementation(libs.lifecycle.common.jvm)
-    ksp(libs.glide.compiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.zip4j)
     implementation(libs.sun.security.android)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.activity.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.haze)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.okhttp)
 }

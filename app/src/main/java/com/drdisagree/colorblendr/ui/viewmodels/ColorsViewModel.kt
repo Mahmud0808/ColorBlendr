@@ -1,8 +1,6 @@
 package com.drdisagree.colorblendr.ui.viewmodels
 
 import androidx.core.graphics.toColorInt
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
@@ -11,30 +9,43 @@ import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ColorsViewModel : ViewModel() {
 
-    private val _wallpaperColors = MutableLiveData<List<Int>>(emptyList())
-    val wallpaperColors: LiveData<List<Int>> = _wallpaperColors
+    private val _wallpaperColors = MutableStateFlow<List<Int>>(emptyList())
+    val wallpaperColors: StateFlow<List<Int>> = _wallpaperColors.asStateFlow()
 
-    private val _basicColors = MutableLiveData<List<Int>>(emptyList())
-    val basicColors: LiveData<List<Int>> = _basicColors
+    private val _basicColors = MutableStateFlow<List<Int>>(emptyList())
+    val basicColors: StateFlow<List<Int>> = _basicColors.asStateFlow()
 
-    private val _wallpaperColorPalettes = MutableLiveData<Map<Int, List<List<Int>>>>(emptyMap())
-    val wallpaperColorPalettes: LiveData<Map<Int, List<List<Int>>>> = _wallpaperColorPalettes
+    private val _wallpaperColorPalettes = MutableStateFlow<Map<Int, List<List<Int>>>>(emptyMap())
+    val wallpaperColorPalettes: StateFlow<Map<Int, List<List<Int>>>> =
+        _wallpaperColorPalettes.asStateFlow()
 
-    private val _basicColorPalettes = MutableLiveData<Map<Int, List<List<Int>>>>(emptyMap())
-    val basicColorPalettes: LiveData<Map<Int, List<List<Int>>>> = _basicColorPalettes
+    private val _basicColorPalettes = MutableStateFlow<Map<Int, List<List<Int>>>>(emptyMap())
+    val basicColorPalettes: StateFlow<Map<Int, List<List<Int>>>> =
+        _basicColorPalettes.asStateFlow()
+
+    private val _customColorEnabled = MutableStateFlow(customColorEnabled())
+    val customColorEnabled: StateFlow<Boolean> = _customColorEnabled.asStateFlow()
+
+    private val _seedColor = MutableStateFlow(getSeedColorValue(0))
+    val seedColor: StateFlow<Int> = _seedColor.asStateFlow()
 
     init {
         refreshData()
@@ -47,20 +58,28 @@ class ColorsViewModel : ViewModel() {
     }
 
     fun refreshData() {
+        _customColorEnabled.value = customColorEnabled()
+        _seedColor.value = getSeedColorValue(0)
         loadBasicColors()
         loadWallpaperColors()
+    }
+
+    // Keeps the flows in sync when the screen writes the prefs directly.
+    fun onSeedColorSelected(color: Int, customColor: Boolean) {
+        _seedColor.value = color
+        _customColorEnabled.value = customColor
     }
 
     fun loadWallpaperColors() {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperColors = getWallpaperColors()
             if (wallpaperColors != _wallpaperColors.value) {
-                _wallpaperColors.postValue(wallpaperColors)
+                _wallpaperColors.value = wallpaperColors
             }
 
             val colorPalettes = loadPreviewColorPalettes(wallpaperColors)
             if (colorPalettes != _wallpaperColorPalettes.value) {
-                _wallpaperColorPalettes.postValue(colorPalettes)
+                _wallpaperColorPalettes.value = colorPalettes
             }
         }
     }
@@ -71,12 +90,12 @@ class ColorsViewModel : ViewModel() {
                 .getStringArray(R.array.basic_color_codes)
                 .map { it.toColorInt() }
             if (basicColors != _basicColors.value) {
-                _basicColors.postValue(basicColors)
+                _basicColors.value = basicColors
             }
 
             val colorPalettes = loadPreviewColorPalettes(basicColors)
             if (colorPalettes != _basicColorPalettes.value) {
-                _basicColorPalettes.postValue(colorPalettes)
+                _basicColorPalettes.value = colorPalettes
             }
         }
     }

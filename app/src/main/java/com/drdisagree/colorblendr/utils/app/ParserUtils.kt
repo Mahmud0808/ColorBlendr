@@ -5,6 +5,7 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.AboutAppModel
 import com.drdisagree.colorblendr.utils.app.AppUtil.readJsonFileFromAssets
 import org.json.JSONArray
+import java.util.Locale
 
 fun parseContributors(): ArrayList<AboutAppModel> {
     val excludedContributors = ArrayList<String>().apply {
@@ -49,7 +50,7 @@ fun parseTranslators(): ArrayList<AboutAppModel> {
         add("DrDisagree")
     }
 
-    val contributorsList = ArrayList<AboutAppModel>()
+    val translators = ArrayList<Pair<AboutAppModel, Int>>()
     val jsonStr = readJsonFileFromAssets("translators.json")
     val jsonArray = try {
         JSONArray(jsonStr)
@@ -65,16 +66,23 @@ fun parseTranslators(): ArrayList<AboutAppModel> {
         if (excludedContributors.contains(username)) continue // Skip the excluded contributors
 
         val picture = jsonObject.getString("picture")
+        val translated = jsonObject.optInt("translated")
         val languagesArray = jsonObject.getJSONArray("languages")
         val languagesList = ArrayList<String>()
         for (j in 0 until languagesArray.length()) {
             languagesList.add(languagesArray.getJSONObject(j).getString("name"))
         }
-        val languages = languagesList.joinToString(", ")
+        val words = appContext.resources.getQuantityString(
+            R.plurals.total_words_translated,
+            translated,
+            String.format(Locale.getDefault(), "%,d", translated)
+        )
+        val languages = "${languagesList.joinToString(", ")} ($words)"
         val url = "https://crowdin.com/profile/$username"
 
-        contributorsList.add(AboutAppModel(name, languages, url, picture))
+        translators.add(AboutAppModel(name, languages, url, picture) to translated)
     }
 
-    return contributorsList
+    translators.sortByDescending { it.second }
+    return ArrayList(translators.map { it.first })
 }

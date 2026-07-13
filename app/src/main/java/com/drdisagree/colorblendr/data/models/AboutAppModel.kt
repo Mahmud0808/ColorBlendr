@@ -1,9 +1,5 @@
 package com.drdisagree.colorblendr.data.models
 
-import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter.Companion.TYPE_ABOUT_APP
-import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter.Companion.TYPE_CREDITS_HEADER
-import com.drdisagree.colorblendr.ui.adapters.AboutAppAdapter.Companion.TYPE_CREDITS_ITEM
-
 class AboutAppModel {
 
     var layout = 0
@@ -29,5 +25,11 @@ class AboutAppModel {
         this.icon = icon
         this.url = url
         this.viewType = TYPE_CREDITS_ITEM
+    }
+
+    companion object {
+        const val TYPE_ABOUT_APP = 0
+        const val TYPE_CREDITS_HEADER = 1
+        const val TYPE_CREDITS_ITEM = 2
     }
 }

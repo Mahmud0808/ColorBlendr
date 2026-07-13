@@ -53,7 +53,8 @@
         android:theme="@style/Base.Theme"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".ui.activities.SplashActivity"
+            android:name=".ui.activities.MainActivity"
+            android:configChanges="orientation|uiMode"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
@@ -82,10 +83,6 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.colorblendr" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activities.MainActivity"
-            android:configChanges="orientation|uiMode"
-            android:exported="true" />
 
         <receiver
             android:name=".service.BroadcastListener"

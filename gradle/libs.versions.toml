@@ -1,61 +1,63 @@
 [versions]
+activityCompose = "1.13.0"
 agp = "9.2.1"
-androidUtils = "0.0.5"
 annotation = "1.10.0"
 appcompat = "1.7.1"
 bcprovJdk15to18 = "1.84"
-blurView = "version-2.0.6"
-circleimageview = "3.1.0"
-constraintlayout = "2.2.1"
-coreKtx = "1.18.0"
+coil = "3.5.0"
+composeBom = "2026.06.01"
+composePlugin = "2.4.0"
+coreKtx = "1.19.0"
 coreSplashscreen = "1.2.0"
-flexbox = "3.0.0"
-glide = "5.0.7"
 gson = "2.14.0"
+haze = "1.7.2"
 hiddenapibypassVersion = "6.1"
 ksp = "2.3.6"
+lifecycleCompose = "2.11.0"
+navigationCompose = "2.9.8"
 libsuVersion = "6.0.0"
 material = "1.14.0"
-palette = "1.0.0"
-preferenceKtx = "1.2.1"
-recyclerview = "1.4.0"
-recyclerviewSelection = "1.2.0"
 remotepreferences = "0.8"
 roomVersion = "2.8.4"
 shizuku = "13.1.5"
 spake2Android = "-SNAPSHOT"
 sunSecurityAndroid = "1.1"
 workRuntime = "2.11.2"
-lifecycleCommonJvm = "2.10.0"
 zip4j = "2.11.6"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composePlugin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
-androidUtils = { module = "me.jfenn:AndroidUtils", version.ref = "androidUtils" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+compose-bom = { module = "androidx.compose:compose-bom-alpha", version.ref = "composeBom" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleCompose" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleCompose" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 bcprov-jdk15to18 = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref = "bcprovJdk15to18" }
-blurView = { module = "com.github.Dimezis:BlurView", version.ref = "blurView" }
-circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version = "5.3.0" }
+localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version = "1.1.0" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-glide-compiler = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
-flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuVersion" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsuVersion" }
 lsposed-hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypassVersion" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-palette = { module = "androidx.palette:palette", version.ref = "palette" }
-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
 remotepreferences = { module = "com.crossbowffs.remotepreferences:remotepreferences", version.ref = "remotepreferences" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
@@ -65,5 +67,4 @@ shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizu
 spake2-android = { module = "com.github.Mahmud0808.spake2-java:spake2-android", version.ref = "spake2Android" }
 sun-security-android = { module = "com.github.MuntashirAkon:sun-security-android", version.ref = "sunSecurityAndroid" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
-lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }

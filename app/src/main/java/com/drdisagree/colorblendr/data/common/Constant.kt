@@ -14,6 +14,7 @@ object Constant {
 
     // Database
     const val DATABASE_NAME = "colorblendr_database"
+    const val COMMUNITY_THEME_TABLE = "community_themes"
     const val CUSTOM_STYLE_TABLE = "custom_style_table"
 
     // Package names
@@ -105,6 +106,14 @@ object Constant {
     val GSON: Gson = Gson()
     const val PREF_WORKING_METHOD = "workingMethod"
 
+    const val COMMUNITY_INDEX_URL =
+        "https://cdn.jsdelivr.net/gh/Mahmud0808/ColorBlendr-Themes@main/index.json"
+    const val DEVELOPER_MODE = "developerMode"
+    const val COMMUNITY_VOTED_IDS = "communityVotedIds"
+    const val COMMUNITY_LAST_FETCH = "communityLastFetch"
+    const val COMMUNITY_WORKER_URL = "https://colorblendr-themes.drdisagree.workers.dev"
+    const val TURNSTILE_SITE_KEY = "0x4AAAAAADzUgMuegUjZcG6j"
+
     val EXCLUDED_PREFS_FROM_BACKUP: Set<String> = HashSet(
         listOf(
             FIRST_RUN,
@@ -112,7 +121,10 @@ object Constant {
             MONET_LAST_UPDATED,
             THEMING_ENABLED,
             SHIZUKU_THEMING_ENABLED,
-            WALLPAPER_COLOR_LIST
+            WALLPAPER_COLOR_LIST,
+            COMMUNITY_VOTED_IDS,
+            COMMUNITY_LAST_FETCH,
+            DEVELOPER_MODE
         )
     )
 
