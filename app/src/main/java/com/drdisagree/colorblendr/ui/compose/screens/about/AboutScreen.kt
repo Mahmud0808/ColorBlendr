@@ -1,6 +1,12 @@
 package com.drdisagree.colorblendr.ui.compose.screens.about
 
 import android.content.Context
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Article
 import androidx.compose.material.icons.rounded.Help
@@ -81,6 +87,8 @@ fun AboutScreen() {
     val translators = remember { parseTranslators() }
     val contributorsHeader = stringResource(R.string.contributors)
     val translatorsHeader = stringResource(R.string.translators)
+    // Headers already underline-animated this visit (once per screen entry).
+    val animatedHeaders = remember { mutableStateListOf<String>() }
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -97,9 +105,9 @@ fun AboutScreen() {
                 contentPadding = PaddingValues(bottom = LocalPreviewBottomInset.current),
                 modifier = Modifier.fillMaxSize()
             ) {
-                item { AboutAppHeader() }
-                creditsSection(contributorsHeader, contributors)
-                creditsSection(translatorsHeader, translators)
+                item { AboutAppHeader(animatedHeaders) }
+                creditsSection(contributorsHeader, contributors, animatedHeaders)
+                creditsSection(translatorsHeader, translators, animatedHeaders)
                 item {
                     Spacer(
                         modifier = Modifier.height(dimensionResource(R.dimen.container_margin_bottom))
@@ -110,22 +118,68 @@ fun AboutScreen() {
     }
 }
 
+// Centered section title with an accent underline that grows from the center
+// to the text width once, when the header first enters the visible area.
+@Composable
+private fun SectionHeader(
+    text: String,
+    animatedHeaders: MutableList<String>,
+    modifier: Modifier = Modifier
+) {
+    val density = LocalDensity.current
+    var textWidthPx by remember { mutableIntStateOf(0) }
+    val alreadyAnimated = text in animatedHeaders
+    val progress = remember { Animatable(if (alreadyAnimated) 1f else 0f) }
+
+    LaunchedEffect(text) {
+        if (!alreadyAnimated) {
+            progress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
+            )
+            animatedHeaders.add(text)
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            onTextLayout = { textWidthPx = it.size.width }
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .width(with(density) {
+                    val startPx = 32.dp.toPx()
+                    val endPx = textWidthPx.toFloat().coerceAtLeast(startPx)
+                    (startPx + (endPx - startPx) * progress.value).toDp()
+                })
+                .height(3.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+    }
+}
+
 private fun LazyListScope.creditsSection(
     header: String,
-    items: List<AboutAppModel>
+    items: List<AboutAppModel>,
+    animatedHeaders: MutableList<String>
 ) {
     val credits = items.filter { it.url.isNotEmpty() }
 
     if (header.isNotEmpty()) {
         item {
-            Text(
+            SectionHeader(
                 text = header,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp)
+                animatedHeaders = animatedHeaders,
+                modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
             )
         }
     }
@@ -140,7 +194,7 @@ private fun LazyListScope.creditsSection(
 }
 
 @Composable
-private fun AboutAppHeader() {
+private fun AboutAppHeader(animatedHeaders: MutableList<String>) {
     val context = LocalContext.current
     val appIcon = remember(context) {
         try {
@@ -217,10 +271,9 @@ private fun AboutAppHeader() {
             modifier = Modifier.padding(vertical = 24.dp)
         )
 
-        Text(
+        SectionHeader(
             text = stringResource(R.string.meet_the_developer),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+            animatedHeaders = animatedHeaders,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 16.dp)
