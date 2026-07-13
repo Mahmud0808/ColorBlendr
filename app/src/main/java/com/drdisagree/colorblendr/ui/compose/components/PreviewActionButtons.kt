@@ -1,6 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -17,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,7 +56,7 @@ fun PreviewActionButtons(
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_close),
+                    painter = rememberVectorPainter(Icons.Rounded.Close),
                     contentDescription = stringResource(R.string.preview_discard)
                 )
             }
@@ -66,7 +69,7 @@ fun PreviewActionButtons(
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 icon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_tick),
+                        painter = rememberVectorPainter(Icons.Rounded.Check),
                         contentDescription = null
                     )
                 },

@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
@@ -110,7 +112,7 @@ private fun ColorPickerItemPreview() {
             title = "Seed color",
             summary = "Custom seed color for palette",
             previewColor = Color(0xFF4285F4),
-            icon = painterResource(R.drawable.ic_color_picker),
+            icon = rememberVectorPainter(Icons.Rounded.Colorize),
             onClick = {}
         )
     }

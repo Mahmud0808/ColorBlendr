@@ -1,6 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
 import android.widget.Toast
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -170,7 +175,7 @@ private fun CommunityScreenContent(
                     if (developerMode) {
                         IconButton(onClick = { showTestDialog = true }) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_edit),
+                                painter = rememberVectorPainter(Icons.Rounded.Edit),
                                 contentDescription = stringResource(R.string.test_theme),
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
@@ -181,7 +186,7 @@ private fun CommunityScreenContent(
                         enabled = rootMode
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_share),
+                            painter = rememberVectorPainter(Icons.Rounded.Share),
                             contentDescription = stringResource(R.string.share_theme),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
@@ -207,7 +212,15 @@ private fun CommunityScreenContent(
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     sorted.isNullOrEmpty() -> {
-                        if (sorted != null) EmptyState()
+                        if (sorted != null) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .hazeSource(hazeState)
+                            ) {
+                                EmptyState()
+                            }
+                        }
                     }
 
                     else -> LazyVerticalGrid(
@@ -266,7 +279,7 @@ private fun EmptyState() {
                 .background(MaterialTheme.colorScheme.primaryContainer)
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_nav_colors_filled),
+                imageVector = Icons.Rounded.Palette,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(56.dp)

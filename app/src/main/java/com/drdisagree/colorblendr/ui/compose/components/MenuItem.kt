@@ -1,6 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
@@ -106,7 +110,7 @@ fun MenuItem(
             if (showEndArrow) {
                 Spacer(modifier = Modifier.width(16.dp))
                 Icon(
-                    painter = painterResource(R.drawable.ic_arrow_end),
+                    painter = rememberVectorPainter(Icons.AutoMirrored.Rounded.KeyboardArrowRight),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                         .copy(alpha = if (enabled) 1f else 0.4f),
@@ -125,14 +129,14 @@ private fun MenuItemPreview() {
             MenuItem(
                 title = "Backup and restore",
                 summary = "Save and restore your settings",
-                icon = painterResource(R.drawable.ic_backup),
+                icon = rememberVectorPainter(Icons.Rounded.Save),
                 showEndArrow = true,
                 position = WidgetPosition.Top
             )
             MenuItem(
                 title = "About",
                 summary = "Version and credits",
-                icon = painterResource(R.drawable.ic_info),
+                icon = rememberVectorPainter(Icons.Rounded.Info),
                 enabled = false,
                 disabledReason = "Requires root",
                 position = WidgetPosition.Bottom

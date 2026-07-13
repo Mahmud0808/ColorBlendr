@@ -1,6 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -29,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -115,7 +118,7 @@ fun CommunityThemeCard(
                 modifier = Modifier.padding(top = 4.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_upvote),
+                    painter = rememberVectorPainter(Icons.Outlined.ThumbUp),
                     contentDescription = null,
                     tint = subtle,
                     modifier = Modifier.size(14.dp)
@@ -128,7 +131,7 @@ fun CommunityThemeCard(
                 if (showDownloads) {
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
-                        painter = painterResource(R.drawable.ic_download),
+                        painter = rememberVectorPainter(Icons.Rounded.Download),
                         contentDescription = null,
                         tint = subtle,
                         modifier = Modifier.size(14.dp)

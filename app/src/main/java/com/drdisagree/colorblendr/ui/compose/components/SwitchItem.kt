@@ -1,6 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FormatColorFill
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +30,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
@@ -166,9 +170,11 @@ private fun SwitchItemContent(
             enabled = enabled,
             thumbContent = {
                 Icon(
-                    painter = painterResource(
-                        if (checked) R.drawable.ic_tick else R.drawable.ic_cross
-                    ),
+                    painter = if (checked) {
+                        rememberVectorPainter(Icons.Rounded.Check)
+                    } else {
+                        rememberVectorPainter(Icons.Rounded.Close)
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize)
                 )
@@ -189,7 +195,7 @@ private fun SwitchItemPreview() {
                 checked = first,
                 onCheckedChange = { first = it },
                 summary = "Use more accurate color shades",
-                icon = painterResource(R.drawable.ic_color_fill),
+                icon = rememberVectorPainter(Icons.Rounded.FormatColorFill),
                 position = WidgetPosition.Top
             )
             SwitchItem(

@@ -1,6 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AttachFile
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -26,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,7 +64,7 @@ fun BackupRestoreCard(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_attach_file),
+                    painter = rememberVectorPainter(Icons.Rounded.AttachFile),
                     contentDescription = null,
                     tint = themeAttrColor(MaterialR.attr.colorPrimaryVariant),
                     modifier = Modifier.size(20.dp)
@@ -100,7 +104,7 @@ fun BackupRestoreCard(
                             .padding(end = 6.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_backup),
+                            painter = rememberVectorPainter(Icons.Rounded.Save),
                             contentDescription = null,
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
@@ -116,7 +120,7 @@ fun BackupRestoreCard(
                             .padding(start = 6.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_restore),
+                            painter = rememberVectorPainter(Icons.Rounded.Restore),
                             contentDescription = null,
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )

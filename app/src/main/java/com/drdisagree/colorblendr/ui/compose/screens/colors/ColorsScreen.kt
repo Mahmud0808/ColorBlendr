@@ -1,6 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.screens.colors
 
 import android.content.BroadcastReceiver
+import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -55,7 +59,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
@@ -411,9 +414,11 @@ private fun CustomColorTile(
             }
     ) {
         Icon(
-            painter = painterResource(
-                if (selected) R.drawable.ic_tick else R.drawable.ic_color_picker
-            ),
+            painter = if (selected) {
+                rememberVectorPainter(Icons.Rounded.Check)
+            } else {
+                rememberVectorPainter(Icons.Rounded.Colorize)
+            },
             contentDescription = stringResource(R.string.seed_color_picker_title),
             tint = iconTint,
             modifier = Modifier.size(22.dp)

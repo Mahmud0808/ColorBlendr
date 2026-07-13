@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.screens.styles
 
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -33,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -237,7 +239,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_add),
+                        painter = rememberVectorPainter(Icons.Rounded.Add),
                         contentDescription = stringResource(R.string.save_current_style)
                     )
                 }

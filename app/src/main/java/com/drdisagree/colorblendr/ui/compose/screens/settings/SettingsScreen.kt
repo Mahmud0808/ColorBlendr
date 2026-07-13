@@ -12,6 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Brush
+import androidx.compose.material.icons.rounded.FormatColorText
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.InvertColors
+import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -359,7 +366,7 @@ fun SettingsScreen(
                     SwitchItem(
                         title = stringResource(R.string.accurate_shades_title),
                         summary = stringResource(R.string.accurate_shades_desc),
-                        icon = painterResource(R.drawable.ic_brush),
+                        icon = rememberVectorPainter(Icons.Rounded.Brush),
                         checked = accurateShades,
                         enabled = rootMode,
                         disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -376,7 +383,7 @@ fun SettingsScreen(
                     SwitchItem(
                         title = stringResource(R.string.pitch_black_theme_title),
                         summary = stringResource(R.string.pitch_black_theme_desc),
-                        icon = painterResource(R.drawable.ic_invert_colors),
+                        icon = rememberVectorPainter(Icons.Rounded.InvertColors),
                         checked = pitchBlack,
                         enabled = rootMode,
                         disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -392,7 +399,7 @@ fun SettingsScreen(
                     SwitchItem(
                         title = stringResource(R.string.tint_text_title),
                         summary = stringResource(R.string.tint_text_desc),
-                        icon = painterResource(R.drawable.ic_text),
+                        icon = rememberVectorPainter(Icons.Rounded.FormatColorText),
                         checked = tintTextColor,
                         enabled = rootMode,
                         disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -408,7 +415,7 @@ fun SettingsScreen(
                     SwitchItem(
                         title = stringResource(R.string.override_colors_manually_title),
                         summary = stringResource(R.string.override_colors_manually_desc),
-                        icon = painterResource(R.drawable.ic_table_view),
+                        icon = rememberVectorPainter(Icons.Rounded.TableChart),
                         checked = overrideManually,
                         enabled = rootMode,
                         disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -439,7 +446,7 @@ fun SettingsScreen(
                     MenuItem(
                         title = stringResource(R.string.about_this_app_title),
                         summary = stringResource(R.string.about_this_app_desc),
-                        icon = painterResource(R.drawable.ic_info),
+                        icon = rememberVectorPainter(Icons.Rounded.Info),
                         showEndArrow = true,
                         onClick = onNavigateToAbout
                     )

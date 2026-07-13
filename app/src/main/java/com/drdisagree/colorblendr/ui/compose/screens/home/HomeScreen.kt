@@ -6,8 +6,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -45,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -59,22 +58,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.drdisagree.colorblendr.utils.community.TestThemeHolder
-import com.drdisagree.colorblendr.utils.community.communityColorScheme
-import com.drdisagree.colorblendr.ui.compose.components.ErrorDialog
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
-import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
-import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
+import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
+import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.service.AutoStartService.Companion.isServiceNotRunning
 import com.drdisagree.colorblendr.service.RestartBroadcastReceiver.Companion.scheduleJob
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
+import com.drdisagree.colorblendr.ui.compose.components.ErrorDialog
 import com.drdisagree.colorblendr.ui.compose.components.LoadingOverlay
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.PreviewActionButtons
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
@@ -100,6 +97,8 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
 import com.drdisagree.colorblendr.utils.app.AppUtil.openAppSettings
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
+import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -330,7 +329,7 @@ fun HomeScreen(
                                     nestedNavController.navigate(Routes.COMMUNITY)
                                 },
                                 onNavigateToCommunityTheme = { themeId ->
-                                    nestedNavController.navigate("communityTheme/" + themeId)
+                                    nestedNavController.navigate("communityTheme/$themeId")
                                 }
                             )
                         }
@@ -382,7 +381,7 @@ fun HomeScreen(
                         composable(Routes.COMMUNITY) {
                             CommunityScreen(
                                 onThemeClick = { themeId ->
-                                    nestedNavController.navigate("communityTheme/" + themeId)
+                                    nestedNavController.navigate("communityTheme/$themeId")
                                 }
                             )
                         }
@@ -420,9 +419,7 @@ fun HomeScreen(
                         alwaysShowLabel = false,
                         icon = {
                             Icon(
-                                painter = painterResource(
-                                    if (selected) tab.filledIconResId else tab.outlineIconResId
-                                ),
+                                imageVector = if (selected) tab.filledIcon else tab.outlineIcon,
                                 contentDescription = null
                             )
                         },

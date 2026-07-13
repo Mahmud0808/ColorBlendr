@@ -1,6 +1,15 @@
 package com.drdisagree.colorblendr.ui.compose.screens.pairing
 
 import android.content.Context
+import androidx.compose.material.icons.rounded.Looks3
+import androidx.compose.material.icons.rounded.LooksOne
+import androidx.compose.material.icons.rounded.LooksTwo
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material.icons.rounded.WifiOff
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -126,7 +135,7 @@ fun PairingScreen(
                         text = stringResource(R.string.notification_access_not_granted),
                         icon = painterResource(R.drawable.ic_notification_error),
                         buttonText = stringResource(R.string.notification_settings),
-                        buttonIcon = painterResource(R.drawable.ic_open_in_new),
+                        buttonIcon = rememberVectorPainter(Icons.AutoMirrored.Rounded.OpenInNew),
                         onButtonClick = { AppUtil.openAppNotificationSettings(context) },
                         modifier = Modifier.padding(top = 15.dp)
                     )
@@ -134,7 +143,7 @@ fun PairingScreen(
 
                 IconTextCard(
                     text = stringResource(R.string.notification_style_error),
-                    icon = painterResource(R.drawable.ic_warning),
+                    icon = rememberVectorPainter(Icons.Rounded.WarningAmber),
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(
@@ -145,9 +154,9 @@ fun PairingScreen(
                 if (!isWifiConnected) {
                     ErrorActionCard(
                         text = stringResource(R.string.wifi_connection_required),
-                        icon = painterResource(R.drawable.ic_no_wifi),
+                        icon = rememberVectorPainter(Icons.Rounded.WifiOff),
                         buttonText = stringResource(R.string.enable_wifi),
-                        buttonIcon = painterResource(R.drawable.ic_wifi_settings),
+                        buttonIcon = rememberVectorPainter(Icons.Rounded.Wifi),
                         onButtonClick = { SystemUtil.requestEnableWifi(context) },
                         modifier = Modifier.padding(top = 15.dp)
                     )
@@ -263,7 +272,7 @@ private fun GuideCard(
         Column(modifier = Modifier.padding(20.dp)) {
             Row {
                 Icon(
-                    painter = painterResource(R.drawable.ic_counter_one),
+                    painter = rememberVectorPainter(Icons.Rounded.LooksOne),
                     contentDescription = null,
                     tint = controlNormal,
                     modifier = Modifier.padding(top = 5.dp, end = 20.dp)
@@ -285,7 +294,7 @@ private fun GuideCard(
                         shapes = ButtonDefaults.shapes()
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_open_in_new),
+                            painter = rememberVectorPainter(Icons.AutoMirrored.Rounded.OpenInNew),
                             contentDescription = null,
                             modifier = Modifier
                                 .width(ButtonDefaults.IconSize)
@@ -301,7 +310,7 @@ private fun GuideCard(
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_counter_two),
+                    painter = rememberVectorPainter(Icons.Rounded.LooksTwo),
                     contentDescription = null,
                     tint = controlNormal,
                     modifier = Modifier.padding(end = 20.dp)
@@ -316,7 +325,7 @@ private fun GuideCard(
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_counter_three),
+                    painter = rememberVectorPainter(Icons.Rounded.Looks3),
                     contentDescription = null,
                     tint = controlNormal,
                     modifier = Modifier.padding(end = 20.dp)

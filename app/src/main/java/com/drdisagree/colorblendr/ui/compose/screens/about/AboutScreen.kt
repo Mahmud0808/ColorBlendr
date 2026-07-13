@@ -1,6 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.screens.about
 
 import android.content.Context
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Article
+import androidx.compose.material.icons.rounded.Help
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.runtime.setValue
 import com.drdisagree.colorblendr.data.common.Utilities.setDeveloperModeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
@@ -239,21 +244,21 @@ private fun LinkButtonsCard(modifier: Modifier = Modifier) {
         Row(modifier = Modifier.alpha(0.8f)) {
             LinkButton(
                 textResId = R.string.news,
-                iconResId = R.drawable.ic_news,
+                icon = rememberVectorPainter(Icons.Rounded.Article),
                 onClick = { context.openUrl("https://t.me/DrDsProjects") },
                 modifier = Modifier.weight(1f)
             )
             LinkButtonDivider()
             LinkButton(
                 textResId = R.string.support,
-                iconResId = R.drawable.ic_help,
+                icon = rememberVectorPainter(Icons.Rounded.Help),
                 onClick = { context.openUrl("https://t.me/DrDsProjectsChat") },
                 modifier = Modifier.weight(1f)
             )
             LinkButtonDivider()
             LinkButton(
                 textResId = R.string.github,
-                iconResId = R.drawable.ic_github,
+                icon = painterResource(R.drawable.ic_github),
                 onClick = { context.openUrl("https://github.com/Mahmud0808/ColorBlendr") },
                 modifier = Modifier.weight(1f)
             )
@@ -264,7 +269,7 @@ private fun LinkButtonsCard(modifier: Modifier = Modifier) {
 @Composable
 private fun LinkButton(
     textResId: Int,
-    iconResId: Int,
+    icon: Painter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -276,7 +281,7 @@ private fun LinkButton(
             .padding(vertical = 10.dp)
     ) {
         Icon(
-            painter = painterResource(iconResId),
+            painter = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(dimensionResource(R.dimen.about_button_icon_size))

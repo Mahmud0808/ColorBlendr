@@ -1,6 +1,12 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.rounded.ThumbUp
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +45,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -178,10 +183,10 @@ private fun DetailsContent(
                         }
 
                         StatChip(
-                            iconRes = if (upvoted) {
-                                R.drawable.ic_upvote_filled
+                            icon = if (upvoted) {
+                                rememberVectorPainter(Icons.Rounded.ThumbUp)
                             } else {
-                                R.drawable.ic_upvote
+                                rememberVectorPainter(Icons.Outlined.ThumbUp)
                             },
                             value = upvotes,
                             onClick = onUpvoteToggle?.let { toggle ->
@@ -193,7 +198,7 @@ private fun DetailsContent(
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                         StatChip(
-                            iconRes = R.drawable.ic_download,
+                            icon = rememberVectorPainter(Icons.Rounded.Download),
                             value = theme.downloads,
                             onClick = null
                         )
@@ -289,7 +294,7 @@ private fun LargeSwatch(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun StatChip(
-    iconRes: Int,
+    icon: Painter,
     value: Int,
     onClick: (() -> Unit)?
 ) {
@@ -299,7 +304,7 @@ private fun StatChip(
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Icon(
-                painter = painterResource(iconRes),
+                painter = icon,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp)
             )

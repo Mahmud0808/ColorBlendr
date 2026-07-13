@@ -6,6 +6,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Contrast
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.FormatPaint
+import androidx.compose.material.icons.rounded.Opacity
+import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material.icons.rounded.Widgets
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -13,20 +22,18 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.drdisagree.colorblendr.data.domain.AppScope
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
@@ -63,11 +70,13 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApp
 import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
@@ -76,7 +85,6 @@ import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -191,7 +199,7 @@ fun SettingsAdvancedScreen(
                     title = stringResource(R.string.custom_secondary_color_desc),
                     summary = stringResource(R.string.custom_secondary_color_summary),
                     previewColor = Color(secondaryColor),
-                    icon = painterResource(R.drawable.ic_paint),
+                    icon = rememberVectorPainter(Icons.Rounded.FormatPaint),
                     enabled = customColor && rootMode,
                     disabledReason = when {
                         !rootMode -> stringResource(R.string.root_required)
@@ -207,7 +215,7 @@ fun SettingsAdvancedScreen(
                     title = stringResource(R.string.custom_tertiary_color_title),
                     summary = stringResource(R.string.custom_tertiary_color_desc),
                     previewColor = Color(tertiaryColor),
-                    icon = painterResource(R.drawable.ic_paint),
+                    icon = rememberVectorPainter(Icons.Rounded.FormatPaint),
                     enabled = customColor && rootMode,
                     disabledReason = when {
                         !rootMode -> stringResource(R.string.root_required)
@@ -223,7 +231,7 @@ fun SettingsAdvancedScreen(
                 MenuItem(
                     title = stringResource(R.string.colorspec_title),
                     summary = stringResource(R.string.colorspec_desc),
-                    icon = painterResource(R.drawable.ic_star_shine),
+                    icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
                     position = WidgetPosition.Top,
@@ -256,7 +264,7 @@ fun SettingsAdvancedScreen(
                 SwitchItem(
                     title = stringResource(R.string.screen_off_update_title),
                     summary = stringResource(R.string.screen_off_update_desc),
-                    icon = painterResource(R.drawable.ic_update),
+                    icon = rememberVectorPainter(Icons.Rounded.Update),
                     checked = screenOffUpdate,
                     position = WidgetPosition.Middle,
                     onCheckedChange = { isChecked ->
@@ -270,7 +278,7 @@ fun SettingsAdvancedScreen(
                 SwitchItem(
                     title = stringResource(R.string.mode_specific_theme_title),
                     summary = stringResource(R.string.mode_specific_theme_desc),
-                    icon = painterResource(R.drawable.ic_light_dark),
+                    icon = rememberVectorPainter(Icons.Rounded.Contrast),
                     checked = modeSpecificThemes,
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -286,7 +294,7 @@ fun SettingsAdvancedScreen(
                 MenuItem(
                     title = stringResource(R.string.force_per_app_theme_title),
                     summary = stringResource(R.string.force_per_app_theme_desc),
-                    icon = painterResource(R.drawable.ic_app_widgets),
+                    icon = rememberVectorPainter(Icons.Rounded.Widgets),
                     showEndArrow = true,
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -296,7 +304,7 @@ fun SettingsAdvancedScreen(
                 SwitchItem(
                     title = stringResource(R.string.darker_launcher_icons_title),
                     summary = stringResource(R.string.darker_launcher_icons_desc),
-                    icon = painterResource(R.drawable.ic_dark_icon),
+                    icon = rememberVectorPainter(Icons.Rounded.DarkMode),
                     checked = darkerIcons,
                     enabled = rootMode && hasPixelLauncher,
                     disabledReason = when {
@@ -317,7 +325,7 @@ fun SettingsAdvancedScreen(
                 SwitchItem(
                     title = stringResource(R.string.semitransparent_launcher_title),
                     summary = stringResource(R.string.semitransparent_launcher_desc),
-                    icon = painterResource(R.drawable.ic_semi_transparent),
+                    icon = rememberVectorPainter(Icons.Rounded.Opacity),
                     checked = semiTransparentIcons,
                     enabled = rootMode && hasPixelLauncher,
                     disabledReason = when {
@@ -340,7 +348,7 @@ fun SettingsAdvancedScreen(
                     SwitchItem(
                         title = stringResource(R.string.pitch_black_settings_workaround_title),
                         summary = stringResource(R.string.pitch_black_settings_workaround_desc),
-                        icon = painterResource(R.drawable.ic_settings_starry),
+                        icon = rememberVectorPainter(Icons.Rounded.Tune),
                         checked = pitchBlackWorkaround,
                         enabled = rootMode && pitchBlackEnabled,
                         disabledReason = when {

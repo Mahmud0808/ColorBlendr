@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -34,7 +37,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -206,7 +208,7 @@ fun SeekbarItem(
                         .padding(start = 16.dp, end = 22.dp, top = 16.dp, bottom = 16.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_reset),
+                        painter = rememberVectorPainter(Icons.Rounded.RestartAlt),
                         contentDescription = stringResource(R.string.reset),
                         tint = textIconColor,
                         modifier = Modifier

@@ -1,6 +1,12 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
@@ -38,7 +44,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -197,7 +202,7 @@ fun StylePreviewCard(
                     if (onEdit != null) {
                         StyleMenuItem(
                             textResId = R.string.edit,
-                            iconResId = R.drawable.ic_edit,
+                            icon = rememberVectorPainter(Icons.Rounded.Edit),
                             onClick = {
                                 menuExpanded = false
                                 onEdit()
@@ -207,7 +212,7 @@ fun StylePreviewCard(
                     if (onUpdate != null) {
                         StyleMenuItem(
                             textResId = R.string.update,
-                            iconResId = R.drawable.ic_renew,
+                            icon = rememberVectorPainter(Icons.Rounded.Refresh),
                             onClick = {
                                 menuExpanded = false
                                 onUpdate()
@@ -217,7 +222,7 @@ fun StylePreviewCard(
                     if (onDelete != null) {
                         StyleMenuItem(
                             textResId = R.string.delete,
-                            iconResId = R.drawable.ic_delete,
+                            icon = rememberVectorPainter(Icons.Rounded.Delete),
                             onClick = {
                                 menuExpanded = false
                                 onDelete()
@@ -233,14 +238,14 @@ fun StylePreviewCard(
 @Composable
 private fun StyleMenuItem(
     textResId: Int,
-    iconResId: Int,
+    icon: Painter,
     onClick: () -> Unit
 ) {
     DropdownMenuItem(
         text = { Text(text = stringResource(textResId)) },
         leadingIcon = {
             Icon(
-                painter = painterResource(iconResId),
+                painter = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface
             )

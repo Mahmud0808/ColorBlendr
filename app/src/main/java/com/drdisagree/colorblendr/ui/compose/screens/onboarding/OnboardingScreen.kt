@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.screens.onboarding
 
 import android.Manifest
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -238,7 +241,7 @@ private fun OnboardingErrorDialog(
         onDismissRequest = onDismiss,
         icon = {
             Icon(
-                painter = painterResource(R.drawable.ic_warning),
+                painter = rememberVectorPainter(Icons.Rounded.WarningAmber),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(48.dp)

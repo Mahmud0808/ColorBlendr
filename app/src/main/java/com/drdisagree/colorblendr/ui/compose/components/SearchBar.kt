@@ -1,6 +1,11 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -88,7 +92,7 @@ fun SearchBar(
                 .padding(horizontal = 8.dp)
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_search),
+                painter = rememberVectorPainter(Icons.Rounded.Search),
                 contentDescription = null,
                 tint = secondaryTextColor,
                 modifier = Modifier
@@ -122,7 +126,7 @@ fun SearchBar(
                     modifier = Modifier.padding(end = 4.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_clear),
+                        painter = rememberVectorPainter(Icons.Rounded.Clear),
                         contentDescription = null,
                         tint = secondaryTextColor
                     )
@@ -133,7 +137,7 @@ fun SearchBar(
                 modifier = Modifier.padding(end = 4.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_filter_list),
+                    painter = rememberVectorPainter(Icons.Rounded.FilterList),
                     contentDescription = null,
                     tint = secondaryTextColor
                 )

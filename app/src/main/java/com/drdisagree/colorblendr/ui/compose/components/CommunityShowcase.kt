@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -40,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -153,7 +155,7 @@ private fun ShowcaseContent(
             TextButton(onClick = onViewAll) {
                 Text(text = stringResource(R.string.view_all))
                 Icon(
-                    painter = painterResource(R.drawable.ic_arrow_end),
+                    painter = rememberVectorPainter(Icons.AutoMirrored.Rounded.KeyboardArrowRight),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 4.dp)
