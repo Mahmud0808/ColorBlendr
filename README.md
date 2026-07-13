@@ -30,43 +30,68 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 ## Features 🔥
 
-- Accent saturation changer
+**Color sources**
 
-- Background saturation changer
+- Generate palettes from your wallpaper
+- Pick any seed color, or choose from a set of basic colors
+- Live preview before applying — see changes as you tweak them
 
-- Background lightness changer
+**Fine-tuning**
 
-- Pitch black theme in dark mode
+- Accent saturation, background saturation, and background lightness sliders
+- Ready-made Monet style presets
+- Pitch black theme for dark mode
+- Tinted text color
+- Custom secondary and tertiary colors
 
-- Manual color overriding
+**Full control**
 
+- Manual per-shade color overriding across the whole palette
+- Separate configurations for light and dark mode
+- Extra tweaks: color spec version, screen-off updates, darker / semi-transparent Pixel launcher icons
+
+**Community & backup**
+
+- Community creations — browse, apply, upvote, and share themes (see below)
+- Backup and restore your entire setup to a file
+- Works with **Root**, **Shizuku**, or **Wireless ADB**
 - and many more...
 
 ## Requirements 🛠
 
 - Android 12+ ROM with Material You support
-
 - Working **Root**, **Shizuku**, or **Wireless ADB** environment
 
 > [!WARNING]
-> 
+>
 > SuperSU root is not supported.
 
 ## How to Use 🚀
 
 - Download and install the apk
-
 - Allow permissions for the app
-
 - Select **Root**, **Shizuku**, or **Wireless ADB** mode
-
 - That's it. Now you are good to go!
 
 ## Note 📝
 
 - Root is recommended if you want to have the full experience
-
 - Shizuku and Wireless ADB are also supported but customizations are limited
+
+## Community Creations 🎨
+
+Share your favorite color setups and discover themes crafted by others, right inside the app.
+
+- **Browse & search** — explore a growing gallery of community-made themes, sorted by popularity or recency
+- **One-tap apply** — preview any creation live and apply it instantly (root mode)
+- **Upvote** — like the themes you enjoy so the best ones rise to the top
+- **Share your own** — publish your current palette with a name and description
+
+Everything is anonymous — no account, sign-up, or personal data required. Submissions go through a quick human review before they appear for everyone.
+
+> [!NOTE]
+>
+> Browsing and upvoting work on every mode. Applying a community creation requires root.
 
 ## FAQ 🤓
 
@@ -98,6 +123,18 @@ Elevate your creativity with effortless material customization. Instantly tweak 
   <summary>How do I properly uninstall ColorBlendr?</summary>
 
 - First, disable the ColorBlendr Service from app settings. Then, uninstall the app and reboot your device.
+</details>
+
+<details>
+  <summary>Is any personal data collected when I share a theme?</summary>
+
+- No. Community creations are fully anonymous — no account or personal data is attached. Only the palette itself, along with the name and description you provide, is submitted.
+</details>
+
+<details>
+  <summary>Why can't I apply a community creation?</summary>
+
+- Applying a community creation modifies system colors, which requires root. You can still browse, search, and upvote in Shizuku and Wireless ADB modes.
 </details>
 
 ## Translation 🌐
