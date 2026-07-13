@@ -47,6 +47,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,6 +82,7 @@ import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.ui.compose.components.AnimatedCheckIcon
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
+import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -90,7 +92,6 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricat
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.Dispatchers
@@ -179,23 +180,23 @@ fun PerAppThemeScreen() {
 
     val filteredList = remember(appList, query) { filterList(appList, query) }
 
-    fun showFilterDialog() {
-        val items = arrayOf(
-            context.getString(R.string.filter_system_apps),
-            context.getString(R.string.filter_user_apps),
-            context.getString(R.string.filter_launchable_apps),
-            context.getString(R.string.filter_all)
-        )
-
-        MaterialAlertDialogBuilder(context)
-            .setTitle(context.getString(R.string.filter_app_category))
-            .setSingleChoiceItems(items, getAppListFilteringMethod()) { dialog, which ->
+    var showFilterDialog by rememberSaveable { mutableStateOf(false) }
+    if (showFilterDialog) {
+        SingleChoiceDialog(
+            title = stringResource(R.string.filter_app_category),
+            options = listOf(
+                stringResource(R.string.filter_system_apps),
+                stringResource(R.string.filter_user_apps),
+                stringResource(R.string.filter_launchable_apps),
+                stringResource(R.string.filter_all)
+            ),
+            selectedIndex = filterMethod,
+            onSelect = { which ->
                 setAppListFilteringMethod(which)
                 filterMethod = which
-                dialog.dismiss()
-            }
-            .setCancelable(true)
-            .show()
+            },
+            onDismiss = { showFilterDialog = false }
+        )
     }
 
     fun toggleApp(app: AppInfoModel) {
@@ -300,7 +301,7 @@ fun PerAppThemeScreen() {
                     SearchBar(
                         query = query,
                         onQueryChange = { query = it },
-                        onFilterClick = ::showFilterDialog,
+                        onFilterClick = { showFilterDialog = true },
                         hazeState = hazeState,
                         modifier = Modifier.align(Alignment.TopCenter)
                     )

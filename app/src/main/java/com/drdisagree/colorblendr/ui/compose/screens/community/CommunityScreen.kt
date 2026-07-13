@@ -34,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,13 +63,13 @@ import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
+import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
@@ -137,20 +138,19 @@ private fun CommunityScreenContent(
         }
     }
 
-    fun showSortDialog() {
-        val items = arrayOf(
-            context.getString(R.string.sort_upvotes),
-            context.getString(R.string.sort_downloads),
-            context.getString(R.string.sort_latest)
+    var showSortDialog by rememberSaveable { mutableStateOf(false) }
+    if (showSortDialog) {
+        SingleChoiceDialog(
+            title = stringResource(R.string.sort_by),
+            options = listOf(
+                stringResource(R.string.sort_upvotes),
+                stringResource(R.string.sort_downloads),
+                stringResource(R.string.sort_latest)
+            ),
+            selectedIndex = sort.ordinal,
+            onSelect = { onSortChange(CommunitySort.entries[it]) },
+            onDismiss = { showSortDialog = false }
         )
-        MaterialAlertDialogBuilder(context)
-            .setTitle(context.getString(R.string.sort_by))
-            .setSingleChoiceItems(items, sort.ordinal) { dialog, which ->
-                onSortChange(CommunitySort.entries[which])
-                dialog.dismiss()
-            }
-            .setCancelable(true)
-            .show()
     }
 
     val developerMode = if (LocalInspectionMode.current) {
@@ -250,7 +250,7 @@ private fun CommunityScreenContent(
                 SearchBar(
                     query = query,
                     onQueryChange = { query = it },
-                    onFilterClick = ::showSortDialog,
+                    onFilterClick = { showSortDialog = true },
                     hazeState = hazeState,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )

@@ -78,13 +78,13 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
+import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -178,6 +178,32 @@ fun SettingsAdvancedScreen(
         )
     }
 
+    var showColorSpecDialog by rememberSaveable { mutableStateOf(false) }
+    if (showColorSpecDialog) {
+        val currentVersion = getColorSpecVersion()
+        SingleChoiceDialog(
+            title = stringResource(R.string.colorspec_title),
+            options = context.resources.getStringArray(R.array.colorspec_versions).toList(),
+            selectedIndex = currentVersion,
+            onSelect = { which ->
+                if (currentVersion != which) {
+                    haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                    PreviewController.beginPreview()
+                    resetCustomStyleIfNotNull()
+                    setColorSpecVersion(which)
+
+                    if (which != 2 && getCurrentMonetStyle() == MONET.CMF) {
+                        setCurrentMonetStyle(MONET.TONAL_SPOT)
+                    }
+
+                    RefreshCoordinator.triggerRefresh()
+                    updateColors()
+                }
+            },
+            onDismiss = { showColorSpecDialog = false }
+        )
+    }
+
     Surface(
         color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxSize()
@@ -235,31 +261,7 @@ fun SettingsAdvancedScreen(
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
                     position = WidgetPosition.Top,
-                    onClick = {
-                        val colorSpecVersions =
-                            context.resources.getStringArray(R.array.colorspec_versions)
-                        val currentVersion = getColorSpecVersion()
-                        MaterialAlertDialogBuilder(context)
-                            .setTitle(R.string.colorspec_title)
-                            .setSingleChoiceItems(colorSpecVersions, currentVersion) { dialog, which ->
-                                if (currentVersion != which) {
-                                    haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                    PreviewController.beginPreview()
-                                    resetCustomStyleIfNotNull()
-                                    setColorSpecVersion(which)
-
-                                    if (which != 2 && getCurrentMonetStyle() == MONET.CMF) {
-                                        setCurrentMonetStyle(MONET.TONAL_SPOT)
-                                    }
-
-                                    RefreshCoordinator.triggerRefresh()
-                                    updateColors()
-                                }
-                                dialog.dismiss()
-                            }
-                            .setNegativeButton(R.string.cancel, null)
-                            .show()
-                    }
+                    onClick = { showColorSpecDialog = true }
                 )
                 SwitchItem(
                     title = stringResource(R.string.screen_off_update_title),
