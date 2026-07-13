@@ -14,13 +14,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.nativePaint
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import android.graphics.Color as AndroidColor
 
 // Large tappable entry to color palette page; previews current
 // primary/secondary/tertiary colors as overlapping gradient circles.
@@ -51,11 +57,13 @@ fun ColorPalettePreviewCard(
                 GradientCircle(
                     startColor = MaterialTheme.colorScheme.secondaryFixedDim,
                     endColor = MaterialTheme.colorScheme.secondary,
+                    startShadow = true,
                     modifier = Modifier
                 )
                 GradientCircle(
                     startColor = MaterialTheme.colorScheme.tertiaryFixedDim,
                     endColor = MaterialTheme.colorScheme.tertiary,
+                    startShadow = true,
                     modifier = Modifier.offset(x = 38.dp)
                 )
             }
@@ -79,11 +87,41 @@ fun ColorPalettePreviewCard(
 private fun GradientCircle(
     startColor: Color,
     endColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    startShadow: Boolean = false
 ) {
+    val shadowColor = Color.Black.copy(alpha = 0.15f)
+
     Box(
         modifier = modifier
             .size(64.dp)
+            .then(
+                if (startShadow) {
+                    Modifier.drawBehind {
+                        val radius = size.minDimension / 2f
+                        drawIntoCanvas { canvas ->
+                            val paint = Paint().nativePaint.apply {
+                                isAntiAlias = true
+                                color = AndroidColor.TRANSPARENT
+                                setShadowLayer(
+                                    5.dp.toPx(),
+                                    -3.dp.toPx(),
+                                    0f,
+                                    shadowColor.toArgb()
+                                )
+                            }
+                            canvas.nativeCanvas.drawCircle(
+                                center.x,
+                                center.y,
+                                radius,
+                                paint
+                            )
+                        }
+                    }
+                } else {
+                    Modifier
+                }
+            )
             .clip(CircleShape)
             .background(
                 Brush.linearGradient(
