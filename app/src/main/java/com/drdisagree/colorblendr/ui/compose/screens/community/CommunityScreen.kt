@@ -25,13 +25,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +59,7 @@ import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
+import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
@@ -260,52 +259,16 @@ private fun CommunityScreenContent(
     }
 }
 
-// Expressive empty state: large icon on an M3 expressive shape, text below.
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+// Empty state for the community grid.
 @Composable
 private fun EmptyState() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 40.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(120.dp)
-                .clip(MaterialShapes.Cookie9Sided.toShape())
-                .background(MaterialTheme.colorScheme.primaryContainer)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Palette,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(56.dp)
-            )
-        }
-
-        Text(
-            text = stringResource(R.string.community_empty),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = stringResource(R.string.community_empty_desc),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 8.dp)
-        )
-    }
+    ExpressiveEmptyState(
+        icon = Icons.Rounded.Palette,
+        title = stringResource(R.string.community_empty),
+        description = stringResource(R.string.community_empty_desc)
+    )
 }
 
-// Developer-mode helper for PR review: paste a theme JSON, view it exactly
-// like a published theme (scoped preview + apply).
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TestThemeDialog(
     onDismiss: () -> Unit,
@@ -327,6 +290,7 @@ private fun TestThemeDialog(
                 )
 
                 OutlinedTextField(
+                    shape = RoundedCornerShape(16.dp),
                     value = input,
                     onValueChange = {
                         input = it
@@ -448,6 +412,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 )
 
                 OutlinedTextField(
+                    shape = RoundedCornerShape(16.dp),
                     value = name,
                     onValueChange = { name = it.take(40) },
                     label = { Text(text = stringResource(R.string.theme_name)) },
@@ -458,6 +423,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                         .padding(top = 16.dp)
                 )
                 OutlinedTextField(
+                    shape = RoundedCornerShape(16.dp),
                     value = description,
                     onValueChange = { description = it.take(500) },
                     label = { Text(text = stringResource(R.string.theme_description)) },
@@ -469,6 +435,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                         .padding(top = 8.dp)
                 )
                 OutlinedTextField(
+                    shape = RoundedCornerShape(16.dp),
                     value = author,
                     onValueChange = { author = it.take(40) },
                     label = { Text(text = stringResource(R.string.author_optional)) },

@@ -37,6 +37,8 @@
     <string name="filter_user_apps">User apps</string>
     <string name="filter_launchable_apps">Launchable apps</string>
     <string name="filter_all">All apps</string>
+    <string name="no_apps_found">No apps found</string>
+    <string name="no_apps_found_desc">Try a different search or filter.</string>
 
     <!-- Theme -->
     <string name="accent_saturation">Accent saturation</string>

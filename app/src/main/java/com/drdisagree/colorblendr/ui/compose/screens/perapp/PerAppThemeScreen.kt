@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
 import android.content.BroadcastReceiver
+import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
+import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.Icons
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -272,6 +275,20 @@ fun PerAppThemeScreen() {
                                     else -> WidgetPosition.Middle
                                 },
                                 onClick = { toggleApp(app) }
+                            )
+                        }
+                    }
+
+                    if (!isLoading && filteredList.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .hazeSource(hazeState)
+                        ) {
+                            ExpressiveEmptyState(
+                                icon = Icons.Rounded.SearchOff,
+                                title = stringResource(R.string.no_apps_found),
+                                description = stringResource(R.string.no_apps_found_desc)
                             )
                         }
                     }
