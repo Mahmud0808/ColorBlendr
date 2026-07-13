@@ -1,10 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -20,6 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,13 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -65,7 +63,7 @@ fun CommunityThemeCard(
         communityColorScheme(theme, isDark, baseScheme)
     }
     // Surface container tinted toward the accent for extra vibrancy.
-    val container = lerp(scheme.surfaceContainer, scheme.primary, 0.12f)
+    val container = scheme.surfaceContainerHigh
     val onContainer = scheme.onSurface
     val subtle = scheme.onSurfaceVariant
 
