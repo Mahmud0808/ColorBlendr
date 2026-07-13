@@ -3,12 +3,8 @@ package com.drdisagree.colorblendr.data.repository
 import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_INDEX_URL
 import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_LAST_FETCH
 import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_WORKER_URL
-import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_SHOWCASE_NEXT
-import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getLong
-import com.drdisagree.colorblendr.data.config.Prefs.getString
 import com.drdisagree.colorblendr.data.config.Prefs.putLong
-import com.drdisagree.colorblendr.data.config.Prefs.putString
 import com.drdisagree.colorblendr.data.dao.CommunityThemeDao
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.data.models.CommunityThemeEntity
@@ -17,14 +13,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 // Cache-first store for community themes. Index fetch replaces the Room
-// cache; browse/showcase read only from cache. Showcase is double-buffered:
-// the "next" bucket persisted last session renders instantly on launch, then
-// a background refresh restocks it for the next launch.
+// cache; browse/showcase read only from cache.
 class CommunityThemeRepository(private val dao: CommunityThemeDao) {
 
     private val client = OkHttpClient.Builder()
@@ -114,50 +107,6 @@ class CommunityThemeRepository(private val dao: CommunityThemeDao) {
 
     suspend fun getThemeById(id: String): CommunityTheme? =
         dao.getByIds(listOf(id)).firstOrNull()?.toTheme()
-
-    // Instant path: themes persisted for this launch. Empty only on first run
-    // (or wiped cache); caller then falls back to fetchShowcaseNow().
-    suspend fun getBufferedShowcase(): List<CommunityTheme> {
-        val ids = readBucket()
-        if (ids.isEmpty()) return emptyList()
-
-        val byId = dao.getByIds(ids).mapNotNull { it.toTheme() }.associateBy { it.id }
-        return ids.mapNotNull { byId[it] }
-    }
-
-    // First-run path: network fetch, then sample immediately.
-    suspend fun fetchShowcaseNow(count: Int): List<CommunityTheme> {
-        if (!refreshIndex()) return emptyList()
-        return getThemes().shuffled().take(count)
-    }
-
-    // Restock the bucket for the next launch: refresh index (best effort),
-    // sample avoiding what is on screen right now. On total failure keeps the
-    // old bucket, so the carousel is never blank next launch.
-    suspend fun prepareNextShowcase(count: Int, excludeIds: List<String>) {
-        refreshIndex()
-
-        val all = getThemes()
-        if (all.isEmpty()) return
-
-        val pool = all.filterNot { it.id in excludeIds }.ifEmpty { all }
-        writeBucket(pool.shuffled().take(count).map { it.id })
-    }
-
-    private fun readBucket(): List<String> {
-        val raw = getString(COMMUNITY_SHOWCASE_NEXT) ?: return emptyList()
-        return try {
-            val array = JSONArray(raw)
-            List(array.length()) { array.getString(it) }
-        } catch (_: Exception) {
-            clearPref(COMMUNITY_SHOWCASE_NEXT)
-            emptyList()
-        }
-    }
-
-    private fun writeBucket(ids: List<String>) {
-        putString(COMMUNITY_SHOWCASE_NEXT, JSONArray(ids).toString())
-    }
 
     private fun CommunityTheme.toEntity(fetchedAt: Long) = CommunityThemeEntity(
         id = id,

@@ -29,11 +29,15 @@ import androidx.lifecycle.compose.currentStateAsState
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,8 +56,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 // Community themes showcase: header with View all, then an endlessly
-// drifting carousel of self-themed cards. First run shows shimmer while the
-// first fetch lands; afterwards the double-buffered bucket renders instantly.
+// drifting carousel of top-voted cards. Count = cards that fit the larger
+// screen dimension + 3 extra (or fewer if the cloud has fewer). First run
+// shows shimmer while the first fetch lands.
 @Composable
 fun CommunityShowcase(
     onViewAll: () -> Unit,
@@ -71,7 +76,7 @@ fun CommunityShowcase(
     }
 
     val communityViewModel: CommunityViewModel = viewModel()
-    val showcase by communityViewModel.showcase.collectAsStateWithLifecycle()
+    val allThemes by communityViewModel.allThemes.collectAsStateWithLifecycle()
 
     LifecycleResumeEffect(Unit) {
         communityViewModel.refreshFromCache()
@@ -79,7 +84,37 @@ fun CommunityShowcase(
     }
 
     // Offline first run: nothing cached, nothing fetched — hide the section.
-    if (showcase?.isEmpty() == true) return
+    if (allThemes?.isEmpty() == true) return
+
+    // Cards that span the larger screen dimension (card + gap), plus 3.
+    // max() is rotation-invariant, so no config key needed.
+    val configuration = LocalConfiguration.current
+    val showcaseCount = maxOf(
+        configuration.screenWidthDp,
+        configuration.screenHeightDp
+    ) / (CARD_WIDTH_DP + CARD_GAP_DP) + 3
+
+    // Latch which cards and in what order, once, so the set stays fixed while
+    // shown; a fresh screen entry re-latches from cache.
+    var showcaseIds by remember { mutableStateOf<List<String>?>(null) }
+    LaunchedEffect(allThemes, showcaseCount) {
+        if (showcaseIds == null) {
+            allThemes?.let {
+                showcaseIds = it.sortedByDescending { theme -> theme.upvotes }
+                    .take(showcaseCount)
+                    .map { theme -> theme.id }
+            }
+        }
+    }
+
+    // Remap latched ids to current themes so vote counts stay live without
+    // changing the set or order.
+    val showcase = remember(showcaseIds, allThemes) {
+        showcaseIds?.let { ids ->
+            val byId = allThemes.orEmpty().associateBy { it.id }
+            ids.mapNotNull { byId[it] }
+        }
+    }
 
     ShowcaseContent(
         showcase = showcase,
@@ -88,6 +123,10 @@ fun CommunityShowcase(
         modifier = modifier
     )
 }
+
+// CommunityThemeCard default width + LazyRow gap.
+private const val CARD_WIDTH_DP = 160
+private const val CARD_GAP_DP = 10
 
 @Composable
 private fun ShowcaseContent(

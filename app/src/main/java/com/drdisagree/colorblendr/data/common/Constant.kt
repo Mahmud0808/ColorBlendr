@@ -108,7 +108,6 @@ object Constant {
 
     const val COMMUNITY_INDEX_URL =
         "https://cdn.jsdelivr.net/gh/Mahmud0808/ColorBlendr-Themes@main/index.json"
-    const val COMMUNITY_SHOWCASE_NEXT = "communityShowcaseNext"
     const val DEVELOPER_MODE = "developerMode"
     const val COMMUNITY_VOTED_IDS = "communityVotedIds"
     const val COMMUNITY_LAST_FETCH = "communityLastFetch"
@@ -123,7 +122,6 @@ object Constant {
             THEMING_ENABLED,
             SHIZUKU_THEMING_ENABLED,
             WALLPAPER_COLOR_LIST,
-            COMMUNITY_SHOWCASE_NEXT,
             COMMUNITY_VOTED_IDS,
             COMMUNITY_LAST_FETCH,
             DEVELOPER_MODE
