@@ -40,8 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
@@ -51,15 +49,17 @@ import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
-import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import android.graphics.Color as AndroidColor
@@ -195,7 +195,7 @@ private fun CommunityScreenContent(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
-                    sorted == null || sorted.isEmpty() -> Box(
+                    sorted.isNullOrEmpty() -> Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -214,7 +214,6 @@ private fun CommunityScreenContent(
                         contentPadding = PaddingValues(
                             start = 16.dp,
                             end = 16.dp,
-                            // Room for the floating search bar (48dp + margins).
                             top = 84.dp,
                             bottom = 16.dp + LocalPreviewBottomInset.current
                         ),
@@ -382,6 +381,12 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Text(
+                    text = stringResource(R.string.share_theme_info),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
 
                 OutlinedTextField(
                     value = name,
@@ -436,7 +441,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                     ) {
                         Text(
                             text = stringResource(
-                                if (submitting) R.string.submitting_theme else android.R.string.ok
+                                if (submitting) R.string.submitting_theme else R.string.submit
                             )
                         )
                     }

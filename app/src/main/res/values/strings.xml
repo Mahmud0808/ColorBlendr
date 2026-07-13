@@ -162,6 +162,7 @@
     <string name="test_theme_hint">Paste creation JSON</string>
     <string name="invalid_theme_json">Invalid creation JSON</string>
     <string name="share_theme">Share current creation</string>
+    <string name="share_theme_info">Your current colors are submitted for review. Once approved, it appears for everyone within about 12 hours. Only the name, description, and colors are shared — no personal data.</string>
     <string name="theme_name">Creation name</string>
     <string name="theme_description">Description</string>
     <string name="author_optional">Author (optional)</string>
@@ -170,6 +171,8 @@
     <string name="theme_submitted">Creation submitted for review</string>
     <string name="theme_submit_failed">Submission failed, try again later</string>
     <string name="submitting_theme">Submitting creation…</string>
+    <string name="verifying_human">Verifying that you are human…</string>
+    <string name="complete_verification">Please complete the verification</string>
 
     <!-- General -->
     <string name="icon">Icon</string>
