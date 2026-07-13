@@ -66,8 +66,18 @@ internal fun WheelPickerPage(
         return (alpha shl 24) or (rgb and 0x00FFFFFF)
     }
 
+    // Own emissions must never re-seed: colorToHSV is lossy (hue 360 -> 0,
+    // s/v quantization), so a round-trip reseed snaps the wheel thumb.
+    var lastEmitted by remember { mutableIntStateOf(color) }
+
+    fun emit() {
+        val emitted = currentColor()
+        lastEmitted = emitted
+        onColorPicked(emitted)
+    }
+
     LaunchedEffect(color) {
-        if (currentColor() != color) {
+        if (color != lastEmitted && currentColor() != color) {
             val hsv = FloatArray(3)
             AndroidColor.colorToHSV(color, hsv)
             hue = hsv[0].toInt()
@@ -106,7 +116,7 @@ internal fun WheelPickerPage(
 
                         hue = ((Math.toDegrees(atan2(dy, dx).toDouble()) + 360) % 360).toInt()
                         saturation = ((hypot(dx, dy) / radius).coerceIn(0f, 1f) * 255).toInt()
-                        onColorPicked(currentColor())
+                        emit()
                     }
 
                     awaitEachGesture {
@@ -164,7 +174,7 @@ internal fun WheelPickerPage(
             valueText = String.format(Locale.getDefault(), "%.2f", brightness / 255f),
             onValueChange = {
                 brightness = it
-                onColorPicked(currentColor())
+                emit()
             }
         )
         if (alphaEnabled) {
@@ -172,7 +182,7 @@ internal fun WheelPickerPage(
                 alpha = alpha,
                 onAlphaChange = {
                     alpha = it
-                    onColorPicked(currentColor())
+                    emit()
                 }
             )
         }

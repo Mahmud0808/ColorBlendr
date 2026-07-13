@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ internal fun HsvPickerPage(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val locale = LocalLocale.current.platformLocale
     val neutral = remember(context) { Color(PickerColors.neutral(context)) }
 
     val initialHsv = remember {
@@ -50,10 +52,19 @@ internal fun HsvPickerPage(
         return (alpha shl 24) or (rgb and 0x00FFFFFF)
     }
 
-    // External color changes re-seed sliders; guarded so own emissions don't
-    // reset hue on degenerate colors.
+    // Own emissions must never re-seed: colorToHSV is lossy (hue 360 -> 0,
+    // s/v quantization), so a round-trip reseed snaps the hue thumb.
+    var lastEmitted by remember { mutableIntStateOf(color) }
+
+    fun emit() {
+        val emitted = currentColor()
+        lastEmitted = emitted
+        onColorPicked(emitted)
+    }
+
+    // External color changes re-seed sliders.
     LaunchedEffect(color) {
-        if (currentColor() != color) {
+        if (color != lastEmitted && currentColor() != color) {
             val hsv = FloatArray(3)
             AndroidColor.colorToHSV(color, hsv)
             hue = hsv[0].toInt()
@@ -91,7 +102,7 @@ internal fun HsvPickerPage(
             valueText = hue.toString(),
             onValueChange = {
                 hue = it
-                onColorPicked(currentColor())
+                emit()
             }
         )
         PickerSliderRow(
@@ -100,10 +111,10 @@ internal fun HsvPickerPage(
             max = 255,
             trackColors = saturationTrack,
             thumbColor = neutral,
-            valueText = String.format(Locale.getDefault(), "%.2f", saturation / 255f),
+            valueText = String.format(locale, "%.2f", saturation / 255f),
             onValueChange = {
                 saturation = it
-                onColorPicked(currentColor())
+                emit()
             }
         )
         PickerSliderRow(
@@ -112,10 +123,10 @@ internal fun HsvPickerPage(
             max = 255,
             trackColors = brightnessTrack,
             thumbColor = neutral,
-            valueText = String.format(Locale.getDefault(), "%.2f", brightness / 255f),
+            valueText = String.format(locale, "%.2f", brightness / 255f),
             onValueChange = {
                 brightness = it
-                onColorPicked(currentColor())
+                emit()
             }
         )
         if (alphaEnabled) {
@@ -123,7 +134,7 @@ internal fun HsvPickerPage(
                 alpha = alpha,
                 onAlphaChange = {
                     alpha = it
-                    onColorPicked(currentColor())
+                    emit()
                 }
             )
         }

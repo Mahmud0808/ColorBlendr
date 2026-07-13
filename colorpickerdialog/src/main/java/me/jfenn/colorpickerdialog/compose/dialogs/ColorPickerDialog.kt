@@ -91,8 +91,8 @@ import kotlin.math.roundToInt
 import android.graphics.Color as AndroidColor
 
 // Color band with centered hex field, tabbed pickers (tab clicks only, no
-// swipe), 64dp M3 expressive button bar. Portrait stacks band on top (8dp
-// corners); landscape puts vertical band on left (24dp corners).
+// swipe), 64dp M3 expressive button bar. Portrait stacks band on top;
+// landscape puts vertical band on left. M3 dialog corners (28dp).
 @Composable
 fun ColorPickerDialog(
     initialColor: Int,
@@ -118,12 +118,12 @@ fun ColorPickerDialog(
     }
 
     // Window width: min(500dp portrait / 800dp landscape, 90% of screen);
-    // card corner = max(requested radius, 8dp portrait / 24dp landscape).
+    // card corner = max(requested radius, M3 dialog 28dp).
     val dialogWidth = min(
         if (isLandscape) 800 else 500,
         (configuration.screenWidthDp * 0.9f).toInt()
     ).dp
-    val effectiveRadius = maxOf(cornerRadius, if (isLandscape) 24.dp else 8.dp)
+    val effectiveRadius = maxOf(cornerRadius, 28.dp)
 
     Dialog(
         onDismissRequest = onDismissRequest,

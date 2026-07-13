@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -40,8 +41,8 @@ import coil3.toBitmap
 import me.jfenn.colorpickerdialog.compose.components.ImageColorPicker
 import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 
-// Surface-colored 8dp-corner card: touch sampler above 64dp button bar; OK
-// confirms sampled color; bitmap loads with Coil.
+// Surface-colored M3 dialog card (28dp corners): touch sampler above 64dp
+// button bar; OK confirms sampled color; bitmap loads with Coil.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ImageColorPickerDialog(
@@ -66,7 +67,7 @@ fun ImageColorPickerDialog(
 
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(28.dp),
             color = Color(PickerColors.colorSurface(context))
         ) {
             Column {
@@ -84,6 +85,13 @@ fun ImageColorPickerDialog(
                             onColorPicked = { sampled -> color = sampled }
                         )
                     }
+                } ?: Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                ) {
+                    ContainedLoadingIndicator()
                 }
 
                 Row(

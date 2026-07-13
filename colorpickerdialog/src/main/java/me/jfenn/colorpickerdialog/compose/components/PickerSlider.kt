@@ -43,8 +43,8 @@ import kotlin.math.roundToInt
 // Decelerate easing for progress animations.
 internal val DecelerateEasing = Easing { fraction -> 1f - (1f - fraction) * (1f - fraction) }
 
-// Slider row: 42dp tall, label(1) : slider(4) : value(1) weights, 14sp bold
-// all-caps secondary text, 4dp rounded track, pill thumb.
+// Slider row: 48dp tall, label(1) : slider(4) : value(1) weights, 14sp
+// medium secondary text, M3-style 12dp rounded track + handle thumb.
 @Composable
 internal fun PickerSliderRow(
     label: String,
@@ -60,20 +60,21 @@ internal fun PickerSliderRow(
 ) {
     val context = LocalContext.current
     val textColor = remember(context) { Color(PickerColors.textColorSecondary(context)) }
+    val surfaceColor = remember(context) { Color(PickerColors.colorSurface(context)) }
     val textStyle = TextStyle(
         color = textColor,
         fontSize = 14.sp,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Medium
     )
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .height(42.dp)
+            .height(48.dp)
     ) {
         Text(
-            text = label.uppercase(Locale.getDefault()),
+            text = label,
             style = textStyle,
             maxLines = 1,
             modifier = Modifier.weight(1f)
@@ -84,6 +85,7 @@ internal fun PickerSliderRow(
             max = max,
             trackColors = trackColors,
             thumbColor = thumbColor,
+            outlineColor = surfaceColor,
             thumb = thumb,
             onValueChange = onValueChange,
             onTrackingChanged = onTrackingChanged,
@@ -108,6 +110,7 @@ private fun SliderTrack(
     max: Int,
     trackColors: List<Color>,
     thumbColor: Color,
+    outlineColor: Color,
     thumb: PickerThumb,
     onValueChange: (Int) -> Unit,
     onTrackingChanged: (Boolean) -> Unit,
@@ -184,7 +187,8 @@ private fun SliderTrack(
             .drawBehind {
                 trackWidth = size.width
 
-                val trackHeight = 4.dp.toPx()
+                // M3-style full-height gradient track.
+                val trackHeight = 12.dp.toPx()
                 drawRoundRect(
                     brush = brush,
                     topLeft = Offset(0f, center.y - trackHeight / 2f),
@@ -200,11 +204,26 @@ private fun SliderTrack(
 
                 when (thumb) {
                     PickerThumb.Pill -> {
-                        // 8x24dp pill, 12dp corners.
-                        val thumbWidth = 8.dp.toPx()
-                        val thumbHeight = 24.dp.toPx()
-                        val centerX = thumbWidth / 2f +
-                                fraction * (size.width - thumbWidth)
+                        // M3 expressive handle: narrow vertical bar taller
+                        // than the track; surface-colored outline separates
+                        // it from the gradient.
+                        val thumbWidth = 6.dp.toPx()
+                        val thumbHeight = 28.dp.toPx()
+                        val outline = 3.dp.toPx()
+                        val centerX = thumbWidth / 2f + outline +
+                                fraction * (size.width - thumbWidth - outline * 2f)
+                        drawRoundRect(
+                            color = outlineColor,
+                            topLeft = Offset(
+                                centerX - thumbWidth / 2f - outline,
+                                center.y - thumbHeight / 2f - outline
+                            ),
+                            size = Size(
+                                thumbWidth + outline * 2f,
+                                thumbHeight + outline * 2f
+                            ),
+                            cornerRadius = CornerRadius(thumbWidth / 2f + outline)
+                        )
                         drawRoundRect(
                             color = thumbColor,
                             topLeft = Offset(
@@ -212,14 +231,21 @@ private fun SliderTrack(
                                 center.y - thumbHeight / 2f
                             ),
                             size = Size(thumbWidth, thumbHeight),
-                            cornerRadius = CornerRadius(12.dp.toPx())
+                            cornerRadius = CornerRadius(thumbWidth / 2f)
                         )
                     }
 
                     PickerThumb.Circle -> {
-                        // Circle thumb for alpha row.
-                        val radius = 8.dp.toPx()
-                        val centerX = radius + fraction * (size.width - radius * 2f)
+                        // Circle thumb for alpha row; same outline treatment.
+                        val radius = 9.dp.toPx()
+                        val outline = 3.dp.toPx()
+                        val centerX = radius + outline +
+                                fraction * (size.width - (radius + outline) * 2f)
+                        drawCircle(
+                            color = outlineColor,
+                            radius = radius + outline,
+                            center = Offset(centerX, center.y)
+                        )
                         drawCircle(
                             color = thumbColor,
                             radius = radius,
