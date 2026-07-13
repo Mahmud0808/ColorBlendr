@@ -1,9 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.screens.onboarding
 
 import android.Manifest
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.WarningAmber
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,12 +15,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,17 +37,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -60,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -85,6 +85,7 @@ import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
 import com.drdisagree.colorblendr.data.enums.WorkMethod
+import com.drdisagree.colorblendr.ui.compose.components.ErrorDialog
 import com.drdisagree.colorblendr.ui.compose.components.SelectableCard
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
@@ -92,7 +93,6 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import kotlinx.coroutines.launch
-import android.R as AndroidR
 import com.google.android.material.R as MaterialR
 
 @Composable
@@ -222,8 +222,16 @@ fun OnboardingScreen(
                 }
             }
 
+            PagerIndicator(
+                pageCount = pagerState.pageCount,
+                currentPage = pagerState.currentPage,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 44.dp)
+            )
+
             if (actionState is OnboardingActionState.Error) {
-                OnboardingErrorDialog(
+                ErrorDialog(
                     message = actionState.message,
                     onDismiss = onErrorDismissed
                 )
@@ -232,38 +240,43 @@ fun OnboardingScreen(
     }
 }
 
+// Expressive dots: active page stretches into a pill.
 @Composable
-private fun OnboardingErrorDialog(
-    message: String,
-    onDismiss: () -> Unit
+private fun PagerIndicator(
+    pageCount: Int,
+    currentPage: Int,
+    modifier: Modifier = Modifier
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = {
-            Icon(
-                painter = rememberVectorPainter(Icons.Rounded.WarningAmber),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(48.dp)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        repeat(pageCount) { index ->
+            val selected = index == currentPage
+            val width by animateDpAsState(
+                targetValue = if (selected) 24.dp else 8.dp,
+                animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+                label = "indicatorWidth"
             )
-        },
-        text = {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+            val color by animateColorAsState(
+                targetValue = if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                },
+                label = "indicatorColor"
             )
-        },
-        confirmButton = {
-            OutlinedButton(
-                onClick = onDismiss,
-                shapes = ButtonDefaults.shapes()
-            ) {
-                Text(text = stringResource(AndroidR.string.ok))
-            }
+
+            Box(
+                modifier = Modifier
+                    .width(width)
+                    .height(8.dp)
+                    .clip(CircleShape)
+                    .background(color)
+            )
         }
-    )
+    }
 }
 
 // Portrait/landscape guideline scaffold shared by onboarding pages.
