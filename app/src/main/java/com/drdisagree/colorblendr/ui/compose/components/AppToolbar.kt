@@ -4,6 +4,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -95,13 +96,19 @@ fun ToolbarIconPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val bgColor = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.surfaceBright
+    } else {
+        MaterialTheme.colorScheme.surfaceDim
+    }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .width(width)
             .height(40.dp)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceBright)
+            .background(bgColor)
             .clickable(onClick = onClick)
     ) {
         Icon(
