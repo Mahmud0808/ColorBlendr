@@ -4,6 +4,10 @@ import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -22,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -118,6 +123,18 @@ fun SeekbarItem(
         )
     }
 
+    // Tap/reset = fast animate fill; drag = snap so it tracks finger.
+    var isDragging by remember { mutableStateOf(false) }
+    val animatedFraction by animateFloatAsState(
+        targetValue = fraction,
+        animationSpec = if (isDragging) {
+            snap()
+        } else {
+            tween(durationMillis = 180, easing = FastOutSlowInEasing)
+        },
+        label = "seekbarFill"
+    )
+
     PositionedCard(position = position, modifier = modifier) {
         var trackWidth by remember { mutableIntStateOf(0) }
 
@@ -152,8 +169,15 @@ fun SeekbarItem(
                     if (!enabled) return@pointerInput
                     var lastTickBucket = Int.MIN_VALUE
                     detectHorizontalDragGestures(
-                        onDragEnd = { onValueChangeFinished?.invoke() },
-                        onDragCancel = { onValueChangeFinished?.invoke() }
+                        onDragStart = { isDragging = true },
+                        onDragEnd = {
+                            isDragging = false
+                            onValueChangeFinished?.invoke()
+                        },
+                        onDragCancel = {
+                            isDragging = false
+                            onValueChangeFinished?.invoke()
+                        }
                     ) { change, _ ->
                         change.consume()
                         val newValue = progressAt(change.position.x)
@@ -171,7 +195,7 @@ fun SeekbarItem(
                 }
                 .drawBehind {
                     trackWidth = size.width.toInt()
-                    val fillWidth = size.width * fraction
+                    val fillWidth = size.width * animatedFraction
                     val clipLeft = if (isRtl) size.width - fillWidth else 0f
                     val clipRight = if (isRtl) size.width else fillWidth
                     clipRect(left = clipLeft, right = clipRight) {
