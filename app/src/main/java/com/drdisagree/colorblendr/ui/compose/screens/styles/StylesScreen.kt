@@ -58,6 +58,7 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
@@ -67,7 +68,6 @@ import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import android.R as AndroidR
 
@@ -121,6 +121,9 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
     )
 
     var fabHidden by rememberSaveable { mutableStateOf(false) }
+    // Confirm targets survive rotation; lambdas can't be saved.
+    var pendingUpdateStyleId by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingDeleteStyleId by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(listState) {
         var previousIndex = listState.firstVisibleItemIndex
         var previousOffset = listState.firstVisibleItemScrollOffset
@@ -200,28 +203,10 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                                 )
                             },
                             onUpdate = {
-                                MaterialAlertDialogBuilder(context)
-                                    .setTitle(R.string.update_style_confirmation_title)
-                                    .setMessage(R.string.update_style_confirmation_desc)
-                                    .setPositiveButton(R.string.update) { _, _ ->
-                                        scope.launch {
-                                            stylesViewModel.updateCustomStyle(style.customStyle!!.styleId)
-                                        }
-                                    }
-                                    .setNegativeButton(R.string.cancel, null)
-                                    .show()
+                                pendingUpdateStyleId = style.customStyle!!.styleId
                             },
                             onDelete = {
-                                MaterialAlertDialogBuilder(context)
-                                    .setTitle(R.string.delete_style_confirmation_title)
-                                    .setMessage(R.string.delete_style_confirmation_desc)
-                                    .setPositiveButton(R.string.delete) { _, _ ->
-                                        scope.launch {
-                                            stylesViewModel.deleteCustomStyle(style.customStyle!!.styleId)
-                                        }
-                                    }
-                                    .setNegativeButton(R.string.cancel, null)
-                                    .show()
+                                pendingDeleteStyleId = style.customStyle!!.styleId
                             }
                         )
                     }
@@ -248,6 +233,32 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 }
             }
         }
+    }
+
+    pendingUpdateStyleId?.let { styleId ->
+        ConfirmDialog(
+            title = stringResource(R.string.update_style_confirmation_title),
+            message = stringResource(R.string.update_style_confirmation_desc),
+            confirmText = stringResource(R.string.update),
+            onConfirm = {
+                pendingUpdateStyleId = null
+                scope.launch { stylesViewModel.updateCustomStyle(styleId) }
+            },
+            onDismiss = { pendingUpdateStyleId = null }
+        )
+    }
+
+    pendingDeleteStyleId?.let { styleId ->
+        ConfirmDialog(
+            title = stringResource(R.string.delete_style_confirmation_title),
+            message = stringResource(R.string.delete_style_confirmation_desc),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                pendingDeleteStyleId = null
+                scope.launch { stylesViewModel.deleteCustomStyle(styleId) }
+            },
+            onDismiss = { pendingDeleteStyleId = null }
+        )
     }
 
     dialogState?.let { state ->

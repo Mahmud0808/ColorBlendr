@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -78,6 +79,7 @@ import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
+import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
@@ -92,7 +94,6 @@ import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.removeFabricatedColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -175,40 +176,52 @@ fun SettingsScreen(
         )
     }
 
+    // Confirm target survives rotation; lambdas can't be saved.
+    var confirmRestoreUri by rememberSaveable { mutableStateOf<String?>(null) }
+
     fun showRestoreDialog(uri: Uri) {
-        MaterialAlertDialogBuilder(context)
-            .setTitle(context.getString(R.string.confirmation_title))
-            .setMessage(context.getString(R.string.confirmation_desc))
-            .setPositiveButton(context.getString(AndroidR.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-                PreviewController.abandonPreview()
-                // Restore must not be cancelled mid-write by recreation.
-                AppScope.launch(Dispatchers.IO) {
-                    val success = uri.restoreDatabaseAndPrefs()
-                    withContext(Dispatchers.Main) {
-                        if (success) {
-                            applyColorsNow()
-                        } else {
-                            scope.launch {
-                                val result = snackbarHostState.showSnackbarReplacing(
-                                    message = restoreFailText,
-                                    actionLabel = retryText,
-                                    duration = SnackbarDuration.Indefinite
-                                )
-                                if (result == SnackbarResult.ActionPerformed) {
-                                    pendingRestore = true
-                                }
-                            }
+        confirmRestoreUri = uri.toString()
+    }
+
+    fun restoreConfirmed(uri: Uri) {
+        PreviewController.abandonPreview()
+        // Restore must not be cancelled mid-write by recreation.
+        AppScope.launch(Dispatchers.IO) {
+            val success = uri.restoreDatabaseAndPrefs()
+            withContext(Dispatchers.Main) {
+                if (success) {
+                    applyColorsNow()
+                } else {
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbarReplacing(
+                            message = restoreFailText,
+                            actionLabel = retryText,
+                            duration = SnackbarDuration.Indefinite
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            pendingRestore = true
                         }
-                        onRestoreUriConsumed()
                     }
                 }
-            }
-            .setNegativeButton(context.getString(AndroidR.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
                 onRestoreUriConsumed()
             }
-            .show()
+        }
+    }
+
+    confirmRestoreUri?.let { uriString ->
+        ConfirmDialog(
+            title = stringResource(R.string.confirmation_title),
+            message = stringResource(R.string.confirmation_desc),
+            confirmText = stringResource(AndroidR.string.ok),
+            onConfirm = {
+                confirmRestoreUri = null
+                restoreConfirmed(Uri.parse(uriString))
+            },
+            onDismiss = {
+                confirmRestoreUri = null
+                onRestoreUriConsumed()
+            }
+        )
     }
 
     val backupLauncher = rememberLauncherForActivityResult(
