@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +30,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS
@@ -50,6 +50,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -72,7 +73,9 @@ fun ThemeScreen() {
     var backgroundSaturation by rememberPrefState(MONET_BACKGROUND_SATURATION) { getBackgroundSaturation() }
     var backgroundLightness by rememberPrefState(MONET_BACKGROUND_LIGHTNESS) { getBackgroundLightness() }
 
-    var colorPalette by remember {
+    val preview by PreviewController.previewColors.collectAsState()
+
+    var committedPalette by remember {
         mutableStateOf(
             ColorUtil.generateModifiedColors(
                 getCurrentMonetStyle(),
@@ -81,11 +84,13 @@ fun ThemeScreen() {
                 backgroundLightness,
                 pitchBlackThemeEnabled(),
                 accurateShadesEnabled()
-            )
+            ).map { it.toList() }
         )
     }
-    LaunchedEffect(accentSaturation, backgroundSaturation, backgroundLightness) {
-        colorPalette = withContext(Dispatchers.Default) {
+    LaunchedEffect(preview == null, accentSaturation, backgroundSaturation, backgroundLightness) {
+        if (preview != null) return@LaunchedEffect
+
+        committedPalette = withContext(Dispatchers.Default) {
             ColorUtil.generateModifiedColors(
                 getCurrentMonetStyle(),
                 accentSaturation,
@@ -93,9 +98,12 @@ fun ThemeScreen() {
                 backgroundLightness,
                 pitchBlackThemeEnabled(),
                 accurateShadesEnabled()
-            )
+            ).map { it.toList() }
         }
     }
+
+    val colorPalette = preview?.let { if (isDark) it.paletteDark else it.paletteLight }
+        ?: committedPalette
 
     fun updateColors() {
         scope.launch {
