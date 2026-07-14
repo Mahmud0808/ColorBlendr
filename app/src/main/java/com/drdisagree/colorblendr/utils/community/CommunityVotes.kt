@@ -65,7 +65,7 @@ object CommunityVotes {
                     .build()
             ).execute().use { response ->
                 if (!response.isSuccessful) return@withContext null
-                val json = JSONObject(response.body?.string() ?: return@withContext null)
+                val json = JSONObject(response.body.string())
                 val array = json.optJSONArray("themeIds") ?: return@withContext null
                 val ids = buildSet {
                     for (i in 0 until array.length()) add(array.getString(i))
@@ -109,7 +109,7 @@ object CommunityVotes {
                 Request.Builder().url("$COMMUNITY_WORKER_URL/vote").post(body).build()
             ).execute().use { response ->
                 if (!response.isSuccessful) return@withContext null
-                val json = JSONObject(response.body?.string() ?: return@withContext null)
+                val json = JSONObject(response.body.string())
                 val result = CommunityVoteResult(
                     voted = json.optBoolean("voted"),
                     upvotes = json.optInt("upvotes")

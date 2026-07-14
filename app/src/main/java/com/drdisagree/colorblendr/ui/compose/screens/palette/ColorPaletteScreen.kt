@@ -234,6 +234,7 @@ fun ColorPaletteScreen(
                             animationSpec = tween(durationMillis = 250)
                         ) + fadeOut()
                     ) {
+                        @Suppress("DEPRECATION")
                         val dismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = { value ->
                                 if (value != SwipeToDismissBoxValue.Settled) {

@@ -46,6 +46,7 @@ fun AppSnackbarHost(
 
     SnackbarHost(hostState = hostState, modifier = modifier) { data ->
         key(data) {
+            @Suppress("DEPRECATION")
             val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = { value ->
                     if (value != SwipeToDismissBoxValue.Settled) {

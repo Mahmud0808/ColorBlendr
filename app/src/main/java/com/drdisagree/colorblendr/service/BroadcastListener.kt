@@ -7,7 +7,6 @@ import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -19,6 +18,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
+import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
@@ -114,7 +114,7 @@ class BroadcastListener : BroadcastReceiver() {
                     Intent.ACTION_WALLPAPER_CHANGED
                 )
             ) {
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+                AppEvents.emit(intent.action!!)
             }
         }
     }

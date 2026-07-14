@@ -32,7 +32,7 @@ object CommunityUploader {
                     Request.Builder().url("$COMMUNITY_WORKER_URL/upload").post(body).build()
                 ).execute().use { response ->
                     if (!response.isSuccessful) return@withContext null
-                    JSONObject(response.body?.string() ?: return@withContext null)
+                    JSONObject(response.body.string())
                         .optString("prUrl").takeIf { it.isNotEmpty() }
                 }
             } catch (_: Exception) {

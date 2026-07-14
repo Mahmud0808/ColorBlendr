@@ -8,8 +8,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Article
-import androidx.compose.material.icons.rounded.Help
+import androidx.compose.material.icons.automirrored.rounded.Article
+import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.runtime.setValue
@@ -293,14 +293,14 @@ private fun LinkButtonsCard(modifier: Modifier = Modifier) {
         Row(modifier = Modifier.alpha(0.8f)) {
             LinkButton(
                 textResId = R.string.news,
-                icon = rememberVectorPainter(Icons.Rounded.Article),
+                icon = rememberVectorPainter(Icons.AutoMirrored.Rounded.Article),
                 onClick = { context.openUrl("https://t.me/DrDsProjects") },
                 modifier = Modifier.weight(1f)
             )
             LinkButtonDivider()
             LinkButton(
                 textResId = R.string.support,
-                icon = rememberVectorPainter(Icons.Rounded.Help),
+                icon = rememberVectorPainter(Icons.AutoMirrored.Rounded.Help),
                 onClick = { context.openUrl("https://t.me/DrDsProjectsChat") },
                 modifier = Modifier.weight(1f)
             )

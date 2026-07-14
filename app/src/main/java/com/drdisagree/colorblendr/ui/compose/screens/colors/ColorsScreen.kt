@@ -1,13 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.screens.colors
 
-import android.content.BroadcastReceiver
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,7 +37,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -65,7 +61,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
@@ -74,6 +69,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
+import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -148,20 +144,11 @@ fun ColorsScreen(
         }
     }
 
-    DisposableEffect(Unit) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
+    LaunchedEffect(Unit) {
+        @Suppress("DEPRECATION")
+        AppEvents.events.collect { action ->
+            if (action == Intent.ACTION_WALLPAPER_CHANGED) {
                 colorsViewModel.loadWallpaperColors()
-            }
-        }
-        LocalBroadcastManager.getInstance(context).registerReceiver(
-            receiver,
-            IntentFilter(Intent.ACTION_WALLPAPER_CHANGED)
-        )
-        onDispose {
-            try {
-                LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
-            } catch (_: Exception) {
             }
         }
     }

@@ -30,7 +30,7 @@ class CommunityThemeRepository(private val dao: CommunityThemeDao) {
             client.newCall(Request.Builder().url(COMMUNITY_INDEX_URL).build())
                 .execute().use { response ->
                     if (!response.isSuccessful) return@withContext false
-                    val responseBody = response.body ?: return@withContext false
+                    val responseBody = response.body
                     if (responseBody.contentLength() > MAX_INDEX_BYTES) return@withContext false
                     responseBody.string()
                 }
@@ -68,7 +68,7 @@ class CommunityThemeRepository(private val dao: CommunityThemeDao) {
             Request.Builder().url("$COMMUNITY_WORKER_URL/counts").build()
         ).execute().use { response ->
             if (!response.isSuccessful) return null
-            val json = JSONObject(response.body?.string() ?: return null)
+            val json = JSONObject(response.body.string())
 
             fun section(name: String): Map<String, Int> {
                 val obj = json.optJSONObject(name) ?: return emptyMap()

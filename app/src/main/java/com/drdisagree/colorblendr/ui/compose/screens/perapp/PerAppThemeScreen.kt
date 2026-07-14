@@ -1,12 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
-import android.content.BroadcastReceiver
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.Icons
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
@@ -38,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -62,7 +58,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
@@ -148,32 +144,12 @@ fun PerAppThemeScreen() {
         }
     }
 
-    DisposableEffect(Unit) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
+    LaunchedEffect(Unit) {
+        AppEvents.events.collect { action ->
+            if (action == Intent.ACTION_PACKAGE_ADDED ||
+                action == Intent.ACTION_PACKAGE_REMOVED
+            ) {
                 reloadTrigger++
-            }
-        }
-        val manager = LocalBroadcastManager.getInstance(context)
-        manager.registerReceiver(
-            receiver,
-            IntentFilter().apply {
-                addAction(Intent.ACTION_PACKAGE_ADDED)
-                addAction(Intent.ACTION_PACKAGE_REMOVED)
-            }
-        )
-        manager.registerReceiver(
-            receiver,
-            IntentFilter().apply {
-                addAction(Intent.ACTION_PACKAGE_ADDED)
-                addAction(Intent.ACTION_PACKAGE_REMOVED)
-                addDataScheme("package")
-            }
-        )
-        onDispose {
-            try {
-                manager.unregisterReceiver(receiver)
-            } catch (_: Exception) {
             }
         }
     }
@@ -324,7 +300,7 @@ private fun AppListItem(
         MaterialTheme.colorScheme.onSurface
     }
     val appIcon = remember(app.packageName) {
-        app.appIcon?.toBitmap()?.asImageBitmap()
+        app.appIcon.toBitmap().asImageBitmap()
     }
 
     val radius = dimensionResource(R.dimen.container_corner_radius)
@@ -378,15 +354,13 @@ private fun AppListItem(
                 .fillMaxWidth()
                 .padding(start = 6.dp, end = 16.dp)
         ) {
-            if (appIcon != null) {
-                Image(
-                    bitmap = appIcon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-                        .size(48.dp)
-                )
-            }
+            Image(
+                bitmap = appIcon,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+                    .size(48.dp)
+            )
             Column(
                 modifier = Modifier
                     .weight(1f)

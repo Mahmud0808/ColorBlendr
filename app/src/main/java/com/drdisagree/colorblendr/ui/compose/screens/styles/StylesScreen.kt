@@ -99,9 +99,6 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
             resetCustomStyle()
             selectedCustomStyle = null
         }
-        if (selectedCustomStyle == null && selectedStyle == null) {
-            selectedStyle = MONET.TONAL_SPOT
-        }
     }
 
     fun applyColorScheme() {
