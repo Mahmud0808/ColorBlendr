@@ -88,7 +88,13 @@ class MainActivity : AppCompatActivity() {
         DynamicColors.applyToActivityIfAvailable(this)
         setupEdgeToEdge()
 
-        val restoreUri = intent?.data ?: intent?.parcelable<Uri>("data")
+        // colorblendr://theme/<id> deep link; anything else on data is a
+        // backup file to restore.
+        val intentData = intent?.data ?: intent?.parcelable<Uri>("data")
+        val deepLinkThemeId = intentData
+            ?.takeIf { it.scheme == "colorblendr" && it.host == "theme" }
+            ?.lastPathSegment
+        val restoreUri = if (deepLinkThemeId == null) intentData else null
         intent?.removeExtra("data")
 
         splashScreen.setKeepOnScreenCondition { initSuccess == null }
@@ -117,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                 AppNavHost(
                     success = success,
                     restoreUri = restoreUri,
+                    deepLinkThemeId = deepLinkThemeId,
                     colorsViewModel = colorsViewModel,
                     stylesViewModel = stylesViewModel,
                     colorPaletteViewModel = colorPaletteViewModel

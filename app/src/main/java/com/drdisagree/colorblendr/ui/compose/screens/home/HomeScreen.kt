@@ -112,7 +112,9 @@ fun HomeScreen(
     onRestoreUriHandled: () -> Unit,
     colorsViewModel: ColorsViewModel,
     stylesViewModel: StylesViewModel,
-    colorPaletteViewModel: ColorPaletteViewModel
+    colorPaletteViewModel: ColorPaletteViewModel,
+    pendingThemeId: String? = null,
+    onThemeIdHandled: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
@@ -243,6 +245,16 @@ fun HomeScreen(
                 launchSingleTop = true
             }
             onRestoreUriHandled()
+        }
+    }
+
+    // Deep link: open the shared theme's details page.
+    LaunchedEffect(pendingThemeId) {
+        pendingThemeId?.let { themeId ->
+            nestedNavController.navigate("communityTheme/$themeId") {
+                launchSingleTop = true
+            }
+            onThemeIdHandled()
         }
     }
 

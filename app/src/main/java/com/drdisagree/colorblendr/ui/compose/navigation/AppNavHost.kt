@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 fun AppNavHost(
     success: Boolean,
     restoreUri: Uri?,
+    deepLinkThemeId: String? = null,
     colorsViewModel: ColorsViewModel,
     stylesViewModel: StylesViewModel,
     colorPaletteViewModel: ColorPaletteViewModel
@@ -61,6 +62,7 @@ fun AppNavHost(
 
     // Saveable so recreation doesn't re-trigger restore navigation.
     var pendingRestoreUri by rememberSaveable { mutableStateOf(restoreUri) }
+    var pendingThemeId by rememberSaveable { mutableStateOf(deepLinkThemeId) }
 
     // Onboarding hands off with success=true.
     var onboardedSuccess by rememberSaveable { mutableStateOf(false) }
@@ -187,6 +189,8 @@ fun AppNavHost(
                 success = success || onboardedSuccess,
                 pendingRestoreUri = pendingRestoreUri,
                 onRestoreUriHandled = { pendingRestoreUri = null },
+                pendingThemeId = pendingThemeId,
+                onThemeIdHandled = { pendingThemeId = null },
                 colorsViewModel = colorsViewModel,
                 stylesViewModel = stylesViewModel,
                 colorPaletteViewModel = colorPaletteViewModel

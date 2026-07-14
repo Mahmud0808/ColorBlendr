@@ -1,10 +1,12 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,7 +28,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -43,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -51,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_WORKER_URL
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.domain.PreviewController
@@ -86,7 +92,12 @@ fun CommunityThemeDetailsScreen(themeId: String) {
             theme = if (isTestTheme) {
                 TestThemeHolder.theme
             } else {
-                getCommunityThemeRepository().getThemeById(themeId)
+                val repository = getCommunityThemeRepository()
+                // Deep link on cold cache: fetch the index, then retry.
+                repository.getThemeById(themeId) ?: run {
+                    repository.refreshIndex()
+                    repository.getThemeById(themeId)
+                }
             }
 
             if (!isTestTheme) {
@@ -97,9 +108,19 @@ fun CommunityThemeDetailsScreen(themeId: String) {
         }
     }
 
+    if (theme == null) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            ContainedLoadingIndicator()
+        }
+    }
+
     theme?.let {
         DetailsContent(
             theme = it,
+            shareable = !isTestTheme,
             upvoted = upvoted,
             upvotes = upvotes ?: it.upvotes,
             onUpvoteToggle = if (isTestTheme) {
@@ -124,6 +145,7 @@ fun CommunityThemeDetailsScreen(themeId: String) {
 @Composable
 private fun DetailsContent(
     theme: CommunityTheme,
+    shareable: Boolean,
     upvoted: Boolean,
     upvotes: Int,
     onUpvoteToggle: (() -> Unit)?
@@ -145,10 +167,40 @@ private fun DetailsContent(
             color = MaterialTheme.colorScheme.surface,
             modifier = Modifier.fillMaxSize()
         ) {
+            val context = LocalContext.current
+            val shareMessage = stringResource(R.string.share_theme_message, theme.name)
+
             Column {
                 AppToolbar(
                     title = theme.name,
-                    showBackButton = true
+                    showBackButton = true,
+                    actions = {
+                        if (shareable) {
+                            IconButton(
+                                onClick = {
+                                    val link = "$COMMUNITY_WORKER_URL/theme/${theme.id}"
+                                    context.startActivity(
+                                        Intent.createChooser(
+                                            Intent(Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(
+                                                    Intent.EXTRA_TEXT,
+                                                    "$shareMessage\n$link"
+                                                )
+                                            },
+                                            null
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    painter = rememberVectorPainter(Icons.Rounded.Share),
+                                    contentDescription = stringResource(R.string.share_theme),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
                 )
 
                 Column(

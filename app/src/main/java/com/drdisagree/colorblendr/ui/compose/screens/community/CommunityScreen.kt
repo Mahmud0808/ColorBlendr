@@ -3,7 +3,7 @@ package com.drdisagree.colorblendr.ui.compose.screens.community
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -185,7 +185,7 @@ private fun CommunityScreenContent(
                         enabled = rootMode
                     ) {
                         Icon(
-                            painter = rememberVectorPainter(Icons.Rounded.Share),
+                            painter = rememberVectorPainter(Icons.Rounded.Upload),
                             contentDescription = stringResource(R.string.share_theme),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
