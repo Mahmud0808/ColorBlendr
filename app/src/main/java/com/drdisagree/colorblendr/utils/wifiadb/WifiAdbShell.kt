@@ -24,7 +24,9 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.Volatile
 
 object WifiAdbShell {
@@ -253,6 +255,97 @@ object WifiAdbShell {
             }
         }
     }
+
+    // Shell.cmd-style synchronous exec: one-shot "shell:" service per call,
+    // stderr merged into stdout, exit code carried by a trailing marker
+    // (interactive adb shell has no exit codes). Reads until the marker line
+    // arrives - never waits for EOF (libadb signals stream end unreliably) -
+    // and a hard timeout guarantees this can never hang the apply flow.
+    // Blocking - call from IO.
+    @WorkerThread
+    fun exec(command: String): AdbCommandResult {
+        if (!isMyDeviceConnected()) {
+            return AdbCommandResult(success = false, output = "Device not connected")
+        }
+
+        val streamRef = AtomicReference<AdbStream?>(null)
+        val future = executor.submit<AdbCommandResult> {
+            try {
+                val manager = AdbConnectionManager.getInstance(appContext)
+                val destination = "shell:{ $command; } 2>&1; echo \"$EXIT_MARKER$?\""
+                val stream = manager.openStream(destination)
+                streamRef.set(stream)
+
+                val input = stream.openInputStream()
+                val builder = StringBuilder()
+                val chunk = ByteArray(8192)
+
+                // Marker line ends with '\n'; stop as soon as it lands.
+                while (true) {
+                    val read = try {
+                        input.read(chunk)
+                    } catch (_: IOException) {
+                        break // libadb throws "Stream closed." at stream end
+                    }
+                    if (read == -1) break
+                    builder.append(String(chunk, 0, read, StandardCharsets.UTF_8))
+
+                    val markerIndex = builder.lastIndexOf(EXIT_MARKER)
+                    if (markerIndex != -1 &&
+                        builder.indexOf("\n", markerIndex) != -1
+                    ) {
+                        break
+                    }
+                }
+
+                try {
+                    stream.close()
+                } catch (_: Exception) {
+                }
+
+                val output = builder.toString()
+                val markerIndex = output.lastIndexOf(EXIT_MARKER)
+                if (markerIndex == -1) {
+                    // Stream ended without marker: connection dropped.
+                    AdbCommandResult(success = false, output = output.trim())
+                } else {
+                    val code = output.substring(markerIndex + EXIT_MARKER.length)
+                        .trim().toIntOrNull() ?: -1
+                    AdbCommandResult(
+                        success = code == 0,
+                        output = output.substring(0, markerIndex).trim()
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "exec: $command", e)
+                AdbCommandResult(
+                    success = false,
+                    output = e.message ?: e.javaClass.simpleName
+                )
+            }
+        }
+
+        return try {
+            future.get(EXEC_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+        } catch (_: TimeoutException) {
+            Log.e(TAG, "exec: timed out: $command")
+            future.cancel(true)
+            try {
+                streamRef.get()?.close()
+            } catch (_: Exception) {
+            }
+            AdbCommandResult(success = false, output = "Command timed out")
+        } catch (e: Exception) {
+            Log.e(TAG, "exec: $command", e)
+            AdbCommandResult(
+                success = false,
+                output = e.message ?: e.javaClass.simpleName
+            )
+        }
+    }
+
+    private const val EXIT_MARKER = "<<CB_EXIT:"
+    private const val EXEC_TIMEOUT_MS = 7000L
 
     fun executeWithObserver(
         command: String,

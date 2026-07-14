@@ -382,9 +382,15 @@ object OverlayManager {
                         mShizukuConnection.run("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
                     }
 
+                    // Null on success, shell error message on failure.
                     mShizukuConnection.applyFabricatedColors(
                         MiscUtil.mergeJsonStrings(currentSettings, themeJson)
-                    )
+                    )?.let { error ->
+                        Log.e(TAG, "applyFabricatedColorsNonRoot: $error")
+                        reportError(
+                            appContext.getString(R.string.error_overlay_operation, error)
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
@@ -398,23 +404,34 @@ object OverlayManager {
             }
 
             try {
-                WifiAdbShell.executeWithObserver(
-                    command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
-                    contains = "android.theme.customization"
-                ) { currentSettings ->
-                    if (themeJson.isNotEmpty()) {
-                        WifiAdbShell.executeWithObserver(
-                            command = "cmd overlay list | grep \"$samsungPaletteName\"",
-                            contains = samsungPaletteName
-                        ) { output ->
-                            if (output.contains(samsungPaletteName)) {
-                                val isEnabled = output.contains("[x]")
-                                WifiAdbShell.execute("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
-                            }
+                val current =
+                    WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
+                if (!current.success) {
+                    reportError(
+                        appContext.getString(R.string.error_overlay_operation, current.output)
+                    )
+                    return true
+                }
 
-                            val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
-                            WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
-                        }
+                if (themeJson.isNotEmpty()) {
+                    // Grep exit 1 = palette absent; only the output matters.
+                    val list =
+                        WifiAdbShell.exec("cmd overlay list | grep \"$samsungPaletteName\"")
+                    if (list.output.contains(samsungPaletteName)) {
+                        val isEnabled = list.output.contains("[x]")
+                        WifiAdbShell.exec("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
+                    }
+
+                    val currentSettings = current.output
+                        .takeUnless { it == "null" || it.isEmpty() } ?: "{}"
+                    val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                    val put = WifiAdbShell
+                        .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                    if (!put.success) {
+                        Log.e(TAG, "applyFabricatedColorsNonRoot: ${put.output}")
+                        reportError(
+                            appContext.getString(R.string.error_overlay_operation, put.output)
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -452,7 +469,13 @@ object OverlayManager {
                     mShizukuConnection.run("cmd overlay enable $samsungPaletteName")
                 }
 
-                mShizukuConnection.removeFabricatedColors()
+                // Null on success, shell error message on failure.
+                mShizukuConnection.removeFabricatedColors()?.let { error ->
+                    Log.e(TAG, "removeFabricatedColorsNonRoot: $error")
+                    reportError(
+                        appContext.getString(R.string.error_overlay_operation, error)
+                    )
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
                 reportError(overlayError(e))
@@ -465,27 +488,37 @@ object OverlayManager {
             }
 
             try {
-                WifiAdbShell.executeWithObserver(
-                    command = "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES",
-                    contains = "android.theme.customization"
-                ) { currentSettings ->
-                    WifiAdbShell.executeWithObserver(
-                        command = "cmd overlay list | grep \"$samsungPaletteName\"",
-                        contains = samsungPaletteName
-                    ) { output ->
-                        if (output.contains(samsungPaletteName)) {
-                            WifiAdbShell.execute("cmd overlay disable $samsungPaletteName")
-                            WifiAdbShell.execute("cmd overlay enable $samsungPaletteName")
-                        }
+                val current =
+                    WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
+                if (!current.success) {
+                    reportError(
+                        appContext.getString(R.string.error_overlay_operation, current.output)
+                    )
+                    return true
+                }
 
-                        val jsonString = ThemeOverlayPackage
-                            .getOriginalSettings(currentSettings.ifEmpty { "{}" })
-                            .toString()
-                        WifiAdbShell.execute("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
-                    }
+                // Grep exit 1 = palette absent; only the output matters.
+                val list = WifiAdbShell.exec("cmd overlay list | grep \"$samsungPaletteName\"")
+                if (list.output.contains(samsungPaletteName)) {
+                    WifiAdbShell.exec("cmd overlay disable $samsungPaletteName")
+                    WifiAdbShell.exec("cmd overlay enable $samsungPaletteName")
+                }
+
+                val currentSettings = current.output
+                    .takeUnless { it == "null" || it.isEmpty() } ?: "{}"
+                val jsonString = ThemeOverlayPackage
+                    .getOriginalSettings(currentSettings)
+                    .toString()
+                val put = WifiAdbShell
+                    .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                if (!put.success) {
+                    Log.e(TAG, "removeFabricatedColorsNonRoot: ${put.output}")
+                    reportError(
+                        appContext.getString(R.string.error_overlay_operation, put.output)
+                    )
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+                Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
                 reportError(overlayError(e))
             }
         }
