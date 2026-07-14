@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -55,9 +56,7 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlin.time.Duration.Companion.milliseconds
 
 // Community themes showcase: header with View all, then an endlessly
 // drifting carousel of top-voted cards. Count = cards that fit the larger
@@ -196,7 +195,8 @@ private fun DriftingCarousel(
 
     // Constant drift, paused while the user holds or drags.
     val dragged by listState.interactionSource.collectIsDraggedAsState()
-    val driftPerTick = with(LocalDensity.current) { 0.4.dp.toPx() }
+    // 0.4dp per 60Hz frame = 25dp/s, now refresh-rate independent.
+    val driftPerSecondPx = with(LocalDensity.current) { 25.dp.toPx() }
 
     // Drift only while the screen is resumed and the user isn't dragging.
     val lifecycleState by LocalLifecycleOwner.current.lifecycle
@@ -205,9 +205,16 @@ private fun DriftingCarousel(
 
     LaunchedEffect(themes, dragged, resumed) {
         if (!infinite || dragged || !resumed) return@LaunchedEffect
+        // Frame-clock driven: scroll by the real elapsed time each frame so
+        // speed and smoothness match any display refresh rate. Delta clamped
+        // so a stall doesn't cause a jump.
+        var lastFrameNanos = withFrameNanos { it }
         while (isActive) {
-            listState.scrollBy(driftPerTick)
-            delay(16.milliseconds)
+            val frameNanos = withFrameNanos { it }
+            val deltaSeconds = ((frameNanos - lastFrameNanos) / 1_000_000_000f)
+                .coerceAtMost(0.1f)
+            lastFrameNanos = frameNanos
+            listState.scrollBy(driftPerSecondPx * deltaSeconds)
         }
     }
 
