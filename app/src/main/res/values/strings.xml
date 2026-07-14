@@ -172,6 +172,13 @@
     <string name="report_theme_desc">Report inappropriate or broken content. The moderation team will review it.</string>
     <string name="report_sent">Report submitted</string>
     <string name="report_failed">Report failed, try again later</string>
+    <string name="crash_log_title">Crash log</string>
+    <string name="crash_log_desc">View crashes recorded on this device</string>
+    <string name="crash_log_copy">Copy</string>
+    <string name="crash_log_clear">Clear</string>
+    <string name="crash_log_copied">Copied to clipboard</string>
+    <string name="crash_log_empty">No crashes recorded</string>
+    <string name="crash_log_empty_desc">Lucky you. Crashes captured on this device will show up here.</string>
     <string name="share_theme_info">Your current colors are submitted for review. Once approved, it appears for everyone within about 12 hours. Only the name, description, and colors are shared — no personal data.</string>
     <string name="theme_name">Creation name</string>
     <string name="theme_description">Description</string>

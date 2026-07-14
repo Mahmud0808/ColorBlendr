@@ -15,6 +15,7 @@ object Routes {
     const val SETTINGS_ADVANCED = "settingsAdvanced"
     const val ABOUT = "about"
     const val PRIVACY_POLICY = "privacyPolicy"
+    const val CRASH_LOG = "crashLog"
     const val COMMUNITY = "community"
     const val COMMUNITY_THEME = "communityTheme/{themeId}"
 }
@@ -25,6 +26,6 @@ fun tabGroup(route: String?): Int = when (route?.substringBefore("?")) {
     Routes.THEME -> 2
     Routes.STYLES -> 3
     Routes.SETTINGS_BASE, Routes.SETTINGS_ADVANCED, Routes.ABOUT, Routes.PRIVACY_POLICY,
-    Routes.PER_APP_THEME -> 4
+    Routes.PER_APP_THEME, Routes.CRASH_LOG -> 4
     else -> 0
 }

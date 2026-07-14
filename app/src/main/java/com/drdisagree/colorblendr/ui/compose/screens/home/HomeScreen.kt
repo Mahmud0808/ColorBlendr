@@ -79,6 +79,7 @@ import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.navigation.Routes
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
 import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
+import com.drdisagree.colorblendr.ui.compose.screens.about.CrashLogScreen
 import com.drdisagree.colorblendr.ui.compose.screens.colors.ColorsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityThemeDetailsScreen
@@ -413,7 +414,14 @@ fun HomeScreen(
                                 CommunityThemeDetailsScreen(themeId = themeId)
                             }
                         }
-                        composable(Routes.ABOUT) { AboutScreen() }
+                        composable(Routes.ABOUT) {
+                            AboutScreen(
+                                onNavigateToCrashLog = {
+                                    nestedNavController.navigate(Routes.CRASH_LOG)
+                                }
+                            )
+                        }
+                        composable(Routes.CRASH_LOG) { CrashLogScreen() }
                         composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
                     }
                 }

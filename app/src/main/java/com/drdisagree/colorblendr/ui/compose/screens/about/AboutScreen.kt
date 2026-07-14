@@ -13,8 +13,12 @@ import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.rounded.BugReport
+import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Utilities.setDeveloperModeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
+import com.drdisagree.colorblendr.ui.compose.components.MenuItem
+import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.runtime.mutableIntStateOf
@@ -76,7 +80,9 @@ import com.drdisagree.colorblendr.utils.app.parseContributors
 import com.drdisagree.colorblendr.utils.app.parseTranslators
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(
+    onNavigateToCrashLog: () -> Unit = {}
+) {
     val listState = rememberLazyListState()
     val toolbarLifted by remember {
         derivedStateOf {
@@ -89,6 +95,7 @@ fun AboutScreen() {
     val translatorsHeader = stringResource(R.string.translators)
     // Headers already underline-animated this visit (once per screen entry).
     val animatedHeaders = remember { mutableStateListOf<String>() }
+    val developerMode by rememberPrefState(DEVELOPER_MODE) { developerModeEnabled() }
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -106,6 +113,18 @@ fun AboutScreen() {
                 modifier = Modifier.fillMaxSize()
             ) {
                 item { AboutAppHeader(animatedHeaders) }
+                if (developerMode) {
+                    item {
+                        MenuItem(
+                            title = stringResource(R.string.crash_log_title),
+                            summary = stringResource(R.string.crash_log_desc),
+                            icon = rememberVectorPainter(Icons.Rounded.BugReport),
+                            showEndArrow = true,
+                            onClick = onNavigateToCrashLog,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                    }
+                }
                 creditsSection(contributorsHeader, contributors, animatedHeaders)
                 creditsSection(translatorsHeader, translators, animatedHeaders)
                 item {
