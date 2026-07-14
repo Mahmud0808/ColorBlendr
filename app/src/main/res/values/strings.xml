@@ -166,6 +166,11 @@
     <string name="invalid_theme_json">Invalid theme JSON</string>
     <string name="share_theme">Share current creation</string>
     <string name="share_theme_message">Check out the \"%1$s\" theme on ColorBlendr!</string>
+    <string name="report">Report</string>
+    <string name="report_theme_title">Report this theme?</string>
+    <string name="report_theme_desc">Report inappropriate or broken content. The moderation team will review it.</string>
+    <string name="report_sent">Report submitted</string>
+    <string name="report_failed">Report failed, try again later</string>
     <string name="share_theme_info">Your current colors are submitted for review. Once approved, it appears for everyone within about 12 hours. Only the name, description, and colors are shared — no personal data.</string>
     <string name="theme_name">Creation name</string>
     <string name="theme_description">Description</string>

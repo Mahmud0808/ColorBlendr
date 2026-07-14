@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -41,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,10 +63,13 @@ import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeReposit
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.models.CommunityTheme
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.previewCommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.utils.community.CommunityReporter
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
 import com.drdisagree.colorblendr.utils.community.CommunityVotes
@@ -169,6 +174,30 @@ private fun DetailsContent(
         ) {
             val context = LocalContext.current
             val shareMessage = stringResource(R.string.share_theme_message, theme.name)
+            val reportSentText = stringResource(R.string.report_sent)
+            val reportFailedText = stringResource(R.string.report_failed)
+            var showReportDialog by rememberSaveable { mutableStateOf(false) }
+
+            if (showReportDialog) {
+                ConfirmDialog(
+                    title = stringResource(R.string.report_theme_title),
+                    message = stringResource(R.string.report_theme_desc),
+                    confirmText = stringResource(R.string.report),
+                    onConfirm = {
+                        showReportDialog = false
+                        scope.launch {
+                            AppSnackbar.show(
+                                if (CommunityReporter.report(theme.id)) {
+                                    reportSentText
+                                } else {
+                                    reportFailedText
+                                }
+                            )
+                        }
+                    },
+                    onDismiss = { showReportDialog = false }
+                )
+            }
 
             Column {
                 AppToolbar(
@@ -176,6 +205,13 @@ private fun DetailsContent(
                     showBackButton = true,
                     actions = {
                         if (shareable) {
+                            IconButton(onClick = { showReportDialog = true }) {
+                                Icon(
+                                    painter = rememberVectorPainter(Icons.Rounded.Flag),
+                                    contentDescription = stringResource(R.string.report),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                             IconButton(
                                 onClick = {
                                     val link = "$COMMUNITY_WORKER_URL/theme/${theme.id}"
