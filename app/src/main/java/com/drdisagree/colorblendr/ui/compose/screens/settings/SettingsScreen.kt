@@ -31,9 +31,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,6 +98,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 import android.R as AndroidR
 
 @Composable
@@ -146,7 +147,7 @@ fun SettingsScreen(
         // Applying colors can recreate the activity; must outlive the screen.
         AppScope.launch {
             updateColorAppliedTimestamp()
-            delay(300)
+            delay(300.milliseconds)
             withContext(Dispatchers.IO) {
                 applyFabricatedColors()
             }
@@ -342,7 +343,7 @@ fun SettingsScreen(
 
                             AppScope.launch {
                                 try {
-                                    delay(300)
+                                    delay(300.milliseconds)
                                     withContext(Dispatchers.IO) {
                                         if (isChecked) {
                                             updateColorAppliedTimestamp()

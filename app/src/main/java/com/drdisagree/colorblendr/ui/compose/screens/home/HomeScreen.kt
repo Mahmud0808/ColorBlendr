@@ -103,6 +103,7 @@ import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun HomeScreen(
@@ -220,7 +221,7 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(2000.milliseconds)
         try {
             if (permissionsGranted(context)) {
                 if (isServiceNotRunning && success) {

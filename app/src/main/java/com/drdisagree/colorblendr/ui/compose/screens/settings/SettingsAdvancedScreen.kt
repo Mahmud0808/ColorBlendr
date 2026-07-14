@@ -91,6 +91,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val TARGET_SECONDARY = "secondary"
 private const val TARGET_TERTIARY = "tertiary"
@@ -127,7 +128,7 @@ fun SettingsAdvancedScreen(
     fun applyColorsNow() {
         AppScope.launch {
             updateColorAppliedTimestamp()
-            delay(300)
+            delay(300.milliseconds)
             withContext(Dispatchers.IO) {
                 applyFabricatedColors()
             }

@@ -33,6 +33,7 @@ import com.drdisagree.colorblendr.data.common.Constant.ADB_IP
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIRING_PORT
 import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIR_NOTIFICATION
 import com.drdisagree.colorblendr.data.common.Constant.ADB_SEARCH_NOTIFICATION
+import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
@@ -45,7 +46,6 @@ import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
-import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
 
@@ -104,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             PreviewController.previewColors.collectLatest { preview ->
                 // Debounced: rebuilding the resources table on every slider
                 // tick is expensive and dialogs only need the settled value.
-                if (preview != null) delay(150)
+                if (preview != null) delay(150.milliseconds)
                 PreviewResourcesOverride.apply(this@MainActivity, preview)
             }
         }
