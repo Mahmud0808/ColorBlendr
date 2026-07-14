@@ -74,6 +74,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.math.pow
 import android.graphics.Color as AndroidColor
 
 // All community creations: searchable, sortable (upvotes / downloads /
@@ -123,6 +124,16 @@ private fun CommunityScreenContent(
 
     val sorted = remember(themes, sort, query) {
         val base = when (sort) {
+            CommunitySort.TRENDING -> {
+                // Gravity score: engagement decays with age, so fresh themes
+                // gaining votes outrank old winners camping the top.
+                val now = System.currentTimeMillis() / 1000
+                themes?.sortedByDescending {
+                    val ageDays = (now - it.createdAt).coerceAtLeast(0) / 86400.0
+                    (it.upvotes + it.downloads * 0.5) / (ageDays + 2.0).pow(1.5)
+                }
+            }
+
             CommunitySort.UPVOTES -> themes?.sortedByDescending { it.upvotes }
             CommunitySort.DOWNLOADS -> themes?.sortedByDescending { it.downloads }
             CommunitySort.LATEST -> themes?.sortedByDescending { it.createdAt }
@@ -143,6 +154,7 @@ private fun CommunityScreenContent(
         SingleChoiceDialog(
             title = stringResource(R.string.sort_by),
             options = listOf(
+                stringResource(R.string.sort_trending),
                 stringResource(R.string.sort_upvotes),
                 stringResource(R.string.sort_downloads),
                 stringResource(R.string.sort_latest)

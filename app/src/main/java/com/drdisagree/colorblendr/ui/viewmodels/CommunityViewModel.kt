@@ -20,7 +20,7 @@ class CommunityViewModel : ViewModel() {
     private val _allThemes = MutableStateFlow<List<CommunityTheme>?>(null)
     val allThemes = _allThemes.asStateFlow()
 
-    private val _sort = MutableStateFlow(CommunitySort.UPVOTES)
+    private val _sort = MutableStateFlow(CommunitySort.TRENDING)
     val sort = _sort.asStateFlow()
 
     init {
