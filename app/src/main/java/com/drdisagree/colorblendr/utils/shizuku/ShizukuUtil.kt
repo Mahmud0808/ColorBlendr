@@ -4,7 +4,7 @@ import android.content.ComponentName
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant
@@ -30,7 +30,18 @@ object ShizukuUtil {
     }
 
     fun requestShizukuPermission(activity: ComponentActivity, callback: ShizukuPermissionCallback) {
-        if (Shizuku.getVersion() >= 11 && !Shizuku.isPreV11()) {
+        if (hasShizukuPermission()) {
+            callback.onPermissionResult(true)
+            return
+        }
+
+        val useShizukuApi = try {
+            Shizuku.getVersion() >= 11 && !Shizuku.isPreV11()
+        } catch (_: Exception) {
+            false
+        }
+
+        if (useShizukuApi) {
             Shizuku.addRequestPermissionResultListener(object : OnRequestPermissionResultListener {
                 override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
                     Shizuku.removeRequestPermissionResultListener(this)
@@ -39,11 +50,12 @@ object ShizukuUtil {
             })
             Shizuku.requestPermission(Constant.SHIZUKU_PERMISSION_REQUEST_ID)
         } else {
-            val permCallback = activity.registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { granted: Boolean -> callback.onPermissionResult(granted) }
-
-            permCallback.launch(ShizukuProvider.PERMISSION)
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(ShizukuProvider.PERMISSION),
+                Constant.SHIZUKU_PERMISSION_REQUEST_ID
+            )
+            callback.onPermissionResult(hasShizukuPermission())
         }
     }
 
