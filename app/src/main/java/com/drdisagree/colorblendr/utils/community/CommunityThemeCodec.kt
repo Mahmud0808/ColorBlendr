@@ -25,7 +25,7 @@ object CommunityThemeCodec {
 
     const val SCHEMA_VERSION = 1
     const val MAX_PAYLOAD_BYTES = 8 * 1024
-    const val MAX_INDEX_THEMES = 500
+    const val MAX_INDEX_THEMES = 2000
 
     private const val MAX_NAME_LENGTH = 40
     private const val MAX_DESCRIPTION_LENGTH = 500

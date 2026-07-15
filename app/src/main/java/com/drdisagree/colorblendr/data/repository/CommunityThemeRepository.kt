@@ -124,6 +124,6 @@ class CommunityThemeRepository(private val dao: CommunityThemeDao) {
     }
 
     companion object {
-        private const val MAX_INDEX_BYTES = 2L * 1024 * 1024
+        private const val MAX_INDEX_BYTES = 20L * 1024 * 1024
     }
 }
