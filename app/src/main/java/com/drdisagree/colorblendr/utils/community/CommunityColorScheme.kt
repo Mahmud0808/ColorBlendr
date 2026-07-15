@@ -15,9 +15,18 @@ fun communityColorScheme(
     theme: CommunityTheme,
     isDark: Boolean,
     base: ColorScheme
-): ColorScheme {
-    val palette = CommunityThemePalette.derive(theme, isDark)
+): ColorScheme = communityColorScheme(
+    CommunityThemePalette.derive(theme, isDark),
+    isDark,
+    base
+)
 
+// Overload for callers that already derived the palette.
+fun communityColorScheme(
+    palette: ArrayList<ArrayList<Int>>,
+    isDark: Boolean,
+    base: ColorScheme
+): ColorScheme {
     val roles = buildMap {
         DynamicColors.ALL_DYNAMIC_COLORS_MAPPED.forEach { mapping ->
             val extracted = mapping.extractResourceFromColorMap(

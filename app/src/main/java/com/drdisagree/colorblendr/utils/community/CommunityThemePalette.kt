@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.community
 
+import android.util.LruCache
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.utils.colors.ColorModifiers
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.generateColorPalette
@@ -11,7 +12,19 @@ import java.util.concurrent.atomic.AtomicInteger
 // identically on any device, including the payload's color spec version.
 object CommunityThemePalette {
 
+    private val cache = LruCache<String, ArrayList<ArrayList<Int>>>(32)
+
     fun derive(theme: CommunityTheme, isDark: Boolean): ArrayList<ArrayList<Int>> {
+        val key = "${theme.id}:${theme.createdAt}:$isDark"
+        cache.get(key)?.let { cached ->
+            return ArrayList(cached.map { ArrayList(it) })
+        }
+        val palette = deriveUncached(theme, isDark)
+        cache.put(key, ArrayList(palette.map { ArrayList(it) }))
+        return palette
+    }
+
+    private fun deriveUncached(theme: CommunityTheme, isDark: Boolean): ArrayList<ArrayList<Int>> {
         val palette = generateColorPalette(
             theme.style,
             theme.seedColor,

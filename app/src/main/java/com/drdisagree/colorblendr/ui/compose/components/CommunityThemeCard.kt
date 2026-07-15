@@ -60,7 +60,7 @@ fun CommunityThemeCard(
     // saturation/lightness and spec version).
     val baseScheme = MaterialTheme.colorScheme
     val scheme = remember(theme, isDark, baseScheme) {
-        communityColorScheme(theme, isDark, baseScheme)
+        communityColorScheme(palette, isDark, baseScheme)
     }
     // Surface container tinted toward the accent for extra vibrancy.
     val container = scheme.surfaceContainerHigh

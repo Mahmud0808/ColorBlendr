@@ -157,10 +157,10 @@ private fun DetailsContent(
 ) {
     val isDark = isSystemInDarkTheme()
     val baseScheme = MaterialTheme.colorScheme
-    val scopedScheme = remember(theme, isDark, baseScheme) {
-        communityColorScheme(theme, isDark, baseScheme)
-    }
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
+    val scopedScheme = remember(theme, isDark, baseScheme) {
+        communityColorScheme(palette, isDark, baseScheme)
+    }
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val rootMode = if (LocalInspectionMode.current) true else remember { isRootMode() }
