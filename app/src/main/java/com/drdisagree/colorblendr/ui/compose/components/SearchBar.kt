@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.ui.compose.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -48,7 +49,8 @@ fun SearchBar(
     onQueryChange: (String) -> Unit,
     onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
-    hazeState: HazeState? = null
+    hazeState: HazeState? = null,
+    onColorPickClick: (() -> Unit)? = null
 ) {
     val overlayColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f)
     val secondaryTextColor = themeAttrColor(AndroidR.attr.textColorSecondary)
@@ -128,6 +130,15 @@ fun SearchBar(
                     Icon(
                         painter = rememberVectorPainter(Icons.Rounded.Clear),
                         contentDescription = null,
+                        tint = secondaryTextColor
+                    )
+                }
+            }
+            if (onColorPickClick != null) {
+                IconButton(onClick = onColorPickClick) {
+                    Icon(
+                        painter = rememberVectorPainter(Icons.Rounded.Colorize),
+                        contentDescription = stringResource(R.string.search_by_color),
                         tint = secondaryTextColor
                     )
                 }

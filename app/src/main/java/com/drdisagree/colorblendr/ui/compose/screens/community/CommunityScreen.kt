@@ -1,11 +1,5 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Upload
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,11 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -38,12 +35,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -67,12 +62,15 @@ import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
+import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
+import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
 import org.json.JSONObject
 import kotlin.math.pow
 import android.graphics.Color as AndroidColor
@@ -139,14 +137,37 @@ private fun CommunityScreenContent(
             CommunitySort.LATEST -> themes?.sortedByDescending { it.createdAt }
         }
         val trimmed = query.trim()
-        if (trimmed.isEmpty()) {
-            base
-        } else {
-            base?.filter {
+        val colorQuery = CommunityColorMatch.parseQuery(trimmed)
+        when {
+            trimmed.isEmpty() -> base
+            colorQuery != null -> base?.filter {
+                CommunityColorMatch.matches(it.seedColor, colorQuery)
+            }
+
+            else -> base?.filter {
                 it.name.contains(trimmed, ignoreCase = true) ||
                         it.author.contains(trimmed, ignoreCase = true)
             }
         }
+    }
+
+    var showColorPicker by remember { mutableStateOf(false) }
+    if (showColorPicker) {
+        ColorPickerDialog(
+            initialColor = CommunityColorMatch.parseQuery(query) ?: 0xFF51BDFF.toInt(),
+            onDismissRequest = { showColorPicker = false },
+            onColorPicked = { color ->
+                showColorPicker = false
+                query = String.format("#%06X", 0xFFFFFF and color)
+            },
+            alphaEnabled = false,
+            pickers = listOf(
+                ColorPickerType.WHEEL,
+                ColorPickerType.RGB,
+                ColorPickerType.HSV
+            ),
+            cornerRadius = 24.dp
+        )
     }
 
     var showSortDialog by rememberSaveable { mutableStateOf(false) }
@@ -264,6 +285,7 @@ private fun CommunityScreenContent(
                     onQueryChange = { query = it },
                     onFilterClick = { showSortDialog = true },
                     hazeState = hazeState,
+                    onColorPickClick = { showColorPicker = true },
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
