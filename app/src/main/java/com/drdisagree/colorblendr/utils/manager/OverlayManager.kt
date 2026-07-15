@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.utils.manager
 import android.graphics.Color
 import android.os.RemoteException
 import android.util.Log
+import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
@@ -236,7 +237,10 @@ object OverlayManager {
                             setColor("surface_header_dark_sysui", Color.BLACK)
                             if (isDarkMode) {
                                 // QS top part color A16+
-                                setColor("shade_panel_fg_color", Color.BLACK) // with blur
+                                setColor(
+                                    "shade_panel_fg_color",
+                                    ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
+                                ) // with blur
                             }
                             setColor(systemPaletteNames[3][11], Color.BLACK)
                             setColor(systemPaletteNames[4][11], Color.BLACK)
@@ -272,10 +276,16 @@ object OverlayManager {
 
                         if (isDarkMode && pitchBlackTheme) {
                             // QS top part color A16+
-                            setColor("shade_panel_base", Color.BLACK) // with blur
+                            setColor(
+                                "shade_panel_base",
+                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
+                            ) // with blur
                             setColor("shade_panel_fallback", Color.BLACK) // no blur
                             // Notification scrim color A16+
-                            setColor("notification_scrim_base", Color.BLACK) // with blur
+                            setColor(
+                                "notification_scrim_base",
+                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt())
+                            ) // with blur
                             setColor("notification_scrim_fallback", Color.BLACK) // no blur
                         }
                     }
