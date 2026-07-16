@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
@@ -85,8 +84,10 @@ import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
@@ -100,6 +101,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 import android.R as AndroidR
+import androidx.core.net.toUri
 
 @Composable
 fun SettingsScreen(
@@ -216,7 +218,7 @@ fun SettingsScreen(
             confirmText = stringResource(AndroidR.string.ok),
             onConfirm = {
                 confirmRestoreUri = null
-                restoreConfirmed(Uri.parse(uriString))
+                restoreConfirmed(uriString.toUri())
             },
             onDismiss = {
                 confirmRestoreUri = null
@@ -319,6 +321,7 @@ fun SettingsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .contentWidthLimit()
                         .verticalScroll(scrollState)
                         .padding(bottom = LocalPreviewBottomInset.current)
                         .padding(top = 16.dp)
@@ -475,7 +478,7 @@ fun SettingsScreen(
     }
 }
 
-@Preview
+@AdaptivePreviews
 @Composable
 private fun SettingsScreenPreview() {
     ColorBlendrTheme {

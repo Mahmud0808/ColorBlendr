@@ -39,6 +39,7 @@ import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.utils.app.CrashLogger
 import androidx.compose.material.icons.rounded.BugReport
@@ -120,6 +121,7 @@ fun CrashLogScreen() {
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .fillMaxSize()
+                            .contentWidthLimit()
                             .verticalScroll(scrollState)
                             .horizontalScroll(rememberScrollState())
                             .padding(16.dp)

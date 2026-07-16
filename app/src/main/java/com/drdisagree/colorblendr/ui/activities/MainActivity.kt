@@ -225,7 +225,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupEdgeToEdge() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+            resources.configuration.screenWidthDp < 600
+        ) {
             val viewGroup: ViewGroup = window.decorView.findViewById(android.R.id.content)
             ViewCompat.setOnApplyWindowInsetsListener(viewGroup) { v: View, windowInsets: WindowInsetsCompat ->
                 val insets: Insets =

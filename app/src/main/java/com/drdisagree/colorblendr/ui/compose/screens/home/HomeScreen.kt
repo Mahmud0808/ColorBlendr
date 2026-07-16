@@ -16,20 +16,24 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -46,10 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -92,6 +96,9 @@ import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.styles.StylesScreen
 import com.drdisagree.colorblendr.ui.compose.screens.theme.ThemeScreen
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
+import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
@@ -106,7 +113,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
-import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
@@ -251,15 +257,20 @@ fun HomeScreen(
         }
     }
 
-    // Deep link: open the shared theme's details page.
+    // Deep link: open the shared theme's details page. Plain navigate — the
+    // RESUMED guard in navigateSingleTop drops programmatic navs that fire
+    // before first frame.
     LaunchedEffect(pendingThemeId) {
         pendingThemeId?.let { themeId ->
-            nestedNavController.navigateSingleTop("communityTheme/$themeId") {
+            nestedNavController.navigate("communityTheme/$themeId") {
                 launchSingleTop = true
             }
             onThemeIdHandled()
         }
     }
+
+    val widthClass = LocalWidthClass.current
+    val useRail = widthClass != WidthClass.Compact
 
     // M3 Expressive motion: spatial springs for slides, effects springs for
     // fades.
@@ -268,6 +279,8 @@ fun HomeScreen(
     val effectsSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
 
     // Tab switches: direction from tab group order, never push vs pop.
+    // Slide axis matches the nav component — horizontal for the bottom bar,
+    // vertical for the rail (items stack top-to-bottom).
     // Same-group pushes (detail pages): expressive depth motion — detail
     // rises in scaling up over the parent while the parent recedes behind;
     // pop reverses.
@@ -286,11 +299,17 @@ fun HomeScreen(
                         slideInVertically(spatialSpec) { it / 8 }
             }
 
-            toGroup > fromGroup ->
+            toGroup > fromGroup -> if (useRail) {
+                slideInVertically(spatialSpec) { it }
+            } else {
                 slideInHorizontally(spatialSpec) { it }
+            }
 
-            else ->
+            else -> if (useRail) {
+                slideInVertically(spatialSpec) { -it }
+            } else {
                 slideInHorizontally(spatialSpec) { -it }
+            }
         }
     }
 
@@ -309,174 +328,205 @@ fun HomeScreen(
                 fadeOut(effectsSpec) + scaleOut(scaleSpec, targetScale = 1.08f)
             }
 
-            toGroup > fromGroup ->
+            toGroup > fromGroup -> if (useRail) {
+                slideOutVertically(spatialSpec) { -it }
+            } else {
                 slideOutHorizontally(spatialSpec) { -it }
+            }
 
-            else ->
+            else -> if (useRail) {
+                slideOutVertically(spatialSpec) { it }
+            } else {
                 slideOutHorizontally(spatialSpec) { it }
+            }
+        }
+    }
+
+    fun onTabClick(tab: TabItem) {
+        val routeGroupNow =
+            tabGroup(nestedNavController.currentBackStackEntry?.destination?.route)
+        val groupNow = if (routeGroupNow != 0) routeGroupNow else lastGroup
+        if (groupNow == tab.group) return
+
+        nestedNavController.navigate(tab.route) {
+            popUpTo(nestedNavController.graph.findStartDestination().id) {
+                inclusive = tab.route == Routes.COLORS
+            }
+            launchSingleTop = true
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f)) {
-                // Reserve room above preview FABs: 56dp FAB + 12dp margin + gap.
-                val previewBottomInset by animateDpAsState(
-                    targetValue = if (previewColors != null && !isApplying) 80.dp else 0.dp,
-                    animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-                    label = "previewBottomInset"
-                )
-
-                CompositionLocalProvider(
-                    // Spatial spring can overshoot below zero; padding forbids it.
-                    LocalPreviewBottomInset provides previewBottomInset.coerceAtLeast(0.dp)
-                ) {
-                    NavHost(
-                        navController = nestedNavController,
-                        startDestination = Routes.COLORS,
-                        enterTransition = { enter(pop = false) },
-                        exitTransition = { exit(pop = false) },
-                        popEnterTransition = { enter(pop = true) },
-                        popExitTransition = { exit(pop = true) },
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        composable(Routes.COLORS) {
-                            LaunchedEffect(Unit) {
-                                if (isShizukuMode()) {
-                                    clearAllOverriddenColors()
-                                }
-                            }
-                            ColorsScreen(
-                                colorsViewModel = colorsViewModel,
-                                onNavigateToColorPalette = {
-                                    nestedNavController.navigateSingleTop(Routes.COLOR_PALETTE)
-                                },
-                                onNavigateToCommunity = {
-                                    nestedNavController.navigateSingleTop(Routes.COMMUNITY)
-                                },
-                                onNavigateToCommunityTheme = { themeId ->
-                                    nestedNavController.navigateSingleTop("communityTheme/$themeId")
-                                }
-                            )
-                        }
-                        composable(Routes.THEME) { ThemeScreen() }
-                        composable(Routes.STYLES) {
-                            StylesScreen(stylesViewModel = stylesViewModel)
-                        }
-                        composable(
-                            route = Routes.SETTINGS,
-                            arguments = listOf(
-                                navArgument("restoreUri") {
-                                    nullable = true
-                                    defaultValue = null
-                                }
-                            )
-                        ) { entry ->
-                            var restoreConsumed by rememberSaveable { mutableStateOf(false) }
-                            val restoreUriArg = entry.arguments?.getString("restoreUri")
-
-                            SettingsScreen(
-                                restoreUri = if (!restoreConsumed) {
-                                    restoreUriArg?.toUri()
-                                } else {
-                                    null
-                                },
-                                onRestoreUriConsumed = { restoreConsumed = true },
-                                onNavigateToAbout = { nestedNavController.navigateSingleTop(Routes.ABOUT) },
-                                onNavigateToAdvanced = {
-                                    nestedNavController.navigateSingleTop(Routes.SETTINGS_ADVANCED)
-                                },
-                                onNavigateToPrivacyPolicy = {
-                                    nestedNavController.navigateSingleTop(Routes.PRIVACY_POLICY)
-                                }
-                            )
-                        }
-                        composable(Routes.COLOR_PALETTE) {
-                            ColorPaletteScreen(
-                                colorPaletteViewModel = colorPaletteViewModel
-                            )
-                        }
-                        composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
-                        composable(Routes.SETTINGS_ADVANCED) {
-                            SettingsAdvancedScreen(
-                                onNavigateToPerAppTheme = {
-                                    nestedNavController.navigateSingleTop(Routes.PER_APP_THEME)
-                                }
-                            )
-                        }
-                        composable(Routes.COMMUNITY) {
-                            CommunityScreen(
-                                onThemeClick = { themeId ->
-                                    nestedNavController.navigateSingleTop("communityTheme/$themeId")
-                                }
-                            )
-                        }
-                        composable(Routes.COMMUNITY_THEME) { entry ->
-                            entry.arguments?.getString("themeId")?.let { themeId ->
-                                CommunityThemeDetailsScreen(themeId = themeId)
-                            }
-                        }
-                        composable(Routes.ABOUT) {
-                            AboutScreen(
-                                onNavigateToCrashLog = {
-                                    nestedNavController.navigateSingleTop(Routes.CRASH_LOG)
-                                }
-                            )
-                        }
-                        composable(Routes.CRASH_LOG) { CrashLogScreen() }
-                        composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
-                    }
-                }
-
-                val fabBottomPadding by animateDpAsState(
-                    targetValue = if (SnackbarVisibility.visible) 76.dp else 12.dp,
-                    animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-                    label = "previewFabSnackbarPush"
-                )
-                PreviewActionButtons(
-                    visible = previewColors != null && !isApplying,
-                    onApply = { scope.launch { PreviewController.applyChanges() } },
-                    onDiscard = { scope.launch { PreviewController.discardChanges() } },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 16.dp, bottom = fabBottomPadding)
-                )
-
-                // Inside the content area so snackbars sit above the nav bar,
-                // same spot as screen-local hosts.
-                AppSnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                )
-            }
-
-            MaterialTheme(colorScheme = navBarScheme) {
-            NavigationBar(modifier = Modifier.fillMaxWidth()) {
-                tabs.forEach { tab ->
-                    val selected = currentGroup == tab.group
-                    NavigationBarItem(
-                        selected = selected,
-                        alwaysShowLabel = false,
-                        icon = {
-                            Icon(
-                                imageVector = if (selected) tab.filledIcon else tab.outlineIcon,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text(text = stringResource(tab.labelResId)) },
-                        onClick = {
-                            if (selected) return@NavigationBarItem
-
-                            nestedNavController.navigate(tab.route) {
-                                popUpTo(nestedNavController.graph.findStartDestination().id) {
-                                    inclusive = tab.route == Routes.COLORS
-                                }
-                                launchSingleTop = true
-                            }
-                        }
+        Row(modifier = Modifier.fillMaxSize()) {
+            if (useRail) {
+                MaterialTheme(colorScheme = navBarScheme) {
+                    HomeNavigationRail(
+                        currentGroup = currentGroup,
+                        expanded = widthClass == WidthClass.Expanded,
+                        onTabClick = ::onTabClick
                     )
                 }
             }
+            Column(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(
+                            if (useRail) {
+                                Modifier
+                                    .background(navBarScheme.surface)
+                                    .windowInsetsPadding(
+                                        WindowInsets.systemBars
+                                            .union(WindowInsets.displayCutout)
+                                            .only(WindowInsetsSides.End + WindowInsetsSides.Bottom)
+                                    )
+                            } else {
+                                Modifier
+                            }
+                        )
+                ) {
+                    // Reserve room above preview FABs: 56dp FAB + 12dp margin + gap.
+                    val previewBottomInset by animateDpAsState(
+                        targetValue = if (previewColors != null && !isApplying) 80.dp else 0.dp,
+                        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+                        label = "previewBottomInset"
+                    )
+
+                    CompositionLocalProvider(
+                        // Spatial spring can overshoot below zero; padding forbids it.
+                        LocalPreviewBottomInset provides previewBottomInset.coerceAtLeast(0.dp)
+                    ) {
+                        NavHost(
+                            navController = nestedNavController,
+                            startDestination = Routes.COLORS,
+                            enterTransition = { enter(pop = false) },
+                            exitTransition = { exit(pop = false) },
+                            popEnterTransition = { enter(pop = true) },
+                            popExitTransition = { exit(pop = true) },
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            composable(Routes.COLORS) {
+                                LaunchedEffect(Unit) {
+                                    if (isShizukuMode()) {
+                                        clearAllOverriddenColors()
+                                    }
+                                }
+                                ColorsScreen(
+                                    colorsViewModel = colorsViewModel,
+                                    onNavigateToColorPalette = {
+                                        nestedNavController.navigateSingleTop(Routes.COLOR_PALETTE)
+                                    },
+                                    onNavigateToCommunity = {
+                                        nestedNavController.navigateSingleTop(Routes.COMMUNITY)
+                                    },
+                                    onNavigateToCommunityTheme = { themeId ->
+                                        nestedNavController.navigateSingleTop("communityTheme/$themeId")
+                                    }
+                                )
+                            }
+                            composable(Routes.THEME) { ThemeScreen() }
+                            composable(Routes.STYLES) {
+                                StylesScreen(stylesViewModel = stylesViewModel)
+                            }
+                            composable(
+                                route = Routes.SETTINGS,
+                                arguments = listOf(
+                                    navArgument("restoreUri") {
+                                        nullable = true
+                                        defaultValue = null
+                                    }
+                                )
+                            ) { entry ->
+                                var restoreConsumed by rememberSaveable { mutableStateOf(false) }
+                                val restoreUriArg = entry.arguments?.getString("restoreUri")
+
+                                SettingsScreen(
+                                    restoreUri = if (!restoreConsumed) {
+                                        restoreUriArg?.toUri()
+                                    } else {
+                                        null
+                                    },
+                                    onRestoreUriConsumed = { restoreConsumed = true },
+                                    onNavigateToAbout = {
+                                        nestedNavController.navigateSingleTop(
+                                            Routes.ABOUT
+                                        )
+                                    },
+                                    onNavigateToAdvanced = {
+                                        nestedNavController.navigateSingleTop(Routes.SETTINGS_ADVANCED)
+                                    },
+                                    onNavigateToPrivacyPolicy = {
+                                        nestedNavController.navigateSingleTop(Routes.PRIVACY_POLICY)
+                                    }
+                                )
+                            }
+                            composable(Routes.COLOR_PALETTE) {
+                                ColorPaletteScreen(
+                                    colorPaletteViewModel = colorPaletteViewModel
+                                )
+                            }
+                            composable(Routes.PER_APP_THEME) { PerAppThemeScreen() }
+                            composable(Routes.SETTINGS_ADVANCED) {
+                                SettingsAdvancedScreen(
+                                    onNavigateToPerAppTheme = {
+                                        nestedNavController.navigateSingleTop(Routes.PER_APP_THEME)
+                                    }
+                                )
+                            }
+                            composable(Routes.COMMUNITY) {
+                                CommunityScreen(
+                                    onThemeClick = { themeId ->
+                                        nestedNavController.navigateSingleTop("communityTheme/$themeId")
+                                    }
+                                )
+                            }
+                            composable(Routes.COMMUNITY_THEME) { entry ->
+                                entry.arguments?.getString("themeId")?.let { themeId ->
+                                    CommunityThemeDetailsScreen(themeId = themeId)
+                                }
+                            }
+                            composable(Routes.ABOUT) {
+                                AboutScreen(
+                                    onNavigateToCrashLog = {
+                                        nestedNavController.navigateSingleTop(Routes.CRASH_LOG)
+                                    }
+                                )
+                            }
+                            composable(Routes.CRASH_LOG) { CrashLogScreen() }
+                            composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
+                        }
+                    }
+
+                    val fabBottomPadding by animateDpAsState(
+                        targetValue = if (SnackbarVisibility.visible) 76.dp else 12.dp,
+                        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+                        label = "previewFabSnackbarPush"
+                    )
+                    PreviewActionButtons(
+                        visible = previewColors != null && !isApplying,
+                        onApply = { scope.launch { PreviewController.applyChanges() } },
+                        onDiscard = { scope.launch { PreviewController.discardChanges() } },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 16.dp, bottom = fabBottomPadding)
+                    )
+
+                    // Inside the content area so snackbars sit above the nav bar,
+                    // same spot as screen-local hosts.
+                    AppSnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
+
+                if (!useRail) {
+                    MaterialTheme(colorScheme = navBarScheme) {
+                        HomeNavigationBar(
+                            currentGroup = currentGroup,
+                            onTabClick = ::onTabClick
+                        )
+                    }
+                }
             }
         }
 
@@ -496,7 +546,7 @@ fun HomeScreen(
 }
 
 @Suppress("ViewModelConstructorInComposable")
-@Preview
+@AdaptivePreviews
 @Composable
 private fun HomeScreenPreview() {
     ColorBlendrTheme {

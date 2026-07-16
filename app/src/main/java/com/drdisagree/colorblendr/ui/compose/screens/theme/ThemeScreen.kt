@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
@@ -55,8 +54,12 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
+import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import kotlinx.coroutines.Dispatchers
@@ -123,125 +126,145 @@ fun ThemeScreen() {
                 showBackButton = true,
                 lifted = toolbarLifted
             )
+            val twoPane = LocalWidthClass.current == WidthClass.Expanded
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
                     .verticalScroll(scrollState)
                     .padding(bottom = LocalPreviewBottomInset.current)
                     .padding(top = 12.dp)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
-                    color = MaterialTheme.colorScheme.surface,
-                    border = AppCardDefaults.outlinedBorder(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = dimensionResource(R.dimen.container_margin_horizontal),
-                            end = dimensionResource(R.dimen.container_margin_horizontal),
-                            bottom = dimensionResource(R.dimen.container_margin_bottom)
-                        )
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-                        TonalRampRow(
-                            label = stringResource(R.string.primary),
-                            shades = colorPalette.getOrNull(0)
-                        )
-                        TonalRampRow(
-                            label = stringResource(R.string.secondary),
-                            shades = colorPalette.getOrNull(1)
-                        )
-                        TonalRampRow(
-                            label = stringResource(R.string.tertiary),
-                            shades = colorPalette.getOrNull(2)
-                        )
-                        TonalRampRow(
-                            label = stringResource(R.string.neutral_1),
-                            shades = colorPalette.getOrNull(3)
-                        )
-                        TonalRampRow(
-                            label = stringResource(R.string.neutral_2),
-                            shades = colorPalette.getOrNull(4)
-                        )
-                    }
+                val rampCard: @Composable () -> Unit = {
+                    TonalRampCard(colorPalette = colorPalette)
+                }
+                val sliders: @Composable () -> Unit = {
+                    ThemeSlider(
+                        title = stringResource(R.string.accent_saturation),
+                        value = accentSaturation,
+                        enabled = rootMode,
+                        onValueChange = {
+                            accentSaturation = it
+                            PreviewController.beginPreview()
+                            setAccentSaturation(it)
+                            PreviewController.updatePreview(refreshOthers = false)
+                        },
+                        onValueChangeFinished = {
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            setAccentSaturation(accentSaturation)
+                            updateColors()
+                        },
+                        onReset = {
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            accentSaturation = 100
+                            resetAccentSaturation()
+                            updateColors()
+                        }
+                    )
+                    ThemeSlider(
+                        title = stringResource(R.string.background_saturation),
+                        value = backgroundSaturation,
+                        enabled = rootMode,
+                        onValueChange = {
+                            backgroundSaturation = it
+                            PreviewController.beginPreview()
+                            setBackgroundSaturation(it)
+                            PreviewController.updatePreview(refreshOthers = false)
+                        },
+                        onValueChangeFinished = {
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            setBackgroundSaturation(backgroundSaturation)
+                            updateColors()
+                        },
+                        onReset = {
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            backgroundSaturation = 100
+                            resetBackgroundSaturation()
+                            updateColors()
+                        }
+                    )
+                    ThemeSlider(
+                        title = stringResource(R.string.background_lightness),
+                        value = backgroundLightness,
+                        enabled = rootMode,
+                        onValueChange = {
+                            backgroundLightness = it
+                            PreviewController.beginPreview()
+                            setBackgroundLightness(it)
+                            PreviewController.updatePreview(refreshOthers = false)
+                        },
+                        onValueChangeFinished = {
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            setBackgroundLightness(backgroundLightness)
+                            updateColors()
+                        },
+                        onReset = {
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            backgroundLightness = 100
+                            resetBackgroundLightness()
+                            updateColors()
+                        }
+                    )
                 }
 
-                ThemeSlider(
-                    title = stringResource(R.string.accent_saturation),
-                    value = accentSaturation,
-                    enabled = rootMode,
-                    onValueChange = {
-                        accentSaturation = it
-                        PreviewController.beginPreview()
-                        setAccentSaturation(it)
-                        PreviewController.updatePreview(refreshOthers = false)
-                    },
-                    onValueChangeFinished = {
-                        PreviewController.beginPreview()
-                        resetCustomStyleIfNotNull()
-                        setAccentSaturation(accentSaturation)
-                        updateColors()
-                    },
-                    onReset = {
-                        PreviewController.beginPreview()
-                        resetCustomStyleIfNotNull()
-                        accentSaturation = 100
-                        resetAccentSaturation()
-                        updateColors()
+                if (twoPane) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.weight(1f)) { rampCard() }
+                        Column(modifier = Modifier.weight(1f)) { sliders() }
                     }
-                )
-                ThemeSlider(
-                    title = stringResource(R.string.background_saturation),
-                    value = backgroundSaturation,
-                    enabled = rootMode,
-                    onValueChange = {
-                        backgroundSaturation = it
-                        PreviewController.beginPreview()
-                        setBackgroundSaturation(it)
-                        PreviewController.updatePreview(refreshOthers = false)
-                    },
-                    onValueChangeFinished = {
-                        PreviewController.beginPreview()
-                        resetCustomStyleIfNotNull()
-                        setBackgroundSaturation(backgroundSaturation)
-                        updateColors()
-                    },
-                    onReset = {
-                        PreviewController.beginPreview()
-                        resetCustomStyleIfNotNull()
-                        backgroundSaturation = 100
-                        resetBackgroundSaturation()
-                        updateColors()
-                    }
-                )
-                ThemeSlider(
-                    title = stringResource(R.string.background_lightness),
-                    value = backgroundLightness,
-                    enabled = rootMode,
-                    onValueChange = {
-                        backgroundLightness = it
-                        PreviewController.beginPreview()
-                        setBackgroundLightness(it)
-                        PreviewController.updatePreview(refreshOthers = false)
-                    },
-                    onValueChangeFinished = {
-                        PreviewController.beginPreview()
-                        resetCustomStyleIfNotNull()
-                        setBackgroundLightness(backgroundLightness)
-                        updateColors()
-                    },
-                    onReset = {
-                        PreviewController.beginPreview()
-                        resetCustomStyleIfNotNull()
-                        backgroundLightness = 100
-                        resetBackgroundLightness()
-                        updateColors()
-                    }
-                )
+                } else {
+                    rampCard()
+                    sliders()
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun TonalRampCard(colorPalette: List<List<Int>>) {
+    Surface(
+        shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
+        color = MaterialTheme.colorScheme.surface,
+        border = AppCardDefaults.outlinedBorder(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = dimensionResource(R.dimen.container_margin_horizontal),
+                end = dimensionResource(R.dimen.container_margin_horizontal),
+                bottom = dimensionResource(R.dimen.container_margin_bottom)
+            )
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(20.dp)
+        ) {
+            TonalRampRow(
+                label = stringResource(R.string.primary),
+                shades = colorPalette.getOrNull(0)
+            )
+            TonalRampRow(
+                label = stringResource(R.string.secondary),
+                shades = colorPalette.getOrNull(1)
+            )
+            TonalRampRow(
+                label = stringResource(R.string.tertiary),
+                shades = colorPalette.getOrNull(2)
+            )
+            TonalRampRow(
+                label = stringResource(R.string.neutral_1),
+                shades = colorPalette.getOrNull(3)
+            )
+            TonalRampRow(
+                label = stringResource(R.string.neutral_2),
+                shades = colorPalette.getOrNull(4)
+            )
         }
     }
 }
@@ -311,7 +334,7 @@ private fun TonalRampRow(
     }
 }
 
-@Preview
+@AdaptivePreviews
 @Composable
 private fun ThemeScreenPreview() {
     ColorBlendrTheme {

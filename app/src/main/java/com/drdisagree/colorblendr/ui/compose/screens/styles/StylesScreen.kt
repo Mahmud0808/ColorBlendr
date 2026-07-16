@@ -40,7 +40,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -68,7 +67,9 @@ import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.WavySectionDivider
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore
@@ -218,7 +219,9 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                         top = 12.dp,
                         bottom = 12.dp + LocalPreviewBottomInset.current
                     ),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .contentWidthLimit()
                 ) {
                     items(builtInStyles, key = { it.titleResId }) { style ->
                         styleItem(style, null)
@@ -445,7 +448,7 @@ private fun StyleListItem(
 }
 
 @Suppress("ViewModelConstructorInComposable")
-@Preview
+@AdaptivePreviews
 @Composable
 private fun StylesScreenPreview() {
     ColorBlendrTheme {

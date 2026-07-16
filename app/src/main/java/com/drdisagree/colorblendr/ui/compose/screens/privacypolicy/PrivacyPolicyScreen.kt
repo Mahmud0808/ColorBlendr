@@ -47,6 +47,7 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.PositionedCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import java.io.IOException
 
@@ -87,6 +88,7 @@ fun PrivacyPolicyScreen() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .contentWidthLimit()
                         .verticalScroll(scrollState)
                         .padding(bottom = LocalPreviewBottomInset.current)
                         .padding(top = 8.dp)

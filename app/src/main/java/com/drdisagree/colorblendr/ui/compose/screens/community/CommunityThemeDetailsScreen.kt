@@ -54,7 +54,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.colorblendr.R
@@ -67,8 +66,12 @@ import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.previewCommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
+import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
 import com.drdisagree.colorblendr.utils.community.CommunityReporter
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
@@ -239,104 +242,119 @@ private fun DetailsContent(
                     }
                 )
 
+                val twoPane = LocalWidthClass.current == WidthClass.Expanded
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
                         .verticalScroll(rememberScrollState())
                         .padding(bottom = LocalPreviewBottomInset.current)
                         .padding(horizontal = 16.dp)
                 ) {
-                    LargeSwatch(palette = palette, isDark = isDark)
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp)
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = theme.name,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = theme.author.ifEmpty {
-                                    stringResource(R.string.anonymous)
-                                },
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = 13.sp
-                            )
-                        }
-
-                        StatChip(
-                            icon = if (upvoted) {
-                                rememberVectorPainter(Icons.Rounded.ThumbUp)
-                            } else {
-                                rememberVectorPainter(Icons.Outlined.ThumbUp)
-                            },
-                            value = upvotes,
-                            onClick = onUpvoteToggle?.let { toggle ->
-                                {
-                                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                                    toggle()
-                                }
-                            }
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        StatChip(
-                            icon = rememberVectorPainter(Icons.Rounded.Download),
-                            value = theme.downloads,
-                            onClick = null
-                        )
-                    }
-
-                    if (theme.description.isNotEmpty()) {
-                        Text(
-                            text = theme.description,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Button(
-                            onClick = {
-                                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                                CommunityThemeApplier.stageForPreview(theme)
-                                scope.launch { PreviewController.updatePreview() }
-                            },
-                            enabled = rootMode,
-                            shapes = ButtonDefaults.shapes(),
-                            modifier = Modifier.fillMaxWidth()
+                    val info: @Composable () -> Unit = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp)
                         ) {
-                            Text(text = stringResource(R.string.try_this_creation))
-                        }
-
-                        if (!rootMode) {
-                            Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 0.dp, y = (-8).dp)
-                            ) {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = stringResource(R.string.root_required),
-                                    color = MaterialTheme.colorScheme.onError,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    text = theme.name,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = theme.author.ifEmpty {
+                                        stringResource(R.string.anonymous)
+                                    },
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 13.sp
                                 )
                             }
+
+                            StatChip(
+                                icon = if (upvoted) {
+                                    rememberVectorPainter(Icons.Rounded.ThumbUp)
+                                } else {
+                                    rememberVectorPainter(Icons.Outlined.ThumbUp)
+                                },
+                                value = upvotes,
+                                onClick = onUpvoteToggle?.let { toggle ->
+                                    {
+                                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                        toggle()
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            StatChip(
+                                icon = rememberVectorPainter(Icons.Rounded.Download),
+                                value = theme.downloads,
+                                onClick = null
+                            )
                         }
+
+                        if (theme.description.isNotEmpty()) {
+                            Text(
+                                text = theme.description,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(top = 12.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Button(
+                                onClick = {
+                                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                    CommunityThemeApplier.stageForPreview(theme)
+                                    scope.launch { PreviewController.updatePreview() }
+                                },
+                                enabled = rootMode,
+                                shapes = ButtonDefaults.shapes(),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = stringResource(R.string.try_this_creation))
+                            }
+
+                            if (!rootMode) {
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 0.dp, y = (-8).dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.root_required),
+                                        color = MaterialTheme.colorScheme.onError,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    if (twoPane) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                LargeSwatch(palette = palette, isDark = isDark)
+                            }
+                            Spacer(modifier = Modifier.size(24.dp))
+                            Column(modifier = Modifier.weight(1f)) { info() }
+                        }
+                    } else {
+                        LargeSwatch(palette = palette, isDark = isDark)
+                        info()
+                    }
                 }
             }
         }
@@ -418,7 +436,7 @@ private fun StatChip(
     }
 }
 
-@Preview
+@AdaptivePreviews
 @Composable
 private fun CommunityThemeDetailsScreenPreview() {
     ColorBlendrTheme {

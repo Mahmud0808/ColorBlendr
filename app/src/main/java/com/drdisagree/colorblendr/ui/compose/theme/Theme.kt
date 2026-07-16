@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -13,6 +14,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.ColorBlendr
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.currentWidthClass
 
 @Composable
 fun ColorBlendrTheme(content: @Composable () -> Unit) {
@@ -29,11 +32,13 @@ fun ColorBlendrTheme(content: @Composable () -> Unit) {
         PreviewSchemeParityCheck(viewScheme)
     }
 
-    MaterialExpressiveTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalWidthClass provides currentWidthClass()) {
+        MaterialExpressiveTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
 
 @Preview

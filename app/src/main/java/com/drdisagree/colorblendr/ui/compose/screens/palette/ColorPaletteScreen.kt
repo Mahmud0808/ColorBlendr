@@ -18,9 +18,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberSwipeToDismissBoxState
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -28,9 +28,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,10 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
@@ -55,15 +53,17 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.components.ColorTable
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
@@ -101,7 +101,7 @@ fun ColorPaletteScreen(
         }
     }
 
-    fun updateColors(delayMillis: Long) {
+    fun updateColors() {
         scope.launch {
             PreviewController.updatePreview()
             colorPaletteViewModel.refreshData()
@@ -142,7 +142,7 @@ fun ColorPaletteScreen(
                     PreviewController.beginPreview()
                     resetCustomStyleIfNotNull()
                     putInt(systemPaletteNames[column][row], color)
-                    updateColors(200)
+                    updateColors()
                 }
             },
             alphaEnabled = false,
@@ -204,7 +204,7 @@ fun ColorPaletteScreen(
         PreviewController.beginPreview()
         resetCustomStyleIfNotNull()
         clearPref(systemPaletteNames[column][row])
-        updateColors(0)
+        updateColors()
     }
 
     Surface(
@@ -221,6 +221,7 @@ fun ColorPaletteScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .contentWidthLimit(max = 760.dp)
                         .verticalScroll(scrollState)
                         .padding(bottom = LocalPreviewBottomInset.current)
                         .padding(top = 12.dp)
@@ -287,7 +288,7 @@ fun ColorPaletteScreen(
 
 
 @Suppress("ViewModelConstructorInComposable")
-@Preview
+@AdaptivePreviews
 @Composable
 private fun ColorPaletteScreenPreview() {
     ColorBlendrTheme {

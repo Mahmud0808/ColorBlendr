@@ -75,7 +75,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,6 +88,9 @@ import com.drdisagree.colorblendr.ui.compose.components.ErrorDialog
 import com.drdisagree.colorblendr.ui.compose.components.SelectableCard
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
+import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
 import com.drdisagree.colorblendr.utils.app.AppUtil.hasStoragePermission
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
@@ -279,14 +281,14 @@ private fun PagerIndicator(
     }
 }
 
-// Portrait/landscape guideline scaffold shared by onboarding pages.
 @Composable
 private fun OnboardingPageScaffold(
     title: String,
     content: @Composable () -> Unit
 ) {
     val isLandscape =
-        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE ||
+                LocalWidthClass.current == WidthClass.Expanded
 
     if (isLandscape) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -346,7 +348,8 @@ private fun OnboardingPageScaffold(
 @Composable
 private fun OnboardingPage1() {
     val isLandscape =
-        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE ||
+                LocalWidthClass.current == WidthClass.Expanded
 
     if (isLandscape) {
         Row(modifier = Modifier.fillMaxSize()) {
@@ -681,7 +684,7 @@ private fun OnboardingPage4(onNavigateToPairing: () -> Unit) {
     }
 }
 
-@Preview
+@AdaptivePreviews
 @Composable
 private fun OnboardingScreenPreview() {
     ColorBlendrTheme {

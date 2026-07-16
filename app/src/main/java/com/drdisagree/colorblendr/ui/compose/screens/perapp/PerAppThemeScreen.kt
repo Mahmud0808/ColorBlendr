@@ -77,6 +77,7 @@ import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
@@ -233,6 +234,7 @@ fun PerAppThemeScreen() {
                         ),
                         modifier = Modifier
                             .fillMaxSize()
+                            .contentWidthLimit()
                             .hazeSource(hazeState)
                     ) {
                         itemsIndexed(
@@ -276,7 +278,9 @@ fun PerAppThemeScreen() {
                         onQueryChange = { query = it },
                         onFilterClick = { showFilterDialog = true },
                         hazeState = hazeState,
-                        modifier = Modifier.align(Alignment.TopCenter)
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .contentWidthLimit()
                     )
                 }
             }

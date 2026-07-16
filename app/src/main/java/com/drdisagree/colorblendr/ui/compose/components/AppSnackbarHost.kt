@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
@@ -19,6 +20,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
 // Tracks whether any snackbar shows, so overlapping UI (e.g. preview
@@ -58,7 +60,8 @@ fun AppSnackbarHost(
 
             SwipeToDismissBox(
                 state = dismissState,
-                backgroundContent = {}
+                backgroundContent = {},
+                modifier = Modifier.widthIn(max = 560.dp)
             ) {
                 Snackbar(
                     snackbarData = data,

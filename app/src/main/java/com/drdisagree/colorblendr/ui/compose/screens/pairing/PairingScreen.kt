@@ -53,6 +53,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.utils.app.AppUtil
@@ -134,6 +135,7 @@ fun PairingScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .contentWidthLimit()
                     .verticalScroll(scrollState)
                     .padding(
                         horizontal = dimensionResource(R.dimen.container_margin_horizontal),

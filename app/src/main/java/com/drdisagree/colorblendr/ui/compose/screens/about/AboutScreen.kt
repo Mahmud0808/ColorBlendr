@@ -18,6 +18,7 @@ import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Utilities.setDeveloperModeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -110,7 +111,9 @@ fun AboutScreen(
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(bottom = LocalPreviewBottomInset.current),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .contentWidthLimit()
             ) {
                 item { AboutAppHeader(animatedHeaders) }
                 if (developerMode) {

@@ -76,8 +76,10 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPalettePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.CommunityShowcase
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewCanvas
 import com.drdisagree.colorblendr.ui.compose.views.WallColorPreviewColors
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
@@ -204,6 +206,7 @@ fun ColorsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .contentWidthLimit()
                     .verticalScroll(scrollState)
                     .padding(bottom = LocalPreviewBottomInset.current)
                     .padding(top = 12.dp)
@@ -426,7 +429,7 @@ private fun CustomColorTilePreview() {
 }
 
 @Suppress("ViewModelConstructorInComposable")
-@Preview
+@AdaptivePreviews
 @Composable
 private fun ColorsScreenPreview() {
     ColorBlendrTheme {

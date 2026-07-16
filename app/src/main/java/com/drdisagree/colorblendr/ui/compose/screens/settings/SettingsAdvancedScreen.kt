@@ -89,6 +89,7 @@ import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
+import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.SystemUtil
@@ -230,6 +231,7 @@ fun SettingsAdvancedScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .contentWidthLimit()
                     .verticalScroll(scrollState)
                     .padding(bottom = LocalPreviewBottomInset.current)
                     .padding(top = 16.dp)
