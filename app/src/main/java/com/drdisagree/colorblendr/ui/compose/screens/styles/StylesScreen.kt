@@ -1,12 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.screens.styles
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -39,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
@@ -54,14 +53,15 @@ import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setOriginalStyleName
 import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
-import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
-import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
+import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
+import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
+import com.drdisagree.colorblendr.ui.compose.components.WavySectionDivider
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
@@ -151,6 +151,57 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                     showBackButton = true,
                     lifted = toolbarLifted
                 )
+                val styleItem: @Composable (StyleModel) -> Unit = { style ->
+                    StyleListItem(
+                        style = style,
+                        stylePalettes = stylePalettes,
+                        isSelected = if (style.customStyle == null) {
+                            style.monetStyle == selectedStyle && selectedCustomStyle == null
+                        } else {
+                            style.customStyle.styleId == selectedCustomStyle
+                        },
+                        onSelect = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            if (style.customStyle == null) {
+                                selectedStyle = style.monetStyle
+                                selectedCustomStyle = null
+                                scope.launch {
+                                    PreviewController.beginPreview()
+                                    setCurrentMonetStyle(style.monetStyle)
+                                    resetCustomStyle()
+                                    setOriginalStyleName(style.titleResId.getStyleNameForRootless())
+                                    applyColorScheme()
+                                }
+                            } else {
+                                selectedCustomStyle = style.customStyle.styleId
+                                scope.launch {
+                                    PreviewController.beginPreview()
+                                    BackupRestore.restorePrefsMap(style.customStyle.prefsGson.toPrefs())
+                                    setCurrentCustomStyle(style.customStyle.styleId)
+                                    clearOriginalStyleName()
+                                    applyColorScheme()
+                                }
+                            }
+                        },
+                        onEdit = {
+                            dialogState = StyleDialogState(
+                                styleId = style.customStyle!!.styleId,
+                                initialTitle = style.customStyle.styleName,
+                                initialDescription = style.customStyle.description
+                            )
+                        },
+                        onUpdate = {
+                            pendingUpdateStyleId = style.customStyle!!.styleId
+                        },
+                        onDelete = {
+                            pendingDeleteStyleId = style.customStyle!!.styleId
+                        }
+                    )
+                }
+                val builtInStyles =
+                    remember(styleList) { styleList.filter { it.customStyle == null } }
+                val customStyles =
+                    remember(styleList) { styleList.filter { it.customStyle != null } }
                 LazyColumn(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -160,52 +211,18 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                     ),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(styleList, key = { it.customStyle?.styleId ?: it.titleResId }) { style ->
-                        StyleListItem(
-                            style = style,
-                            stylePalettes = stylePalettes,
-                            isSelected = if (style.customStyle == null) {
-                                style.monetStyle == selectedStyle && selectedCustomStyle == null
-                            } else {
-                                style.customStyle.styleId == selectedCustomStyle
-                            },
-                            onSelect = {
-                                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                                if (style.customStyle == null) {
-                                    selectedStyle = style.monetStyle
-                                    selectedCustomStyle = null
-                                    scope.launch {
-                                        PreviewController.beginPreview()
-                                        setCurrentMonetStyle(style.monetStyle)
-                                        resetCustomStyle()
-                                        setOriginalStyleName(style.titleResId.getStyleNameForRootless())
-                                        applyColorScheme()
-                                    }
-                                } else {
-                                    selectedCustomStyle = style.customStyle.styleId
-                                    scope.launch {
-                                        PreviewController.beginPreview()
-                                        BackupRestore.restorePrefsMap(style.customStyle.prefsGson.toPrefs())
-                                        setCurrentCustomStyle(style.customStyle.styleId)
-                                        clearOriginalStyleName()
-                                        applyColorScheme()
-                                    }
-                                }
-                            },
-                            onEdit = {
-                                dialogState = StyleDialogState(
-                                    styleId = style.customStyle!!.styleId,
-                                    initialTitle = style.customStyle.styleName,
-                                    initialDescription = style.customStyle.description
-                                )
-                            },
-                            onUpdate = {
-                                pendingUpdateStyleId = style.customStyle!!.styleId
-                            },
-                            onDelete = {
-                                pendingDeleteStyleId = style.customStyle!!.styleId
-                            }
-                        )
+                    items(builtInStyles, key = { it.titleResId }) { style -> styleItem(style) }
+                    if (customStyles.isNotEmpty()) {
+                        item(key = "saved_styles_divider") {
+                            WavySectionDivider(
+                                text = stringResource(R.string.saved_styles_divider),
+                                modifier = Modifier.padding(vertical = 6.dp)
+                            )
+                        }
+                        items(
+                            customStyles,
+                            key = { it.customStyle!!.styleId }
+                        ) { style -> styleItem(style) }
                     }
                 }
             }
@@ -252,7 +269,14 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
             confirmText = stringResource(R.string.delete),
             onConfirm = {
                 pendingDeleteStyleId = null
-                scope.launch { stylesViewModel.deleteCustomStyle(styleId) }
+                scope.launch {
+                    val previewingDeleted = styleId == selectedCustomStyle &&
+                            PreviewController.isPreviewActive
+                    stylesViewModel.deleteCustomStyle(styleId)
+                    if (previewingDeleted) {
+                        PreviewController.discardChanges()
+                    }
+                }
             },
             onDismiss = { pendingDeleteStyleId = null }
         )
