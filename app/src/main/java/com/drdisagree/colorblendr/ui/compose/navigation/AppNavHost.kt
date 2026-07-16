@@ -173,7 +173,7 @@ fun AppNavHost(
                 onCheckRootConnection = ::checkRootConnection,
                 onCheckShizukuConnection = ::checkShizukuConnection,
                 onCheckAdbConnection = ::checkAdbConnection,
-                onNavigateToPairing = { navController.navigate(Routes.PAIRING) },
+                onNavigateToPairing = { navController.navigateSingleTop(Routes.PAIRING) },
                 popActivityBackStack = { false },
                 onFinishActivity = { activity?.finish() }
             )

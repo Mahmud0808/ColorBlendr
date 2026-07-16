@@ -77,6 +77,7 @@ import com.drdisagree.colorblendr.ui.compose.components.PreviewActionButtons
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.navigation.Routes
+import com.drdisagree.colorblendr.ui.compose.navigation.navigateSingleTop
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
 import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
 import com.drdisagree.colorblendr.ui.compose.screens.about.CrashLogScreen
@@ -105,6 +106,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
@@ -252,7 +254,7 @@ fun HomeScreen(
     // Deep link: open the shared theme's details page.
     LaunchedEffect(pendingThemeId) {
         pendingThemeId?.let { themeId ->
-            nestedNavController.navigate("communityTheme/$themeId") {
+            nestedNavController.navigateSingleTop("communityTheme/$themeId") {
                 launchSingleTop = true
             }
             onThemeIdHandled()
@@ -347,13 +349,13 @@ fun HomeScreen(
                             ColorsScreen(
                                 colorsViewModel = colorsViewModel,
                                 onNavigateToColorPalette = {
-                                    nestedNavController.navigate(Routes.COLOR_PALETTE)
+                                    nestedNavController.navigateSingleTop(Routes.COLOR_PALETTE)
                                 },
                                 onNavigateToCommunity = {
-                                    nestedNavController.navigate(Routes.COMMUNITY)
+                                    nestedNavController.navigateSingleTop(Routes.COMMUNITY)
                                 },
                                 onNavigateToCommunityTheme = { themeId ->
-                                    nestedNavController.navigate("communityTheme/$themeId")
+                                    nestedNavController.navigateSingleTop("communityTheme/$themeId")
                                 }
                             )
                         }
@@ -375,17 +377,17 @@ fun HomeScreen(
 
                             SettingsScreen(
                                 restoreUri = if (!restoreConsumed) {
-                                    restoreUriArg?.let { Uri.parse(it) }
+                                    restoreUriArg?.toUri()
                                 } else {
                                     null
                                 },
                                 onRestoreUriConsumed = { restoreConsumed = true },
-                                onNavigateToAbout = { nestedNavController.navigate(Routes.ABOUT) },
+                                onNavigateToAbout = { nestedNavController.navigateSingleTop(Routes.ABOUT) },
                                 onNavigateToAdvanced = {
-                                    nestedNavController.navigate(Routes.SETTINGS_ADVANCED)
+                                    nestedNavController.navigateSingleTop(Routes.SETTINGS_ADVANCED)
                                 },
                                 onNavigateToPrivacyPolicy = {
-                                    nestedNavController.navigate(Routes.PRIVACY_POLICY)
+                                    nestedNavController.navigateSingleTop(Routes.PRIVACY_POLICY)
                                 }
                             )
                         }
@@ -398,14 +400,14 @@ fun HomeScreen(
                         composable(Routes.SETTINGS_ADVANCED) {
                             SettingsAdvancedScreen(
                                 onNavigateToPerAppTheme = {
-                                    nestedNavController.navigate(Routes.PER_APP_THEME)
+                                    nestedNavController.navigateSingleTop(Routes.PER_APP_THEME)
                                 }
                             )
                         }
                         composable(Routes.COMMUNITY) {
                             CommunityScreen(
                                 onThemeClick = { themeId ->
-                                    nestedNavController.navigate("communityTheme/$themeId")
+                                    nestedNavController.navigateSingleTop("communityTheme/$themeId")
                                 }
                             )
                         }
@@ -417,7 +419,7 @@ fun HomeScreen(
                         composable(Routes.ABOUT) {
                             AboutScreen(
                                 onNavigateToCrashLog = {
-                                    nestedNavController.navigate(Routes.CRASH_LOG)
+                                    nestedNavController.navigateSingleTop(Routes.CRASH_LOG)
                                 }
                             )
                         }
