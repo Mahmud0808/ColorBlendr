@@ -1,5 +1,6 @@
 // App landing page: MCU-derived dynamic coloring (rotating seed), seed chip
-// demo, community creations marquee. Same engine as the themes site.
+// demo, light/dark, community creations marquee. Same engine as the
+// themes site.
 import {
     Hct,
     SchemeContent,
@@ -64,39 +65,69 @@ function shiftLightness(hex, lightness, minTone = 0, maxTone = 100) {
 
 // ---- Site-wide dynamic coloring -------------------------------------------
 
+let darkMode = true;
+
+// Phone mockup palette rows; one CSS var per cell.
+const PH_TONES = [95, 80, 60, 40, 20, 5];
+
 function applySiteSeed(seedHex, style, spec, sliders) {
     const { accentSat = 100, bgSat = 100, bgLight = 100 } = sliders ?? {};
     const Ctor = SCHEME_BY_STYLE[style] ?? SchemeTonalSpot;
     const scheme = new Ctor(
-        Hct.fromInt(argbFromHex(seedHex)), true, 0, spec ?? DEFAULT_SPEC
+        Hct.fromInt(argbFromHex(seedHex)), darkMode, 0, spec ?? DEFAULT_SPEC
     );
     const role = (argb) => hexFromArgb(argb);
     const accent = (argb) => adjustSaturation(role(argb), accentSat);
-    // Tone floors keep slider-shifted surfaces off pure black + separated.
+    // Tone clamps keep slider-shifted surfaces off pure black/white and
+    // separated; ranges flip per mode.
     const surf = (argb, minTone, maxTone) =>
         shiftLightness(adjustSaturation(role(argb), bgSat), bgLight, minTone, maxTone);
+    const dm = darkMode;
 
     const vars = {
-        "--bg": surf(scheme.surface, 4, 99),
+        "--bg": dm ? surf(scheme.surface, 4, 99) : surf(scheme.surface, 70, 100),
         "--text": role(scheme.onSurface),
         "--subtle": alpha(role(scheme.onSurfaceVariant), 0.75),
         "--body2": role(scheme.onSurfaceVariant),
         "--accent": accent(scheme.primary),
         "--on-accent": role(scheme.onPrimary),
-        "--accent-glow": alpha(accent(scheme.primary), 0.32),
+        "--accent-glow": alpha(accent(scheme.primary), dm ? 0.32 : 0.24),
         "--tonal": role(scheme.secondaryContainer),
         "--on-tonal": role(scheme.onSecondaryContainer),
-        "--card": surf(scheme.surfaceContainer, 10, 96),
-        "--card-high": surf(scheme.surfaceContainerHigh, 14, 93),
-        "--card-highest": surf(scheme.surfaceContainerHighest, 16, 91),
+        "--card": dm ? surf(scheme.surfaceContainer, 10, 96) : surf(scheme.surfaceContainer, 66, 98),
+        "--card-high": dm ? surf(scheme.surfaceContainerHigh, 14, 93) : surf(scheme.surfaceContainerHigh, 62, 97),
+        "--card-highest": dm ? surf(scheme.surfaceContainerHighest, 16, 91) : surf(scheme.surfaceContainerHighest, 58, 96),
         "--outline-v": role(scheme.outlineVariant),
         "--grad-a": role(scheme.onSurface),
         "--grad-b": accent(scheme.primary),
-        "--grad-c": accent(scheme.tertiary)
+        "--grad-c": accent(scheme.tertiary),
+        "--blob-a": accent(scheme.primary),
+        "--blob-b": accent(scheme.tertiary),
+        "--blob-c": role(scheme.secondaryContainer),
+        "--ph-sat": `${accentSat / 2}%`
     };
+    const root = document.documentElement;
     for (const [k, v] of Object.entries(vars)) {
-        document.documentElement.style.setProperty(k, v);
+        root.style.setProperty(k, v);
     }
+
+    // Phone mockup palette grid (accent rows honor accentSat, neutral bgSat).
+    const phPalettes = {
+        p: [scheme.primaryPalette, true],
+        s: [scheme.secondaryPalette, true],
+        t: [scheme.tertiaryPalette, true],
+        n: [scheme.neutralVariantPalette, false]
+    };
+    for (const [key, [palette, isAccent]] of Object.entries(phPalettes)) {
+        for (const t of PH_TONES) {
+            const base = hexFromArgb(palette.tone(t));
+            root.style.setProperty(`--ph-${key}-${t}`,
+                adjustSaturation(base, isAccent ? accentSat : bgSat));
+        }
+    }
+
+    document.querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", vars["--bg"]);
 
     // Hero logo disc follows the seed (launcher gradient formula).
     const stops = document.querySelectorAll("#lg stop");
@@ -113,24 +144,31 @@ const INITIAL_SEED = "#51BDFF";
 
 // Theme the site rests on when nothing is hovered; rotation or the
 // playground moves it.
-let resting = { seed: INITIAL_SEED, style: undefined, spec: undefined };
+let resting = { seed: INITIAL_SEED, style: undefined, spec: undefined, sliders: undefined };
 let hoverHold = false;
 let demoHold = false;
 
 // Rotation cycles the playground's own seeds so the selected swatch always
 // mirrors what the page is wearing.
 let demoSync = null;
+let railRefresh = null;
 
+// Rotation is DRIVEN by the selection ring's 7s CSS animation: each
+// completed lap advances the seed. Pausing the ring (rail hover) pauses
+// rotation with it - no timer to desync; reduced-motion kills both.
 function startSeedRotation() {
-    let i = 0;
-    setInterval(() => {
-        // Playground takes permanent control; hover pauses.
+    const seedsEl = document.getElementById("demoSeeds");
+    if (!seedsEl) return;
+    seedsEl.classList.add("rotating");
+    seedsEl.addEventListener("animationiteration", (e) => {
+        if (e.animationName !== "ringfill") return;
         if (hoverHold || demoHold) return;
-        i = (i + 1) % DEMO_SEEDS.length;
-        resting = { seed: DEMO_SEEDS[i] };
-        applySiteSeed(resting.seed);
-        demoSync?.(resting.seed);
-    }, 7000);
+        const i = DEMO_SEEDS.indexOf(resting.seed);
+        const next = DEMO_SEEDS[(i + 1) % DEMO_SEEDS.length];
+        resting = { seed: next };
+        applySiteSeed(next);
+        demoSync?.(next);
+    });
 }
 
 // Engine playground: app-style swatches + Monet style + spec selectors.
@@ -190,6 +228,7 @@ function initDemo() {
 
     const apply = (rebuildSwatches) => {
         demoHold = true;
+        seedsEl.classList.remove("rotating");
         resting = { seed, style, spec };
         if (clearTimer) clearTimeout(clearTimer);
         root.style.setProperty("--recolor", ".5s");
@@ -255,6 +294,7 @@ function initDemo() {
 function initHoverTheming(container) {
     if (!container || !matchMedia("(hover: hover)").matches) return;
     const root = document.documentElement;
+    const seedsEl = document.getElementById("demoSeeds");
     let activeSeed = null;
     let clearTimer = null;
     container.addEventListener("mouseover", (e) => {
@@ -263,6 +303,7 @@ function initHoverTheming(container) {
         if (!seed || seed === activeSeed) return;
         activeSeed = seed;
         hoverHold = true;
+        seedsEl?.classList.add("paused");
         if (clearTimer) clearTimeout(clearTimer);
         root.style.setProperty("--recolor", ".5s");
         applySiteSeed(seed, card.dataset.style, card.dataset.spec, {
@@ -277,8 +318,36 @@ function initHoverTheming(container) {
         if (e.relatedTarget?.closest?.(".tcard")) return;
         activeSeed = null;
         hoverHold = false;
-        applySiteSeed(resting.seed, resting.style, resting.spec);
+        seedsEl?.classList.remove("paused");
+        applySiteSeed(resting.seed, resting.style, resting.spec, resting.sliders);
         clearTimer = setTimeout(() => root.style.removeProperty("--recolor"), 600);
+    });
+}
+
+// ---- Light/dark -----------------------------------------------------------
+
+function initMode() {
+    try {
+        const stored = localStorage.cbMode;
+        darkMode = stored
+            ? stored === "dark"
+            : !matchMedia("(prefers-color-scheme: light)").matches;
+    } catch { darkMode = true; }
+    document.documentElement.classList.toggle("light", !darkMode);
+}
+
+function initModeToggle() {
+    const btn = document.getElementById("modeToggle");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+        darkMode = !darkMode;
+        try { localStorage.cbMode = darkMode ? "dark" : "light"; } catch { /* private mode */ }
+        const root = document.documentElement;
+        root.classList.toggle("light", !darkMode);
+        root.style.setProperty("--recolor", ".5s");
+        applySiteSeed(resting.seed, resting.style, resting.spec, resting.sliders);
+        setTimeout(() => root.style.removeProperty("--recolor"), 600);
+        railRefresh?.();
     });
 }
 
@@ -291,7 +360,7 @@ function cardData(theme) {
     const seed = HEX.test(theme.seedColor ?? "") ? theme.seedColor : "#6750A4";
     const Ctor = SCHEME_BY_STYLE[theme.style] ?? SchemeTonalSpot;
     const spec = SPEC_BY_VERSION[theme.colorSpecVersion] ?? DEFAULT_SPEC;
-    const scheme = new Ctor(Hct.fromInt(argbFromHex(seed)), true, 0, spec);
+    const scheme = new Ctor(Hct.fromInt(argbFromHex(seed)), darkMode, 0, spec);
     const isMono = theme.style === "MONOCHROMATIC";
     const accentSat = isMono ? 100 : (theme.accentSaturation ?? 100);
     const bgSat = isMono ? 100 : (theme.backgroundSaturation ?? 100);
@@ -366,6 +435,86 @@ const trendingScore = (t) => {
     return ((t.upvotes ?? 0) + (t.downloads ?? 0) * 0.5) / Math.pow(days + 2, 1.5);
 };
 
+const SHOTS_SPRITE =
+    "https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/features.png";
+
+// Slice the screenshot sprite by measuring panel bounds from the actual
+// bitmap - hand-tuned percentages break whenever the sprite is re-exported
+// or a stale copy sits in a cache. The same blob feeds the CSS background,
+// so measurement and render can't diverge. CSS values stay as fallback.
+async function initShots() {
+    const shots = [...document.querySelectorAll(".shot")];
+    if (!shots.length) return;
+    try {
+        const blob = await (await fetch(SHOTS_SPRITE, { cache: "no-cache" })).blob();
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+        const c = document.createElement("canvas");
+        c.width = img.naturalWidth;
+        c.height = img.naturalHeight;
+        const ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const data = ctx.getImageData(0, 0, c.width, c.height).data;
+        const opaque = (x, y) => data[(y * c.width + x) * 4 + 3] > 10;
+        // horizontal panel runs along the middle row
+        const midY = Math.floor(c.height / 2);
+        const runs = [];
+        let start = null;
+        for (let x = 0; x <= c.width; x++) {
+            const on = x < c.width && opaque(x, midY);
+            if (on && start === null) start = x;
+            if (!on && start !== null) { runs.push([start, x]); start = null; }
+        }
+        if (runs.length !== shots.length) return;
+        // shared vertical band, probed on the first panel
+        const mx = Math.floor((runs[0][0] + runs[0][1]) / 2);
+        let top = 0, bottom = c.height;
+        while (top < c.height && !opaque(mx, top)) top++;
+        while (bottom > top && !opaque(mx, bottom - 1)) bottom--;
+        const h = bottom - top;
+        shots.forEach((el, i) => {
+            const [x0, x1] = runs[i];
+            const w = x1 - x0;
+            el.style.aspectRatio = `${w} / ${h}`;
+            el.style.backgroundImage = `url("${url}")`;
+            el.style.backgroundSize = `${(c.width / w) * 100}% auto`;
+            el.style.backgroundPosition =
+                `${(x0 / (c.width - w)) * 100}% ${(top / (c.height - h)) * 100}%`;
+        });
+    } catch { /* keep CSS fallback */ }
+}
+
+// M3 Expressive decorative shapes: polar cosine-modulated outlines
+// (cookie/sunny/flower/clover), generated once per placeholder.
+const DECO_SHAPES = {
+    cookie: { k: 12, a: 0.09 },
+    sunny: { k: 8, a: 0.22 },
+    flower: { k: 6, a: 0.18 },
+    clover: { k: 4, a: 0.28 }
+};
+
+function decoPath(k, a, steps = 240) {
+    let d = "";
+    for (let i = 0; i <= steps; i++) {
+        const th = (i / steps) * Math.PI * 2;
+        const r = 50 * (1 + a * Math.cos(k * th)) / (1 + a);
+        const x = 50 + r * Math.cos(th);
+        const y = 50 + r * Math.sin(th);
+        d += `${i ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`;
+    }
+    return d + "Z";
+}
+
+function initDeco() {
+    document.querySelectorAll(".deco").forEach((el) => {
+        const { k, a } = DECO_SHAPES[el.dataset.shape] ?? DECO_SHAPES.cookie;
+        el.innerHTML =
+            `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${decoPath(k, a)}"/></svg>`;
+    });
+}
+
 // Scroll-in reveal for sections below the fold.
 function initReveal() {
     const observer = new IntersectionObserver((entries) => {
@@ -377,6 +526,53 @@ function initReveal() {
         }
     }, { threshold: 0.12 });
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+}
+
+// Per-letter hero entrance; restores plain text after so the whole-word
+// gradient shimmer takes over.
+function initTitleStagger() {
+    const h1 = document.querySelector("h1.title");
+    if (!h1 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const text = h1.textContent;
+    h1.classList.add("stagger");
+    h1.setAttribute("aria-label", text);
+    h1.innerHTML = [...text].map((ch, i) =>
+        `<span class="tl" aria-hidden="true" style="animation-delay:${80 + i * 40}ms">${ch}</span>`
+    ).join("");
+    setTimeout(() => {
+        h1.textContent = text;
+        h1.removeAttribute("aria-label");
+        h1.classList.remove("stagger");
+        h1.classList.add("settled");
+    }, 80 + text.length * 40 + 650);
+}
+
+// Accent spotlight trailing the cursor inside feature cards.
+function initSpotlight() {
+    if (!matchMedia("(hover: hover)").matches) return;
+    document.querySelectorAll(".info").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+            card.style.setProperty("--my", `${e.clientY - r.top}px`);
+        });
+    });
+}
+
+// Screenshots tilt toward the cursor.
+function initShotTilt() {
+    if (!matchMedia("(hover: hover)").matches) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll(".shot").forEach((el) => {
+        el.addEventListener("mousemove", (e) => {
+            const r = el.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width - 0.5;
+            const y = (e.clientY - r.top) / r.height - 0.5;
+            el.style.transform =
+                `perspective(800px) rotateY(${(x * 10).toFixed(2)}deg) rotateX(${(-y * 10).toFixed(2)}deg) translateY(-4px)`;
+        });
+        el.addEventListener("mouseleave", () => { el.style.transform = ""; });
+    });
 }
 
 // Animated expand/collapse for FAQ details (native toggle snaps).
@@ -421,27 +617,35 @@ function initFaq() {
 }
 
 export async function initApp() {
+    initMode();
     applySiteSeed(INITIAL_SEED);
+    initDeco();
+    initShots();
     initReveal();
     initFaq();
+    initTitleStagger();
     initDemo();
     startSeedRotation();
+    initSpotlight();
+    initShotTilt();
+    initModeToggle();
     try {
         const themes = await (await fetch(THEMES_INDEX)).json();
         const top = [...themes]
             .sort((a, b) => trendingScore(b) - trendingScore(a))
             .slice(0, 10);
-        const set = top.map(cardHtml).join("");
-        const setReversed = [...top].reverse().map(cardHtml).join("");
         // Loop = two identical halves shifted -50%; each half must cover the
         // viewport or blank space drifts in before the wrap. Rebuilt when the
-        // viewport outgrows the built halves (maximize, zoom out).
+        // viewport outgrows the built halves (maximize, zoom out) or the
+        // light/dark mode flips (cards re-derive per mode).
         const setWidth = top.length * 296;
         let builtPerHalf = 0;
         const buildRail = () => {
             const perHalf = Math.max(1, Math.ceil(window.innerWidth / setWidth));
             if (perHalf <= builtPerHalf) return;
             builtPerHalf = perHalf;
+            const set = top.map(cardHtml).join("");
+            const setReversed = [...top].reverse().map(cardHtml).join("");
             const half = set.repeat(perHalf);
             const halfReversed = setReversed.repeat(perHalf);
             // Second row: mobile only, reversed list, opposite drift.
@@ -451,6 +655,7 @@ export async function initApp() {
         };
         buildRail();
         window.addEventListener("resize", buildRail);
+        railRefresh = () => { builtPerHalf = 0; buildRail(); };
         initHoverTheming(document.getElementById("rail"));
     } catch {
         document.getElementById("rail").innerHTML =
