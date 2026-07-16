@@ -23,4 +23,12 @@ class CustomStyleRepository(private val customStyleDao: CustomStyleDao) {
     suspend fun getCustomStyleById(styleId: String): CustomStyleModel? {
         return customStyleDao.getCustomStyleById(styleId)
     }
+
+    suspend fun getNextSortOrder(): Int {
+        return customStyleDao.getNextSortOrder()
+    }
+
+    suspend fun updateSortOrders(styleIds: List<String>) {
+        customStyleDao.updateSortOrders(styleIds)
+    }
 }

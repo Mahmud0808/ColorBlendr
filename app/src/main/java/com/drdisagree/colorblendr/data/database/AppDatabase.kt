@@ -7,14 +7,15 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.data.common.Constant.DATABASE_NAME
 import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_THEME_TABLE
+import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_STYLE_TABLE
+import com.drdisagree.colorblendr.data.common.Constant.DATABASE_NAME
 import com.drdisagree.colorblendr.data.dao.CommunityThemeDao
 import com.drdisagree.colorblendr.data.dao.CustomStyleDao
 import com.drdisagree.colorblendr.data.models.CommunityThemeEntity
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 
-@Database(entities = [CustomStyleModel::class, CommunityThemeEntity::class], version = 2)
+@Database(entities = [CustomStyleModel::class, CommunityThemeEntity::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun customStyleDao(): CustomStyleDao
@@ -30,7 +31,10 @@ abstract class AppDatabase : RoomDatabase() {
                     appContext,
                     AppDatabase::class.java,
                     DATABASE_NAME
-                ).addMigrations(MIGRATION_1_2).build().also { INSTANCE = it }
+                ).addMigrations(
+                    MIGRATION_1_2,
+                    MIGRATION_2_3
+                ).build().also { INSTANCE = it }
             }
         }
 
@@ -49,13 +53,26 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `$CUSTOM_STYLE_TABLE` " +
+                            "ADD COLUMN `sortOrder` INTEGER NOT NULL DEFAULT 0"
+                )
+                db.execSQL("UPDATE `$CUSTOM_STYLE_TABLE` SET sortOrder = rowid")
+            }
+        }
+
         fun reloadInstance() {
             synchronized(this) {
                 INSTANCE = Room.databaseBuilder(
                     appContext,
                     AppDatabase::class.java,
                     DATABASE_NAME
-                ).addMigrations(MIGRATION_1_2).build()
+                ).addMigrations(
+                    MIGRATION_1_2,
+                    MIGRATION_2_3
+                ).build()
             }
         }
     }

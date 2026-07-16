@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,13 +33,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
@@ -151,9 +156,10 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                     showBackButton = true,
                     lifted = toolbarLifted
                 )
-                val styleItem: @Composable (StyleModel) -> Unit = { style ->
+                val styleItem: @Composable (StyleModel, Modifier?) -> Unit = { style, dragHandle ->
                     StyleListItem(
                         style = style,
+                        dragHandleModifier = dragHandle,
                         stylePalettes = stylePalettes,
                         isSelected = if (style.customStyle == null) {
                             style.monetStyle == selectedStyle && selectedCustomStyle == null
@@ -202,6 +208,8 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                     remember(styleList) { styleList.filter { it.customStyle == null } }
                 val customStyles =
                     remember(styleList) { styleList.filter { it.customStyle != null } }
+                var draggingStyleId by remember { mutableStateOf<String?>(null) }
+                var dragOffsetY by remember { mutableFloatStateOf(0f) }
                 LazyColumn(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -211,7 +219,9 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                     ),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(builtInStyles, key = { it.titleResId }) { style -> styleItem(style) }
+                    items(builtInStyles, key = { it.titleResId }) { style ->
+                        styleItem(style, null)
+                    }
                     if (customStyles.isNotEmpty()) {
                         item(key = "saved_styles_divider") {
                             WavySectionDivider(
@@ -222,7 +232,61 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                         items(
                             customStyles,
                             key = { it.customStyle!!.styleId }
-                        ) { style -> styleItem(style) }
+                        ) { style ->
+                            val styleId = style.customStyle!!.styleId
+                            val isDragging = draggingStyleId == styleId
+                            val dragHandle = Modifier.pointerInput(styleId) {
+                                detectDragGestures(
+                                    onDragStart = {
+                                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        draggingStyleId = styleId
+                                        dragOffsetY = 0f
+                                    },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        dragOffsetY += dragAmount.y
+                                        val visibleItems = listState.layoutInfo.visibleItemsInfo
+                                        val current = visibleItems.find { it.key == styleId }
+                                            ?: return@detectDragGestures
+                                        val centerY =
+                                            current.offset + dragOffsetY + current.size / 2f
+                                        val target = visibleItems.find { item ->
+                                            item.key != styleId &&
+                                                    customStyles.any { it.customStyle!!.styleId == item.key } &&
+                                                    centerY >= item.offset &&
+                                                    centerY <= item.offset + item.size
+                                        } ?: return@detectDragGestures
+                                        dragOffsetY -= target.offset - current.offset
+                                        stylesViewModel.moveCustomStyle(
+                                            styleId,
+                                            target.key as String
+                                        )
+                                    },
+                                    onDragEnd = {
+                                        draggingStyleId = null
+                                        dragOffsetY = 0f
+                                        stylesViewModel.persistCustomStyleOrder()
+                                    },
+                                    onDragCancel = {
+                                        draggingStyleId = null
+                                        dragOffsetY = 0f
+                                    }
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .zIndex(if (isDragging) 1f else 0f)
+                                    .then(
+                                        if (isDragging) {
+                                            Modifier.graphicsLayer { translationY = dragOffsetY }
+                                        } else {
+                                            Modifier.animateItem()
+                                        }
+                                    )
+                            ) {
+                                styleItem(style, dragHandle)
+                            }
+                        }
                     }
                 }
             }
@@ -294,9 +358,9 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
             onConfirm = { title, description ->
                 dialogState = null
 
-                if (title.trim().isEmpty() || description.trim().isEmpty()) {
+                if (title.trim().isEmpty()) {
                     AppSnackbar.show(
-                        context.getString(R.string.title_and_desc_cant_be_empty)
+                        context.getString(R.string.title_cant_be_empty)
                     )
                     return@OutlinedTextFieldDialog
                 }
@@ -324,7 +388,8 @@ private fun StyleListItem(
     onSelect: () -> Unit,
     onEdit: () -> Unit,
     onUpdate: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    dragHandleModifier: Modifier? = null
 ) {
     if (style.customStyle == null) {
         StylePreviewCard(
@@ -357,7 +422,8 @@ private fun StyleListItem(
             },
             onEdit = onEdit,
             onUpdate = onUpdate,
-            onDelete = onDelete
+            onDelete = onDelete,
+            dragHandleModifier = dragHandleModifier
         )
     }
 }

@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.ui.compose.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DragIndicator
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.ui.graphics.painter.Painter
@@ -70,7 +71,8 @@ fun StylePreviewCard(
     position: WidgetPosition = WidgetPosition.Single,
     onEdit: (() -> Unit)? = null,
     onUpdate: (() -> Unit)? = null,
-    onDelete: (() -> Unit)? = null
+    onDelete: (() -> Unit)? = null,
+    dragHandleModifier: Modifier? = null
 ) {
     val radius = dimensionResource(R.dimen.container_corner_radius)
     val radiusSmall = dimensionResource(R.dimen.container_corner_radius_small)
@@ -165,18 +167,30 @@ fun StylePreviewCard(
                     modifier = Modifier.size(60.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     TitleWithBadge(
                         title = title,
                         badge = if (enabled) null else disabledReason,
                         textStyle = MaterialTheme.typography.titleSmall,
                         textColor = contentColor.copy(alpha = if (enabled) 1f else 0.6f)
                     )
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = contentColor.copy(alpha = if (enabled) 0.8f else 0.4f),
-                        modifier = Modifier.padding(top = 2.dp)
+                    if (description.isNotBlank()) {
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = contentColor.copy(alpha = if (enabled) 0.8f else 0.4f),
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                }
+                if (dragHandleModifier != null) {
+                    Icon(
+                        painter = rememberVectorPainter(Icons.Rounded.DragIndicator),
+                        contentDescription = stringResource(R.string.reorder_style),
+                        tint = contentColor.copy(alpha = 0.5f),
+                        modifier = dragHandleModifier
+                            .padding(start = 12.dp)
+                            .size(24.dp)
                     )
                 }
             }

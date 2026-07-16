@@ -13,5 +13,6 @@ data class CustomStyleModel(
     var description: String,
     val prefsGson: String,
     val monet: MONET,
-    val palette: ArrayList<ArrayList<Int>>
+    val palette: ArrayList<ArrayList<Int>>,
+    val sortOrder: Int = 0
 )

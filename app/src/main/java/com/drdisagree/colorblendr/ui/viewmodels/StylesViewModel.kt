@@ -100,7 +100,8 @@ class StylesViewModel(
                 getBackgroundLightness(),
                 pitchBlackThemeEnabled(),
                 accurateShadesEnabled()
-            )
+            ),
+            sortOrder = customStyleRepository.getNextSortOrder()
         )
 
         customStyleRepository.saveCustomStyle(newStyle)
@@ -149,6 +150,23 @@ class StylesViewModel(
         val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return
         customStyleRepository.deleteCustomStyle(customStyle)
         refreshData()
+    }
+
+    fun moveCustomStyle(fromStyleId: String, toStyleId: String) {
+        val list = _styleList.value.toMutableList()
+        val fromIndex = list.indexOfFirst { it.customStyle?.styleId == fromStyleId }
+        val toIndex = list.indexOfFirst { it.customStyle?.styleId == toStyleId }
+        if (fromIndex == -1 || toIndex == -1 || fromIndex == toIndex) return
+        list.add(toIndex, list.removeAt(fromIndex))
+        _styleList.value = list
+    }
+
+    fun persistCustomStyleOrder() {
+        viewModelScope.launch(Dispatchers.IO) {
+            customStyleRepository.updateSortOrders(
+                _styleList.value.mapNotNull { it.customStyle?.styleId }
+            )
+        }
     }
 
     private suspend fun loadPreviewColorPalettes(styleName: List<String>): Map<String, List<List<Int>>> {
