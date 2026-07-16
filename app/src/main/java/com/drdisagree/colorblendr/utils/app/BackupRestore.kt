@@ -280,8 +280,10 @@ object BackupRestore {
             }
 
             // Restore non-excluded prefs
+            val rootMode = Utilities.isRootMode()
             for ((key, value) in newPrefs) {
                 if (EXCLUDED_PREFS_FROM_BACKUP.contains(key)) continue
+                if (!rootMode && isRootOnlyPref(key)) continue
 
                 put(key, value)
             }
@@ -292,6 +294,10 @@ object BackupRestore {
             if (!staging) preferenceEditor.commit()
         }
     }
+
+    // system_* keys = per-shade manual overrides (root-only feature).
+    private fun isRootOnlyPref(key: String): Boolean =
+        key in Constant.ROOT_ONLY_PREFS || key.startsWith("system_")
 
     private fun putObject(key: String, value: Any) {
         when (value) {

@@ -1,16 +1,22 @@
 package com.drdisagree.colorblendr.utils.community
 
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_DARK
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_LIGHT
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_DARK
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_LIGHT
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_DARK
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_LIGHT
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
-import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.tertiaryColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
 import com.drdisagree.colorblendr.data.common.Utilities.getOverriddenColorFor
+import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
+import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.tertiaryColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.enums.MONET
@@ -35,18 +41,9 @@ object CommunityThemeCodec {
 
     private val ID_REGEX = Regex("^[a-z0-9][a-z0-9-]{0,63}$")
     private val HEX_COLOR_REGEX = Regex("^#[0-9a-fA-F]{6}$")
-    private val CONTROL_CHARS = Regex("[\\p{Cntrl}]")
+    private val CONTROL_CHARS = Regex("\\p{Cntrl}")
     private val CONTROL_CHARS_EXCEPT_NEWLINE = Regex("[\\p{Cntrl}&&[^\n]]")
     private val EXCESS_NEWLINES = Regex("\n{3,}")
-
-    // Raw slider pref keys: dark/default vs light variants (the Constant
-    // getters are mode-dependent — uploads must read both explicitly).
-    internal const val KEY_ACCENT_SATURATION = "monetAccentSaturationValue"
-    internal const val KEY_ACCENT_SATURATION_LIGHT = "monetAccentSaturationValueLight"
-    internal const val KEY_BACKGROUND_SATURATION = "monetBackgroundSaturationValue"
-    internal const val KEY_BACKGROUND_SATURATION_LIGHT = "monetBackgroundSaturationValueLight"
-    internal const val KEY_BACKGROUND_LIGHTNESS = "monetBackgroundLightnessValue"
-    internal const val KEY_BACKGROUND_LIGHTNESS_LIGHT = "monetBackgroundLightnessValueLight"
 
     private val validShadeNames: Set<String> by lazy {
         systemPaletteNames.flatMap { it.asIterable() }.toSet()
@@ -151,15 +148,14 @@ object CommunityThemeCodec {
         put("seedColor", toHex(seedColor))
         if (secondaryColorEnabled()) put("secondaryColor", toHex(getSecondaryColorValue()))
         if (tertiaryColorEnabled()) put("tertiaryColor", toHex(getTertiaryColorValue()))
-        // Raw dark/default keys — the getters return the CURRENT mode's value.
-        put("accentSaturation", Prefs.getInt(KEY_ACCENT_SATURATION, 100))
-        put("backgroundSaturation", Prefs.getInt(KEY_BACKGROUND_SATURATION, 100))
-        put("backgroundLightness", Prefs.getInt(KEY_BACKGROUND_LIGHTNESS, 100))
+        put("accentSaturation", Prefs.getInt(MONET_ACCENT_SATURATION_DARK, 100))
+        put("backgroundSaturation", Prefs.getInt(MONET_BACKGROUND_SATURATION_DARK, 100))
+        put("backgroundLightness", Prefs.getInt(MONET_BACKGROUND_LIGHTNESS_DARK, 100))
         if (modeSpecificThemesEnabled()) {
             put("modeSpecificThemes", true)
-            put("accentSaturationLight", Prefs.getInt(KEY_ACCENT_SATURATION_LIGHT, 100))
-            put("backgroundSaturationLight", Prefs.getInt(KEY_BACKGROUND_SATURATION_LIGHT, 100))
-            put("backgroundLightnessLight", Prefs.getInt(KEY_BACKGROUND_LIGHTNESS_LIGHT, 100))
+            put("accentSaturationLight", Prefs.getInt(MONET_ACCENT_SATURATION_LIGHT, 100))
+            put("backgroundSaturationLight", Prefs.getInt(MONET_BACKGROUND_SATURATION_LIGHT, 100))
+            put("backgroundLightnessLight", Prefs.getInt(MONET_BACKGROUND_LIGHTNESS_LIGHT, 100))
         }
         put("accurateShades", accurateShadesEnabled())
         put("colorSpecVersion", getColorSpecVersion())

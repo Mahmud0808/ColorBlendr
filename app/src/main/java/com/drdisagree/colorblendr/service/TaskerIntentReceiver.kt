@@ -6,6 +6,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import androidx.core.graphics.toColorInt
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_LIGHT
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_LIGHT
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_LIGHT
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
@@ -29,7 +32,6 @@ import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
-import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -92,9 +94,9 @@ class TaskerIntentReceiver : BroadcastReceiver() {
         ).any { config.has(it) }
         if (hasSliders && modeSpecificThemesEnabled()) {
             setModeSpecificThemesEnabled(false)
-            Prefs.clearPref(CommunityThemeCodec.KEY_ACCENT_SATURATION_LIGHT)
-            Prefs.clearPref(CommunityThemeCodec.KEY_BACKGROUND_SATURATION_LIGHT)
-            Prefs.clearPref(CommunityThemeCodec.KEY_BACKGROUND_LIGHTNESS_LIGHT)
+            Prefs.clearPref(MONET_ACCENT_SATURATION_LIGHT)
+            Prefs.clearPref(MONET_BACKGROUND_SATURATION_LIGHT)
+            Prefs.clearPref(MONET_BACKGROUND_LIGHTNESS_LIGHT)
             changed = true
         }
 

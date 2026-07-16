@@ -1,6 +1,12 @@
 package com.drdisagree.colorblendr.utils.community
 
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_DARK
+import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_LIGHT
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_DARK
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_LIGHT
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_DARK
+import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_LIGHT
 import com.drdisagree.colorblendr.data.common.Utilities.setAccurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
@@ -41,26 +47,26 @@ object CommunityThemeApplier {
         setSecondaryColorValue(theme.secondaryColor ?: AndroidColor.WHITE)
         setTertiaryColorValue(theme.tertiaryColor ?: AndroidColor.WHITE)
         // Raw keys: setters write the CURRENT mode's key, payload is explicit.
-        Prefs.putInt(CommunityThemeCodec.KEY_ACCENT_SATURATION, theme.accentSaturation)
-        Prefs.putInt(CommunityThemeCodec.KEY_BACKGROUND_SATURATION, theme.backgroundSaturation)
-        Prefs.putInt(CommunityThemeCodec.KEY_BACKGROUND_LIGHTNESS, theme.backgroundLightness)
+        Prefs.putInt(MONET_ACCENT_SATURATION_DARK, theme.accentSaturation)
+        Prefs.putInt(MONET_BACKGROUND_SATURATION_DARK, theme.backgroundSaturation)
+        Prefs.putInt(MONET_BACKGROUND_LIGHTNESS_DARK, theme.backgroundLightness)
         setModeSpecificThemesEnabled(theme.modeSpecificThemes)
         if (theme.modeSpecificThemes) {
             Prefs.putInt(
-                CommunityThemeCodec.KEY_ACCENT_SATURATION_LIGHT, theme.accentSaturationLight
+                MONET_ACCENT_SATURATION_LIGHT, theme.accentSaturationLight
             )
             Prefs.putInt(
-                CommunityThemeCodec.KEY_BACKGROUND_SATURATION_LIGHT,
+                MONET_BACKGROUND_SATURATION_LIGHT,
                 theme.backgroundSaturationLight
             )
             Prefs.putInt(
-                CommunityThemeCodec.KEY_BACKGROUND_LIGHTNESS_LIGHT,
+                MONET_BACKGROUND_LIGHTNESS_LIGHT,
                 theme.backgroundLightnessLight
             )
         } else {
-            Prefs.clearPref(CommunityThemeCodec.KEY_ACCENT_SATURATION_LIGHT)
-            Prefs.clearPref(CommunityThemeCodec.KEY_BACKGROUND_SATURATION_LIGHT)
-            Prefs.clearPref(CommunityThemeCodec.KEY_BACKGROUND_LIGHTNESS_LIGHT)
+            Prefs.clearPref(MONET_ACCENT_SATURATION_LIGHT)
+            Prefs.clearPref(MONET_BACKGROUND_SATURATION_LIGHT)
+            Prefs.clearPref(MONET_BACKGROUND_LIGHTNESS_LIGHT)
         }
         setAccurateShadesEnabled(theme.accurateShades)
         setColorSpecVersion(theme.colorSpecVersion)
