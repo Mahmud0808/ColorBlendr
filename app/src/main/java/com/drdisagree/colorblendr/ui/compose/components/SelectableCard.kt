@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,14 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
@@ -57,11 +54,7 @@ fun SelectableCard(
         WidgetPosition.Bottom -> radiusSmall to radius
     }
 
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    val isSmallHeightDevice =
-        isLandscape && configuration.screenWidthDp >= configuration.screenHeightDp * 1.8
-    val minHeight = if (isSmallHeightDevice) Dp.Unspecified else 100.dp
+    val minHeight = 100.dp
 
     val contentColor = if (selected) {
         MaterialTheme.colorScheme.onPrimaryContainer
@@ -124,14 +117,12 @@ fun SelectableCard(
                     fontWeight = FontWeight.Bold,
                     color = contentColor
                 )
-                if (!isSmallHeightDevice) {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = contentColor.copy(alpha = 0.8f),
-                        modifier = Modifier.padding(top = 6.dp)
-                    )
-                }
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = contentColor.copy(alpha = 0.8f),
+                    modifier = Modifier.padding(top = 6.dp)
+                )
             }
         }
     }
