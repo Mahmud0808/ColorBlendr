@@ -56,6 +56,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentCustomStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setOriginalStyleName
+import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.config.Prefs.toPrefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.models.StyleModel
@@ -320,7 +321,22 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
             confirmText = stringResource(R.string.update),
             onConfirm = {
                 pendingUpdateStyleId = null
-                scope.launch { stylesViewModel.updateCustomStyle(styleId) }
+                scope.launch {
+                    val updated = stylesViewModel.updateCustomStyle(styleId) ?: return@launch
+                    if (!PreviewController.isPreviewActive) return@launch
+
+                    when (styleId) {
+                        selectedCustomStyle -> PreviewController.applyChanges()
+
+                        Prefs.getCommittedString(CUSTOM_MONET_STYLE) -> {
+                            PreviewController.reapply {
+                                BackupRestore.restorePrefsMap(updated.prefsGson.toPrefs())
+                                setCurrentCustomStyle(styleId)
+                                clearOriginalStyleName()
+                            }
+                        }
+                    }
+                }
             },
             onDismiss = { pendingUpdateStyleId = null }
         )

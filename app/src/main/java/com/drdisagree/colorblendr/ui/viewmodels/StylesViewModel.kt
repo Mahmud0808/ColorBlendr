@@ -120,8 +120,8 @@ class StylesViewModel(
         refreshData()
     }
 
-    suspend fun updateCustomStyle(styleId: String) {
-        val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return
+    suspend fun updateCustomStyle(styleId: String): CustomStyleModel? {
+        val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return null
 
         val allPrefs = Prefs.getAllPrefs()
         for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
@@ -144,6 +144,7 @@ class StylesViewModel(
 
         customStyleRepository.updateCustomStyle(updatedStyle)
         refreshData()
+        return updatedStyle
     }
 
     suspend fun deleteCustomStyle(styleId: String) {

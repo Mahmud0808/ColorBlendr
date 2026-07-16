@@ -154,6 +154,9 @@ object Prefs {
         return if (staged === REMOVED) defValue else (staged as Number).toFloat()
     }
 
+    fun getCommittedString(key: String, defValue: String? = null): String? =
+        prefs.getString(key, defValue)
+
     fun getString(key: String): String? = getString(key, null)
 
     fun getString(key: String, defValue: String?): String? {

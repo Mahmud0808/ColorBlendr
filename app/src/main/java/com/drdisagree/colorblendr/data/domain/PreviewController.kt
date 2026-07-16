@@ -128,6 +128,25 @@ object PreviewController {
         }
     }
 
+    // Drops any active preview, then runs an out-of-band apply (e.g. restoring
+    // a just-updated style) with the same "applying" dialog + overlay push
+    // applyChanges shows.
+    fun reapply(prepare: suspend () -> Unit) {
+        controllerScope.launch {
+            _isApplying.value = true
+            try {
+                abandonPreview()
+                prepare()
+                updateColorAppliedTimestamp()
+                applyFabricatedColors()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error reapplying colors", e)
+            } finally {
+                _isApplying.value = false
+            }
+        }
+    }
+
     // Synchronous discard for flows that take over from an active preview
     // (master switch, backup restore).
     fun abandonPreview() {
