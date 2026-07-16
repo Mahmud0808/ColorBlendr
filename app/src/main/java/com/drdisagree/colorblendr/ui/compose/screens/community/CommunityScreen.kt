@@ -15,8 +15,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -219,7 +219,7 @@ private fun CommunityScreenContent(
                         enabled = rootMode
                     ) {
                         Icon(
-                            painter = rememberVectorPainter(Icons.Rounded.Upload),
+                            painter = rememberVectorPainter(Icons.Rounded.IosShare),
                             contentDescription = stringResource(R.string.share_theme),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
