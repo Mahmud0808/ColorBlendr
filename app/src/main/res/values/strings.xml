@@ -209,6 +209,8 @@
     <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">Search here…</string>
     <string name="search_by_color">Search by color</string>
+    <string name="tasker_integration_title">Tasker integration</string>
+    <string name="tasker_integration_desc">Let automation apps change and apply theme settings via broadcast</string>
     <string name="note_title">Note:</string>
     <string name="long_press_to_reset">Long press to reset</string>
     <string name="onboarding_image">Onboarding image</string>

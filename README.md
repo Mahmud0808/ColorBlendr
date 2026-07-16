@@ -133,6 +133,35 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
 - Applying a community creation modifies system colors, which requires root. You can still browse, search, and upvote in Shizuku and Wireless ADB modes.
 </details>
 
+<details>
+  <summary>Can I automate theme changes with Tasker?</summary>
+
+- Yes. Enable **Tasker integration** in the app's advanced settings, then send a broadcast from Tasker (or MacroDroid / Automate) with:
+  - **Action:** `com.drdisagree.colorblendr.action.APPLY_CONFIG`
+  - **Package:** `com.drdisagree.colorblendr` (required — broadcasts without it are dropped by Android)
+  - **Target:** Broadcast Receiver
+
+- Supported extras — include any combination; only the ones you send are changed:
+
+  | Extra | Type | Values | What it does |
+  |-------|------|--------|--------------|
+  | `seedColor` | String | `#RRGGBB`, e.g. `#3F51B5` | Sets a custom seed color and generates the palette from it |
+  | `randomColor` | Boolean | `true` | Picks a random vivid seed color |
+  | `wallpaperColors` | Boolean | `true` | Switches back to wallpaper-based colors |
+  | `monetStyle` | String | `TONAL_SPOT`, `VIBRANT`, `EXPRESSIVE`, `RAINBOW`, `FRUIT_SALAD`, `SPRITZ`, `MONOCHROMATIC`, `FIDELITY`, `CONTENT`, `CMF` | Sets the Monet style preset |
+  | `accentSaturation` | Integer | `0`–`200` (100 = default) | Accent saturation slider |
+  | `backgroundSaturation` | Integer | `0`–`200` (100 = default) | Background saturation slider |
+  | `backgroundLightness` | Integer | `0`–`200` (100 = default) | Background lightness slider |
+  | `pitchBlack` | Boolean | `true` / `false` | Toggles the pitch black dark theme |
+  | `accurateShades` | Boolean | `true` / `false` | Toggles accurate shades |
+  | `config` | String | JSON with any of the keys above, e.g. `{"seedColor":"#3F51B5","pitchBlack":true}` | Sends everything in one extra — useful since Tasker's UI has limited extra fields |
+
+- Values outside their allowed range or malformed colors are ignored. Extras sent both individually and inside `config` — the individual one wins.
+- Sending any of the three slider extras turns off **Mode specific themes**, since the automated value replaces the separate light/dark slider setup.
+- If **Update colors when screen off** is enabled, automated changes are held back and applied once the screen actually turns off.
+- Example: a Tasker time profile repeating every hour + Send Intent with extra `randomColor:true` gives you a fresh random theme every hour.
+</details>
+
 ## Translation 🌐
 
 - Assist in translating ColorBlendr into your preferred language through [our Crowdin platform](https://crowdin.com/project/ColorBlendr). Your contribution will help make ColorBlendr accessible to a wider audience.

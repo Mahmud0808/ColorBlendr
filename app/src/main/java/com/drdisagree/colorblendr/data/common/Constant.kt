@@ -52,6 +52,7 @@ object Constant {
     const val CUSTOM_MONET_STYLE = "userGeneratedMonetStyle"
     const val MODE_SPECIFIC_THEMES = "modeSpecificThemes"
     const val SCREEN_OFF_UPDATE_COLORS = "screenOffUpdateColors"
+    const val TASKER_INTEGRATION = "taskerIntegration"
     const val COLOR_SPEC_VERSION = "colorSpecVersion"
     const val DARKER_LAUNCHER_ICONS = "darkerLauncherIcons"
     const val SEMI_TRANSPARENT_LAUNCHER_ICONS = "semiTransparentLauncherIcons"

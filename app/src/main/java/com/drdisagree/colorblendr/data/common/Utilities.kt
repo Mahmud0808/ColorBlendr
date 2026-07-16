@@ -26,6 +26,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
+import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
@@ -148,6 +149,14 @@ object Utilities {
 
     fun setModeSpecificThemesEnabled(enabled: Boolean) {
         putBoolean(MODE_SPECIFIC_THEMES, enabled)
+    }
+
+    fun taskerIntegrationEnabled(): Boolean {
+        return getBoolean(TASKER_INTEGRATION, false)
+    }
+
+    fun setTaskerIntegrationEnabled(enabled: Boolean) {
+        putBoolean(TASKER_INTEGRATION, enabled)
     }
 
     fun screenOffColorUpdateEnabled(): Boolean {

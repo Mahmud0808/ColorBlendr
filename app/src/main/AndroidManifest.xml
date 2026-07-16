@@ -121,6 +121,16 @@
             android:foregroundServiceType="specialUse" />
 
         <receiver
+            android:name=".service.TaskerIntentReceiver"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.drdisagree.colorblendr.action.APPLY_CONFIG" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".service.RestartBroadcastReceiver"
             android:enabled="true"
             android:exported="true"

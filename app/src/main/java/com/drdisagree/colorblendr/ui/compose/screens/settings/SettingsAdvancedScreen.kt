@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.AutoMode
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FormatPaint
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
@@ -68,7 +71,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.setScreenOffColorUpdateE
 import com.drdisagree.colorblendr.data.common.Utilities.setSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setTaskerIntegrationEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.taskerIntegrationEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
@@ -101,6 +106,7 @@ fun SettingsAdvancedScreen(
     onNavigateToPerAppTheme: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
     val scrollState = rememberScrollState()
@@ -114,6 +120,7 @@ fun SettingsAdvancedScreen(
     var secondaryColor by rememberPrefState(MONET_SECONDARY_COLOR) { getSecondaryColorValue() }
     var tertiaryColor by rememberPrefState(MONET_TERTIARY_COLOR) { getTertiaryColorValue() }
     var screenOffUpdate by rememberPrefState(SCREEN_OFF_UPDATE_COLORS) { screenOffColorUpdateEnabled() }
+    var taskerIntegration by rememberPrefState(TASKER_INTEGRATION) { taskerIntegrationEnabled() }
     var modeSpecificThemes by rememberPrefState(MODE_SPECIFIC_THEMES) { modeSpecificThemesEnabled() }
     var darkerIcons by rememberPrefState(DARKER_LAUNCHER_ICONS) { darkerLauncherIconsEnabled() }
     var semiTransparentIcons by rememberPrefState(SEMI_TRANSPARENT_LAUNCHER_ICONS) { semiTransparentLauncherIconsEnabled() }
@@ -184,7 +191,7 @@ fun SettingsAdvancedScreen(
         val currentVersion = getColorSpecVersion()
         SingleChoiceDialog(
             title = stringResource(R.string.colorspec_title),
-            options = context.resources.getStringArray(R.array.colorspec_versions).toList(),
+            options = resources.getStringArray(R.array.colorspec_versions).toList(),
             selectedIndex = currentVersion,
             onSelect = { which ->
                 if (currentVersion != which) {
@@ -285,12 +292,23 @@ fun SettingsAdvancedScreen(
                     checked = modeSpecificThemes,
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
-                    position = WidgetPosition.Bottom,
+                    position = WidgetPosition.Middle,
                     onCheckedChange = { isChecked ->
                         modeSpecificThemes = isChecked
                         resetCustomStyleIfNotNull()
                         setModeSpecificThemesEnabled(isChecked)
                         applyColorsNow()
+                    }
+                )
+                SwitchItem(
+                    title = stringResource(R.string.tasker_integration_title),
+                    summary = stringResource(R.string.tasker_integration_desc),
+                    icon = rememberVectorPainter(Icons.Rounded.AutoMode),
+                    checked = taskerIntegration,
+                    position = WidgetPosition.Bottom,
+                    onCheckedChange = { isChecked ->
+                        taskerIntegration = isChecked
+                        setTaskerIntegrationEnabled(isChecked)
                     }
                 )
 
