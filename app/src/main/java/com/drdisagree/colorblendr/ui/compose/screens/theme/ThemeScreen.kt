@@ -1,13 +1,16 @@
 package com.drdisagree.colorblendr.ui.compose.screens.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,8 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +58,6 @@ import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
-import com.drdisagree.colorblendr.ui.compose.views.ColorPreviewCanvas
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -140,42 +142,30 @@ fun ThemeScreen() {
                             bottom = dimensionResource(R.dimen.container_margin_bottom)
                         )
                 ) {
-                    Column(modifier = Modifier.padding(24.dp)) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            LabeledColorPreview(
-                                label = stringResource(R.string.primary),
-                                palette = colorPalette.getOrNull(0),
-                                isDark = isDark
-                            )
-                            LabeledColorPreview(
-                                label = stringResource(R.string.secondary),
-                                palette = colorPalette.getOrNull(1),
-                                isDark = isDark
-                            )
-                            LabeledColorPreview(
-                                label = stringResource(R.string.tertiary),
-                                palette = colorPalette.getOrNull(2),
-                                isDark = isDark
-                            )
-                        }
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            LabeledColorPreview(
-                                label = stringResource(R.string.neutral_1),
-                                palette = colorPalette.getOrNull(3),
-                                isDark = isDark
-                            )
-                            LabeledColorPreview(
-                                label = stringResource(R.string.neutral_2),
-                                palette = colorPalette.getOrNull(4),
-                                isDark = isDark
-                            )
-                        }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        TonalRampRow(
+                            label = stringResource(R.string.primary),
+                            shades = colorPalette.getOrNull(0)
+                        )
+                        TonalRampRow(
+                            label = stringResource(R.string.secondary),
+                            shades = colorPalette.getOrNull(1)
+                        )
+                        TonalRampRow(
+                            label = stringResource(R.string.tertiary),
+                            shades = colorPalette.getOrNull(2)
+                        )
+                        TonalRampRow(
+                            label = stringResource(R.string.neutral_1),
+                            shades = colorPalette.getOrNull(3)
+                        )
+                        TonalRampRow(
+                            label = stringResource(R.string.neutral_2),
+                            shades = colorPalette.getOrNull(4)
+                        )
                     }
                 }
 
@@ -284,36 +274,40 @@ private fun ThemeSlider(
 }
 
 @Composable
-private fun LabeledColorPreview(
+private fun TonalRampRow(
     label: String,
-    palette: List<Int>?,
-    isDark: Boolean
+    shades: List<Int>?
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(12.dp)
-    ) {
-        if (palette != null) {
-            ColorPreviewCanvas(
-                squareColor = Color(palette[if (!isDark) 3 else 9]),
-                halfCircleColor = Color(palette[4]),
-                firstQuarterCircleColor = Color(palette[5]),
-                secondQuarterCircleColor = Color(palette[6]),
-                padding = 8.dp,
-                modifier = Modifier.size(48.dp)
-            )
-        } else {
-            ColorPreviewCanvas(
-                padding = 8.dp,
-                modifier = Modifier.size(48.dp)
-            )
-        }
+    Column {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-            modifier = Modifier.padding(top = 6.dp)
+            modifier = Modifier.padding(bottom = 6.dp)
         )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(28.dp)
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            if (shades != null) {
+                shades.forEach { shade ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(Color(shade))
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                )
+            }
+        }
     }
 }
 
