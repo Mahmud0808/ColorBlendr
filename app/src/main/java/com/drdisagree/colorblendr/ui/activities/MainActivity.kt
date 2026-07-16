@@ -229,7 +229,10 @@ class MainActivity : AppCompatActivity() {
             val viewGroup: ViewGroup = window.decorView.findViewById(android.R.id.content)
             ViewCompat.setOnApplyWindowInsetsListener(viewGroup) { v: View, windowInsets: WindowInsetsCompat ->
                 val insets: Insets =
-                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.systemBars() or
+                                WindowInsetsCompat.Type.displayCutout()
+                    )
                 val params: MarginLayoutParams = v.layoutParams as MarginLayoutParams
                 v.setPadding(
                     params.leftMargin + insets.left,
