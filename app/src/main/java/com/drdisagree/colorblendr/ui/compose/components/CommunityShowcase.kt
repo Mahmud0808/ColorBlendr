@@ -28,11 +28,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -172,17 +172,22 @@ private fun ShowcaseContent(
 }
 
 // One container for loading and loaded states, so spacing is identical:
-// null themes -> three pulsing placeholders sized by an invisible real card.
+// null themes -> pulsing placeholders sized by an invisible real card
 @Composable
 private fun DriftingCarousel(
     themes: List<CommunityTheme>?,
     onThemeClick: (CommunityTheme) -> Unit
 ) {
+    val windowWidthDp = with(LocalDensity.current) {
+        LocalWindowInfo.current.containerSize.width.toDp()
+    }
+    val shimmerCount = (windowWidthDp.value / (CARD_WIDTH_DP + CARD_GAP_DP)).toInt() + 1
+
     // Looped item space so the row never ends; start in the middle aligned to
     // a list-size multiple.
     val infinite = (themes?.size ?: 0) > 1
     val itemCount = when {
-        themes == null -> 3
+        themes == null -> shimmerCount
         infinite -> Int.MAX_VALUE
         else -> themes.size
     }
