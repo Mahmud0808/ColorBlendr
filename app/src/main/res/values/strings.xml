@@ -214,6 +214,8 @@
     <string name="saved_styles_divider">Your styles</string>
     <string name="tasker_integration_title">Tasker integration</string>
     <string name="tasker_integration_desc">Let automation apps change and apply theme settings via broadcast</string>
+    <string name="tasker_setup_guide_title">Setup guide</string>
+    <string name="no_browser_found">No browser found to open the link</string>
     <string name="note_title">Note:</string>
     <string name="long_press_to_reset">Long press to reset</string>
     <string name="onboarding_image">Onboarding image</string>

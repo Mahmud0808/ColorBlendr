@@ -1,6 +1,8 @@
 package com.drdisagree.colorblendr.ui.compose.screens.settings
 
+import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
@@ -99,6 +102,8 @@ import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val TARGET_SECONDARY = "secondary"
+private const val TASKER_GUIDE_URL =
+    "https://github.com/Mahmud0808/ColorBlendr#tasker-integration"
 private const val TARGET_TERTIARY = "tertiary"
 
 @Composable
@@ -306,6 +311,20 @@ fun SettingsAdvancedScreen(
                     icon = rememberVectorPainter(Icons.Rounded.AutoMode),
                     checked = taskerIntegration,
                     position = WidgetPosition.Bottom,
+                    summaryLinkText = stringResource(R.string.tasker_setup_guide_title),
+                    onSummaryLinkClick = {
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, TASKER_GUIDE_URL.toUri())
+                            )
+                        }.onFailure {
+                            Toast.makeText(
+                                context,
+                                R.string.no_browser_found,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
                     onCheckedChange = { isChecked ->
                         taskerIntegration = isChecked
                         setTaskerIntegrationEnabled(isChecked)

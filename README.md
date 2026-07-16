@@ -133,6 +133,7 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
 - Applying a community creation modifies system colors, which requires root. You can still browse, search, and upvote in Shizuku and Wireless ADB modes.
 </details>
 
+<a id="tasker-integration"></a>
 <details>
   <summary>Can I automate theme changes with Tasker?</summary>
 

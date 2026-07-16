@@ -1,11 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FormatColorFill
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.FormatColorFill
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -27,9 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
@@ -51,7 +57,9 @@ fun SwitchItem(
     enabled: Boolean = true,
     disabledReason: String? = null,
     isMasterSwitch: Boolean = false,
-    position: WidgetPosition = WidgetPosition.Single
+    position: WidgetPosition = WidgetPosition.Single,
+    summaryLinkText: String? = null,
+    onSummaryLinkClick: (() -> Unit)? = null
 ) {
     val haptics = LocalHapticFeedback.current
 
@@ -87,7 +95,9 @@ fun SwitchItem(
             enabled = enabled,
             disabledReason = disabledReason,
             iconTint = if (isMasterSwitch) masterContent else themeAttrColor(MaterialR.attr.colorPrimaryVariant),
-            textColor = if (isMasterSwitch) masterContent else MaterialTheme.colorScheme.onSurface
+            textColor = if (isMasterSwitch) masterContent else MaterialTheme.colorScheme.onSurface,
+            summaryLinkText = summaryLinkText,
+            onSummaryLinkClick = onSummaryLinkClick
         )
     }
 
@@ -123,7 +133,9 @@ private fun SwitchItemContent(
     enabled: Boolean,
     disabledReason: String?,
     iconTint: Color,
-    textColor: Color
+    textColor: Color,
+    summaryLinkText: String? = null,
+    onSummaryLinkClick: (() -> Unit)? = null
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -155,12 +167,41 @@ private fun SwitchItemContent(
                 textColor = textColor.copy(alpha = if (enabled) 1f else 0.6f)
             )
             if (summary != null) {
-                Text(
-                    text = summary,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textColor.copy(alpha = if (enabled) 0.8f else 0.4f),
-                    modifier = Modifier.padding(top = 2.dp)
-                )
+                val summaryColor = textColor.copy(alpha = if (enabled) 0.8f else 0.4f)
+                if (summaryLinkText != null && onSummaryLinkClick != null) {
+                    val linkColor = MaterialTheme.colorScheme.primary
+                    val annotated = remember(summary, summaryLinkText, linkColor) {
+                        buildAnnotatedString {
+                            append(summary)
+                            append("  ")
+                            withLink(
+                                LinkAnnotation.Clickable("guide") { onSummaryLinkClick() }
+                            ) {
+                                withStyle(
+                                    SpanStyle(
+                                        color = linkColor,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                ) {
+                                    append(summaryLinkText)
+                                }
+                            }
+                        }
+                    }
+                    Text(
+                        text = annotated,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = summaryColor,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                } else {
+                    Text(
+                        text = summary,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = summaryColor,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
             }
         }
 
