@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.screens.styles
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.scaleIn
@@ -68,6 +69,7 @@ import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.WavySectionDivider
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
@@ -301,7 +303,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 exit = scaleOut(),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = fabBottomPadding)
+                    .padding(end = 16.dp, bottom = fabBottomPadding + navBottomInset())
             ) {
                 FloatingActionButton(
                     onClick = { dialogState = StyleDialogState() },
@@ -408,7 +410,7 @@ private fun StyleListItem(
     onEdit: () -> Unit,
     onUpdate: () -> Unit,
     onDelete: () -> Unit,
-    dragHandleModifier: Modifier? = null
+    @SuppressLint("ModifierParameter") dragHandleModifier: Modifier? = null
 ) {
     if (style.customStyle == null) {
         StylePreviewCard(

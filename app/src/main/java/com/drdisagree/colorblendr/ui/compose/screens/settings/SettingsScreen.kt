@@ -85,6 +85,7 @@ import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -472,7 +473,9 @@ fun SettingsScreen(
 
             AppSnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = navBottomInset())
             )
         }
     }

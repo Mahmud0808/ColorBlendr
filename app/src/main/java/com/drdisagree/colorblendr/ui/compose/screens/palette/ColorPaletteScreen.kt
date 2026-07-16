@@ -57,6 +57,7 @@ import com.drdisagree.colorblendr.ui.compose.components.ColorTable
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -280,7 +281,9 @@ fun ColorPaletteScreen(
 
             AppSnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = navBottomInset())
             )
         }
     }

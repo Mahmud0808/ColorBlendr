@@ -79,6 +79,7 @@ import com.drdisagree.colorblendr.ui.compose.components.LoadingOverlay
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.PreviewActionButtons
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.navigation.Routes
 import com.drdisagree.colorblendr.ui.compose.navigation.navigateSingleTop
@@ -378,7 +379,7 @@ fun HomeScreen(
                                     .windowInsetsPadding(
                                         WindowInsets.systemBars
                                             .union(WindowInsets.displayCutout)
-                                            .only(WindowInsetsSides.End + WindowInsetsSides.Bottom)
+                                            .only(WindowInsetsSides.End)
                                     )
                             } else {
                                 Modifier
@@ -392,9 +393,11 @@ fun HomeScreen(
                         label = "previewBottomInset"
                     )
 
+                    val navBottomInset = navBottomInset()
+
                     CompositionLocalProvider(
                         // Spatial spring can overshoot below zero; padding forbids it.
-                        LocalPreviewBottomInset provides previewBottomInset.coerceAtLeast(0.dp)
+                        LocalPreviewBottomInset provides previewBottomInset.coerceAtLeast(0.dp) + navBottomInset
                     ) {
                         NavHost(
                             navController = nestedNavController,
@@ -508,14 +511,16 @@ fun HomeScreen(
                         onDiscard = { scope.launch { PreviewController.discardChanges() } },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(end = 16.dp, bottom = fabBottomPadding)
+                            .padding(end = 16.dp, bottom = fabBottomPadding + navBottomInset)
                     )
 
                     // Inside the content area so snackbars sit above the nav bar,
                     // same spot as screen-local hosts.
                     AppSnackbarHost(
                         hostState = snackbarHostState,
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = navBottomInset)
                     )
                 }
 
