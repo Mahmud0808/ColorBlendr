@@ -121,8 +121,9 @@ a.btn:active { transform: scale(.97); border-radius: 18px; }
 @keyframes ph-float { to { transform: translateY(-12px); } }
 .phone {
   user-select: none; -webkit-user-select: none;
-  width: 262px; aspect-ratio: 9 / 19; border-radius: 42px;
-  border: 1px solid var(--outline-v);
+  width: 262px; aspect-ratio: 9 / 19; border-radius: 36px;
+  border: 8px solid var(--tonal);
+  outline: 1px solid var(--outline-v); outline-offset: -1px;
   background: var(--card);
   box-shadow: 0 34px 90px rgba(0,0,0,.5), 0 0 130px var(--accent-glow);
   padding: 12px 14px 14px;
@@ -193,7 +194,7 @@ header.hero, .shots, .faq { position: relative; }
 .deco svg { width: 100%; height: 100%; display: block; fill: currentColor; animation: deco-spin 70s linear infinite; }
 .deco-b svg, .deco-d svg { animation-direction: reverse; animation-duration: 55s; }
 @keyframes deco-spin { to { transform: rotate(360deg); } }
-.deco-a { width: 150px; height: 150px; left: -84px; top: -8px; }
+.deco-a { width: 150px; height: 150px; left: -128px; top: -48px; }
 .deco-b { width: 96px; height: 96px; right: -36px; bottom: 6px; color: var(--grad-c); }
 .deco-c { width: 120px; height: 120px; right: -92px; top: -54px; }
 .deco-d { width: 130px; height: 130px; left: -140px; bottom: 90px; color: var(--grad-c); }
@@ -400,6 +401,9 @@ a.tcard:hover .tswatch { transform: scale(1.06) rotate(-3deg); }
   background: var(--card-high); border-radius: 6px; padding: 1px 6px;
   transition: background-color var(--recolor, 1.6s) ease;
 }
+/* Closed details skips rendering -> recolor transitions inside would fire
+   late, on reveal; JS adds .no-recolor for the reveal frames. */
+.faq details.no-recolor .answer, .faq details.no-recolor .answer * { transition: none !important; }
 
 footer {
   display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;

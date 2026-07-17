@@ -562,6 +562,14 @@ function initFaq() {
     document.querySelectorAll(".faq details").forEach((details) => {
         const summary = details.querySelector("summary");
         const answer = details.querySelector(".answer");
+        // Reveal after a mode/seed change while closed: content was
+        // render-skipped, so pending recolors would transition late. Snap them.
+        details.addEventListener("toggle", () => {
+            if (!details.open) return;
+            details.classList.add("no-recolor");
+            requestAnimationFrame(() => requestAnimationFrame(() =>
+                details.classList.remove("no-recolor")));
+        });
         if (!summary || !answer || reduced) return;
         let animation = null;
         summary.addEventListener("click", (e) => {
@@ -583,6 +591,7 @@ function initFaq() {
                     animation = null;
                 };
             } else {
+                details.classList.add("no-recolor");
                 details.open = true;
                 animation = answer.animate(
                     [
