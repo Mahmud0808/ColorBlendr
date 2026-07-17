@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
@@ -28,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -119,6 +121,12 @@ private fun CommunityScreenContent(
 ) {
     val context = LocalContext.current
     val hazeState = remember { HazeState() }
+    val gridState = rememberLazyGridState()
+    val toolbarLifted by remember {
+        derivedStateOf {
+            gridState.firstVisibleItemIndex > 0 || gridState.firstVisibleItemScrollOffset > 0
+        }
+    }
     var query by remember { mutableStateOf("") }
 
     val sorted = remember(themes, sort, query) {
@@ -204,6 +212,7 @@ private fun CommunityScreenContent(
             AppToolbar(
                 title = stringResource(R.string.community_themes),
                 showBackButton = true,
+                lifted = toolbarLifted,
                 actions = {
                     if (developerMode) {
                         IconButton(onClick = { showTestDialog = true }) {
@@ -257,6 +266,7 @@ private fun CommunityScreenContent(
                     }
 
                     else -> LazyVerticalGrid(
+                        state = gridState,
                         columns = GridCells.Adaptive(160.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),

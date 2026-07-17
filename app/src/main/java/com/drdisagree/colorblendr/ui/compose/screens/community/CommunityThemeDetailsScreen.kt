@@ -38,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -167,6 +168,8 @@ private fun DetailsContent(
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val rootMode = if (LocalInspectionMode.current) true else remember { isRootMode() }
+    val scrollState = rememberScrollState()
+    val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
 
     // Scoped theming: only this screen wears the theme; navigating away
     // simply recomposes the rest of the app untouched.
@@ -206,6 +209,7 @@ private fun DetailsContent(
                 AppToolbar(
                     title = theme.name,
                     showBackButton = true,
+                    lifted = toolbarLifted,
                     actions = {
                         if (shareable) {
                             IconButton(onClick = { showReportDialog = true }) {
@@ -247,7 +251,7 @@ private fun DetailsContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(scrollState)
                         .padding(bottom = LocalPreviewBottomInset.current)
                         .padding(horizontal = 16.dp)
                 ) {
