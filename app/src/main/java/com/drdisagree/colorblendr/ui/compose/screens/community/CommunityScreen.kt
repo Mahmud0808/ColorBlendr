@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -225,12 +226,14 @@ private fun CommunityScreenContent(
                     }
                     IconButton(
                         onClick = { showShareDialog = true },
-                        enabled = rootMode
+                        enabled = rootMode,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
                         Icon(
                             painter = rememberVectorPainter(Icons.Rounded.IosShare),
-                            contentDescription = stringResource(R.string.share_theme),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            contentDescription = stringResource(R.string.share_theme)
                         )
                     }
                 }
