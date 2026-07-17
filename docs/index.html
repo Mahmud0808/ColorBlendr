@@ -1,294 +1,988 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b0f11">
-<script>try{const m=localStorage.cbMode||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");if(m==="light")document.documentElement.classList.add("light")}catch(e){}</script>
-<meta name="description" content="ColorBlendr customizes Material You colors on Android 12+. Pick any seed color, tune saturation and lightness, override individual shades - with Root, Shizuku, or Wireless ADB. Free and open source.">
-<link rel="canonical" href="https://mahmud0808.github.io/ColorBlendr/">
-<meta property="og:title" content="ColorBlendr">
-<meta property="og:description" content="Customize Material You colors of your device. Root, Shizuku, or Wireless ADB.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://mahmud0808.github.io/ColorBlendr/">
-<meta property="og:image" content="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png">
-<meta property="og:site_name" content="ColorBlendr">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ColorBlendr">
-<meta name="twitter:description" content="Customize Material You colors of your device. Root, Shizuku, or Wireless ADB.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png">
-<title>ColorBlendr - Customize Material You colors</title>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "ColorBlendr",
-  "operatingSystem": "Android 12+",
-  "applicationCategory": "DesignApplication",
-  "description": "Customize Material You colors of your Android device with Root, Shizuku, or Wireless ADB.",
-  "image": "https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png",
-  "url": "https://mahmud0808.github.io/ColorBlendr/",
-  "downloadUrl": "https://github.com/Mahmud0808/ColorBlendr/releases/latest",
-  "author": { "@type": "Person", "name": "DrDisagree", "url": "https://github.com/Mahmud0808" },
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-}
-</script>
-<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cdefs%3E%3ClinearGradient id="g" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0" stop-color="%238dafcb"/%3E%3Cstop offset="1" stop-color="%2340627b"/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx="50" cy="50" r="50" fill="url(%23g)"/%3E%3Cg transform="translate(50,50) scale(1.5) translate(-50,-50) translate(26.777779,26.777779) scale(0.46444446)"%3E%3Cpath fill="%23fff" fill-opacity="0.4" d="M86.2,66.5Q86.8,61.7 86.1,57.2C104.3,66.1 106.8,81 82,81C59.7,81 29.9,74.8 10,61.2C-4.9,51.2 -4.9,38.8 21.2,39Q18.6,43.1 17.3,46.2Q0.1,46 12.8,54.6C34.8,68.6 62.1,73.6 84.5,74.4Q99.4,74.4 86.2,66.5z"/%3E%3Cpath fill="%23fff" fill-opacity="0.902" d="M82.6,70.2C56.5,68.5 34.3,62.5 18,52.5C20,43.5 33,24 49.8,6.6C72.5,31.5 88.3,50.5 82.6,70.2zM73.4,84.7C56,101 24,94 17.2,70.3C30.8,78.5 48.7,83.6 73.4,84.7z"/%3E%3C/g%3E%3C/svg%3E'>
-<link rel="stylesheet" href="assets/app.css?v=3">
-</head>
-<body>
-<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
-<button id="modeToggle" class="modebtn" aria-label="Toggle light or dark theme">
-  <svg class="ic-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0c-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0c-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41a.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41a.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-  <svg class="ic-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-</button>
-<main>
-<div class="wrap">
-  <header class="hero">
-    <div class="deco deco-a" data-shape="cookie" aria-hidden="true"></div>
-    <div class="deco deco-b" data-shape="sunny" aria-hidden="true"></div>
-    <div class="hero-copy">
-      <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
-        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#8dafcb"/><stop offset="1" stop-color="#40627b"/>
-        </linearGradient></defs>
-        <circle cx="50" cy="50" r="50" fill="url(#lg)"/>
-        <g transform="translate(50,50) scale(1.5) translate(-50,-50) translate(26.777779,26.777779) scale(0.46444446)">
-          <path fill="#fff" fill-opacity="0.4" d="M86.2,66.5Q86.8,61.7 86.1,57.2C104.3,66.1 106.8,81 82,81C59.7,81 29.9,74.8 10,61.2C-4.9,51.2 -4.9,38.8 21.2,39Q18.6,43.1 17.3,46.2Q0.1,46 12.8,54.6C34.8,68.6 62.1,73.6 84.5,74.4Q99.4,74.4 86.2,66.5z"/>
-          <path fill="#fff" fill-opacity="0.902" d="M82.6,70.2C56.5,68.5 34.3,62.5 18,52.5C20,43.5 33,24 49.8,6.6C72.5,31.5 88.3,50.5 82.6,70.2zM73.4,84.7C56,101 24,94 17.2,70.3C30.8,78.5 48.7,83.6 73.4,84.7z"/>
-        </g>
-      </svg>
-      <h1 class="title">ColorBlendr</h1>
-      <p class="tagline">Customize Material You colors of your device. Pick a seed, tune saturation and lightness, override any shade — applied system-wide at runtime, no reboot.</p>
-      <div class="cta">
-      <a class="btn primary" href="https://github.com/Mahmud0808/ColorBlendr/releases/latest">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.59 9H15V4c0-.55-.45-1-1-1h-4c-.55 0-1 .45-1 1v5H7.41c-.89 0-1.34 1.08-.71 1.71l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.63-.63.19-1.71-.7-1.71ZM5 19c0 .55.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1H6c-.55 0-1 .45-1 1Z"/></svg>
-        Download APK
-      </a>
-      <a class="btn tonalbtn" href="https://f-droid.org/en/packages/com.drdisagree.colorblendr/">
-        <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.472,10.081H3.528c-0.877,0-1.589,0.711-1.589,1.589v10.59c0,0.877,0.711,1.589,1.589,1.589h16.944 c0.877,0,1.589-0.711,1.589-1.589V11.67C22.061,10.792,21.349,10.081,20.472,10.081z M12,22.525c-3.066,0-5.56-2.494-5.56-5.56 s2.494-5.56,5.56-5.56c3.066,0,5.56,2.494,5.56,5.56S15.066,22.525,12,22.525z M12,12.411c-2.511,0-4.554,2.043-4.554,4.554 S9.489,21.519,12,21.519s4.554-2.043,4.554-4.554S14.511,12.411,12,12.411z M12,20.274c-1.563,0-2.881-1.103-3.221-2.568h1.67 c0.275,0.581,0.859,0.979,1.551,0.979c0.96,0,1.721-0.761,1.721-1.721c0-0.96-0.761-1.721-1.721-1.721 c-0.649,0-1.2,0.352-1.493,0.874H8.805c0.378-1.412,1.669-2.462,3.195-2.462c1.818,0,3.309,1.491,3.309,3.309 C15.309,18.783,13.818,20.274,12,20.274z M23.849,0.396c-0.001,0.001-0.002,0.002-0.002,0.003 c-0.002-0.002-0.004-0.003-0.006-0.005c0.001-0.001,0.002-0.003,0.004-0.004c-0.116-0.137-0.279-0.231-0.519-0.238 c-0.202,0.005-0.391,0.097-0.512,0.259l-1.818,2.353c-0.164-0.058-0.339-0.095-0.523-0.095H3.528c-0.184,0-0.358,0.038-0.523,0.095 L1.187,0.41c-0.121-0.162-0.31-0.253-0.512-0.259c-0.24,0.006-0.403,0.1-0.519,0.238c0.001,0.001,0.002,0.003,0.004,0.004 C0.157,0.395,0.155,0.397,0.153,0.399C0.153,0.398,0.152,0.397,0.151,0.396C0.085,0.474-0.146,0.822,0.139,1.22l1.909,2.471 C1.981,3.867,1.94,4.057,1.94,4.257v3.707c0,0.877,0.711,1.589,1.589,1.589h16.944c0.877,0,1.589-0.711,1.589-1.589V4.257 c0-0.2-0.041-0.39-0.109-0.566l1.909-2.471C24.146,0.822,23.915,0.474,23.849,0.396z M6.904,8.228c-0.987,0-1.787-0.8-1.787-1.787 s0.8-1.787,1.787-1.787s1.787,0.8,1.787,1.787S7.891,8.228,6.904,8.228z M17.229,8.228c-0.987,0-1.787-0.8-1.787-1.787 s0.8-1.787,1.787-1.787c0.987,0,1.787,0.8,1.787,1.787S18.216,8.228,17.229,8.228z"/></svg>
-        F-Droid
-      </a>
-      <a class="btn tonalbtn" href="https://apt.izzysoft.de/packages/com.drdisagree.colorblendr/">
-        <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M18.4395 5.5586c-.675 1.1664-1.352 2.3318-2.0274 3.498-.0366-.0155-.0742-.0286-.1113-.043-1.8249-.6957-3.484-.8-4.42-.787-1.8551.0185-3.3544.4643-4.2597.8203-.084-.1494-1.7526-3.021-2.0215-3.4864a1.1451 1.1451 0 0 0-.1406-.1914c-.3312-.364-.9054-.4859-1.379-.203-.475.282-.7136.9361-.3886 1.5019 1.9466 3.3696-.0966-.2158 1.9473 3.3593.0172.031-.4946.2642-1.3926 1.0177C2.8987 12.176.452 14.772 0 18.9902h24c-.119-1.1108-.3686-2.099-.7461-3.0683-.7438-1.9118-1.8435-3.2928-2.7402-4.1836a12.1048 12.1048 0 0 0-2.1309-1.6875c.6594-1.122 1.312-2.2559 1.9649-3.3848.2077-.3615.1886-.7956-.0079-1.1191a1.1001 1.1001 0 0 0-.8515-.5332c-.5225-.0536-.9392.3128-1.0488.5449zm-.0391 8.461c.3944.5926.324 1.3306-.1563 1.6503-.4799.3197-1.188.0985-1.582-.4941-.3944-.5927-.324-1.3307.1563-1.6504.4727-.315 1.1812-.1086 1.582.4941zM7.207 13.5273c.4803.3197.5506 1.0577.1563 1.6504-.394.5926-1.1038.8138-1.584.4941-.48-.3197-.5503-1.0577-.1563-1.6504.4008-.6021 1.1087-.8106 1.584-.4941z"/></svg>
-        IzzyOnDroid
-      </a>
-      </div>
-    </div>
-    <div class="hero-phone" aria-hidden="true">
-      <div class="phone-float">
-        <div class="phone">
-          <div class="ph-cam"></div>
-          <div class="ph-status"><span>12:30</span><span class="ph-icons"><i></i><i></i><i></i></span></div>
-          <div class="ph-head">Colors</div>
-          <div class="ph-card">
-            <div class="ph-label">System palette</div>
-            <div class="ph-row"><i style="background:var(--ph-p-95)"></i><i style="background:var(--ph-p-80)"></i><i style="background:var(--ph-p-60)"></i><i style="background:var(--ph-p-40)"></i><i style="background:var(--ph-p-20)"></i><i style="background:var(--ph-p-5)"></i></div>
-            <div class="ph-row"><i style="background:var(--ph-s-95)"></i><i style="background:var(--ph-s-80)"></i><i style="background:var(--ph-s-60)"></i><i style="background:var(--ph-s-40)"></i><i style="background:var(--ph-s-20)"></i><i style="background:var(--ph-s-5)"></i></div>
-            <div class="ph-row"><i style="background:var(--ph-t-95)"></i><i style="background:var(--ph-t-80)"></i><i style="background:var(--ph-t-60)"></i><i style="background:var(--ph-t-40)"></i><i style="background:var(--ph-t-20)"></i><i style="background:var(--ph-t-5)"></i></div>
-            <div class="ph-row"><i style="background:var(--ph-n-95)"></i><i style="background:var(--ph-n-80)"></i><i style="background:var(--ph-n-60)"></i><i style="background:var(--ph-n-40)"></i><i style="background:var(--ph-n-20)"></i><i style="background:var(--ph-n-5)"></i></div>
-          </div>
-          <div class="ph-card">
-            <div class="ph-label">Accent saturation</div>
-            <div class="ph-track"></div>
-          </div>
-          <div class="ph-card ph-switchrow">
-            <span class="ph-label">Pitch black theme</span>
-            <span class="ph-switch"><i></i></span>
-          </div>
-          <div class="ph-fab"></div>
-          <div class="ph-nav"><span class="on"></span><span></span><span></span><span></span></div>
-        </div>
-      </div>
-    </div>
-  </header>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#0b0f11" />
+		<script>
+			try {
+				const m =
+					localStorage.cbMode ||
+					(matchMedia("(prefers-color-scheme: light)").matches
+						? "light"
+						: "dark");
+				if (m === "light")
+					document.documentElement.classList.add("light");
+			} catch (e) {}
+		</script>
+		<meta
+			name="description"
+			content="ColorBlendr customizes Material You colors on Android 12+. Pick any seed color, tune saturation and lightness, override individual shades - with Root, Shizuku, or Wireless ADB. Free and open source."
+		/>
+		<link
+			rel="canonical"
+			href="https://mahmud0808.github.io/ColorBlendr/"
+		/>
+		<meta property="og:title" content="ColorBlendr" />
+		<meta
+			property="og:description"
+			content="Customize Material You colors of your device. Root, Shizuku, or Wireless ADB."
+		/>
+		<meta property="og:type" content="website" />
+		<meta
+			property="og:url"
+			content="https://mahmud0808.github.io/ColorBlendr/"
+		/>
+		<meta
+			property="og:image"
+			content="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png"
+		/>
+		<meta property="og:site_name" content="ColorBlendr" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="ColorBlendr" />
+		<meta
+			name="twitter:description"
+			content="Customize Material You colors of your device. Root, Shizuku, or Wireless ADB."
+		/>
+		<meta
+			name="twitter:image"
+			content="https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png"
+		/>
+		<title>ColorBlendr - Customize Material You colors</title>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "SoftwareApplication",
+				"name": "ColorBlendr",
+				"operatingSystem": "Android 12+",
+				"applicationCategory": "DesignApplication",
+				"description": "Customize Material You colors of your Android device with Root, Shizuku, or Wireless ADB.",
+				"image": "https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/banner.png",
+				"url": "https://mahmud0808.github.io/ColorBlendr/",
+				"downloadUrl": "https://github.com/Mahmud0808/ColorBlendr/releases/latest",
+				"author": {
+					"@type": "Person",
+					"name": "DrDisagree",
+					"url": "https://github.com/Mahmud0808"
+				},
+				"offers": {
+					"@type": "Offer",
+					"price": "0",
+					"priceCurrency": "USD"
+				}
+			}
+		</script>
+		<link
+			rel="icon"
+			type="image/svg+xml"
+			href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cdefs%3E%3ClinearGradient id="g" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0" stop-color="%238dafcb"/%3E%3Cstop offset="1" stop-color="%2340627b"/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx="50" cy="50" r="50" fill="url(%23g)"/%3E%3Cg transform="translate(50,50) scale(1.5) translate(-50,-50) translate(26.777779,26.777779) scale(0.46444446)"%3E%3Cpath fill="%23fff" fill-opacity="0.4" d="M86.2,66.5Q86.8,61.7 86.1,57.2C104.3,66.1 106.8,81 82,81C59.7,81 29.9,74.8 10,61.2C-4.9,51.2 -4.9,38.8 21.2,39Q18.6,43.1 17.3,46.2Q0.1,46 12.8,54.6C34.8,68.6 62.1,73.6 84.5,74.4Q99.4,74.4 86.2,66.5z"/%3E%3Cpath fill="%23fff" fill-opacity="0.902" d="M82.6,70.2C56.5,68.5 34.3,62.5 18,52.5C20,43.5 33,24 49.8,6.6C72.5,31.5 88.3,50.5 82.6,70.2zM73.4,84.7C56,101 24,94 17.2,70.3C30.8,78.5 48.7,83.6 73.4,84.7z"/%3E%3C/g%3E%3C/svg%3E'
+		/>
+		<link rel="stylesheet" href="assets/app.css?v=3" />
+	</head>
+	<body>
+		<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+		<button
+			id="modeToggle"
+			class="modebtn"
+			aria-label="Toggle light or dark theme"
+		>
+			<svg class="ic-sun" viewBox="0 0 24 24" aria-hidden="true">
+				<path
+					d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0c-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0c-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41a.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41a.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"
+				/>
+			</svg>
+			<svg class="ic-moon" viewBox="0 0 24 24" aria-hidden="true">
+				<path
+					d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
+				/>
+			</svg>
+		</button>
+		<main>
+			<div class="wrap">
+				<header class="hero">
+					<div
+						class="deco deco-a"
+						data-shape="cookie"
+						aria-hidden="true"
+					></div>
+					<div
+						class="deco deco-b"
+						data-shape="sunny"
+						aria-hidden="true"
+					></div>
+					<div class="hero-copy">
+						<svg
+							class="logo"
+							viewBox="0 0 100 100"
+							aria-hidden="true"
+						>
+							<defs>
+								<linearGradient
+									id="lg"
+									x1="0"
+									y1="0"
+									x2="1"
+									y2="1"
+								>
+									<stop offset="0" stop-color="#8dafcb" />
+									<stop offset="1" stop-color="#40627b" />
+								</linearGradient>
+							</defs>
+							<circle cx="50" cy="50" r="50" fill="url(#lg)" />
+							<g
+								transform="translate(50,50) scale(1.5) translate(-50,-50) translate(26.777779,26.777779) scale(0.46444446)"
+							>
+								<path
+									fill="#fff"
+									fill-opacity="0.4"
+									d="M86.2,66.5Q86.8,61.7 86.1,57.2C104.3,66.1 106.8,81 82,81C59.7,81 29.9,74.8 10,61.2C-4.9,51.2 -4.9,38.8 21.2,39Q18.6,43.1 17.3,46.2Q0.1,46 12.8,54.6C34.8,68.6 62.1,73.6 84.5,74.4Q99.4,74.4 86.2,66.5z"
+								/>
+								<path
+									fill="#fff"
+									fill-opacity="0.902"
+									d="M82.6,70.2C56.5,68.5 34.3,62.5 18,52.5C20,43.5 33,24 49.8,6.6C72.5,31.5 88.3,50.5 82.6,70.2zM73.4,84.7C56,101 24,94 17.2,70.3C30.8,78.5 48.7,83.6 73.4,84.7z"
+								/>
+							</g>
+						</svg>
+						<h1 class="title">ColorBlendr</h1>
+						<p class="tagline">
+							Customize Material You colors of your device. Pick a
+							seed, tune saturation and lightness, override any
+							shade — applied system-wide at runtime, no reboot.
+						</p>
+						<div class="cta">
+							<a
+								class="btn primary"
+								href="https://github.com/Mahmud0808/ColorBlendr/releases/latest"
+							>
+								<svg
+									viewBox="0 0 24 24"
+									width="18"
+									height="18"
+									fill="currentColor"
+									aria-hidden="true"
+								>
+									<path
+										d="M16.59 9H15V4c0-.55-.45-1-1-1h-4c-.55 0-1 .45-1 1v5H7.41c-.89 0-1.34 1.08-.71 1.71l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.63-.63.19-1.71-.7-1.71ZM5 19c0 .55.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1H6c-.55 0-1 .45-1 1Z"
+									/>
+								</svg>
+								Download APK
+							</a>
+							<a
+								class="btn tonalbtn"
+								href="https://f-droid.org/en/packages/com.drdisagree.colorblendr/"
+							>
+								<svg
+									viewBox="0 0 24 24"
+									width="17"
+									height="17"
+									fill="currentColor"
+									aria-hidden="true"
+								>
+									<path
+										d="M20.472,10.081H3.528c-0.877,0-1.589,0.711-1.589,1.589v10.59c0,0.877,0.711,1.589,1.589,1.589h16.944 c0.877,0,1.589-0.711,1.589-1.589V11.67C22.061,10.792,21.349,10.081,20.472,10.081z M12,22.525c-3.066,0-5.56-2.494-5.56-5.56 s2.494-5.56,5.56-5.56c3.066,0,5.56,2.494,5.56,5.56S15.066,22.525,12,22.525z M12,12.411c-2.511,0-4.554,2.043-4.554,4.554 S9.489,21.519,12,21.519s4.554-2.043,4.554-4.554S14.511,12.411,12,12.411z M12,20.274c-1.563,0-2.881-1.103-3.221-2.568h1.67 c0.275,0.581,0.859,0.979,1.551,0.979c0.96,0,1.721-0.761,1.721-1.721c0-0.96-0.761-1.721-1.721-1.721 c-0.649,0-1.2,0.352-1.493,0.874H8.805c0.378-1.412,1.669-2.462,3.195-2.462c1.818,0,3.309,1.491,3.309,3.309 C15.309,18.783,13.818,20.274,12,20.274z M23.849,0.396c-0.001,0.001-0.002,0.002-0.002,0.003 c-0.002-0.002-0.004-0.003-0.006-0.005c0.001-0.001,0.002-0.003,0.004-0.004c-0.116-0.137-0.279-0.231-0.519-0.238 c-0.202,0.005-0.391,0.097-0.512,0.259l-1.818,2.353c-0.164-0.058-0.339-0.095-0.523-0.095H3.528c-0.184,0-0.358,0.038-0.523,0.095 L1.187,0.41c-0.121-0.162-0.31-0.253-0.512-0.259c-0.24,0.006-0.403,0.1-0.519,0.238c0.001,0.001,0.002,0.003,0.004,0.004 C0.157,0.395,0.155,0.397,0.153,0.399C0.153,0.398,0.152,0.397,0.151,0.396C0.085,0.474-0.146,0.822,0.139,1.22l1.909,2.471 C1.981,3.867,1.94,4.057,1.94,4.257v3.707c0,0.877,0.711,1.589,1.589,1.589h16.944c0.877,0,1.589-0.711,1.589-1.589V4.257 c0-0.2-0.041-0.39-0.109-0.566l1.909-2.471C24.146,0.822,23.915,0.474,23.849,0.396z M6.904,8.228c-0.987,0-1.787-0.8-1.787-1.787 s0.8-1.787,1.787-1.787s1.787,0.8,1.787,1.787S7.891,8.228,6.904,8.228z M17.229,8.228c-0.987,0-1.787-0.8-1.787-1.787 s0.8-1.787,1.787-1.787c0.987,0,1.787,0.8,1.787,1.787S18.216,8.228,17.229,8.228z"
+									/>
+								</svg>
+								F-Droid
+							</a>
+							<a
+								class="btn tonalbtn"
+								href="https://apt.izzysoft.de/packages/com.drdisagree.colorblendr/"
+							>
+								<svg
+									viewBox="0 0 24 24"
+									width="17"
+									height="17"
+									fill="currentColor"
+									aria-hidden="true"
+								>
+									<path
+										d="M18.4395 5.5586c-.675 1.1664-1.352 2.3318-2.0274 3.498-.0366-.0155-.0742-.0286-.1113-.043-1.8249-.6957-3.484-.8-4.42-.787-1.8551.0185-3.3544.4643-4.2597.8203-.084-.1494-1.7526-3.021-2.0215-3.4864a1.1451 1.1451 0 0 0-.1406-.1914c-.3312-.364-.9054-.4859-1.379-.203-.475.282-.7136.9361-.3886 1.5019 1.9466 3.3696-.0966-.2158 1.9473 3.3593.0172.031-.4946.2642-1.3926 1.0177C2.8987 12.176.452 14.772 0 18.9902h24c-.119-1.1108-.3686-2.099-.7461-3.0683-.7438-1.9118-1.8435-3.2928-2.7402-4.1836a12.1048 12.1048 0 0 0-2.1309-1.6875c.6594-1.122 1.312-2.2559 1.9649-3.3848.2077-.3615.1886-.7956-.0079-1.1191a1.1001 1.1001 0 0 0-.8515-.5332c-.5225-.0536-.9392.3128-1.0488.5449zm-.0391 8.461c.3944.5926.324 1.3306-.1563 1.6503-.4799.3197-1.188.0985-1.582-.4941-.3944-.5927-.324-1.3307.1563-1.6504.4727-.315 1.1812-.1086 1.582.4941zM7.207 13.5273c.4803.3197.5506 1.0577.1563 1.6504-.394.5926-1.1038.8138-1.584.4941-.48-.3197-.5503-1.0577-.1563-1.6504.4008-.6021 1.1087-.8106 1.584-.4941z"
+									/>
+								</svg>
+								IzzyOnDroid
+							</a>
+						</div>
+					</div>
+					<div class="hero-phone" aria-hidden="true">
+						<div class="phone-float">
+							<div class="phone">
+								<div class="ph-cam"></div>
+								<div class="ph-status">
+									<span>12:30</span
+									><span class="ph-icons"
+										><i></i><i></i><i></i
+									></span>
+								</div>
+								<div class="ph-head">Colors</div>
+								<div class="ph-card">
+									<div class="ph-label">System palette</div>
+									<div class="ph-row">
+										<i
+											style="background: var(--ph-p-95)"
+										></i
+										><i
+											style="background: var(--ph-p-80)"
+										></i
+										><i
+											style="background: var(--ph-p-60)"
+										></i
+										><i
+											style="background: var(--ph-p-40)"
+										></i
+										><i
+											style="background: var(--ph-p-20)"
+										></i
+										><i
+											style="background: var(--ph-p-5)"
+										></i>
+									</div>
+									<div class="ph-row">
+										<i
+											style="background: var(--ph-s-95)"
+										></i
+										><i
+											style="background: var(--ph-s-80)"
+										></i
+										><i
+											style="background: var(--ph-s-60)"
+										></i
+										><i
+											style="background: var(--ph-s-40)"
+										></i
+										><i
+											style="background: var(--ph-s-20)"
+										></i
+										><i
+											style="background: var(--ph-s-5)"
+										></i>
+									</div>
+									<div class="ph-row">
+										<i
+											style="background: var(--ph-t-95)"
+										></i
+										><i
+											style="background: var(--ph-t-80)"
+										></i
+										><i
+											style="background: var(--ph-t-60)"
+										></i
+										><i
+											style="background: var(--ph-t-40)"
+										></i
+										><i
+											style="background: var(--ph-t-20)"
+										></i
+										><i
+											style="background: var(--ph-t-5)"
+										></i>
+									</div>
+									<div class="ph-row">
+										<i
+											style="background: var(--ph-n-95)"
+										></i
+										><i
+											style="background: var(--ph-n-80)"
+										></i
+										><i
+											style="background: var(--ph-n-60)"
+										></i
+										><i
+											style="background: var(--ph-n-40)"
+										></i
+										><i
+											style="background: var(--ph-n-20)"
+										></i
+										><i
+											style="background: var(--ph-n-5)"
+										></i>
+									</div>
+								</div>
+								<div class="ph-card">
+									<div class="ph-label">
+										Accent saturation
+									</div>
+									<div class="ph-track"></div>
+								</div>
+								<div class="ph-card ph-switchrow">
+									<span class="ph-label"
+										>Pitch black theme</span
+									>
+									<span class="ph-switch"><i></i></span>
+								</div>
+								<div class="ph-fab"></div>
+								<div class="ph-nav">
+									<span class="on"></span><span></span
+									><span></span><span></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</header>
 
-  <h2 class="section-title reveal">This page runs the same engine</h2>
-  <p class="lead reveal">Every surface, button, and gradient here is derived on the fly with Material Color Utilities — the exact pipeline the app uses on your device. Pick a seed, a Monet style, and a color spec; the whole page re-derives.</p>
-  <div class="demo-swatches reveal" id="demoSeeds"></div>
-  <div class="demo-ctls reveal">
-    <div class="menuwrap" id="styleWrap">
-      <button class="sortbtn" aria-haspopup="listbox" aria-expanded="false">
-        <span class="dlabel">Tonal Spot</span>
-        <svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg>
-      </button>
-      <div class="menu" role="listbox" hidden></div>
-    </div>
-    <div class="menuwrap" id="specWrap">
-      <button class="sortbtn" aria-haspopup="listbox" aria-expanded="false">
-        <span class="dlabel">Spec 2025</span>
-        <svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg>
-      </button>
-      <div class="menu" role="listbox" hidden></div>
-    </div>
-  </div>
+				<h2 class="section-title reveal">
+					This page runs the same engine
+				</h2>
+				<p class="lead reveal">
+					Every surface, button, and gradient here is derived on the
+					fly with Material Color Utilities — the exact pipeline the
+					app uses on your device. Pick a seed, a Monet style, and a
+					color spec; the whole page re-derives.
+				</p>
+				<div class="demo-swatches reveal" id="demoSeeds"></div>
+				<div class="demo-ctls reveal">
+					<div class="menuwrap" id="styleWrap">
+						<button
+							class="sortbtn"
+							aria-haspopup="listbox"
+							aria-expanded="false"
+						>
+							<span class="dlabel">Tonal Spot</span>
+							<svg
+								class="chev"
+								viewBox="0 0 24 24"
+								width="18"
+								height="18"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</button>
+						<div class="menu" role="listbox" hidden></div>
+					</div>
+					<div class="menuwrap" id="specWrap">
+						<button
+							class="sortbtn"
+							aria-haspopup="listbox"
+							aria-expanded="false"
+						>
+							<span class="dlabel">Spec 2025</span>
+							<svg
+								class="chev"
+								viewBox="0 0 24 24"
+								width="18"
+								height="18"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</button>
+						<div class="menu" role="listbox" hidden></div>
+					</div>
+				</div>
 
-  <h2 class="section-title reveal">What it does</h2>
-  <div class="grid">
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-      <h3>Any seed, any source</h3>
-      <p>Generate palettes from your wallpaper, pick from basic colors, or dial in an exact hex. Everything previews live before it touches the system.</p>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
-      <h3>Sliders that go further</h3>
-      <p>Accent saturation, background saturation, and background lightness — 0 to 200%, per light and dark mode, in CAM16 color space.</p>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
-      <h3>Per-shade overrides</h3>
-      <p>Press any of 55 palette slots and set it to whatever you want. The whole system follows, one shade at a time.</p>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>
-      <h3>Every Monet style</h3>
-      <p>Tonal Spot, Vibrant, Expressive, Rainbow, Fruit Salad, Monochrome and more — plus color spec 2021, 2025, or 2026 on supported builds.</p>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-      <h3>Dark mode, properly</h3>
-      <p>Pitch black backgrounds for AMOLED, tinted text color, and separate configurations for light and dark mode.</p>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67 2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/></svg>
-      <h3>Backup and restore</h3>
-      <p>Your entire setup — sliders, overrides, styles, everything — exports to a single file and comes back with one import.</p>
-    </div>
-  </div>
+				<h2 class="section-title reveal">What it does</h2>
+				<div class="grid">
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+							/>
+						</svg>
+						<h3>Any seed, any source</h3>
+						<p>
+							Generate palettes from your wallpaper, pick from
+							basic colors, or dial in an exact hex. Everything
+							previews live before it touches the system.
+						</p>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"
+							/>
+						</svg>
+						<h3>Sliders that go further</h3>
+						<p>
+							Accent saturation, background saturation, and
+							background lightness — 0 to 200%, per light and dark
+							mode, in CAM16 color space.
+						</p>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"
+							/>
+						</svg>
+						<h3>Per-shade overrides</h3>
+						<p>
+							Press any of 55 palette slots and set it to whatever
+							you want. The whole system follows, one shade at a
+							time.
+						</p>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"
+							/>
+						</svg>
+						<h3>Every Monet style</h3>
+						<p>
+							Tonal Spot, Vibrant, Expressive, Rainbow, Fruit
+							Salad, Monochrome and more — plus color spec 2021,
+							2025, or 2026 on supported builds.
+						</p>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
+							/>
+						</svg>
+						<h3>Dark mode, properly</h3>
+						<p>
+							Pitch black backgrounds for AMOLED, tinted text
+							color, and separate configurations for light and
+							dark mode.
+						</p>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67 2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"
+							/>
+						</svg>
+						<h3>Backup and restore</h3>
+						<p>
+							Your entire setup — sliders, overrides, styles,
+							everything — exports to a single file and comes back
+							with one import.
+						</p>
+					</div>
+				</div>
 
-  <h2 class="section-title reveal">What it looks like</h2>
-  <div class="shots reveal">
-    <div class="shot" role="img" aria-label="Colors screen: wallpaper and basic seed colors"></div>
-    <div class="shot" role="img" aria-label="Theme screen: saturation and lightness sliders"></div>
-    <div class="shot" role="img" aria-label="Styles screen: Monet style presets"></div>
-    <div class="shot" role="img" aria-label="Settings screen: pitch black and tinted text"></div>
-    <div class="deco deco-c" data-shape="flower" aria-hidden="true"></div>
-  </div>
+				<h2 class="section-title reveal">What it looks like</h2>
+				<div class="shots reveal">
+					<div
+						class="shot"
+						role="img"
+						aria-label="Colors screen: wallpaper and basic seed colors"
+					></div>
+					<div
+						class="shot"
+						role="img"
+						aria-label="Theme screen: saturation and lightness sliders"
+					></div>
+					<div
+						class="shot"
+						role="img"
+						aria-label="Styles screen: Monet style presets"
+					></div>
+					<div
+						class="shot"
+						role="img"
+						aria-label="Settings screen: pitch black and tinted text"
+					></div>
+					<div
+						class="deco deco-c"
+						data-shape="flower"
+						aria-hidden="true"
+					></div>
+				</div>
 
-  <h2 class="section-title reveal">Three ways in</h2>
-  <div class="grid">
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-      <h3>Root</h3>
-      <p>The full engine. Fabricated overlays register directly with the system's overlay service — palette changes land instantly, without reboot.</p>
-      <ul class="caps">
-        <li>Per-shade overriding and sliders</li>
-        <li>Pitch black, tinted text, per-app themes</li>
-        <li>Community themes applied in one tap</li>
-      </ul>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z"/></svg>
-      <h3>Shizuku</h3>
-      <p>No root required. A helper process at shell privilege writes the system's theme customization settings directly.</p>
-      <ul class="caps">
-        <li>Any seed color and Monet style</li>
-        <li>Survives reboots — settings persist</li>
-        <li>Setup once per boot via the Shizuku app</li>
-      </ul>
-    </div>
-    <div class="info reveal">
-      <svg class="mode-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21l3.5-4.67c-.98-.73-2.19-1.16-3.5-1.16s-2.52.43-3.5 1.16L12 21zm0-18C7.31 3 3.07 4.9 0 7.97l2.12 2.12C4.66 7.55 8.15 6 12 6s7.34 1.55 9.88 4.09L24 7.97C20.93 4.9 16.69 3 12 3zm0 6c-2.9 0-5.53 1.17-7.44 3.06l2.12 2.12C8.06 12.79 9.94 12 12 12s3.94.79 5.32 2.18l2.12-2.12C17.53 10.17 14.9 9 12 9z"/></svg>
-      <h3>Wireless ADB</h3>
-      <p>The same shell-privilege path, negotiated on-device over the ADB TLS protocol. Pair once; no computer involved afterward.</p>
-      <ul class="caps">
-        <li>Identical capabilities to Shizuku mode</li>
-        <li>Works where Shizuku isn't installed</li>
-        <li>Requires Wi-Fi and developer options</li>
-      </ul>
-    </div>
-  </div>
+				<h2 class="section-title reveal">Three ways in</h2>
+				<div class="grid">
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
+							/>
+						</svg>
+						<h3>Root</h3>
+						<p>
+							The full engine. Fabricated overlays register
+							directly with the system's overlay service — palette
+							changes land instantly, without reboot.
+						</p>
+						<ul class="caps">
+							<li>Per-shade overriding and sliders</li>
+							<li>Pitch black, tinted text, per-app themes</li>
+							<li>Community themes applied in one tap</li>
+						</ul>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z"
+							/>
+						</svg>
+						<h3>Shizuku</h3>
+						<p>
+							No root required. A helper process at shell
+							privilege writes the system's theme customization
+							settings directly.
+						</p>
+						<ul class="caps">
+							<li>Any seed color and Monet style</li>
+							<li>Survives reboots — settings persist</li>
+							<li>Setup once per boot via the Shizuku app</li>
+						</ul>
+					</div>
+					<div class="info reveal">
+						<svg
+							class="mode-icon"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M12 21l3.5-4.67c-.98-.73-2.19-1.16-3.5-1.16s-2.52.43-3.5 1.16L12 21zm0-18C7.31 3 3.07 4.9 0 7.97l2.12 2.12C4.66 7.55 8.15 6 12 6s7.34 1.55 9.88 4.09L24 7.97C20.93 4.9 16.69 3 12 3zm0 6c-2.9 0-5.53 1.17-7.44 3.06l2.12 2.12C8.06 12.79 9.94 12 12 12s3.94.79 5.32 2.18l2.12-2.12C17.53 10.17 14.9 9 12 9z"
+							/>
+						</svg>
+						<h3>Wireless ADB</h3>
+						<p>
+							The same shell-privilege path, negotiated on-device
+							over the ADB TLS protocol. Pair once; no computer
+							involved afterward.
+						</p>
+						<ul class="caps">
+							<li>Identical capabilities to Shizuku mode</li>
+							<li>Works where Shizuku isn't installed</li>
+							<li>Requires Wi-Fi and developer options</li>
+						</ul>
+					</div>
+				</div>
 
-  <h2 class="section-title reveal">Mode comparison</h2>
-  <div class="tablewrap reveal">
-    <table class="compare">
-      <thead>
-        <tr>
-          <th>Capability</th>
-          <th>Root</th>
-          <th>Shizuku</th>
-          <th>Wireless ADB</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><th>How colors apply</th><td>Fabricated overlays at runtime</td><td>Theme settings write</td><td>Theme settings write</td></tr>
-        <tr><th>Seed color and Monet styles</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-        <tr><th>Live preview in app</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-        <tr><th>Saturation / lightness sliders</th><td>Yes — 0 to 200%</td><td>No</td><td>No</td></tr>
-        <tr><th>Per-shade overrides</th><td>Yes — 55 slots</td><td>No</td><td>No</td></tr>
-        <tr><th>Pitch black, tinted text, accurate shades</th><td>Yes</td><td>No</td><td>No</td></tr>
-        <tr><th>Custom secondary / tertiary colors</th><td>Yes</td><td>No</td><td>No</td></tr>
-        <tr><th>Color spec version</th><td>2021 / 2025 / 2026</td><td>No</td><td>No</td></tr>
-        <tr><th>Per-app theming</th><td>Yes</td><td>No</td><td>No</td></tr>
-        <tr><th>Community themes</th><td>Browse, vote, apply</td><td>Browse and vote</td><td>Browse and vote</td></tr>
-        <tr><th>Setup</th><td>Grant root once</td><td>Start via Shizuku app each boot</td><td>Pair once over Wi-Fi</td></tr>
-        <tr><th>Survives reboot</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      </tbody>
-    </table>
-  </div>
+				<h2 class="section-title reveal">Mode comparison</h2>
+				<div class="tablewrap reveal">
+					<table class="compare">
+						<thead>
+							<tr>
+								<th>Capability</th>
+								<th>Root</th>
+								<th>Shizuku</th>
+								<th>Wireless ADB</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>How colors apply</th>
+								<td>Fabricated overlays at runtime</td>
+								<td>Theme settings write</td>
+								<td>Theme settings write</td>
+							</tr>
+							<tr>
+								<th>Seed color and Monet styles</th>
+								<td>Yes</td>
+								<td>Yes</td>
+								<td>Yes</td>
+							</tr>
+							<tr>
+								<th>Live preview in app</th>
+								<td>Yes</td>
+								<td>Yes</td>
+								<td>Yes</td>
+							</tr>
+							<tr>
+								<th>Saturation / lightness sliders</th>
+								<td>Yes — 0 to 200%</td>
+								<td>No</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<th>Per-shade overrides</th>
+								<td>Yes — 55 slots</td>
+								<td>No</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<th>
+									Pitch black, tinted text, accurate shades
+								</th>
+								<td>Yes</td>
+								<td>No</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<th>Custom secondary / tertiary colors</th>
+								<td>Yes</td>
+								<td>No</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<th>Color spec version</th>
+								<td>2021 / 2025 / 2026</td>
+								<td>No</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<th>Per-app theming</th>
+								<td>Yes</td>
+								<td>No</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<th>Community themes</th>
+								<td>Browse, vote, apply</td>
+								<td>Browse and vote</td>
+								<td>Browse and vote</td>
+							</tr>
+							<tr>
+								<th>Setup</th>
+								<td>Grant root once</td>
+								<td>Start via Shizuku app each boot</td>
+								<td>Pair once over Wi-Fi</td>
+							</tr>
+							<tr>
+								<th>Survives reboot</th>
+								<td>Yes</td>
+								<td>Yes</td>
+								<td>Yes</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 
-  <div class="req reveal">
-    <span><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84 1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/></svg>Android 12+ with Material You</span>
-    <span><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>Root, Shizuku, or Wireless ADB</span>
-  </div>
-</div>
+				<div class="req reveal">
+					<span
+						><svg
+							viewBox="0 0 24 24"
+							width="18"
+							height="18"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84 1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"
+							/></svg
+						>Android 12+ with Material You</span
+					>
+					<span
+						><svg
+							viewBox="0 0 24 24"
+							width="18"
+							height="18"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
+							/></svg
+						>Root, Shizuku, or Wireless ADB</span
+					>
+				</div>
+			</div>
 
-<h2 class="section-title reveal">Made by the community</h2>
-<p class="lead reveal">Browse, vote, and apply themes shared by other users — right inside the app. Hover a card; the page wears it.</p>
-<div id="rail" class="marquee"><div class="sk-row"><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div><div class="sk-card"><div class="sk-swatch"></div><div class="sk-lines"><div class="sk-line w75"></div><div class="sk-line w45"></div><div class="sk-line w60"></div></div></div></div></div>
+			<h2 class="section-title reveal">Made by the community</h2>
+			<p class="lead reveal">
+				Browse, vote, and apply themes shared by other users — right
+				inside the app. Hover a card; the page wears it.
+			</p>
+			<div id="rail" class="marquee">
+				<div class="sk-row">
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+					<div class="sk-card">
+						<div class="sk-swatch"></div>
+						<div class="sk-lines">
+							<div class="sk-line w75"></div>
+							<div class="sk-line w45"></div>
+							<div class="sk-line w60"></div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-<div class="wrap">
-  <div class="centerlink reveal"><a class="btn tonalbtn" href="https://mahmud0808.github.io/ColorBlendr-Themes/">Browse the gallery</a></div>
+			<div class="wrap">
+				<div class="centerlink reveal">
+					<a
+						class="btn tonalbtn"
+						href="https://mahmud0808.github.io/ColorBlendr-Themes/"
+						>Browse the gallery</a
+					>
+				</div>
 
-  <h2 class="section-title reveal">FAQ</h2>
-  <div class="faq reveal">
-    <div class="deco deco-d" data-shape="clover" aria-hidden="true"></div>
-    <details>
-      <summary>How does it work without root?<svg class="chevd" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg></summary>
-      <div class="answer"><p>Shizuku and Wireless ADB modes run shell commands that write the documented <code>theme_customization_overlay_packages</code> secure setting — the same mechanism the stock wallpaper picker uses, with more of its fields filled in.</p></div>
-    </details>
-    <details>
-      <summary>How does it work with root?<svg class="chevd" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg></summary>
-      <div class="answer"><p>Root mode uses the <code>FabricatedOverlay</code> API to register palette overlays with the system at runtime. Nothing is written to the system partition; removing a theme is the same operation as applying one.</p></div>
-    </details>
-    <details>
-      <summary>Why doesn't it fully work on OneUI?<svg class="chevd" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg></summary>
-      <div class="answer"><p>OneUI system apps use Samsung's own palette instead of Material You. ColorBlendr's changes affect Google apps and everything else that honors Monet, but not OneUI's system UI.</p></div>
-    </details>
-    <details>
-      <summary>Why are some features grayed out?<svg class="chevd" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg></summary>
-      <div class="answer"><p>They either need a newer Android version or root. Sliders, per-shade overrides, pitch black, and applying community themes are root-mode features; a badge in the app tells you which is which.</p></div>
-    </details>
-    <details>
-      <summary>Is sharing a theme anonymous?<svg class="chevd" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg></summary>
-      <div class="answer"><p>Yes. No account, no sign-up, no personal data. Only the palette plus the name and description you type are submitted, and every submission passes a human review before it appears.</p></div>
-    </details>
-    <details>
-      <summary>How do I uninstall it cleanly?<svg class="chevd" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"/></svg></summary>
-      <div class="answer"><p>Disable the ColorBlendr service from the app's settings first, then uninstall and reboot. Your device returns to stock wallpaper-derived colors.</p></div>
-    </details>
-  </div>
+				<h2 class="section-title reveal">FAQ</h2>
+				<div class="faq reveal">
+					<div
+						class="deco deco-d"
+						data-shape="clover"
+						aria-hidden="true"
+					></div>
+					<details>
+						<summary>
+							How does it work without root?<svg
+								class="chevd"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</summary>
+						<div class="answer">
+							<p>
+								Shizuku and Wireless ADB modes run shell
+								commands that write the documented
+								<code
+									>theme_customization_overlay_packages</code
+								>
+								secure setting — the same mechanism the stock
+								wallpaper picker uses, with more of its fields
+								filled in.
+							</p>
+						</div>
+					</details>
+					<details>
+						<summary>
+							How does it work with root?<svg
+								class="chevd"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</summary>
+						<div class="answer">
+							<p>
+								Root mode uses the
+								<code>FabricatedOverlay</code> API to register
+								palette overlays with the system at runtime.
+								Nothing is written to the system partition;
+								removing a theme is the same operation as
+								applying one.
+							</p>
+						</div>
+					</details>
+					<details>
+						<summary>
+							Why doesn't it fully work on OneUI?<svg
+								class="chevd"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</summary>
+						<div class="answer">
+							<p>
+								OneUI system apps use Samsung's own palette
+								instead of Material You. ColorBlendr's changes
+								affect Google apps and everything else that
+								honors Monet, but not OneUI's system UI.
+							</p>
+						</div>
+					</details>
+					<details>
+						<summary>
+							Why are some features grayed out?<svg
+								class="chevd"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</summary>
+						<div class="answer">
+							<p>
+								They either need a newer Android version or
+								root. Sliders, per-shade overrides, pitch black,
+								and applying community themes are root-mode
+								features; a badge in the app tells you which is
+								which.
+							</p>
+						</div>
+					</details>
+					<details>
+						<summary>
+							Is sharing a theme anonymous?<svg
+								class="chevd"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</summary>
+						<div class="answer">
+							<p>
+								Yes. No account, no sign-up, no personal data.
+								Only the palette plus the name and description
+								you type are submitted, and every submission
+								passes a human review before it appears.
+							</p>
+						</div>
+					</details>
+					<details>
+						<summary>
+							How do I uninstall it cleanly?<svg
+								class="chevd"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M8.12 9.29 12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0Z"
+								/>
+							</svg>
+						</summary>
+						<div class="answer">
+							<p>
+								Disable the ColorBlendr service from the app's
+								settings first, then uninstall and reboot. Your
+								device returns to stock wallpaper-derived
+								colors.
+							</p>
+						</div>
+					</details>
+				</div>
 
-  <footer class="reveal">
-    <a href="https://github.com/Mahmud0808/ColorBlendr">GitHub</a>
-    <span class="sep"></span>
-    <a href="https://github.com/Mahmud0808/ColorBlendr/releases">Releases</a>
-    <span class="sep"></span>
-    <a href="https://t.me/DrDsProjects">Telegram</a>
-    <span class="sep"></span>
-    <a href="https://crowdin.com/project/ColorBlendr">Translate</a>
-    <span class="sep"></span>
-    <a href="https://www.buymeacoffee.com/DrDisagree">Buy me a coffee</a>
-    <span class="sep"></span>
-    <a href="https://mahmud0808.github.io/ColorBlendr-Themes/">Community themes</a>
-  </footer>
-</div>
-</main>
+				<footer class="reveal">
+					<a href="https://github.com/Mahmud0808/ColorBlendr"
+						>GitHub</a
+					>
+					<span class="sep"></span>
+					<a href="https://github.com/Mahmud0808/ColorBlendr/releases"
+						>Releases</a
+					>
+					<span class="sep"></span>
+					<a href="https://t.me/DrDsProjects">Telegram</a>
+					<span class="sep"></span>
+					<a href="https://crowdin.com/project/ColorBlendr"
+						>Translate</a
+					>
+					<span class="sep"></span>
+					<a href="https://www.buymeacoffee.com/DrDisagree"
+						>Buy me a coffee</a
+					>
+					<span class="sep"></span>
+					<a href="https://mahmud0808.github.io/ColorBlendr-Themes/"
+						>Community themes</a
+					>
+				</footer>
+			</div>
+		</main>
 
-<script type="module">
-  import { initApp } from "./assets/app.js?v=3";
-  initApp();
-</script>
-</body>
+		<script type="module">
+			import { initApp } from "./assets/app.js?v=3";
+			initApp();
+		</script>
+	</body>
 </html>
