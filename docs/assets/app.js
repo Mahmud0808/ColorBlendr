@@ -647,6 +647,66 @@ function initReveal() {
 	document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 }
 
+// Live stars + release download totals, counted up when they arrive;
+// markup values stay for no-JS / fetch failure.
+function initStats() {
+	const dlEl = document.getElementById("statDownloads");
+	const starsEl = document.getElementById("statStars");
+	const ossEl = document.getElementById("statOss");
+	if (!dlEl || !starsEl || !ossEl) return;
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+	// Markup holds final-looking values for no-JS; zero for the build-up.
+	if (!reduced) {
+		dlEl.textContent = "0";
+		starsEl.textContent = "0";
+		ossEl.textContent = "0%";
+	}
+	const compact = (n) => {
+		if (n >= 10000) return `${Math.floor(n / 1000)}K+`;
+		if (n >= 1000)
+			return `${(Math.floor(n / 100) / 10).toFixed(1).replace(/\.0$/, "")}K+`;
+		return String(n);
+	};
+	const countTo = (el, target, fmt) => {
+		if (reduced) {
+			el.textContent = fmt(target);
+			return;
+		}
+		const t0 = performance.now();
+		const tick = (now) => {
+			const p = Math.min(1, (now - t0) / 1400);
+			const eased = 1 - (1 - p) ** 3;
+			el.textContent = fmt(Math.round(target * eased));
+			if (p < 1) requestAnimationFrame(tick);
+		};
+		requestAnimationFrame(tick);
+	};
+	// Hold count-up until the hero entrance settles.
+	const settled = new Promise((resolve) => setTimeout(resolve, 500));
+	settled.then(() => countTo(ossEl, 100, (n) => `${n}%`));
+	const REPO = "https://api.github.com/repos/Mahmud0808/ColorBlendr";
+	fetch(REPO)
+		.then((r) => (r.ok ? r.json() : null))
+		.then(async (repo) => {
+			if (!repo?.stargazers_count) return;
+			await settled;
+			countTo(starsEl, repo.stargazers_count, compact);
+		})
+		.catch(() => {});
+	fetch(`${REPO}/releases?per_page=100`)
+		.then((r) => (r.ok ? r.json() : null))
+		.then(async (releases) => {
+			if (!Array.isArray(releases)) return;
+			const total = releases
+				.flatMap((rel) => rel.assets ?? [])
+				.reduce((sum, a) => sum + (a.download_count ?? 0), 0);
+			if (!total) return;
+			await settled;
+			countTo(dlEl, total, compact);
+		})
+		.catch(() => {});
+}
+
 // Accent spotlight trailing the cursor inside feature cards.
 function initSpotlight() {
 	if (!matchMedia("(hover: hover)").matches) return;
@@ -755,6 +815,7 @@ export async function initApp() {
 	initSpotlight();
 	initShotTilt();
 	initModeToggle();
+	initStats();
 	try {
 		const themes = await (await fetch(THEMES_INDEX)).json();
 		const top = [...themes]

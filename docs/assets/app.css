@@ -303,6 +303,30 @@ a.btn:active {
 	color: var(--on-tonal);
 }
 
+/* Hero stat strip; numbers wear the title gradient. */
+.stats {
+	display: flex;
+	gap: 38px;
+	margin-top: 36px;
+}
+.stat b {
+	display: block;
+	min-width: 5ch;
+	font-variant-numeric: tabular-nums;
+	font-size: 26px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	background: linear-gradient(100deg, var(--grad-b), var(--grad-c));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+.stat span {
+	font-size: 12.5px;
+	color: var(--subtle);
+	transition: color var(--recolor, 1.6s) ease;
+}
+
 /* Phone mockup: fake app UI drawn from the same vars as the page. */
 .hero-phone {
 	display: flex;
@@ -543,6 +567,9 @@ html.light .ph-cam {
 		padding: 76px 0 60px;
 	}
 	.hero .cta {
+		justify-content: center;
+	}
+	.stats {
 		justify-content: center;
 	}
 	.tagline {
@@ -1244,6 +1271,9 @@ html {
 }
 .hero-copy .cta {
 	animation-delay: 0.35s;
+}
+.hero-copy .stats {
+	animation-delay: 0.45s;
 }
 .hero-phone {
 	animation-delay: 0.45s;
