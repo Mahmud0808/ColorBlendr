@@ -426,15 +426,6 @@ html { scroll-behavior: smooth; }
 h1.title { background-size: 220% 100%; animation: rise .8s cubic-bezier(.2,.7,.2,1) .15s forwards, shimmer 9s ease-in-out infinite alternate; }
 @keyframes shimmer { from { background-position: 0% 0; } to { background-position: 100% 0; } }
 
-/* Per-letter entrance; JS restores plain text after so shimmer clips
-   the gradient across the whole word again. */
-h1.title.stagger, h1.title.settled { opacity: 1; transform: none; animation: shimmer 9s ease-in-out infinite alternate; }
-h1.title.stagger .tl {
-  display: inline-block; opacity: 0; transform: translateY(26px);
-  color: var(--accent); -webkit-text-fill-color: var(--accent);
-  animation: rise .6s cubic-bezier(.2,.7,.2,1) forwards;
-}
-
 /* Animation, not transition: a transition here would REPLACE the element's
    own list (.info etc.) and kill its recolor. */
 .reveal { opacity: 0; transform: translateY(22px); }
@@ -451,7 +442,15 @@ h1.title.stagger .tl {
   .shot:nth-child(2) { animation-range: entry 0% cover 30%; }
   .shot:nth-child(3) { animation-range: entry 0% cover 35%; }
   .shot:nth-child(4) { animation-range: entry 0% cover 40%; }
-  header.hero { animation: hero-out linear both; animation-timeline: scroll(); animation-range: 0 70vh; }
+  /* Fade per part via view() exit: fixed scroll() range faded the phone
+     mid-screen on mobile, where the stacked hero is taller than a viewport. */
+  .hero-copy { animation: hero-out linear both; animation-timeline: view(); animation-range: exit 35% exit 90%; }
+  .hero-phone {
+    animation: rise .8s cubic-bezier(.2,.7,.2,1) forwards, hero-out linear both;
+    animation-delay: .45s, 0s;
+    animation-timeline: auto, view();
+    animation-range: normal, exit 35% exit 90%;
+  }
 }
 @keyframes shot-rise { from { translate: 0 56px; } to { translate: 0 0; } }
 @keyframes hero-out { to { opacity: .25; scale: .96; } }

@@ -528,25 +528,6 @@ function initReveal() {
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 }
 
-// Per-letter hero entrance; restores plain text after so the whole-word
-// gradient shimmer takes over.
-function initTitleStagger() {
-    const h1 = document.querySelector("h1.title");
-    if (!h1 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const text = h1.textContent;
-    h1.classList.add("stagger");
-    h1.setAttribute("aria-label", text);
-    h1.innerHTML = [...text].map((ch, i) =>
-        `<span class="tl" aria-hidden="true" style="animation-delay:${80 + i * 40}ms">${ch}</span>`
-    ).join("");
-    setTimeout(() => {
-        h1.textContent = text;
-        h1.removeAttribute("aria-label");
-        h1.classList.remove("stagger");
-        h1.classList.add("settled");
-    }, 80 + text.length * 40 + 650);
-}
-
 // Accent spotlight trailing the cursor inside feature cards.
 function initSpotlight() {
     if (!matchMedia("(hover: hover)").matches) return;
@@ -623,7 +604,6 @@ export async function initApp() {
     initShots();
     initReveal();
     initFaq();
-    initTitleStagger();
     initDemo();
     startSeedRotation();
     initSpotlight();
