@@ -1,8 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.screens.home
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.WideNavigationRail
+import androidx.compose.material3.WideNavigationRailDefaults
 import androidx.compose.material3.WideNavigationRailItem
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
@@ -23,7 +25,12 @@ internal fun HomeNavigationRail(
         if (expanded) state.expand() else state.collapse()
     }
 
-    WideNavigationRail(state = state) {
+    WideNavigationRail(
+        state = state,
+        colors = WideNavigationRailDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
         tabs.forEach { tab ->
             val selected = currentGroup == tab.group
             WideNavigationRailItem(
