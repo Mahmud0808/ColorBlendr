@@ -168,7 +168,7 @@ fun OnboardingScreen(
             Button(
                 onClick = {
                     if (pagerState.currentPage == 3) {
-                        if (!permissionsGranted(context)) {
+                        if (!permissionsGranted(context) || !hasStoragePermission()) {
                             onError(context.getString(R.string.grant_all_permissions))
                             return@Button
                         }
