@@ -56,6 +56,7 @@ class TaskerIntentReceiver : BroadcastReceiver() {
         if (PreviewController.isPreviewActive) return
 
         val config = parseConfig(intent)
+        val rootMode = isRootMode()
         var changed = false
 
         if (config.optBoolean(EXTRA_WALLPAPER_COLORS)) {
@@ -89,37 +90,39 @@ class TaskerIntentReceiver : BroadcastReceiver() {
             changed = true
         }
 
-        val hasSliders = arrayOf(
-            EXTRA_ACCENT_SATURATION, EXTRA_BACKGROUND_SATURATION, EXTRA_BACKGROUND_LIGHTNESS
-        ).any { config.has(it) }
-        if (hasSliders && modeSpecificThemesEnabled()) {
-            setModeSpecificThemesEnabled(false)
-            Prefs.clearPref(MONET_ACCENT_SATURATION_LIGHT)
-            Prefs.clearPref(MONET_BACKGROUND_SATURATION_LIGHT)
-            Prefs.clearPref(MONET_BACKGROUND_LIGHTNESS_LIGHT)
-            changed = true
-        }
+        if (rootMode) {
+            val hasSliders = arrayOf(
+                EXTRA_ACCENT_SATURATION, EXTRA_BACKGROUND_SATURATION, EXTRA_BACKGROUND_LIGHTNESS
+            ).any { config.has(it) }
+            if (hasSliders && modeSpecificThemesEnabled()) {
+                setModeSpecificThemesEnabled(false)
+                Prefs.clearPref(MONET_ACCENT_SATURATION_LIGHT)
+                Prefs.clearPref(MONET_BACKGROUND_SATURATION_LIGHT)
+                Prefs.clearPref(MONET_BACKGROUND_LIGHTNESS_LIGHT)
+                changed = true
+            }
 
-        sliderValue(config, EXTRA_ACCENT_SATURATION)?.let {
-            setAccentSaturation(it)
-            changed = true
-        }
-        sliderValue(config, EXTRA_BACKGROUND_SATURATION)?.let {
-            setBackgroundSaturation(it)
-            changed = true
-        }
-        sliderValue(config, EXTRA_BACKGROUND_LIGHTNESS)?.let {
-            setBackgroundLightness(it)
-            changed = true
-        }
+            sliderValue(config, EXTRA_ACCENT_SATURATION)?.let {
+                setAccentSaturation(it)
+                changed = true
+            }
+            sliderValue(config, EXTRA_BACKGROUND_SATURATION)?.let {
+                setBackgroundSaturation(it)
+                changed = true
+            }
+            sliderValue(config, EXTRA_BACKGROUND_LIGHTNESS)?.let {
+                setBackgroundLightness(it)
+                changed = true
+            }
 
-        if (config.has(EXTRA_PITCH_BLACK)) {
-            setPitchBlackThemeEnabled(config.optBoolean(EXTRA_PITCH_BLACK))
-            changed = true
-        }
-        if (config.has(EXTRA_ACCURATE_SHADES)) {
-            setAccurateShadesEnabled(config.optBoolean(EXTRA_ACCURATE_SHADES, true))
-            changed = true
+            if (config.has(EXTRA_PITCH_BLACK)) {
+                setPitchBlackThemeEnabled(config.optBoolean(EXTRA_PITCH_BLACK))
+                changed = true
+            }
+            if (config.has(EXTRA_ACCURATE_SHADES)) {
+                setAccurateShadesEnabled(config.optBoolean(EXTRA_ACCURATE_SHADES, true))
+                changed = true
+            }
         }
 
         if (!changed) return
@@ -131,7 +134,7 @@ class TaskerIntentReceiver : BroadcastReceiver() {
 
         val pending = goAsync()
         CoroutineScope(Dispatchers.Main).launch {
-            if (isRootMode() && RootConnectionProvider.isNotConnected) {
+            if (rootMode && RootConnectionProvider.isNotConnected) {
                 RootConnectionProvider
                     .builder(context)
                     .onSuccess {
