@@ -28,6 +28,7 @@ dependencyResolutionManagement {
 rootProject.name = "ColorBlendr"
 
 include(":app")
+include(":devapp")
 include(":systemstubs")
 include(":libadb")
 include(":colorpickerdialog")

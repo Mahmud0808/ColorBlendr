@@ -37,6 +37,10 @@
         </intent>
     </queries>
 
+    <permission
+        android:name="com.drdisagree.colorblendr.permission.PREVIEW_THEME"
+        android:protectionLevel="signature" />
+
     <application
         android:name=".ColorBlendr"
         android:allowBackup="true"
@@ -93,6 +97,22 @@
                     android:scheme="colorblendr" />
             </intent-filter>
         </activity>
+
+        <activity-alias
+            android:name=".ui.activities.PreviewAlias"
+            android:exported="true"
+            android:permission="com.drdisagree.colorblendr.permission.PREVIEW_THEME"
+            android:targetActivity=".ui.activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="preview"
+                    android:scheme="colorblendr" />
+            </intent-filter>
+        </activity-alias>
 
         <receiver
             android:name=".service.BroadcastListener"

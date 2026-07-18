@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Button
@@ -50,7 +49,6 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Utilities.developerModeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
@@ -69,13 +67,11 @@ import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
-import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
-import org.json.JSONObject
 import kotlin.math.pow
 import android.graphics.Color as AndroidColor
 
@@ -120,7 +116,6 @@ private fun CommunityScreenContent(
     onSortChange: (CommunitySort) -> Unit,
     onThemeClick: (String) -> Unit
 ) {
-    val context = LocalContext.current
     val hazeState = remember { HazeState() }
     val gridState = rememberLazyGridState()
     val toolbarLifted by remember {
@@ -196,14 +191,8 @@ private fun CommunityScreenContent(
         )
     }
 
-    val developerMode = if (LocalInspectionMode.current) {
-        false
-    } else {
-        remember { developerModeEnabled() }
-    }
     val rootMode = if (LocalInspectionMode.current) true else remember { isRootMode() }
-    var showTestDialog by remember { mutableStateOf(false) }
-    var showShareDialog by remember { mutableStateOf(false) }
+    var showShareDialog by rememberSaveable { mutableStateOf(false) }
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -215,15 +204,6 @@ private fun CommunityScreenContent(
                 showBackButton = true,
                 lifted = toolbarLifted,
                 actions = {
-                    if (developerMode) {
-                        IconButton(onClick = { showTestDialog = true }) {
-                            Icon(
-                                painter = rememberVectorPainter(Icons.Rounded.Edit),
-                                contentDescription = stringResource(R.string.test_theme),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
                     IconButton(
                         onClick = { showShareDialog = true },
                         enabled = rootMode,
@@ -241,17 +221,6 @@ private fun CommunityScreenContent(
 
             if (showShareDialog) {
                 ShareThemeDialog(onDismiss = { showShareDialog = false })
-            }
-
-            if (showTestDialog) {
-                TestThemeDialog(
-                    onDismiss = { showTestDialog = false },
-                    onLoaded = { theme ->
-                        showTestDialog = false
-                        TestThemeHolder.theme = theme
-                        onThemeClick(TestThemeHolder.TEST_THEME_ID)
-                    }
-                )
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -317,89 +286,6 @@ private fun EmptyState() {
     )
 }
 
-@Composable
-private fun TestThemeDialog(
-    onDismiss: () -> Unit,
-    onLoaded: (CommunityTheme) -> Unit
-) {
-    var input by remember { mutableStateOf("") }
-    var invalid by remember { mutableStateOf(false) }
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            modifier = Modifier.widthIn(max = 560.dp)
-        ) {
-            Column(modifier = Modifier.padding(24.dp)) {
-                Text(
-                    text = stringResource(R.string.test_theme),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                OutlinedTextField(
-                    shape = RoundedCornerShape(16.dp),
-                    value = input,
-                    onValueChange = {
-                        input = it
-                        invalid = false
-                    },
-                    placeholder = { Text(text = stringResource(R.string.test_theme_hint)) },
-                    isError = invalid,
-                    supportingText = if (invalid) {
-                        { Text(text = stringResource(R.string.invalid_theme_json)) }
-                    } else {
-                        null
-                    },
-                    minLines = 6,
-                    maxLines = 10,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = onDismiss,
-                        shapes = ButtonDefaults.shapes()
-                    ) {
-                        Text(text = stringResource(android.R.string.cancel))
-                    }
-                    Button(
-                        onClick = {
-                            val theme = parseTestTheme(input)
-                            if (theme == null) {
-                                invalid = true
-                            } else {
-                                onLoaded(theme)
-                            }
-                        },
-                        shapes = ButtonDefaults.shapes(),
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Text(text = stringResource(android.R.string.ok))
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Accepts a full theme file or a bare upload payload (id injected).
-private fun parseTestTheme(input: String): CommunityTheme? = try {
-    val json = JSONObject(input)
-    if (!json.has("id")) json.put("id", TestThemeHolder.TEST_THEME_ID)
-    CommunityThemeCodec.parseTheme(json)
-} catch (_: Exception) {
-    null
-}
-
 // Share current selections as a community theme: name/description dialog ->
 // Turnstile -> worker opens a moderated PR.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -407,9 +293,9 @@ private fun parseTestTheme(input: String): CommunityTheme? = try {
 private fun ShareThemeDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var author by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var author by rememberSaveable { mutableStateOf("") }
     var showChallenge by remember { mutableStateOf(false) }
     var submitting by remember { mutableStateOf(false) }
 
@@ -428,14 +314,14 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                         author = author.trim(),
                         seedColor = seed
                     )
-                    val prUrl = CommunityUploader.upload(payload, token)
+                    val queued = CommunityUploader.upload(payload, token)
                     submitting = false
                     AppSnackbar.show(
                         context.getString(
-                            if (prUrl != null) R.string.theme_submitted else R.string.theme_submit_failed
+                            if (queued) R.string.theme_submitted else R.string.theme_submit_failed
                         )
                     )
-                    if (prUrl != null) onDismiss()
+                    if (queued) onDismiss()
                 }
             },
             onDismiss = { showChallenge = false }

@@ -151,9 +151,9 @@ fun HomeScreen(
         null
     }
     val detailsTheme by produceState<CommunityTheme?>(null, detailsThemeId) {
-        value = when (detailsThemeId) {
-            null -> null
-            TestThemeHolder.TEST_THEME_ID -> TestThemeHolder.theme
+        value = when {
+            detailsThemeId == null -> null
+            detailsThemeId == TestThemeHolder.theme?.id -> TestThemeHolder.theme
             else -> getCommunityThemeRepository().getThemeById(detailsThemeId)
         }
     }

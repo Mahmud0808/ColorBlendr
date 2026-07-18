@@ -88,7 +88,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CommunityThemeDetailsScreen(themeId: String) {
     val inspection = LocalInspectionMode.current
-    val isTestTheme = themeId == TestThemeHolder.TEST_THEME_ID
+    val isTestTheme = TestThemeHolder.isPreviewId(themeId)
     var theme by remember {
         mutableStateOf(if (inspection) previewCommunityTheme else null)
     }

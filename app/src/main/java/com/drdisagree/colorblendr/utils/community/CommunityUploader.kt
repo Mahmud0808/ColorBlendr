@@ -10,8 +10,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
-// Submits a theme payload to the worker, which opens a moderated PR on the
-// themes repo. Returns the PR url, or null on any failure.
+// Submits a theme payload to the worker's review queue; the owner approves
+// before anything reaches GitHub. Returns false on any failure.
 object CommunityUploader {
 
     private val client = OkHttpClient.Builder()
@@ -19,24 +19,24 @@ object CommunityUploader {
         .callTimeout(45, TimeUnit.SECONDS)
         .build()
 
-    suspend fun upload(payload: JSONObject, turnstileToken: String): String? =
+    suspend fun upload(payload: JSONObject, turnstileToken: String): Boolean =
         withContext(Dispatchers.IO) {
             try {
                 val body = JSONObject()
                     .put("payload", payload)
                     .put("turnstileToken", turnstileToken)
+                    .put("device", CommunityVotes.deviceHash())
                     .toString()
                     .toRequestBody("application/json".toMediaType())
 
                 client.newCall(
                     Request.Builder().url("$COMMUNITY_WORKER_URL/upload").post(body).build()
                 ).execute().use { response ->
-                    if (!response.isSuccessful) return@withContext null
-                    JSONObject(response.body.string())
-                        .optString("prUrl").takeIf { it.isNotEmpty() }
+                    if (!response.isSuccessful) return@withContext false
+                    JSONObject(response.body.string()).optBoolean("queued")
                 }
             } catch (_: Exception) {
-                null
+                false
             }
         }
 }

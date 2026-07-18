@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -51,6 +52,9 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
+import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
+import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import org.json.JSONObject
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
@@ -88,12 +92,17 @@ class MainActivity : AppCompatActivity() {
         DynamicColors.applyToActivityIfAvailable(this)
         setupEdgeToEdge()
 
-        // colorblendr://theme/<id> deep link; anything else on data is a
-        // backup file to restore.
+        // colorblendr://theme/<id> opens a community creation by id;
+        // colorblendr://preview?data=<base64 payload> previews an arbitrary
+        // theme (dev app forwarding); anything else on data is a backup file.
         val intentData = intent?.data ?: intent?.parcelable<Uri>("data")
-        val deepLinkThemeId = intentData
+        val communityDeepLink = intentData
             ?.takeIf { it.scheme == "colorblendr" && it.host == "theme" }
             ?.lastPathSegment
+        val previewThemeId = intentData
+            ?.takeIf { it.scheme == "colorblendr" && it.host == "preview" }
+            ?.let { loadPreviewFromDeepLink(it.getQueryParameter("data")) }
+        val deepLinkThemeId = previewThemeId ?: communityDeepLink
         val restoreUri = if (deepLinkThemeId == null) intentData else null
         intent?.removeExtra("data")
 
@@ -136,6 +145,20 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
 
         initSuccess?.let { outState.putBoolean(KEY_INIT_SUCCESS, it) }
+    }
+
+    private fun loadPreviewFromDeepLink(encoded: String?): String? {
+        if (encoded.isNullOrEmpty()) return null
+        return try {
+            val json = String(Base64.decode(encoded, Base64.URL_SAFE), Charsets.UTF_8)
+            val id = TestThemeHolder.newPreviewId()
+            val obj = JSONObject(json).put("id", id)
+            val theme = CommunityThemeCodec.parseTheme(obj) ?: return null
+            TestThemeHolder.theme = theme
+            id
+        } catch (_: Exception) {
+            null
+        }
     }
 
     private fun bootstrap() {

@@ -34,7 +34,7 @@ object CommunityThemeApplier {
     var pendingCreationId: String? = null
 
     fun stageForPreview(theme: CommunityTheme) {
-        pendingCreationId = theme.id.takeUnless { it == TestThemeHolder.TEST_THEME_ID }
+        pendingCreationId = theme.id.takeUnless { TestThemeHolder.isPreviewId(it) }
         PreviewController.beginPreview()
 
         // Community themes replace any selected custom style.
