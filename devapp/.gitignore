@@ -1,1 +1,12 @@
 /build
+/release
+/debug
+*.apk
+*.aab
+*.apks
+*.aab.idsig
+*.apk.idsig
+/*.hprof
+src/*/generated/baselineProfiles/
+**/baseline-prof.txt
+**/baseline.profm
