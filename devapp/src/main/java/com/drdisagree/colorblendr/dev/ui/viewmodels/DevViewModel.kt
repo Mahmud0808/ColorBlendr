@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.data.api.AdminApi
+import com.drdisagree.colorblendr.dev.data.api.ApiResult
 import com.drdisagree.colorblendr.dev.data.config.DevPrefs
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
@@ -47,17 +48,19 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
             val fetchedPending = AdminApi.fetchPending(key)
             val fetchedBlocked = AdminApi.fetchBlocked(key)
             _loading.value = false
-            if (fetchedPending == null || fetchedBlocked == null) {
+            val failure = (fetchedPending as? ApiResult.Failure)
+                ?: (fetchedBlocked as? ApiResult.Failure)
+            if (failure != null) {
                 if (_pending.value == null && _blocked.value == null) {
                     _authorized.value = false
                 }
-                push(R.string.request_failed)
+                push(failureMessage(failure))
             } else {
                 _authorized.value = true
                 savedKey = key
                 DevPrefs.setAdminKey(getApplication(), key)
-                _pending.value = fetchedPending
-                _blocked.value = fetchedBlocked
+                _pending.value = (fetchedPending as ApiResult.Success).data
+                _blocked.value = (fetchedBlocked as ApiResult.Success).data
             }
         }
     }
@@ -72,20 +75,22 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     fun openPreview(item: PendingSubmission) {
         if (!ThemeForwarder.openPreview(getApplication(), item.payloadJson)) {
-            push(R.string.colorblendr_not_installed)
+            push(getApplication<Application>().getString(R.string.colorblendr_not_installed))
         }
     }
 
     fun approve(item: PendingSubmission) {
         _busy.value = true
         viewModelScope.launch {
-            val prUrl = AdminApi.approve(savedKey, item.id)
+            val result = AdminApi.approve(savedKey, item.id)
             _busy.value = false
-            if (prUrl != null) {
-                _pending.update { it?.filterNot { s -> s.id == item.id } }
-                push(R.string.theme_approved)
-            } else {
-                push(R.string.request_failed)
+            when (result) {
+                is ApiResult.Success -> {
+                    _pending.update { it?.filterNot { s -> s.id == item.id } }
+                    push(getApplication<Application>().getString(R.string.theme_approved))
+                }
+
+                is ApiResult.Failure -> push(failureMessage(result))
             }
         }
     }
@@ -93,13 +98,15 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun reject(item: PendingSubmission) {
         _busy.value = true
         viewModelScope.launch {
-            val rejected = AdminApi.reject(savedKey, item.id)
+            val result = AdminApi.reject(savedKey, item.id)
             _busy.value = false
-            if (rejected) {
-                _pending.update { it?.filterNot { s -> s.id == item.id } }
-                push(R.string.theme_rejected)
-            } else {
-                push(R.string.request_failed)
+            when (result) {
+                is ApiResult.Success -> {
+                    _pending.update { it?.filterNot { s -> s.id == item.id } }
+                    push(getApplication<Application>().getString(R.string.theme_rejected))
+                }
+
+                is ApiResult.Failure -> push(failureMessage(result))
             }
         }
     }
@@ -107,22 +114,24 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun block(item: PendingSubmission, reason: String) {
         _busy.value = true
         viewModelScope.launch {
-            val blocked = AdminApi.block(savedKey, item.device, reason)
+            val result = AdminApi.block(savedKey, item.device, reason)
             _busy.value = false
-            if (blocked) {
-                _pending.update { it?.filterNot { s -> s.device == item.device } }
-                _blocked.update {
-                    it?.plus(
-                        BlockedEntry(
-                            device = item.device,
-                            reason = reason,
-                            created = System.currentTimeMillis()
+            when (result) {
+                is ApiResult.Success -> {
+                    _pending.update { it?.filterNot { s -> s.device == item.device } }
+                    _blocked.update {
+                        it?.plus(
+                            BlockedEntry(
+                                device = item.device,
+                                reason = reason,
+                                created = System.currentTimeMillis()
+                            )
                         )
-                    )
+                    }
+                    push(getApplication<Application>().getString(R.string.uploader_blocked))
                 }
-                push(R.string.uploader_blocked)
-            } else {
-                push(R.string.request_failed)
+
+                is ApiResult.Failure -> push(failureMessage(result))
             }
         }
     }
@@ -130,13 +139,15 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun unblock(entry: BlockedEntry) {
         _busy.value = true
         viewModelScope.launch {
-            val unblocked = AdminApi.unblock(savedKey, entry.device)
+            val result = AdminApi.unblock(savedKey, entry.device)
             _busy.value = false
-            if (unblocked) {
-                _blocked.update { it?.filterNot { b -> b.device == entry.device } }
-                push(R.string.uploader_unblocked)
-            } else {
-                push(R.string.request_failed)
+            when (result) {
+                is ApiResult.Success -> {
+                    _blocked.update { it?.filterNot { b -> b.device == entry.device } }
+                    push(getApplication<Application>().getString(R.string.uploader_unblocked))
+                }
+
+                is ApiResult.Failure -> push(failureMessage(result))
             }
         }
     }
@@ -145,12 +156,24 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         _messages.update { it.filterNot { m -> m.id == id } }
     }
 
-    private fun push(resId: Int) {
-        _messages.update {
-            it + StackedMessage(
-                id = System.nanoTime(),
-                text = getApplication<Application>().getString(resId)
+    private fun failureMessage(failure: ApiResult.Failure): String {
+        val app = getApplication<Application>()
+        return when (failure.code) {
+            null -> app.getString(R.string.error_network, failure.error ?: "")
+            401 -> app.getString(R.string.error_unauthorized)
+            429 -> app.getString(R.string.error_locked_out)
+            502 -> app.getString(R.string.error_github)
+            else -> app.getString(
+                R.string.error_generic,
+                failure.code,
+                failure.error ?: app.getString(R.string.error_unknown)
             )
+        }
+    }
+
+    private fun push(text: String) {
+        _messages.update {
+            it + StackedMessage(id = System.nanoTime(), text = text.trim())
         }
     }
 }

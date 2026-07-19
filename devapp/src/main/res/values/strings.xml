@@ -23,7 +23,12 @@
     <string name="sort_by">Sort by</string>
     <string name="sort_newest">Newest first</string>
     <string name="sort_oldest">Oldest first</string>
-    <string name="request_failed">Request failed, check the admin key</string>
+    <string name="error_unauthorized">Unauthorized, admin key rejected</string>
+    <string name="error_locked_out">Locked out after failed attempts, try again within an hour</string>
+    <string name="error_github">GitHub error, PR could not be created</string>
+    <string name="error_network">Network error %1$s</string>
+    <string name="error_generic">Error %1$d: %2$s</string>
+    <string name="error_unknown">unknown</string>
     <string name="theme_approved">Approved, PR opened</string>
     <string name="theme_rejected">Submission rejected</string>
     <string name="uploader_blocked">Uploader blocked</string>
