@@ -33,6 +33,8 @@
     <string name="filter_user_apps">Пользовательские приложения</string>
     <string name="filter_launchable_apps">Запускаемые приложения</string>
     <string name="filter_all">Все приложения</string>
+    <string name="no_apps_found">Приложения не найдены</string>
+    <string name="no_apps_found_desc">Попробуйте другой поиск или фильтр.</string>
     <!-- Theme -->
     <string name="accent_saturation">Насыщенность акцента</string>
     <string name="background_saturation">Насыщенность фона</string>
@@ -67,6 +69,8 @@
     <string name="delete">Удалить</string>
     <string name="cancel">Закрыть</string>
     <string name="title_and_desc_cant_be_empty">Название и описание не могут быть пустыми</string>
+    <string name="title_cant_be_empty">Заголовок не может быть пустым</string>
+    <string name="reorder_style">Пере заказать</string>
     <string name="update_style_confirmation_title">Обновить стиль?</string>
     <string name="update_style_confirmation_desc">Вы уверены, что хотите обновить этот пользовательский стиль, используя вашу текущую тему?</string>
     <string name="delete_style_confirmation_title">Удалить стиль?</string>
@@ -127,7 +131,52 @@
     <string name="buymeacoffee_desc">Подумайте о том, чтобы купить мне кофе</string>
     <string name="contributors">Соучастники</string>
     <string name="total_contributions">Правки: %d</string>
+    <plurals name="total_words_translated">
+        <item quantity="one">%s слово</item>
+        <item quantity="few">%s слова</item>
+        <item quantity="many">%s слова</item>
+        <item quantity="other">%s слова</item>
+    </plurals>
     <string name="translators">Переводчики</string>
+    <string name="community_themes">Творения сообщества</string>
+    <string name="view_all">Посмотреть все</string>
+    <string name="sort_by">Сортировать по</string>
+    <string name="sort_trending">В тренде</string>
+    <string name="sort_upvotes">Наибольшей голосов</string>
+    <string name="sort_downloads">Самые скачиваемые</string>
+    <string name="sort_latest">Последний</string>
+    <string name="community_empty">Пока ничего нет</string>
+    <string name="community_empty_desc">Будьте первым, кто поделится темой с сообществом.</string>
+    <string name="developer_mode_enabled">Режим разработчика включен</string>
+    <string name="developer_mode_already_enabled">Режим разработчика уже включен</string>
+    <string name="test_theme">Тестирование темы</string>
+    <string name="test_theme_hint">Вставить тему в формате JSON</string>
+    <string name="invalid_theme_json">Неверная тема JSON</string>
+    <string name="share_theme">Поделиться текущим творением</string>
+    <string name="share_theme_message">Проверьте \"%1$s\" тему в ColorBlendr!</string>
+    <string name="report">Отчет</string>
+    <string name="report_theme_title">Отчет об этой теме?</string>
+    <string name="report_theme_desc">Отчёт о неприемлемом или поврежденном контенте. Команда модераторов рассмотрит его.</string>
+    <string name="report_sent">Отчет отправлен</string>
+    <string name="report_failed">Отчет не удался, попробуйте еще раз позже</string>
+    <string name="crash_log_title">Журнал сбоев</string>
+    <string name="crash_log_desc">Просмотр сбоев, зафиксированных на этом устройстве</string>
+    <string name="crash_log_copy">Копировать</string>
+    <string name="crash_log_clear">Очистить</string>
+    <string name="crash_log_copied">Скопировано в буфер обмена</string>
+    <string name="crash_log_empty">Сбоев не зафиксировано</string>
+    <string name="crash_log_empty_desc">Повезло тебе. Здесь будут отображаться сбои, зафиксированные на этом устройстве.</string>
+    <string name="share_theme_info">Ваши текущие цвета отправлены на рассмотрение. После одобрения оно появится у всех в течение примерно 12 часов. Передаются только имя, описание и цвета — никаких личных данных.</string>
+    <string name="theme_name">Имя создания</string>
+    <string name="theme_description">Описание</string>
+    <string name="author_optional">Автор (необязательно)</string>
+    <string name="anonymous">Анонимный</string>
+    <string name="try_this_creation">Попробуйте это творение</string>
+    <string name="theme_submitted">Творение отправлено на рассмотрение</string>
+    <string name="theme_submit_failed">Отправка не удалась, повторите попытку позже</string>
+    <string name="submitting_theme">Отправка создания…</string>
+    <string name="verifying_human">Подтверждение того, что вы человек…</string>
+    <string name="complete_verification">Пожалуйста, завершите проверку</string>
     <!-- General -->
     <string name="icon">Иконка</string>
     <string name="reset">Сброс</string>
@@ -139,7 +188,17 @@
     <string name="override">Переопределить</string>
     <string name="copy">Копировать</string>
     <string name="something_went_wrong">Что-то пошло не так.</string>
+    <string name="error_root_unavailable">Служба root не подключена. Предоставьте root доступ и перезапустите приложение.</string>
+    <string name="error_shizuku_unavailable">Shizuku не запущен или отсутствует разрешение.</string>
+    <string name="error_wireless_adb_unavailable">Беспроводной ADB не подключен.</string>
+    <string name="error_overlay_operation">Операция наложения не удалась: %1$s</string>
     <string name="search_hint">Искать здесь…</string>
+    <string name="search_by_color">Поиск по цвету</string>
+    <string name="saved_styles_divider">Ваши стили</string>
+    <string name="tasker_integration_title">Интеграция задачи</string>
+    <string name="tasker_integration_desc">Разрешить программам автоматизации изменять и применять настройки темы через трансляцию</string>
+    <string name="tasker_setup_guide_title">Руководство по настройке</string>
+    <string name="no_browser_found">Не найден браузер для открытия ссылки</string>
     <string name="note_title">Примечание:</string>
     <string name="long_press_to_reset">Нажмите и удерживайте для сброса</string>
     <string name="onboarding_image">Вводное изображение</string>
@@ -180,7 +239,7 @@
     <!-- Requirements -->
     <string name="root_required">Требуется root</string>
     <string name="pixel_launcher_required">Требуется Pixel launcher</string>
-    <string name="pitch_black_theme_required">Требуется кромешная тьма</string>
+    <string name="pitch_black_theme_required">Требуется кромешно чёрный</string>
     <string name="custom_primary_color_required">Требуется основной пользователь</string>
     <string name="android_13_required">Android 13+</string>
     <string name="android_14_required">Android 14+</string>
@@ -211,4 +270,7 @@
     <string name="submit">Продолжить</string>
     <string name="close">Закрыть</string>
     <string name="ok">ОК</string>
+    <string name="preview_apply">Применить</string>
+    <string name="preview_applying">Применение цветов…</string>
+    <string name="preview_discard">Отменить изменения</string>
 </resources>
