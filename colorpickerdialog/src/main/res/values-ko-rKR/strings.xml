@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">색 선택기</string>
+    <string name="colorPickerDialog_wheel">Wheel</string>
     <string name="colorPickerDialog_preset">프리셋</string>
     <string name="colorPickerDialog_image">이미지</string>
     <string name="colorPickerDialog_imageColorPicker">이미지로 색선택</string>

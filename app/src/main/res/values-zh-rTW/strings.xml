@@ -33,6 +33,8 @@
     <string name="filter_user_apps">用戶應用程式</string>
     <string name="filter_launchable_apps">可啟動的應用程式</string>
     <string name="filter_all">所有應用程式</string>
+    <string name="no_apps_found">No apps found</string>
+    <string name="no_apps_found_desc">Try a different search or filter.</string>
     <!-- Theme -->
     <string name="accent_saturation">強調色飽和度</string>
     <string name="background_saturation">背景飽和度</string>
@@ -67,6 +69,8 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="title_and_desc_cant_be_empty">Title and description can\'t be empty</string>
+    <string name="title_cant_be_empty">Title can\'t be empty</string>
+    <string name="reorder_style">Reorder</string>
     <string name="update_style_confirmation_title">Update style?</string>
     <string name="update_style_confirmation_desc">Are you sure you want to update this custom style using your current theme?</string>
     <string name="delete_style_confirmation_title">Delete style?</string>
@@ -127,7 +131,49 @@
     <string name="buymeacoffee_desc">考慮請我喝杯咖啡</string>
     <string name="contributors">背後的貢獻者</string>
     <string name="total_contributions">貢獻次數：%d</string>
+    <plurals name="total_words_translated">
+        <item quantity="other">%s words</item>
+    </plurals>
     <string name="translators">跨越語言的翻譯者</string>
+    <string name="community_themes">Community creations</string>
+    <string name="view_all">View all</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_trending">Trending</string>
+    <string name="sort_upvotes">Top voted</string>
+    <string name="sort_downloads">Most downloaded</string>
+    <string name="sort_latest">Latest</string>
+    <string name="community_empty">Nothing here yet</string>
+    <string name="community_empty_desc">Be the first to share a theme with the community.</string>
+    <string name="developer_mode_enabled">Developer mode enabled</string>
+    <string name="developer_mode_already_enabled">Developer mode is already enabled</string>
+    <string name="test_theme">Test a theme</string>
+    <string name="test_theme_hint">Paste theme JSON</string>
+    <string name="invalid_theme_json">Invalid theme JSON</string>
+    <string name="share_theme">Share current creation</string>
+    <string name="share_theme_message">Check out the \"%1$s\" theme on ColorBlendr!</string>
+    <string name="report">Report</string>
+    <string name="report_theme_title">Report this theme?</string>
+    <string name="report_theme_desc">Report inappropriate or broken content. The moderation team will review it.</string>
+    <string name="report_sent">Report submitted</string>
+    <string name="report_failed">Report failed, try again later</string>
+    <string name="crash_log_title">Crash log</string>
+    <string name="crash_log_desc">View crashes recorded on this device</string>
+    <string name="crash_log_copy">Copy</string>
+    <string name="crash_log_clear">Clear</string>
+    <string name="crash_log_copied">Copied to clipboard</string>
+    <string name="crash_log_empty">No crashes recorded</string>
+    <string name="crash_log_empty_desc">Lucky you. Crashes captured on this device will show up here.</string>
+    <string name="share_theme_info">Your current colors are submitted for review. Once approved, it appears for everyone within about 12 hours. Only the name, description, and colors are shared — no personal data.</string>
+    <string name="theme_name">Creation name</string>
+    <string name="theme_description">Description</string>
+    <string name="author_optional">Author (optional)</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="try_this_creation">Try this creation</string>
+    <string name="theme_submitted">Creation submitted for review</string>
+    <string name="theme_submit_failed">Submission failed, try again later</string>
+    <string name="submitting_theme">Submitting creation…</string>
+    <string name="verifying_human">Verifying that you are human…</string>
+    <string name="complete_verification">Please complete the verification</string>
     <!-- General -->
     <string name="icon">圖示</string>
     <string name="reset">重設</string>
@@ -139,7 +185,17 @@
     <string name="override">覆蓋</string>
     <string name="copy">複製</string>
     <string name="something_went_wrong">發生錯誤。</string>
+    <string name="error_root_unavailable">Root service is not connected. Grant root access and restart the app.</string>
+    <string name="error_shizuku_unavailable">Shizuku is not running or permission is missing.</string>
+    <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
+    <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">在此搜尋...</string>
+    <string name="search_by_color">Search by color</string>
+    <string name="saved_styles_divider">Your styles</string>
+    <string name="tasker_integration_title">Tasker integration</string>
+    <string name="tasker_integration_desc">Let automation apps change and apply theme settings via broadcast</string>
+    <string name="tasker_setup_guide_title">Setup guide</string>
+    <string name="no_browser_found">No browser found to open the link</string>
     <string name="note_title">注意：</string>
     <string name="long_press_to_reset">長按以重設</string>
     <string name="onboarding_image">入門介紹圖片</string>
@@ -211,4 +267,7 @@
     <string name="submit">Submit</string>
     <string name="close">Close</string>
     <string name="ok">OK</string>
+    <string name="preview_apply">Apply</string>
+    <string name="preview_applying">Applying colors…</string>
+    <string name="preview_discard">Discard changes</string>
 </resources>

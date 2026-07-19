@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">顏色選擇器</string>
+    <string name="colorPickerDialog_wheel">Wheel</string>
     <string name="colorPickerDialog_preset">預設</string>
     <string name="colorPickerDialog_image">圖片</string>
     <string name="colorPickerDialog_imageColorPicker">從圖片選取顏色</string>
