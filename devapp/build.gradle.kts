@@ -87,5 +87,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.activity.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.okhttp)
 }

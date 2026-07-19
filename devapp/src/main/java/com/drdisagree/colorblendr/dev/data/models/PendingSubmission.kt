@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.dev
+package com.drdisagree.colorblendr.dev.data.models
 
 data class PendingSubmission(
     val id: String,

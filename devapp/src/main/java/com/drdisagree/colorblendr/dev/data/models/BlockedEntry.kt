@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.dev
+package com.drdisagree.colorblendr.dev.data.models
 
 data class BlockedEntry(
     val device: String,

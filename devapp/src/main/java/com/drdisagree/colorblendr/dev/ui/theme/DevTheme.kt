@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.dev.ui
+package com.drdisagree.colorblendr.dev.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -7,12 +7,14 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalInspectionMode
 
 @Composable
 fun DevTheme(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val colorScheme = if (isSystemInDarkTheme()) {
+    val colorScheme = if (LocalInspectionMode.current) {
+        expressiveLightColorScheme()
+    } else if (isSystemInDarkTheme()) {
         dynamicDarkColorScheme(context)
     } else {
         dynamicLightColorScheme(context)
@@ -22,10 +24,4 @@ fun DevTheme(content: @Composable () -> Unit) {
         colorScheme = colorScheme,
         content = content
     )
-}
-
-@Preview
-@Composable
-private fun DevThemePreview() {
-    MaterialTheme(colorScheme = expressiveLightColorScheme()) {}
 }

@@ -2,6 +2,8 @@
     <string name="app_name">ColorBlendr Dev</string>
     <string name="moderation_console">Community moderation console</string>
     <string name="admin_key">Admin key</string>
+    <string name="reveal_key">Reveal key</string>
+    <string name="hide_key">Hide key</string>
     <string name="unlock">Unlock</string>
     <string name="pending">Pending</string>
     <string name="blocked">Blocked</string>
@@ -17,6 +19,10 @@
     <string name="no_pending">Queue is empty</string>
     <string name="no_blocked">No blocked uploaders</string>
     <string name="search_hint">Search here…</string>
+    <string name="clear_search">Clear search</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_newest">Newest first</string>
+    <string name="sort_oldest">Oldest first</string>
     <string name="request_failed">Request failed, check the admin key</string>
     <string name="theme_approved">Approved, PR opened</string>
     <string name="theme_rejected">Submission rejected</string>

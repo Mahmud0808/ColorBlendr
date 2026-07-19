@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.dev
+package com.drdisagree.colorblendr.dev.data.config
 
 import android.content.Context
 import androidx.core.content.edit

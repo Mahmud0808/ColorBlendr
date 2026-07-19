@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.dev
+package com.drdisagree.colorblendr.dev.utils
 
 import android.content.Context
 import android.content.Intent
