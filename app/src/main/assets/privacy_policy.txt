@@ -33,9 +33,9 @@ The Community Creations feature lets you browse, preview, vote on, and share col
 
 1. **Browsing**: The app downloads a public list of creations from a content delivery network (jsDelivr, backed by a public GitHub repository). This is a plain download; no account or identifier is required.
 
-2. **Voting**: To prevent duplicate votes, when you upvote a creation the app sends a **one-way hashed device identifier** (a SHA-256 hash derived from the Android device ID with an app-specific salt) to a Cloudflare Worker operated by the developer. This hash cannot be reversed to identify you or your device, cannot be used to track you across apps, and is stored solely to enforce one vote per device and to restore your own vote state after a reinstall. Voting is entirely optional.
+2. **Voting**: To prevent duplicate votes, when you upvote a creation the app sends a **one-way hashed device identifier** (a SHA-256 hash derived from the Android device ID with an app-specific salt) to a Cloudflare Worker operated by the developer. Alongside it, the server derives and stores a **one-way salted hash of your IP address** (never the raw IP). Both hashes are irreversible, cannot be used to track you across apps, and are stored solely to enforce one vote per person — checking the device hash *or* the IP hash so that a VPN or a device reset cannot stack votes — and to restore your own vote state after a reinstall. Voting is entirely optional.
 
-3. **Sharing a creation**: If you choose to submit a creation, the app uploads only the color configuration itself plus the name, description, and optional author name you enter. Submissions pass through Cloudflare Turnstile (a privacy-respecting bot check) and are published as a public pull request on GitHub for human review. Do not include personal information in these fields — anything you enter becomes public. Your IP address is processed transiently by the server for rate limiting and is not published.
+3. **Sharing a creation**: If you choose to submit a creation, the app uploads only the color configuration itself plus the name, description, and optional author name you enter. Submissions pass through Cloudflare Turnstile (a privacy-respecting bot check) and are published as a public pull request on GitHub for human review. Do not include personal information in these fields — anything you enter becomes public. For rate limiting, the server stores the same irreversible hashes described under Voting (a salted hash of the device identifier and a salted hash of your IP address); the raw IP is never stored or published. The same applies when you report a creation.
 
 Creations are pure color data. They contain no code and cannot access your device.
 
@@ -97,7 +97,7 @@ ColorBlendr is safe for all age groups and does not knowingly collect, store, or
 Security
 --------
 
-No personal data is collected or stored. The only identifier ever transmitted is the irreversible vote hash described above.
+No personal data is collected or stored. The only identifiers ever retained are the irreversible salted hashes described above — the device hash the app sends and a salted hash of your IP address the server derives — neither of which can be reversed to identify you.
 All community submissions are validated against a strict schema on the server, in the public repository, and again on every device, and are human-reviewed before publication.
 
 Open Source Transparency
