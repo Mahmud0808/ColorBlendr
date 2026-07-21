@@ -9,6 +9,7 @@ import androidx.core.graphics.toColorInt
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_LIGHT
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_LIGHT
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_LIGHT
+import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
@@ -85,9 +86,12 @@ class TaskerIntentReceiver : BroadcastReceiver() {
         }
 
         config.optString(EXTRA_MONET_STYLE).takeIf { it.isNotBlank() }?.let { style ->
-            resetCustomStyleIfNotNull()
-            setCurrentMonetStyle(style.toEnumMonet())
-            changed = true
+            val monet = style.toEnumMonet()
+            if (monet.isAvailable(rootMode, getColorSpecVersion())) {
+                resetCustomStyleIfNotNull()
+                setCurrentMonetStyle(monet)
+                changed = true
+            }
         }
 
         if (rootMode) {

@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.viewmodels
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.R
@@ -35,11 +34,6 @@ import kotlinx.coroutines.withContext
 class StylesViewModel(
     private val customStyleRepository: CustomStyleRepository
 ) : ViewModel() {
-
-    private val isAtleastA13 = isRootMode() ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    private val isAtleastA14 = isRootMode() ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
     private val _styleList = MutableStateFlow<List<StyleModel>>(emptyList())
     val styleList: StateFlow<List<StyleModel>> = _styleList.asStateFlow()
@@ -192,78 +186,30 @@ class StylesViewModel(
     }
 
     private suspend fun getStyleList(): List<StyleModel> {
+        val rootMode = isRootMode()
+        val colorSpecVersion = Utilities.getColorSpecVersion()
+
+        fun styleModel(titleResId: Int, descriptionResId: Int, style: MONET) = StyleModel(
+            titleResId = titleResId,
+            descriptionResId = descriptionResId,
+            isEnabled = style.isAvailable(rootMode, colorSpecVersion),
+            disabledReason = style.disabledReason(rootMode, colorSpecVersion),
+            monetStyle = style
+        )
+
         return arrayListOf(
-            StyleModel(
-                titleResId = R.string.monet_neutral,
-                descriptionResId = R.string.monet_neutral_desc,
-                isEnabled = isAtleastA13,
-                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
-                monetStyle = MONET.SPRITZ
-            ),
-            StyleModel(
-                titleResId = R.string.monet_monochrome,
-                descriptionResId = R.string.monet_monochrome_desc,
-                isEnabled = isAtleastA14,
-                disabledReason = if (!isAtleastA14) R.string.android_14_required else 0,
-                monetStyle = MONET.MONOCHROMATIC
-            ),
-            StyleModel(
-                titleResId = R.string.monet_tonalspot,
-                descriptionResId = R.string.monet_tonalspot_desc,
-                isEnabled = true,
-                monetStyle = MONET.TONAL_SPOT
-            ),
-            StyleModel(
-                titleResId = R.string.monet_vibrant,
-                descriptionResId = R.string.monet_vibrant_desc,
-                isEnabled = isAtleastA13,
-                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
-                monetStyle = MONET.VIBRANT
-            ),
-            StyleModel(
-                titleResId = R.string.monet_rainbow,
-                descriptionResId = R.string.monet_rainbow_desc,
-                isEnabled = isAtleastA13,
-                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
-                monetStyle = MONET.RAINBOW
-            ),
-            StyleModel(
-                titleResId = R.string.monet_expressive,
-                descriptionResId = R.string.monet_expressive_desc,
-                isEnabled = isAtleastA13,
-                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
-                monetStyle = MONET.EXPRESSIVE
-            ),
-            StyleModel(
-                titleResId = R.string.monet_fidelity,
-                descriptionResId = R.string.monet_fidelity_desc,
-                isEnabled = isRootMode(),
-                disabledReason = if (!isRootMode()) R.string.root_required else 0,
-                monetStyle = MONET.FIDELITY
-            ),
-            StyleModel(
-                titleResId = R.string.monet_content,
-                descriptionResId = R.string.monet_content_desc,
-                isEnabled = isRootMode(),
-                disabledReason = if (!isRootMode()) R.string.root_required else 0,
-                monetStyle = MONET.CONTENT
-            ),
-            StyleModel(
-                titleResId = R.string.monet_fruitsalad,
-                descriptionResId = R.string.monet_fruitsalad_desc,
-                isEnabled = isAtleastA13,
-                disabledReason = if (!isAtleastA13) R.string.android_13_required else 0,
-                monetStyle = MONET.FRUIT_SALAD
-            ),
-            StyleModel(
-                titleResId = R.string.monet_cmf,
-                descriptionResId = R.string.monet_cmf_desc,
-                isEnabled = isRootMode() && Utilities.getColorSpecVersion() == 2,
-                disabledReason = if (!isRootMode()) R.string.root_required else if (Utilities.getColorSpecVersion() != 2) R.string.colorspec_2026_required else 0,
-                monetStyle = MONET.CMF
-            )
+            styleModel(R.string.monet_neutral, R.string.monet_neutral_desc, MONET.SPRITZ),
+            styleModel(R.string.monet_monochrome, R.string.monet_monochrome_desc, MONET.MONOCHROMATIC),
+            styleModel(R.string.monet_tonalspot, R.string.monet_tonalspot_desc, MONET.TONAL_SPOT),
+            styleModel(R.string.monet_vibrant, R.string.monet_vibrant_desc, MONET.VIBRANT),
+            styleModel(R.string.monet_rainbow, R.string.monet_rainbow_desc, MONET.RAINBOW),
+            styleModel(R.string.monet_expressive, R.string.monet_expressive_desc, MONET.EXPRESSIVE),
+            styleModel(R.string.monet_fidelity, R.string.monet_fidelity_desc, MONET.FIDELITY),
+            styleModel(R.string.monet_content, R.string.monet_content_desc, MONET.CONTENT),
+            styleModel(R.string.monet_fruitsalad, R.string.monet_fruitsalad_desc, MONET.FRUIT_SALAD),
+            styleModel(R.string.monet_cmf, R.string.monet_cmf_desc, MONET.CMF)
         ).apply {
-            if (!isRootMode()) return@apply
+            if (!rootMode) return@apply
 
             customStyleRepository.getCustomStyles().forEach { customStyle ->
                 add(
