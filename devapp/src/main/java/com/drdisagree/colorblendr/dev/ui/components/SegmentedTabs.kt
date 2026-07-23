@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +35,8 @@ fun SegmentedTabs(
     options: List<String>,
     selected: Int,
     onSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    badges: List<Int> = emptyList()
 ) {
     Box(
         modifier = modifier
@@ -60,8 +63,13 @@ fun SegmentedTabs(
             )
             Row(modifier = Modifier.fillMaxSize()) {
                 options.forEachIndexed { index, label ->
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    val isSelected = selected == index
+                    val count = badges.getOrElse(index) { 0 }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            6.dp, Alignment.CenterHorizontally
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
@@ -75,17 +83,44 @@ fun SegmentedTabs(
                         Text(
                             text = label,
                             style = MaterialTheme.typography.labelLarge,
-                            fontWeight = if (selected == index) {
+                            fontWeight = if (isSelected) {
                                 FontWeight.SemiBold
                             } else {
                                 FontWeight.Normal
                             },
-                            color = if (selected == index) {
+                            color = if (isSelected) {
                                 MaterialTheme.colorScheme.onPrimary
                             } else {
                                 MaterialTheme.colorScheme.onSurfaceVariant
                             }
                         )
+                        if (count > 0) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .sizeIn(minWidth = 18.dp, minHeight = 18.dp)
+                                    .clip(RoundedCornerShape(999.dp))
+                                    .background(
+                                        if (isSelected) {
+                                            MaterialTheme.colorScheme.onPrimary
+                                        } else {
+                                            MaterialTheme.colorScheme.primary
+                                        }
+                                    )
+                                    .padding(horizontal = 5.dp)
+                            ) {
+                                Text(
+                                    text = if (count > 99) "99+" else count.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (isSelected) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -100,7 +135,8 @@ private fun SegmentedTabsPreview() {
         SegmentedTabs(
             options = listOf("Pending", "Blocked"),
             selected = 0,
-            onSelect = {}
+            onSelect = {},
+            badges = listOf(3, 0)
         )
     }
 }

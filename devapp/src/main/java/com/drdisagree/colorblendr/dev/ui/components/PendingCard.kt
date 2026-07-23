@@ -1,8 +1,14 @@
 package com.drdisagree.colorblendr.dev.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -42,14 +48,19 @@ import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
+import androidx.compose.foundation.ExperimentalFoundationApi
 import java.text.DateFormat
 import java.util.Date
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PendingCard(
     item: PendingSubmission,
     busy: Boolean,
-    onPreview: () -> Unit,
+    selectionMode: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onApprove: () -> Unit,
     onReject: () -> Unit,
     onBlock: () -> Unit
@@ -62,16 +73,35 @@ fun PendingCard(
     )
 
     Surface(
-        onClick = onPreview,
-        interactionSource = interactionSource,
         shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = if (selected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainer
+        },
         modifier = Modifier
             .fillMaxWidth()
             .graphicsLayer {
                 scaleX = pressScale
                 scaleY = pressScale
             }
+            .then(
+                if (selected) {
+                    Modifier.border(
+                        2.dp,
+                        MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(24.dp)
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .combinedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
         Column(
             modifier = Modifier.padding(
@@ -79,6 +109,35 @@ fun PendingCard(
             )
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                AnimatedVisibility(
+                    visible = selectionMode,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally()
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .size(24.dp)
+                            .background(
+                                if (selected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerHighest
+                                },
+                                CircleShape
+                            )
+                    ) {
+                        if (selected) {
+                            Icon(
+                                painter = rememberVectorPainter(Icons.Rounded.Check),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy((-8).dp),
                     modifier = Modifier.width(62.dp)
@@ -123,45 +182,47 @@ fun PendingCard(
                     }
                 }
             }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-                FilledIconButton(
-                    onClick = onApprove,
-                    enabled = !busy,
-                    shapes = IconButtonDefaults.shapes()
+            AnimatedVisibility(visible = !selectionMode) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
                 ) {
-                    Icon(
-                        painter = rememberVectorPainter(Icons.Rounded.Check),
-                        contentDescription = stringResource(R.string.approve)
-                    )
-                }
-                FilledTonalIconButton(
-                    onClick = onReject,
-                    enabled = !busy,
-                    shapes = IconButtonDefaults.shapes()
-                ) {
-                    Icon(
-                        painter = rememberVectorPainter(Icons.Rounded.Close),
-                        contentDescription = stringResource(R.string.reject)
-                    )
-                }
-                FilledTonalIconButton(
-                    onClick = onBlock,
-                    enabled = !busy,
-                    shapes = IconButtonDefaults.shapes(),
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                ) {
-                    Icon(
-                        painter = rememberVectorPainter(Icons.Rounded.Block),
-                        contentDescription = stringResource(R.string.block)
-                    )
+                    FilledIconButton(
+                        onClick = onApprove,
+                        enabled = !busy,
+                        shapes = IconButtonDefaults.shapes()
+                    ) {
+                        Icon(
+                            painter = rememberVectorPainter(Icons.Rounded.Check),
+                            contentDescription = stringResource(R.string.approve)
+                        )
+                    }
+                    FilledTonalIconButton(
+                        onClick = onReject,
+                        enabled = !busy,
+                        shapes = IconButtonDefaults.shapes()
+                    ) {
+                        Icon(
+                            painter = rememberVectorPainter(Icons.Rounded.Close),
+                            contentDescription = stringResource(R.string.reject)
+                        )
+                    }
+                    FilledTonalIconButton(
+                        onClick = onBlock,
+                        enabled = !busy,
+                        shapes = IconButtonDefaults.shapes(),
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    ) {
+                        Icon(
+                            painter = rememberVectorPainter(Icons.Rounded.Block),
+                            contentDescription = stringResource(R.string.block)
+                        )
+                    }
                 }
             }
         }
@@ -185,7 +246,10 @@ private fun PendingCardPreview() {
                 payloadJson = "{}"
             ),
             busy = false,
-            onPreview = {},
+            selectionMode = false,
+            selected = false,
+            onClick = {},
+            onLongClick = {},
             onApprove = {},
             onReject = {},
             onBlock = {}

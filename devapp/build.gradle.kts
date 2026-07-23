@@ -88,5 +88,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.activity.compose)
     implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.work.runtime)
     implementation(libs.okhttp)
 }

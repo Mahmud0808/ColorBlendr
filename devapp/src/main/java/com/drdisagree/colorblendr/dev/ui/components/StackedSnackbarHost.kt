@@ -8,8 +8,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +20,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +45,8 @@ fun StackedSnackbarHost(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
             .fillMaxSize()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 12.dp)
             .padding(bottom = 12.dp)
     ) {
@@ -51,7 +57,7 @@ fun StackedSnackbarHost(
                         MutableTransitionState(false).apply { targetState = true }
                     }
                     LaunchedEffect(msg.id) {
-                        delay(3500)
+                        delay(msg.durationMillis)
                         visibleState.targetState = false
                     }
                     LaunchedEffect(msg.id) {
@@ -81,7 +87,23 @@ fun StackedSnackbarHost(
                                 contentColor = MaterialTheme.colorScheme.inverseOnSurface,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(text = msg.text)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = msg.text,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    msg.onAction?.let { action ->
+                                        TextButton(
+                                            onClick = action,
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = msg.actionLabel.orEmpty(),
+                                                color = MaterialTheme.colorScheme.inversePrimary
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -91,7 +92,7 @@ fun KeyGate(
         OutlinedTextField(
             shape = RoundedCornerShape(20.dp),
             value = adminKey,
-            onValueChange = onKeyChange,
+            onValueChange = { onKeyChange(it.filterNot(Char::isISOControl)) },
             label = { Text(text = stringResource(R.string.admin_key)) },
             singleLine = true,
             enabled = !loading,
@@ -134,7 +135,14 @@ fun KeyGate(
                 .padding(top = 20.dp)
                 .height(56.dp)
         ) {
-            Text(text = stringResource(R.string.unlock))
+            if (loading) {
+                LoadingIndicator(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                    modifier = Modifier.size(32.dp)
+                )
+            } else {
+                Text(text = stringResource(R.string.unlock))
+            }
         }
         Spacer(modifier = Modifier.height(72.dp))
     }

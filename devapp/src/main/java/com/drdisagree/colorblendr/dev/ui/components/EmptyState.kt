@@ -4,54 +4,72 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Inbox
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun EmptyState(text: String) {
+fun EmptyState(
+    text: String,
+    icon: ImageVector = Icons.Rounded.Inbox,
+    subtitle: String? = null
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 40.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(72.dp)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape)
+                .size(120.dp)
+                .clip(MaterialShapes.Cookie9Sided.toShape())
+                .background(MaterialTheme.colorScheme.primaryContainer)
         ) {
             Icon(
-                painter = rememberVectorPainter(Icons.Rounded.Inbox),
+                imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(32.dp)
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(56.dp)
             )
         }
+
         Text(
             text = text,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(top = 24.dp)
         )
-        Spacer(modifier = Modifier.height(96.dp))
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
 }
 
@@ -59,6 +77,9 @@ fun EmptyState(text: String) {
 @Composable
 private fun EmptyStatePreview() {
     DevTheme {
-        EmptyState(text = "Queue is empty")
+        EmptyState(
+            text = "Queue is empty",
+            subtitle = "New submissions will show up here."
+        )
     }
 }

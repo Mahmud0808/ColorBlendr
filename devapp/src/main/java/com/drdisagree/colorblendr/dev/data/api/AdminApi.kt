@@ -103,15 +103,18 @@ object AdminApi {
     private fun get(path: String, adminKey: String): Request =
         Request.Builder()
             .url("$WORKER_URL/admin/$path")
-            .header("x-admin-key", adminKey)
+            .header("x-admin-key", sanitize(adminKey))
             .build()
 
     private fun post(action: String, adminKey: String, payload: JSONObject): Request =
         Request.Builder()
             .url("$WORKER_URL/admin/$action")
-            .header("x-admin-key", adminKey)
+            .header("x-admin-key", sanitize(adminKey))
             .post(payload.toString().toRequestBody("application/json".toMediaType()))
             .build()
+
+    private fun sanitize(value: String): String =
+        value.filter { it.code in 0x20..0x7e }.trim()
 
     private fun JSONObject.color(key: String): Int? =
         optString(key).takeIf { it.isNotEmpty() }?.let {
