@@ -61,7 +61,6 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
                 _authorized.value = true
                 savedKey = key
                 DevPrefs.setAdminKey(getApplication(), key)
-                DevPrefs.setLastCheck(getApplication(), System.currentTimeMillis())
                 _pending.value = (fetchedPending as ApiResult.Success).data
                 _blocked.value = (fetchedBlocked as ApiResult.Success).data
             }
