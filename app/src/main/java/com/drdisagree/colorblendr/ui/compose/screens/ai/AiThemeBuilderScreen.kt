@@ -67,6 +67,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
@@ -326,6 +327,8 @@ private fun AiBuilderContent(
         }
     }
     val rootMode = remember { isRootMode() }
+    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
 
     var prompt by rememberSaveable { mutableStateOf("") }
     val themes = AiThemeHolder.themes
@@ -380,6 +383,7 @@ private fun AiBuilderContent(
                 contentPadding = PaddingValues(
                     top = 12.dp,
                     bottom = LocalPreviewBottomInset.current
+                            + if (previewColors != null && !isApplying) 0.dp else 12.dp
                 ),
                 modifier = Modifier
                     .fillMaxSize()
