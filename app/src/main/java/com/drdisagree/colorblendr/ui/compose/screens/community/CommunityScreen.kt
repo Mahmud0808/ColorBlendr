@@ -66,6 +66,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
+import com.drdisagree.colorblendr.utils.ai.AiThemeHolder
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
@@ -293,8 +294,9 @@ private fun EmptyState() {
 private fun ShareThemeDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var name by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
+    val aiTheme = remember { AiThemeHolder.stagedThemeIfCurrent() }
+    var name by rememberSaveable { mutableStateOf(aiTheme?.name ?: "") }
+    var description by rememberSaveable { mutableStateOf(aiTheme?.description ?: "") }
     var author by rememberSaveable { mutableStateOf("") }
     var showChallenge by remember { mutableStateOf(false) }
     var submitting by remember { mutableStateOf(false) }

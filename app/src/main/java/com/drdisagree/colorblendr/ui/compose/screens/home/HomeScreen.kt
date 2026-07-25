@@ -86,6 +86,7 @@ import com.drdisagree.colorblendr.ui.compose.navigation.navigateSingleTop
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
 import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
 import com.drdisagree.colorblendr.ui.compose.screens.about.CrashLogScreen
+import com.drdisagree.colorblendr.ui.compose.screens.ai.AiThemeBuilderScreen
 import com.drdisagree.colorblendr.ui.compose.screens.colors.ColorsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityThemeDetailsScreen
@@ -424,6 +425,9 @@ fun HomeScreen(
                                     },
                                     onNavigateToCommunityTheme = { themeId ->
                                         nestedNavController.navigateSingleTop("communityTheme/$themeId")
+                                    },
+                                    onNavigateToAiBuilder = {
+                                        nestedNavController.navigateSingleTop(Routes.AI_THEME_BUILDER)
                                     }
                                 )
                             }
@@ -497,6 +501,7 @@ fun HomeScreen(
                             }
                             composable(Routes.CRASH_LOG) { CrashLogScreen() }
                             composable(Routes.PRIVACY_POLICY) { PrivacyPolicyScreen() }
+                            composable(Routes.AI_THEME_BUILDER) { AiThemeBuilderScreen() }
                         }
                     }
 

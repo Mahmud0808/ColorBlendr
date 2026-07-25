@@ -1,12 +1,9 @@
 package com.drdisagree.colorblendr.ui.compose.screens.colors
 
-import androidx.compose.material.icons.rounded.Colorize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,6 +28,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -51,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -76,7 +79,9 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPalettePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.CommunityShowcase
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -95,7 +100,8 @@ fun ColorsScreen(
     colorsViewModel: ColorsViewModel,
     onNavigateToColorPalette: () -> Unit,
     onNavigateToCommunity: () -> Unit = {},
-    onNavigateToCommunityTheme: (String) -> Unit = {}
+    onNavigateToCommunityTheme: (String) -> Unit = {},
+    onNavigateToAiBuilder: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -198,159 +204,189 @@ fun ColorsScreen(
         color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            AppToolbar(
-                title = stringResource(R.string.app_name),
-                lifted = toolbarLifted
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .contentWidthLimit()
-                    .verticalScroll(scrollState)
-                    .padding(bottom = LocalPreviewBottomInset.current)
-                    .padding(top = 12.dp)
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
-                    color = MaterialTheme.colorScheme.surface,
-                    border = AppCardDefaults.outlinedBorder(),
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column {
+                AppToolbar(
+                    title = stringResource(R.string.app_name),
+                    lifted = toolbarLifted
+                )
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = dimensionResource(R.dimen.container_margin_horizontal),
-                            end = dimensionResource(R.dimen.container_margin_horizontal),
-                            bottom = dimensionResource(R.dimen.container_margin_bottom)
-                        )
+                        .fillMaxSize()
+                        .contentWidthLimit()
+                        .verticalScroll(scrollState)
+                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(top = 12.dp, bottom = if (rootMode) 80.dp else 0.dp)
                 ) {
-                    Column {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(
-                                8.dp,
-                                Alignment.CenterHorizontally
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 22.dp, end = 22.dp, top = 16.dp)
-                        ) {
-                            ToggleButton(
-                                checked = showWallpaperColors,
-                                onCheckedChange = {
-                                    if (it && !showWallpaperColors) {
-                                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                        showWallpaperColors = true
-                                    }
-                                }
+                    Surface(
+                        shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
+                        color = MaterialTheme.colorScheme.surface,
+                        border = AppCardDefaults.outlinedBorder(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = dimensionResource(R.dimen.container_margin_horizontal),
+                                end = dimensionResource(R.dimen.container_margin_horizontal),
+                                bottom = dimensionResource(R.dimen.container_margin_bottom)
+                            )
+                    ) {
+                        Column {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    8.dp,
+                                    Alignment.CenterHorizontally
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 22.dp, end = 22.dp, top = 16.dp)
                             ) {
-                                Text(
-                                    text = stringResource(R.string.wallpaper_colors),
-                                    fontSize = 13.sp
-                                )
-                            }
-                            ToggleButton(
-                                checked = !showWallpaperColors,
-                                onCheckedChange = {
-                                    if (it && showWallpaperColors) {
-                                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                        showWallpaperColors = false
+                                ToggleButton(
+                                    checked = showWallpaperColors,
+                                    onCheckedChange = {
+                                        if (it && !showWallpaperColors) {
+                                            haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                            showWallpaperColors = true
+                                        }
                                     }
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.wallpaper_colors),
+                                        fontSize = 13.sp
+                                    )
                                 }
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.basic_colors),
-                                    fontSize = 13.sp
-                                )
-                            }
-                        }
-
-                        val gridFadeSpec =
-                            MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
-                        val gridSizeSpec =
-                            MaterialTheme.motionScheme.defaultSpatialSpec<IntSize>()
-
-                        AnimatedContent(
-                            targetState = showWallpaperColors,
-                            transitionSpec = {
-                                fadeIn(gridFadeSpec)
-                                    .togetherWith(fadeOut(gridFadeSpec))
-                                    .using(SizeTransform(clip = true) { _, _ -> gridSizeSpec })
-                            },
-                            label = "colorGrid"
-                        ) { showWallpaper ->
-                        FlowRow(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    start = 24.dp,
-                                    end = 24.dp,
-                                    top = 18.dp,
-                                    bottom = 24.dp
-                                )
-                        ) {
-                            val colors = if (showWallpaper) wallpaperColors else basicColors
-                            val palettes = if (showWallpaper) wallpaperPalettes else basicPalettes
-
-                            colors.forEach { color ->
-                                val palette = palettes[color]
-                                val selected = color == seedColor &&
-                                        if (showWallpaper) !customColor else true
-
-                                if (palette != null) {
-                                    val textColor = calculateTextColor(color)
-                                    WallColorPreviewCanvas(
-                                        colors = WallColorPreviewColors(
-                                            halfCircle = Color(palette[0][4]),
-                                            firstQuarterCircle = Color(palette[2][5]),
-                                            secondQuarterCircle = Color(palette[1][6]),
-                                            square = Color(palette[4][if (!isDark) 3 else 9]),
-                                            centerCircle = Color(color),
-                                            tick = Color(
-                                                palette[4][if (textColor == AndroidColor.WHITE) 2 else 11]
-                                            )
-                                        ),
-                                        selected = selected,
-                                        onClick = {
-                                            applyColor(color, showWallpaper, selected)
-                                        },
-                                        modifier = Modifier
-                                            .padding(12.dp)
-                                            .size(48.dp)
+                                ToggleButton(
+                                    checked = !showWallpaperColors,
+                                    onCheckedChange = {
+                                        if (it && showWallpaperColors) {
+                                            haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                            showWallpaperColors = false
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.basic_colors),
+                                        fontSize = 13.sp
                                     )
                                 }
                             }
 
-                            if (!showWallpaper) {
-                                CustomColorTile(
-                                    color = seedColor,
-                                    selected = customColor && !colors.contains(seedColor),
-                                    onClick = { showSeedColorPicker = true },
+                            val gridFadeSpec =
+                                MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
+                            val gridSizeSpec =
+                                MaterialTheme.motionScheme.defaultSpatialSpec<IntSize>()
+
+                            AnimatedContent(
+                                targetState = showWallpaperColors,
+                                transitionSpec = {
+                                    fadeIn(gridFadeSpec)
+                                        .togetherWith(fadeOut(gridFadeSpec))
+                                        .using(SizeTransform(clip = true) { _, _ -> gridSizeSpec })
+                                },
+                                label = "colorGrid"
+                            ) { showWallpaper ->
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
-                                        .padding(12.dp)
-                                        .size(48.dp)
-                                )
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = 24.dp,
+                                            end = 24.dp,
+                                            top = 18.dp,
+                                            bottom = 24.dp
+                                        )
+                                ) {
+                                    val colors = if (showWallpaper) wallpaperColors else basicColors
+                                    val palettes =
+                                        if (showWallpaper) wallpaperPalettes else basicPalettes
+
+                                    colors.forEach { color ->
+                                        val palette = palettes[color]
+                                        val selected = color == seedColor &&
+                                                if (showWallpaper) !customColor else true
+
+                                        if (palette != null) {
+                                            val textColor = calculateTextColor(color)
+                                            WallColorPreviewCanvas(
+                                                colors = WallColorPreviewColors(
+                                                    halfCircle = Color(palette[0][4]),
+                                                    firstQuarterCircle = Color(palette[2][5]),
+                                                    secondQuarterCircle = Color(palette[1][6]),
+                                                    square = Color(palette[4][if (!isDark) 3 else 9]),
+                                                    centerCircle = Color(color),
+                                                    tick = Color(
+                                                        palette[4][if (textColor == AndroidColor.WHITE) 2 else 11]
+                                                    )
+                                                ),
+                                                selected = selected,
+                                                onClick = {
+                                                    applyColor(color, showWallpaper, selected)
+                                                },
+                                                modifier = Modifier
+                                                    .padding(12.dp)
+                                                    .size(48.dp)
+                                            )
+                                        }
+                                    }
+
+                                    if (!showWallpaper) {
+                                        CustomColorTile(
+                                            color = seedColor,
+                                            selected = customColor && !colors.contains(seedColor),
+                                            onClick = { showSeedColorPicker = true },
+                                            modifier = Modifier
+                                                .padding(12.dp)
+                                                .size(48.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
-                        }
                     }
+
+                    CommunityShowcase(
+                        onViewAll = onNavigateToCommunity,
+                        onThemeClick = { onNavigateToCommunityTheme(it.id) },
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+
+                    ColorPalettePreviewCard(
+                        title = stringResource(R.string.color_palette_title),
+                        summary = stringResource(R.string.color_palette_desc),
+                        onClick = onNavigateToColorPalette
+                    )
                 }
+            }
 
-                CommunityShowcase(
-                    onViewAll = onNavigateToCommunity,
-                    onThemeClick = { onNavigateToCommunityTheme(it.id) },
-                    modifier = Modifier.padding(bottom = 4.dp)
+            if (rootMode) {
+                val restPadding by animateDpAsState(
+                    targetValue = if (SnackbarVisibility.visible) 76.dp else 16.dp,
+                    animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+                    label = "aiFabSnackbarPush"
                 )
-
-                ColorPalettePreviewCard(
-                    title = stringResource(R.string.color_palette_title),
-                    summary = stringResource(R.string.color_palette_desc),
-                    onClick = onNavigateToColorPalette
+                val fabBottom = maxOf(
+                    LocalPreviewBottomInset.current,
+                    navBottomInset() + restPadding.coerceAtLeast(0.dp)
                 )
+                FloatingActionButton(
+                    onClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onNavigateToAiBuilder()
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 20.dp, bottom = fabBottom)
+                ) {
+                    Icon(
+                        painter = rememberVectorPainter(Icons.Rounded.AutoAwesome),
+                        contentDescription = stringResource(R.string.ai_theme_builder_title)
+                    )
+                }
             }
         }
     }
 }
-
 
 // Custom seed color entry living at the end of the basic color grid: rounded
 // square in the picked color, contrast plus icon, ring when active.

@@ -18,11 +18,13 @@ object Routes {
     const val CRASH_LOG = "crashLog"
     const val COMMUNITY = "community"
     const val COMMUNITY_THEME = "communityTheme/{themeId}"
+    const val AI_THEME_BUILDER = "aiThemeBuilder"
 }
 
 // Group 1-4 mapping for slide directions + bottom bar highlighting.
 fun tabGroup(route: String?): Int = when (route?.substringBefore("?")) {
-    Routes.COLORS, Routes.COLOR_PALETTE, Routes.COMMUNITY, Routes.COMMUNITY_THEME -> 1
+    Routes.COLORS, Routes.COLOR_PALETTE, Routes.COMMUNITY, Routes.COMMUNITY_THEME,
+    Routes.AI_THEME_BUILDER -> 1
     Routes.THEME -> 2
     Routes.STYLES -> 3
     Routes.SETTINGS_BASE, Routes.SETTINGS_ADVANCED, Routes.ABOUT, Routes.PRIVACY_POLICY,

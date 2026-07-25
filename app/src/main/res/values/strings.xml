@@ -294,4 +294,27 @@
     <string name="preview_apply">Apply</string>
     <string name="preview_applying">Applying colors…</string>
     <string name="preview_discard">Discard changes</string>
+    <string name="ai_theme_builder_title">AI Theme Builder</string>
+    <string name="ai_setup_title">Connect Gemini</string>
+    <string name="ai_setup_desc">Theme generation runs on Google Gemini and needs your own free API key.</string>
+    <string name="ai_setup_step_1">Open %1$s and sign in with your Google account</string>
+    <string name="ai_setup_step_2">Tap Create API key</string>
+    <string name="ai_setup_step_3">Copy the generated key</string>
+    <string name="ai_setup_step_4">Paste it below and save</string>
+    <string name="ai_api_key_hint">Gemini API key</string>
+    <string name="ai_save_key">Save</string>
+    <string name="ai_key_invalid">Invalid API key, check it and try again</string>
+    <string name="ai_key_network">Could not verify the key, check your connection</string>
+    <string name="ai_prompt_hint">Describe your dream theme…</string>
+    <string name="ai_generate">Generate</string>
+    <string name="ai_reset_key">Reset API key</string>
+    <string name="ai_reset_key_message">Delete the saved Gemini API key? You will need to set it up again.</string>
+    <string name="ai_reset_key_confirm">Delete</string>
+    <string name="ai_error_auth">Authentication failed, reset your API key and try again</string>
+    <string name="ai_error_rate_limit">Rate limit reached, wait a minute and try again</string>
+    <string name="ai_error_timeout">Request timed out, try again</string>
+    <string name="ai_error_network">Network error, check your connection</string>
+    <string name="ai_error_invalid">The AI returned an invalid theme, try generating again</string>
+    <string name="ai_error_server">Gemini is unavailable right now, try again later</string>
+    <string name="ai_theme_active">Currently trying</string>
 </resources>
