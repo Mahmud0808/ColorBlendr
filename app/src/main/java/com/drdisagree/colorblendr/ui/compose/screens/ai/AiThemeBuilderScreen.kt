@@ -152,7 +152,7 @@ private fun AiKeySetupContent(
                     .fillMaxSize()
                     .contentWidthLimit()
                     .verticalScroll(scrollState)
-                    .padding(bottom = LocalPreviewBottomInset.current)
+                    .padding(bottom = LocalPreviewBottomInset.current + 12.dp)
                     .padding(
                         horizontal = dimensionResource(R.dimen.container_margin_horizontal)
                     )

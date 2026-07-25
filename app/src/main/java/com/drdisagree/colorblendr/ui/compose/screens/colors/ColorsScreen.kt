@@ -55,7 +55,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -103,7 +102,6 @@ fun ColorsScreen(
     onNavigateToCommunityTheme: (String) -> Unit = {},
     onNavigateToAiBuilder: () -> Unit = {}
 ) {
-    val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -111,6 +109,8 @@ fun ColorsScreen(
     val isDark = isSystemInDarkTheme()
     val rootMode = remember { isRootMode() }
 
+    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     val wallpaperColors by colorsViewModel.wallpaperColors.collectAsStateWithLifecycle()
     val basicColors by colorsViewModel.basicColors.collectAsStateWithLifecycle()
     val wallpaperPalettes by colorsViewModel.wallpaperColorPalettes.collectAsStateWithLifecycle()
@@ -216,7 +216,13 @@ fun ColorsScreen(
                         .contentWidthLimit()
                         .verticalScroll(scrollState)
                         .padding(bottom = LocalPreviewBottomInset.current)
-                        .padding(top = 12.dp, bottom = if (rootMode) 80.dp else 0.dp)
+                        .padding(
+                            top = 12.dp,
+                            bottom = if (rootMode)
+                                if (previewColors != null && !isApplying) 68.dp else 80.dp
+                            else
+                                0.dp
+                        )
                 ) {
                     Surface(
                         shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
