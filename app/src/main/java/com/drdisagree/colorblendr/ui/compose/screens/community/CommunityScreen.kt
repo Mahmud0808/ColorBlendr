@@ -20,9 +20,6 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -61,12 +58,13 @@ import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
+import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
+import com.drdisagree.colorblendr.utils.ai.AiThemeHolder
 import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
-import com.drdisagree.colorblendr.utils.ai.AiThemeHolder
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
@@ -205,18 +203,13 @@ private fun CommunityScreenContent(
                 showBackButton = true,
                 lifted = toolbarLifted,
                 actions = {
-                    IconButton(
-                        onClick = { showShareDialog = true },
+                    ToolbarIconPill(
+                        icon = rememberVectorPainter(Icons.Rounded.IosShare),
+                        width = 40.dp,
                         enabled = rootMode,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    ) {
-                        Icon(
-                            painter = rememberVectorPainter(Icons.Rounded.IosShare),
-                            contentDescription = stringResource(R.string.share_theme)
-                        )
-                    }
+                        contentDescription = stringResource(R.string.share_theme),
+                        onClick = { showShareDialog = true }
+                    )
                 }
             )
 

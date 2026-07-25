@@ -23,7 +23,8 @@ fun ConfirmDialog(
     confirmText: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    dismissText: String = stringResource(AndroidR.string.cancel)
+    dismissText: String = stringResource(AndroidR.string.cancel),
+    destructive: Boolean = false
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -39,7 +40,15 @@ fun ConfirmDialog(
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                shapes = ButtonDefaults.shapes()
+                shapes = ButtonDefaults.shapes(),
+                colors = if (destructive) {
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
             ) {
                 Text(text = confirmText)
             }

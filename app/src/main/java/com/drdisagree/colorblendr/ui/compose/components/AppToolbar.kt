@@ -3,9 +3,7 @@ package com.drdisagree.colorblendr.ui.compose.components
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -15,20 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,7 +65,6 @@ fun AppToolbar(
         if (showBackButton) {
             ToolbarIconPill(
                 icon = rememberVectorPainter(Icons.AutoMirrored.Rounded.ArrowBack),
-                shape = CircleShape,
                 width = 40.dp,
                 onClick = { backDispatcher?.onBackPressed() }
             )
@@ -87,34 +82,42 @@ fun AppToolbar(
     }
 }
 
-// Surface pill (surfaceBright at night) behind 24dp icon.
 @Composable
 fun ToolbarIconPill(
     icon: Painter,
-    shape: Shape,
     width: Dp,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    destructive: Boolean = false,
+    contentDescription: String? = null
 ) {
-    val bgColor = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.surfaceBright
+    val bgColor = when {
+        destructive -> MaterialTheme.colorScheme.errorContainer
+        isSystemInDarkTheme() -> MaterialTheme.colorScheme.surfaceBright
+        else -> MaterialTheme.colorScheme.surfaceDim
+    }
+    val contentColor = if (destructive) {
+        MaterialTheme.colorScheme.onErrorContainer
     } else {
-        MaterialTheme.colorScheme.surfaceDim
+        MaterialTheme.colorScheme.onSurface
     }
 
-    Box(
-        contentAlignment = Alignment.Center,
+    FilledTonalIconButton(
+        onClick = onClick,
+        enabled = enabled,
+        shapes = IconButtonDefaults.shapes(),
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = bgColor,
+            contentColor = contentColor
+        ),
         modifier = modifier
             .width(width)
             .height(40.dp)
-            .clip(shape)
-            .background(bgColor)
-            .clickable(onClick = onClick)
     ) {
         Icon(
             painter = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
+            contentDescription = contentDescription,
             modifier = Modifier.size(24.dp)
         )
     }
@@ -124,7 +127,6 @@ fun ToolbarIconPill(
 fun ToolbarOverflowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     ToolbarIconPill(
         icon = rememberVectorPainter(Icons.Rounded.MoreVert),
-        shape = RoundedCornerShape(12.dp),
         width = 36.dp,
         onClick = onClick,
         modifier = modifier

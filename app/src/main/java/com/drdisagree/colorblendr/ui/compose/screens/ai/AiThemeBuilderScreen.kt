@@ -181,7 +181,7 @@ private fun AiKeySetupContent(
                         val step1Template = stringResource(R.string.ai_setup_step_1)
                         val step1 = remember(step1Template, linkColor) {
                             buildAnnotatedString {
-                                val parts = step1Template.split("%1\$s")
+                                val parts = step1Template.split($$"%1$s")
                                 append(parts.getOrElse(0) { "" })
                                 withLink(
                                     LinkAnnotation.Url("https://aistudio.google.com/apikey")
@@ -349,7 +349,8 @@ private fun AiBuilderContent(
                 showResetDialog = false
                 onKeyReset()
             },
-            onDismiss = { showResetDialog = false }
+            onDismiss = { showResetDialog = false },
+            destructive = true
         )
     }
 
@@ -365,8 +366,8 @@ private fun AiBuilderContent(
                 actions = {
                     ToolbarIconPill(
                         icon = rememberVectorPainter(Icons.Rounded.KeyOff),
-                        shape = CircleShape,
                         width = 40.dp,
+                        contentDescription = stringResource(R.string.ai_reset_key),
                         onClick = { showResetDialog = true }
                     )
                 }
@@ -378,7 +379,7 @@ private fun AiBuilderContent(
                 state = listState,
                 contentPadding = PaddingValues(
                     top = 12.dp,
-                    bottom = LocalPreviewBottomInset.current + 16.dp
+                    bottom = LocalPreviewBottomInset.current
                 ),
                 modifier = Modifier
                     .fillMaxSize()

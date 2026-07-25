@@ -2,14 +2,6 @@ package com.drdisagree.colorblendr.ui.compose.screens.community
 
 import android.content.Intent
 import androidx.compose.foundation.background
-import androidx.compose.material.icons.rounded.ThumbUp
-import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.Flag
-import androidx.compose.material.icons.rounded.Share
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,16 +14,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -49,6 +47,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -67,6 +67,7 @@ import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.previewCommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -212,14 +213,17 @@ private fun DetailsContent(
                     lifted = toolbarLifted,
                     actions = {
                         if (shareable) {
-                            IconButton(onClick = { showReportDialog = true }) {
-                                Icon(
-                                    painter = rememberVectorPainter(Icons.Rounded.Flag),
-                                    contentDescription = stringResource(R.string.report),
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                            IconButton(
+                            ToolbarIconPill(
+                                icon = rememberVectorPainter(Icons.Rounded.Flag),
+                                width = 40.dp,
+                                contentDescription = stringResource(R.string.report),
+                                onClick = { showReportDialog = true }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ToolbarIconPill(
+                                icon = rememberVectorPainter(Icons.Rounded.Share),
+                                width = 40.dp,
+                                contentDescription = stringResource(R.string.share_theme),
                                 onClick = {
                                     val link = "$COMMUNITY_WORKER_URL/theme/${theme.id}"
                                     context.startActivity(
@@ -235,13 +239,7 @@ private fun DetailsContent(
                                         )
                                     )
                                 }
-                            ) {
-                                Icon(
-                                    painter = rememberVectorPainter(Icons.Rounded.Share),
-                                    contentDescription = stringResource(R.string.share_theme),
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
+                            )
                         }
                     }
                 )
@@ -350,13 +348,13 @@ private fun DetailsContent(
                     if (twoPane) {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.weight(1f)) {
-                                LargeSwatch(palette = palette, isDark = isDark)
+                                LargeSwatch(palette = palette)
                             }
                             Spacer(modifier = Modifier.size(24.dp))
                             Column(modifier = Modifier.weight(1f)) { info() }
                         }
                     } else {
-                        LargeSwatch(palette = palette, isDark = isDark)
+                        LargeSwatch(palette = palette)
                         info()
                     }
                 }
@@ -367,10 +365,7 @@ private fun DetailsContent(
 
 // All five palette rows as large overlapping shade circles.
 @Composable
-private fun LargeSwatch(
-    palette: ArrayList<ArrayList<Int>>,
-    isDark: Boolean
-) {
+private fun LargeSwatch(palette: ArrayList<ArrayList<Int>>) {
     val shadeIndices = listOf(3, 4, 6, 8, 10)
 
     Surface(

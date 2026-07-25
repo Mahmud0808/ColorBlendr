@@ -3,16 +3,17 @@ package com.drdisagree.colorblendr.ui.compose.screens.about
 import android.content.ClipData
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteOutline
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,10 +40,10 @@ import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.utils.app.CrashLogger
-import androidx.compose.material.icons.rounded.BugReport
 import kotlinx.coroutines.launch
 
 // Dev-mode only: crashes captured locally by CrashLogger, newest first.
@@ -71,7 +72,10 @@ fun CrashLogScreen() {
                 lifted = toolbarLifted,
                 actions = {
                     if (log.isNotEmpty()) {
-                        IconButton(
+                        ToolbarIconPill(
+                            icon = rememberVectorPainter(Icons.Rounded.ContentCopy),
+                            width = 40.dp,
+                            contentDescription = stringResource(R.string.crash_log_copy),
                             onClick = {
                                 scope.launch {
                                     clipboard.setClipEntry(
@@ -82,25 +86,18 @@ fun CrashLogScreen() {
                                     AppSnackbar.show(copiedText)
                                 }
                             }
-                        ) {
-                            Icon(
-                                painter = rememberVectorPainter(Icons.Rounded.ContentCopy),
-                                contentDescription = stringResource(R.string.crash_log_copy),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        IconButton(
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ToolbarIconPill(
+                            icon = rememberVectorPainter(Icons.Rounded.DeleteOutline),
+                            width = 40.dp,
+                            destructive = true,
+                            contentDescription = stringResource(R.string.crash_log_clear),
                             onClick = {
                                 CrashLogger.clear(context)
                                 log = ""
                             }
-                        ) {
-                            Icon(
-                                painter = rememberVectorPainter(Icons.Rounded.DeleteOutline),
-                                contentDescription = stringResource(R.string.crash_log_clear),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                        )
                     }
                 }
             )
