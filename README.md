@@ -50,9 +50,13 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 - Separate configurations for light and dark mode
 - Extra tweaks: color spec version, screen-off updates, darker / semi-transparent Pixel launcher icons
 
-**Community & backup**
+**AI & community**
 
+- AI Theme Builder — describe your dream theme in words and let Gemini craft it (see below)
 - Community creations — browse, apply, upvote, and share themes (see below)
+
+**Backup & modes**
+
 - Backup and restore your entire setup to a file
 - Works with **Root**, **Shizuku**, or **Wireless ADB**
 - and many more...
@@ -88,6 +92,21 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
 > [!NOTE]
 >
 > Browsing and upvoting work on every mode. Applying a community creation requires root.
+
+## AI Theme Builder ✨
+
+Describe the theme you want in plain words — "warm sunset with amber buttons and pure black background" — and let AI turn it into a complete theme.
+
+- **Powered by Google Gemini** — bring your own free API key from [Google AI Studio](https://aistudio.google.com/apikey); guided setup inside the app
+- **Full theme generation** — style, seed colors, saturation and lightness, pitch black, even per-shade color overrides when you ask for exact colors
+- **Stacked history** — every generation is kept in a list so you can compare and go back
+- **Preview before applying** — nothing changes until you tap *Try this creation*, which starts the same live preview as any other theme
+
+Your prompt goes directly from your device to Google's Gemini API using your own key — no middleman server. The key is stored only on your device and is excluded from backups.
+
+> [!NOTE]
+>
+> The AI Theme Builder requires root mode, since applying generated themes uses the same pipeline as community creations.
 
 ## FAQ 🤓
 
@@ -131,6 +150,18 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
   <summary>Why can't I apply a community creation?</summary>
 
 - Applying a community creation modifies system colors, which requires root. You can still browse, search, and upvote in Shizuku and Wireless ADB modes.
+</details>
+
+<details>
+  <summary>Is the AI Theme Builder free? Where does my prompt go?</summary>
+
+- You use your own free Gemini API key from Google AI Studio, so generation costs you nothing on Google's free tier. Your prompt is sent directly from your device to Google's Gemini API — the developer never sees your prompts or your key. The key is stored only on your device and is excluded from backups.
+</details>
+
+<details>
+  <summary>Why don't I see the AI button on the Colors page?</summary>
+
+- The AI Theme Builder requires root mode, since applying generated themes modifies system colors the same way community creations do.
 </details>
 
 <a id="tasker-integration"></a>

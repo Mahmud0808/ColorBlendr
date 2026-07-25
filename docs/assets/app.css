@@ -850,10 +850,15 @@ html.light .menu {
 
 /* Feature grid */
 .grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 	gap: 16px;
 	margin-bottom: 28px;
+}
+.grid > .info {
+	flex: 1 1 280px;
+	max-width: 420px;
 }
 .info {
 	background: var(--card);
