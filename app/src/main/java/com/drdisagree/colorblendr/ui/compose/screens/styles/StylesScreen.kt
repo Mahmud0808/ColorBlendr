@@ -118,7 +118,6 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
 
     val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
     val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
-    // Additive push: snackbar lifts the base, preview FABs stack on top.
     val fabBottomPadding by animateDpAsState(
         targetValue = (if (SnackbarVisibility.visible) 76.dp else 12.dp) +
                 (if (previewColors != null && !isApplying) 72.dp else 0.dp),

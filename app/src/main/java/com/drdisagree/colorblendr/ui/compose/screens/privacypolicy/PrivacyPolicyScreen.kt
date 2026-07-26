@@ -40,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -49,6 +48,7 @@ import com.drdisagree.colorblendr.ui.compose.components.PositionedCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import java.io.IOException
 
 private const val TAG = "PrivacyPolicyScreen"
@@ -274,7 +274,7 @@ private fun markdownToBold(text: String): AnnotatedString = buildAnnotatedString
     append(text.substring(lastIndex))
 }
 
-@Preview
+@AdaptivePreviews
 @Composable
 private fun PrivacyPolicyScreenPreview() {
     ColorBlendrTheme {

@@ -72,6 +72,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -415,8 +416,11 @@ private fun OnboardingPage1() {
 @Composable
 private fun OnboardingPage2() {
     val context = LocalContext.current
+    val isPreview = LocalInspectionMode.current
 
     fun checkSelfPermission(permission: String): Boolean {
+        if (isPreview) return true
+
         return ContextCompat.checkSelfPermission(context, permission) ==
                 PackageManager.PERMISSION_GRANTED
     }
@@ -435,12 +439,16 @@ private fun OnboardingPage2() {
 
     var hasNotificationPermission by remember { mutableStateOf(notificationGranted()) }
     var hasMediaPermission by remember { mutableStateOf(mediaGranted()) }
-    var hasAllFilesPermission by remember { mutableStateOf(hasStoragePermission()) }
+    var hasAllFilesPermission by remember {
+        mutableStateOf(if (isPreview) true else hasStoragePermission())
+    }
 
     LifecycleResumeEffect(Unit) {
-        hasNotificationPermission = notificationGranted()
-        hasMediaPermission = mediaGranted()
-        hasAllFilesPermission = hasStoragePermission()
+        if (!isPreview) {
+            hasNotificationPermission = notificationGranted()
+            hasMediaPermission = mediaGranted()
+            hasAllFilesPermission = hasStoragePermission()
+        }
         onPauseOrDispose {}
     }
 
@@ -522,8 +530,11 @@ private fun OnboardingPage2() {
 private fun OnboardingPage3() {
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
+    val isPreview = LocalInspectionMode.current
 
     fun isBatteryOptimizationDisabled(): Boolean {
+        if (isPreview) return true
+
         return (context.getSystemService(Context.POWER_SERVICE) as PowerManager)
             .isIgnoringBatteryOptimizations(context.packageName)
     }

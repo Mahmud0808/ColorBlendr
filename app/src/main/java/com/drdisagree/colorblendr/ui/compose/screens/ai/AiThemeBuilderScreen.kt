@@ -75,7 +75,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -92,6 +91,7 @@ import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.AiThemeViewModel
 import com.drdisagree.colorblendr.utils.ai.AiThemeHolder
 import com.drdisagree.colorblendr.utils.ai.GeminiError
@@ -669,7 +669,7 @@ private fun GeneratedThemeCard(
     }
 }
 
-@Preview
+@AdaptivePreviews
 @Composable
 private fun AiThemeBuilderScreenPreview() {
     ColorBlendrTheme {

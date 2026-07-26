@@ -34,12 +34,13 @@ class ColorBlendr : Application() {
 
         val appContext: Context
             get() {
-                if (!this::contextReference.isInitialized || contextReference.get() == null) {
-                    contextReference = WeakReference(
-                        getInstance().applicationContext
-                    )
-                }
-                return contextReference.get()!!
+                val context = if (this::contextReference.isInitialized) contextReference.get() else null
+                if (context != null) return context
+
+                val inst = getInstance()
+                val fallback = inst.applicationContext ?: inst
+                contextReference = WeakReference(fallback)
+                return fallback
             }
 
         fun initializeForPreview(context: Context) {

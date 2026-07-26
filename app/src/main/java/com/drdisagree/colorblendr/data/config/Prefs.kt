@@ -10,13 +10,18 @@ import java.util.concurrent.CopyOnWriteArraySet
 
 @Suppress("unused")
 object Prefs {
+
     private val TAG: String = Prefs::class.java.simpleName
 
-    private var prefs: SharedPreferences = appContext
-        .createDeviceProtectedStorageContext()
-        .getSharedPreferences(Constant.SHARED_PREFS, Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences by lazy {
+        val context = runCatching { appContext.createDeviceProtectedStorageContext() }
+            .getOrNull() ?: appContext
+        context.getSharedPreferences(Constant.SHARED_PREFS, Context.MODE_PRIVATE).apply {
+            registerOnSharedPreferenceChangeListener(storageListener)
+        }
+    }
 
-    private var editor = prefs.edit()
+    private val editor by lazy { prefs.edit() }
 
     val preferenceEditor: SharedPreferences.Editor
         get() = editor
@@ -40,9 +45,6 @@ object Prefs {
             changeListeners.forEach { it.onSharedPreferenceChanged(sharedPrefs, key) }
         }
 
-    init {
-        prefs.registerOnSharedPreferenceChangeListener(storageListener)
-    }
 
     val isStagingActive: Boolean
         get() = stagingActive

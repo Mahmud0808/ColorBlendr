@@ -48,13 +48,15 @@ object ColorUtil {
     ): ArrayList<ArrayList<Int>> {
         val wallpaperColorList = getWallpaperColorList()
 
-        if (wallpaperColorList.isEmpty()) {
-            throw Exception("No wallpaper color list found")
+        val seedColor = if (wallpaperColorList.isNotEmpty()) {
+            getSeedColorValue(wallpaperColorList[0])
+        } else {
+            getSeedColorValue(Color.BLUE)
         }
 
         return generateModifiedColors(
             style,
-            getSeedColorValue(wallpaperColorList[0]),
+            seedColor,
             accentSaturation,
             backgroundSaturation,
             backgroundLightness,

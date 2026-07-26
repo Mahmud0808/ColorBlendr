@@ -55,7 +55,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +65,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.drdisagree.colorblendr.ColorBlendr
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
@@ -474,6 +477,9 @@ private fun CustomColorTilePreview() {
 @AdaptivePreviews
 @Composable
 private fun ColorsScreenPreview() {
+    if (LocalInspectionMode.current) {
+        ColorBlendr.initializeForPreview(LocalContext.current)
+    }
     ColorBlendrTheme {
         ColorsScreen(
             colorsViewModel = ColorsViewModel(),
