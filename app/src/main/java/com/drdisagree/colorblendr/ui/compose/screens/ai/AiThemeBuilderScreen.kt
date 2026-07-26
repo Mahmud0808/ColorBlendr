@@ -1,5 +1,12 @@
 package com.drdisagree.colorblendr.ui.compose.screens.ai
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -423,10 +431,46 @@ private fun AiBuilderContent(
                                 .height(52.dp)
                         ) {
                             if (generating) {
-                                LoadingIndicator(
-                                    color = MaterialTheme.colorScheme.onSurface
-                                        .copy(alpha = 0.38f),
-                                    modifier = Modifier.size(30.dp)
+                                val transition = rememberInfiniteTransition(label = "aiWorking")
+                                val hue by transition.animateFloat(
+                                    initialValue = 0f,
+                                    targetValue = 360f,
+                                    animationSpec = infiniteRepeatable(
+                                        tween(2400, easing = LinearEasing)
+                                    ),
+                                    label = "aiHue"
+                                )
+                                val pulse by transition.animateFloat(
+                                    initialValue = 0.8f,
+                                    targetValue = 1.2f,
+                                    animationSpec = infiniteRepeatable(
+                                        tween(650, easing = FastOutSlowInEasing),
+                                        RepeatMode.Reverse
+                                    ),
+                                    label = "aiPulse"
+                                )
+                                val wobble by transition.animateFloat(
+                                    initialValue = -20f,
+                                    targetValue = 20f,
+                                    animationSpec = infiniteRepeatable(
+                                        tween(900, easing = FastOutSlowInEasing),
+                                        RepeatMode.Reverse
+                                    ),
+                                    label = "aiWobble"
+                                )
+                                Icon(
+                                    painter = rememberVectorPainter(
+                                        Icons.Rounded.AutoAwesome
+                                    ),
+                                    contentDescription = null,
+                                    tint = Color.hsv(hue, 0.6f, 1f),
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .graphicsLayer {
+                                            scaleX = pulse
+                                            scaleY = pulse
+                                            rotationZ = wobble
+                                        }
                                 )
                             } else {
                                 Icon(
