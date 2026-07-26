@@ -24,6 +24,11 @@ object AiThemeHolder {
         }
     }
 
+    fun remove(theme: CommunityTheme) {
+        themes.removeAll { it.id == theme.id }
+        if (stagedTheme?.id == theme.id) stagedTheme = null
+    }
+
     fun stagedThemeIfCurrent(): CommunityTheme? {
         val staged = stagedTheme ?: return null
         return staged.takeIf {

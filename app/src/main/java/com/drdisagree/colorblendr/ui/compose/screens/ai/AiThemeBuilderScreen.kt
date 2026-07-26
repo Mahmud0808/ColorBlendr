@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.compose.screens.ai
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.KeyOff
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
@@ -48,6 +50,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -488,6 +491,10 @@ private fun AiBuilderContent(
                             CommunityThemeApplier.stageForPreview(generated)
                             scope.launch { PreviewController.updatePreview() }
                         },
+                        onDismiss = {
+                            haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            AiThemeHolder.remove(generated)
+                        },
                         modifier = Modifier
                             .animateItem()
                             .padding(horizontal = horizontalPadding)
@@ -505,6 +512,7 @@ private fun GeneratedThemeCard(
     rootMode: Boolean,
     active: Boolean,
     onApply: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -528,6 +536,24 @@ private fun GeneratedThemeCard(
                         painter = rememberVectorPainter(Icons.Rounded.Check),
                         contentDescription = stringResource(R.string.ai_theme_active),
                         tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            } else {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 14.dp, end = 14.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .clickable(onClick = onDismiss)
+                ) {
+                    Icon(
+                        painter = rememberVectorPainter(Icons.Rounded.Close),
+                        contentDescription = stringResource(R.string.ai_theme_dismiss),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                 }
