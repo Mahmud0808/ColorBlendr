@@ -111,7 +111,9 @@ function applySiteSeed(seedHex, style, spec, sliders) {
 			? surf(scheme.surface, 4, 99)
 			: surf(scheme.surface, 70, 100),
 		"--text": role(scheme.onSurface),
-		"--subtle": alpha(role(scheme.onSurfaceVariant), 0.75),
+		// 0.9, not 0.75: --subtle carries real text (stat labels, table
+		// headers) that has to clear 4.5:1 in light mode.
+		"--subtle": alpha(role(scheme.onSurfaceVariant), 0.9),
 		"--body2": role(scheme.onSurfaceVariant),
 		"--accent": accent(scheme.primary),
 		"--on-accent": role(scheme.onPrimary),
@@ -128,12 +130,9 @@ function applySiteSeed(seedHex, style, spec, sliders) {
 			? surf(scheme.surfaceContainerHighest, 16, 91)
 			: surf(scheme.surfaceContainerHighest, 58, 96),
 		"--outline-v": role(scheme.outlineVariant),
-		"--grad-a": role(scheme.onSurface),
-		"--grad-b": accent(scheme.primary),
 		"--grad-c": accent(scheme.tertiary),
 		"--blob-a": accent(scheme.primary),
 		"--blob-b": accent(scheme.tertiary),
-		"--blob-c": role(scheme.secondaryContainer),
 		"--ph-sat": `${accentSat / 2}%`,
 	};
 	const root = document.documentElement;
@@ -314,10 +313,10 @@ function initDemo() {
 		const setOpen = (open) => {
 			if (open) {
 				menu.innerHTML = items
-					.map(
-						([v, l]) =>
-							`<button class="menuitem${v === getValue() ? " selected" : ""}" role="option" data-value="${v}">${l}</button>`,
-					)
+					.map(([v, l]) => {
+						const on = v === getValue();
+						return `<button class="menuitem${on ? " selected" : ""}" role="option" aria-selected="${on}" data-value="${v}">${l}</button>`;
+					})
 					.join("");
 			}
 			menu.hidden = !open;
@@ -330,13 +329,18 @@ function initDemo() {
 			if (!item) return;
 			label.textContent = item.textContent;
 			setOpen(false);
+			btn.focus();
 			onPick(item.dataset.value);
 		});
 		document.addEventListener("click", (e) => {
 			if (!wrap.contains(e.target)) setOpen(false);
 		});
+		// Escape returns focus to the trigger; closing under the caret would
+		// otherwise drop focus to the body.
 		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape") setOpen(false);
+			if (e.key !== "Escape" || menu.hidden) return;
+			setOpen(false);
+			if (wrap.contains(document.activeElement)) btn.focus();
 		});
 	};
 	dropdown(
@@ -424,9 +428,28 @@ function initMode() {
 	document.documentElement.classList.toggle("light", !darkMode);
 }
 
+// Phones only: the toggle has no gutter to sit in, so hide it on the way
+// down and bring it back on the way up. Never while it holds focus.
+function initToggleTuck(btn) {
+	if (!matchMedia("(max-width: 620px)").matches) return;
+	let last = window.scrollY;
+	window.addEventListener(
+		"scroll",
+		() => {
+			const y = window.scrollY;
+			if (Math.abs(y - last) < 8) return;
+			const tuck = y > last && y > 220 && document.activeElement !== btn;
+			btn.classList.toggle("tucked", tuck);
+			last = y;
+		},
+		{ passive: true },
+	);
+}
+
 function initModeToggle() {
 	const btn = document.getElementById("modeToggle");
 	if (!btn) return;
+	initToggleTuck(btn);
 	btn.addEventListener("click", () => {
 		darkMode = !darkMode;
 		try {
@@ -656,6 +679,15 @@ function initStats() {
 	if (!dlEl || !starsEl || !ossEl) return;
 	const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 	// Markup holds final-looking values for no-JS; zero for the build-up.
+	// Stash them first: the API is rate limited to 60/hour per IP, and a
+	// 403 must fall back to the markup rather than leave a live "0".
+	const fallback = new Map([
+		[dlEl, dlEl.textContent],
+		[starsEl, starsEl.textContent],
+	]);
+	const restore = (el) => {
+		el.textContent = fallback.get(el);
+	};
 	if (!reduced) {
 		dlEl.textContent = "0";
 		starsEl.textContent = "0";
@@ -688,52 +720,23 @@ function initStats() {
 	fetch(REPO)
 		.then((r) => (r.ok ? r.json() : null))
 		.then(async (repo) => {
-			if (!repo?.stargazers_count) return;
+			if (!repo?.stargazers_count) return restore(starsEl);
 			await settled;
 			countTo(starsEl, repo.stargazers_count, compact);
 		})
-		.catch(() => {});
+		.catch(() => restore(starsEl));
 	fetch(`${REPO}/releases?per_page=100`)
 		.then((r) => (r.ok ? r.json() : null))
 		.then(async (releases) => {
-			if (!Array.isArray(releases)) return;
+			if (!Array.isArray(releases)) return restore(dlEl);
 			const total = releases
 				.flatMap((rel) => rel.assets ?? [])
 				.reduce((sum, a) => sum + (a.download_count ?? 0), 0);
-			if (!total) return;
+			if (!total) return restore(dlEl);
 			await settled;
 			countTo(dlEl, total, compact);
 		})
-		.catch(() => {});
-}
-
-// Accent spotlight trailing the cursor inside feature cards.
-function initSpotlight() {
-	if (!matchMedia("(hover: hover)").matches) return;
-	document.querySelectorAll(".info").forEach((card) => {
-		card.addEventListener("mousemove", (e) => {
-			const r = card.getBoundingClientRect();
-			card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-			card.style.setProperty("--my", `${e.clientY - r.top}px`);
-		});
-	});
-}
-
-// Screenshots tilt toward the cursor.
-function initShotTilt() {
-	if (!matchMedia("(hover: hover)").matches) return;
-	if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-	document.querySelectorAll(".shot").forEach((el) => {
-		el.addEventListener("mousemove", (e) => {
-			const r = el.getBoundingClientRect();
-			const x = (e.clientX - r.left) / r.width - 0.5;
-			const y = (e.clientY - r.top) / r.height - 0.5;
-			el.style.transform = `perspective(800px) rotateY(${(x * 10).toFixed(2)}deg) rotateX(${(-y * 10).toFixed(2)}deg) translateY(-4px)`;
-		});
-		el.addEventListener("mouseleave", () => {
-			el.style.transform = "";
-		});
-	});
+		.catch(() => restore(dlEl));
 }
 
 // Animated expand/collapse for FAQ details (native toggle snaps).
@@ -812,8 +815,6 @@ export async function initApp() {
 	initFaq();
 	initDemo();
 	startSeedRotation();
-	initSpotlight();
-	initShotTilt();
 	initModeToggle();
 	initStats();
 	try {

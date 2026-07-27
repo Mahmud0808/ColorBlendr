@@ -1,6 +1,6 @@
 ### Translators
 
-Thanks to these translators and proofreaders, this project exists:
+ColorBlendr speaks your language because of these translators and proofreaders:
 
 <!-- CROWDIN-CONTRIBUTORS-START -->
 <table>
@@ -472,5 +472,4 @@ Thanks to these translators and proofreaders, this project exists:
 </table><a href="https://crowdin.com/project/ColorBlendr" target="_blank">Translate in Crowdin 🚀</a>
 <!-- CROWDIN-CONTRIBUTORS-END -->
 
-We extend our gratitude to everyone who has contributed to this project. Your efforts are highly
-appreciated!
+Missing your language, or spotted a bad string? Fix it on Crowdin and your name lands here.

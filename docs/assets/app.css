@@ -3,17 +3,12 @@
 * {
 	box-sizing: border-box;
 }
-@property --grad-a {
-	syntax: "<color>";
-	inherits: true;
-	initial-value: #e0e6ee;
-}
-@property --grad-b {
+@property --blob-a {
 	syntax: "<color>";
 	inherits: true;
 	initial-value: #a8cbe7;
 }
-@property --grad-c {
+@property --blob-b {
 	syntax: "<color>";
 	inherits: true;
 	initial-value: #dcddff;
@@ -23,20 +18,19 @@
 	inherits: false;
 	initial-value: 360deg;
 }
-/* Only the grad vars animate at :root (gradients cannot interpolate).
+/* Only the hero-wash vars animate at :root (gradients cannot interpolate).
    Everything else transitions its own property once - a root transition
    plus an element transition would double-smooth and desync. */
 :root {
 	transition:
-		--grad-a var(--recolor, 1.6s) ease,
-		--grad-b var(--recolor, 1.6s) ease,
-		--grad-c var(--recolor, 1.6s) ease;
+		--blob-a var(--recolor, 1.6s) ease,
+		--blob-b var(--recolor, 1.6s) ease;
 }
 :root {
 	--bg: #0b0f11;
 	--text: #e0e6ee;
 	--body2: #a5acb3;
-	--subtle: #a5acb3bf;
+	--subtle: #a5acb3e6;
 	--accent: #a8cbe7;
 	--on-accent: #20445b;
 	--accent-glow: #a8cbe752;
@@ -46,19 +40,16 @@
 	--card-high: #1b2025;
 	--card-highest: #20272c;
 	--outline-v: #42494f;
-	--grad-a: #e0e6ee;
-	--grad-b: #a8cbe7;
 	--grad-c: #dcddff;
 	--blob-a: #a8cbe7;
 	--blob-b: #dcddff;
-	--blob-c: #b0c1d1;
 }
 /* First-paint fallbacks only; JS re-derives real values immediately. */
 html.light {
 	--bg: #f7f9ff;
 	--text: #181c20;
 	--body2: #42474e;
-	--subtle: #42474ebf;
+	--subtle: #42474ee6;
 	--accent: #31628d;
 	--on-accent: #ffffff;
 	--accent-glow: #31628d3d;
@@ -68,12 +59,9 @@ html.light {
 	--card-high: #e5e8ee;
 	--card-highest: #dfe2e8;
 	--outline-v: #c2c7cf;
-	--grad-a: #181c20;
-	--grad-b: #31628d;
 	--grad-c: #64597b;
 	--blob-a: #31628d;
 	--blob-b: #64597b;
-	--blob-c: #d4e4f6;
 }
 body {
 	margin: 0;
@@ -88,6 +76,7 @@ body {
 	color: var(--text);
 	-webkit-font-smoothing: antialiased;
 	overflow-x: hidden;
+	position: relative;
 	transition:
 		background-color var(--recolor, 1.6s) ease,
 		color var(--recolor, 1.6s) ease;
@@ -97,74 +86,42 @@ main {
 	z-index: 1;
 }
 
-/* Ambient gradient mesh: seed-tinted blobs drifting behind everything. */
+/* One seed-tinted wash behind the hero, anchored to the page top rather
+   than floating. Ends where the hero ends; the rest is flat tonal surface. */
 .blobs {
-	position: fixed;
-	inset: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 760px;
 	z-index: 0;
 	pointer-events: none;
-	overflow: hidden;
+	background:
+		radial-gradient(
+			120% 78% at 78% 6%,
+			color-mix(in srgb, var(--blob-a) 22%, transparent),
+			transparent 62%
+		),
+		radial-gradient(
+			90% 62% at 8% 0%,
+			color-mix(in srgb, var(--blob-b) 14%, transparent),
+			transparent 66%
+		);
+	mask-image: linear-gradient(#000 55%, transparent);
+	-webkit-mask-image: linear-gradient(#000 55%, transparent);
 }
-.blobs i {
-	position: absolute;
-	display: block;
-	border-radius: 50%;
-	width: 46vw;
-	height: 46vw;
-	min-width: 420px;
-	min-height: 420px;
-	filter: blur(110px);
-	opacity: 0.17;
-	transition: background-color var(--recolor, 1.6s) ease;
-}
-.blobs i:nth-child(1) {
-	background: var(--blob-a);
-	top: -14%;
-	left: -10%;
-	animation: blob1 26s ease-in-out infinite alternate;
-}
-.blobs i:nth-child(2) {
-	background: var(--blob-b);
-	top: 24%;
-	right: -14%;
-	animation: blob2 32s ease-in-out infinite alternate;
-}
-.blobs i:nth-child(3) {
-	background: var(--blob-c);
-	bottom: -18%;
-	left: 18%;
-	animation: blob3 38s ease-in-out infinite alternate;
-}
-@keyframes blob1 {
-	to {
-		transform: translate(7vw, 9vh) scale(1.15);
-	}
-}
-@keyframes blob2 {
-	to {
-		transform: translate(-8vw, -6vh) scale(0.92);
-	}
-}
-@keyframes blob3 {
-	to {
-		transform: translate(6vw, -8vh) scale(1.2);
-	}
-}
-html.light .blobs i {
-	opacity: 0.3;
-}
-
-/* Film grain above content, below the mode toggle. */
-body::after {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: 80;
-	pointer-events: none;
-	opacity: 0.028;
-	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")
-		repeat;
-	background-size: 160px 160px;
+html.light .blobs {
+	background:
+		radial-gradient(
+			120% 78% at 78% 6%,
+			color-mix(in srgb, var(--blob-a) 16%, transparent),
+			transparent 62%
+		),
+		radial-gradient(
+			90% 62% at 8% 0%,
+			color-mix(in srgb, var(--blob-b) 11%, transparent),
+			transparent 66%
+		);
 }
 
 /* Light/dark toggle */
@@ -187,13 +144,21 @@ body::after {
 	transition:
 		background-color var(--recolor, 1.6s) ease,
 		color var(--recolor, 1.6s) ease,
-		transform 0.15s ease;
+		opacity 0.2s ease,
+		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .modebtn:hover {
 	transform: scale(1.08);
 }
 .modebtn:active {
 	transform: scale(0.92);
+}
+/* Phones have no gutter to put this in, so it steps out of the way while
+   you read and comes back the moment you scroll up. */
+.modebtn.tucked {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(-72px);
 }
 .modebtn:focus-visible {
 	outline: 2px solid var(--accent);
@@ -204,6 +169,20 @@ body::after {
 	height: 22px;
 	fill: currentColor;
 	display: block;
+}
+/* Tucked tighter on phones, where centred copy runs the full width and the
+   button would otherwise sit on top of a line of text. */
+@media (max-width: 620px) {
+	.modebtn {
+		top: 10px;
+		right: 10px;
+		width: 40px;
+		height: 40px;
+	}
+	.modebtn svg {
+		width: 20px;
+		height: 20px;
+	}
 }
 .modebtn .ic-moon {
 	display: none;
@@ -219,6 +198,18 @@ html.light .modebtn .ic-moon {
 	max-width: 1080px;
 	margin: 0 auto;
 	padding: 0 28px;
+}
+/* Below the width where the 1080 column stops leaving a gutter, widen the
+   margins so the fixed theme toggle never lands on a line of text. */
+@media (max-width: 1200px) {
+	.wrap {
+		padding: 0 62px;
+	}
+}
+@media (max-width: 620px) {
+	.wrap {
+		padding: 0 22px;
+	}
 }
 
 /* Hero: copy left, live phone twin right. */
@@ -239,18 +230,11 @@ header.hero {
 }
 h1.title {
 	margin: 0 0 14px;
-	font-size: clamp(38px, 6vw, 56px);
+	font-size: clamp(40px, 6.4vw, 60px);
 	font-weight: 800;
-	letter-spacing: -0.03em;
-	background: linear-gradient(
-		100deg,
-		var(--grad-a) 20%,
-		var(--grad-b) 55%,
-		var(--grad-c) 85%
-	);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	letter-spacing: -0.035em;
+	color: var(--text);
+	transition: color var(--recolor, 1.6s) ease;
 }
 .tagline {
 	margin: 0 0 38px;
@@ -303,7 +287,7 @@ a.btn:active {
 	color: var(--on-tonal);
 }
 
-/* Hero stat strip; numbers wear the title gradient. */
+/* Hero stat strip; weight carries the emphasis, not a gradient. */
 .stats {
 	display: flex;
 	gap: 38px;
@@ -316,10 +300,8 @@ a.btn:active {
 	font-size: 26px;
 	font-weight: 800;
 	letter-spacing: -0.02em;
-	background: linear-gradient(100deg, var(--grad-b), var(--grad-c));
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--text);
+	transition: color var(--recolor, 1.6s) ease;
 }
 .stat span {
 	font-size: 12.5px;
@@ -653,14 +635,15 @@ header.hero,
 	}
 }
 
+/* Section headings outrank the copy under them: size and weight, no
+   tracked-out eyebrow. More air above than below. */
 .section-title {
-	font-size: 13px;
+	font-size: clamp(24px, 3.2vw, 30px);
 	font-weight: 700;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--subtle);
+	letter-spacing: -0.025em;
+	color: var(--text);
 	text-align: center;
-	margin: 76px 0 28px;
+	margin: 88px 0 24px;
 	transition: color var(--recolor, 1.6s) ease;
 }
 .lead {
@@ -688,7 +671,7 @@ header.hero,
 	border: none;
 	border-radius: 22px;
 	position: relative;
-	transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .demo-swatch svg {
 	display: block;
@@ -769,8 +752,8 @@ header.hero,
 		box-shadow 0.15s ease;
 }
 .sortbtn:focus-visible {
-	box-shadow: 0 0 0 2px var(--accent) inset;
-	outline: none;
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
 }
 .sortbtn .chev {
 	color: var(--subtle);
@@ -827,10 +810,13 @@ html.light .menu {
 		background-color 0.15s ease,
 		color var(--recolor, 1.6s) ease;
 }
-.menuitem:hover,
+.menuitem:hover {
+	background: var(--card-highest);
+}
 .menuitem:focus-visible {
 	background: var(--card-highest);
-	outline: none;
+	outline: 2px solid var(--accent);
+	outline-offset: -2px;
 }
 .menuitem.selected {
 	color: var(--accent);
@@ -850,15 +836,10 @@ html.light .menu {
 
 /* Feature grid */
 .grid {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 16px;
 	margin-bottom: 28px;
-}
-.grid > .info {
-	flex: 1 1 280px;
-	max-width: 420px;
 }
 .info {
 	background: var(--card);
@@ -866,29 +847,29 @@ html.light .menu {
 	padding: 28px;
 	position: relative;
 	overflow: hidden;
-	transition:
-		background-color var(--recolor, 1.6s) ease,
-		transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+	transition: background-color var(--recolor, 1.6s) ease;
 }
+/* M3 state layer, not a lift. */
 .info:hover {
-	transform: translateY(-3px);
+	background: var(--card-high);
 }
-/* Cursor spotlight, accent-tinted. */
-.info::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	opacity: 0;
-	pointer-events: none;
-	background: radial-gradient(
-		280px circle at var(--mx, 50%) var(--my, 50%),
-		color-mix(in srgb, var(--accent) 9%, transparent),
-		transparent 70%
-	);
-	transition: opacity 0.3s ease;
+/* Backup is a utility, not a color feature: it closes the row on its own
+   terms instead of orphaning a seventh equal card. */
+.info.wide {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px 26px;
 }
-.info:hover::after {
-	opacity: 1;
+.info.wide .mode-icon {
+	margin-bottom: 0;
+}
+.info.wide h3 {
+	margin: 0;
+}
+.info.wide p {
+	flex: 1 1 380px;
 }
 .info h3 {
 	margin: 0 0 10px;
@@ -947,7 +928,6 @@ html.light .menu {
 	background-image: url("https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/features.png");
 	background-size: 437.5% auto;
 	background-repeat: no-repeat;
-	transition: transform 0.25s ease;
 }
 .shot:nth-child(1) {
 	background-position: 2.37% 50%;
@@ -964,6 +944,31 @@ html.light .menu {
 @media (max-width: 768px) {
 	.shots {
 		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 940px) {
+	.grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	/* A three-card grid (the access modes) would orphan its third card in a
+	   two-column row; let it close the row instead. */
+	.grid > .info:nth-child(3):last-child {
+		grid-column: 1 / -1;
+	}
+}
+@media (max-width: 620px) {
+	.grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.info.wide {
+		display: block;
+	}
+	.info.wide .mode-icon {
+		margin-bottom: 12px;
+	}
+	.info.wide h3 {
+		margin-bottom: 10px;
 	}
 }
 
@@ -993,7 +998,10 @@ html.light .menu {
 	width: max-content;
 	animation: drift 60s linear infinite;
 }
-.marquee:hover .marquee-track {
+/* Focus pauses too: a drifting track slides the focused link out from
+   under a keyboard user. */
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
 	animation-play-state: paused;
 }
 @keyframes drift {
@@ -1116,7 +1124,15 @@ a.tcard:hover .tswatch {
 	font-size: 12px;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--subtle);
+	color: var(--body2);
+}
+/* Capability column stays put while the modes scroll under it - without it
+   a narrow screen shows a column of bare Yes/No with nothing to anchor them. */
+.compare th:first-child {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	background: var(--card);
 }
 .compare tbody th {
 	font-weight: 600;
@@ -1243,7 +1259,12 @@ footer {
 footer a {
 	color: var(--accent);
 	text-decoration: none;
+	padding: 8px 2px;
 	transition: color var(--recolor, 1.6s) ease;
+}
+footer a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
 }
 .sep {
 	width: 4px;
@@ -1304,36 +1325,20 @@ html {
 	}
 }
 
-h1.title {
-	background-size: 220% 100%;
-	animation:
-		rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s forwards,
-		shimmer 9s ease-in-out infinite alternate;
-}
-@keyframes shimmer {
-	from {
-		background-position: 0% 0;
-	}
-	to {
-		background-position: 100% 0;
-	}
-}
-
-/* Animation, not transition: a transition here would REPLACE the element's
+/* Sections settle in, they don't all slide the same 22px. The authored
+   motion on this page is the hero entrance and the screenshot stagger.
+   Animation, not transition: a transition here would REPLACE the element's
    own list (.info etc.) and kill its recolor. */
 .reveal {
 	opacity: 0;
-	transform: translateY(22px);
 }
 .reveal.in {
 	opacity: 1;
-	transform: none;
-	animation: reveal-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+	animation: reveal-in 0.45s ease-out;
 }
 @keyframes reveal-in {
 	from {
 		opacity: 0;
-		transform: translateY(22px);
 	}
 }
 
@@ -1394,7 +1399,7 @@ h1.title {
 a.btn:focus-visible,
 a.tcard:focus-visible,
 .faq summary:focus-visible,
-.seed:focus-visible {
+footer a:focus-visible {
 	outline: 2px solid var(--accent);
 	outline-offset: 3px;
 }
@@ -1404,6 +1409,9 @@ a.tcard:focus-visible,
 }
 
 @media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
 	*,
 	*::before,
 	*::after {
@@ -1457,7 +1465,8 @@ a.tcard:focus-visible,
 		margin-top: 16px;
 		animation: drift-reverse 60s linear infinite;
 	}
-	.marquee:hover .track2 {
+	.marquee:hover .track2,
+	.marquee:focus-within .track2 {
 		animation-play-state: paused;
 	}
 }

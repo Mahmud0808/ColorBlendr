@@ -1,6 +1,6 @@
 ### Contributors
 
-This project exists thanks to the following contributors:
+Code, fixes, and ideas from these people:
 
 <!-- readme: contributors,Mahmud0808/-,dependabot/-,crowdin-bot/- -start -->
 <table>

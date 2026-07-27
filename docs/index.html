@@ -17,7 +17,7 @@
 		</script>
 		<meta
 			name="description"
-			content="ColorBlendr customizes Material You colors on Android 12+. Pick any seed color, tune saturation and lightness, override individual shades - with Root, Shizuku, or Wireless ADB. Free and open source."
+			content="ColorBlendr customizes Material You colors on Android 12+. Pick any seed color, tune saturation and lightness, override individual shades. Works with Root, Shizuku, or Wireless ADB. Free and open source."
 		/>
 		<link
 			rel="canonical"
@@ -80,7 +80,7 @@
 		<link rel="stylesheet" href="assets/app.css?v=3" />
 	</head>
 	<body>
-		<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+		<div class="blobs" aria-hidden="true"></div>
 		<button
 			id="modeToggle"
 			class="modebtn"
@@ -148,7 +148,7 @@
 						<p class="tagline">
 							Customize Material You colors of your device. Pick a
 							seed, tune saturation and lightness, override any
-							shade — applied system-wide at runtime, no reboot.
+							shade. Applied system-wide at runtime, no reboot.
 						</p>
 						<div class="cta">
 							<a
@@ -424,7 +424,7 @@
 						<h3>Sliders that go further</h3>
 						<p>
 							Accent saturation, background saturation, and
-							background lightness — 0 to 200%, per light and dark
+							background lightness. 0 to 200%, per light and dark
 							mode, in CAM16 color space.
 						</p>
 					</div>
@@ -460,7 +460,7 @@
 						<h3>Every Monet style</h3>
 						<p>
 							Tonal Spot, Vibrant, Expressive, Rainbow, Fruit
-							Salad, Monochrome and more — plus color spec 2021,
+							Salad, Monochrome and more, plus color spec 2021,
 							2025, or 2026 on supported builds.
 						</p>
 					</div>
@@ -478,7 +478,7 @@
 						<h3>AI Theme Builder</h3>
 						<p>
 							Describe the theme you want in plain words and let
-							Gemini craft it — styles, colors, sliders, even
+							Gemini build it: styles, colors, sliders, even
 							per-shade overrides. Bring your own free API key.
 						</p>
 					</div>
@@ -500,7 +500,7 @@
 							dark mode.
 						</p>
 					</div>
-					<div class="info reveal">
+					<div class="info wide reveal">
 						<svg
 							class="mode-icon"
 							viewBox="0 0 24 24"
@@ -513,9 +513,9 @@
 						</svg>
 						<h3>Backup and restore</h3>
 						<p>
-							Your entire setup — sliders, overrides, styles,
-							everything — exports to a single file and comes back
-							with one import.
+							Sliders, overrides, styles, everything you set up
+							exports to a single file and comes back with one
+							import.
 						</p>
 					</div>
 				</div>
@@ -565,8 +565,8 @@
 						<h3>Root</h3>
 						<p>
 							The full engine. Fabricated overlays register
-							directly with the system's overlay service — palette
-							changes land instantly, without reboot.
+							directly with the system's overlay service. Palette
+							changes land instantly, no reboot.
 						</p>
 						<ul class="caps">
 							<li>Per-shade overriding and sliders</li>
@@ -593,7 +593,7 @@
 						</p>
 						<ul class="caps">
 							<li>Any seed color and Monet style</li>
-							<li>Survives reboots — settings persist</li>
+							<li>Survives reboots</li>
 							<li>Setup once per boot via the Shizuku app</li>
 						</ul>
 					</div>
@@ -654,13 +654,13 @@
 							</tr>
 							<tr>
 								<th>Saturation / lightness sliders</th>
-								<td>Yes — 0 to 200%</td>
+								<td>Yes, 0 to 200%</td>
 								<td>No</td>
 								<td>No</td>
 							</tr>
 							<tr>
 								<th>Per-shade overrides</th>
-								<td>Yes — 55 slots</td>
+								<td>Yes, 55 slots</td>
 								<td>No</td>
 								<td>No</td>
 							</tr>
@@ -698,7 +698,7 @@
 							</tr>
 							<tr>
 								<th>AI Theme Builder</th>
-								<td>Yes — with your Gemini key</td>
+								<td>Yes, with your Gemini key</td>
 								<td>No</td>
 								<td>No</td>
 							</tr>
@@ -748,11 +748,13 @@
 				</div>
 			</div>
 
-			<h2 class="section-title reveal">Made by the community</h2>
-			<p class="lead reveal">
-				Browse, vote, and apply themes shared by other users — right
-				inside the app. Hover a card; the page wears it.
-			</p>
+			<div class="wrap">
+				<h2 class="section-title reveal">Made by the community</h2>
+				<p class="lead reveal">
+					Browse, vote, and apply themes shared by other users, right
+					inside the app. Hover a card; the page wears it.
+				</p>
+			</div>
 			<div id="rail" class="marquee">
 				<div class="sk-row">
 					<div class="sk-card">
@@ -860,7 +862,7 @@
 								<code
 									>theme_customization_overlay_packages</code
 								>
-								secure setting — the same mechanism the stock
+								secure setting. Same mechanism the stock
 								wallpaper picker uses, with more of its fields
 								filled in.
 							</p>
@@ -983,7 +985,7 @@
 						<div class="answer">
 							<p>
 								Describe your theme in words and Google Gemini
-								generates it — using your own free API key from
+								generates it, using your own free API key from
 								Google AI Studio. Prompts go straight from your
 								device to Google; the key stays on your device
 								and no other server is involved. Root mode is
