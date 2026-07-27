@@ -72,6 +72,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
@@ -98,6 +99,8 @@ import com.drdisagree.colorblendr.utils.ai.GeminiError
 import com.drdisagree.colorblendr.utils.ai.KeyCheckResult
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import kotlinx.coroutines.launch
+
+private const val PROMPT_MAX_LENGTH = 300
 
 @Composable
 fun AiThemeBuilderScreen() {
@@ -404,12 +407,30 @@ private fun AiBuilderContent(
                     Column(
                         modifier = Modifier.padding(horizontal = horizontalPadding)
                     ) {
+                        Text(
+                            text = stringResource(R.string.ai_prompt_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(bottom = 10.dp)
+                        )
                         OutlinedTextField(
                             shape = RoundedCornerShape(20.dp),
                             value = prompt,
-                            onValueChange = { prompt = it },
-                            label = {
-                                Text(text = stringResource(R.string.ai_prompt_hint))
+                            onValueChange = { prompt = it.take(PROMPT_MAX_LENGTH) },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.ai_prompt_examples),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        .copy(alpha = 0.6f)
+                                )
+                            },
+                            supportingText = {
+                                Text(
+                                    text = "${prompt.length} / $PROMPT_MAX_LENGTH",
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             },
                             minLines = 4,
                             maxLines = 8,

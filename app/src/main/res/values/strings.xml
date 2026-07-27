@@ -309,7 +309,8 @@
     <string name="ai_save_key">Save</string>
     <string name="ai_key_invalid">Invalid API key, check it and try again</string>
     <string name="ai_key_network">Could not verify the key, check your connection</string>
-    <string name="ai_prompt_hint">Describe your dream theme…</string>
+    <string name="ai_prompt_title">Describe your dream theme</string>
+    <string name="ai_prompt_examples">e.g. calm forest greens with a soft cream background, or AMOLED black with neon cyan accents, or warm sunset tones with golden buttons…</string>
     <string name="ai_generate">Generate</string>
     <string name="ai_reset_key">Reset API key</string>
     <string name="ai_reset_key_message">Delete the saved Gemini API key? You will need to set it up again.</string>
