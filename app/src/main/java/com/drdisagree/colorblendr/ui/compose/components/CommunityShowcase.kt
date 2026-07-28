@@ -1,15 +1,8 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
@@ -35,8 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -229,15 +219,7 @@ private fun DriftingCarousel(
         }
     }
 
-    val pulse by rememberInfiniteTransition(label = "showcaseShimmer").animateFloat(
-        initialValue = 0.4f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 600),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "showcaseShimmerAlpha"
-    )
+    val pulse = rememberSkeletonPulse()
 
     LazyRow(
         state = listState,
@@ -251,20 +233,7 @@ private fun DriftingCarousel(
     ) {
         items(itemCount) { index ->
             if (themes == null) {
-                Box {
-                    CommunityThemeCard(
-                        theme = previewCommunityTheme,
-                        onClick = {},
-                        modifier = Modifier.alpha(0f)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .alpha(pulse)
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    )
-                }
+                CommunityThemeCardSkeleton(pulse = pulse)
             } else {
                 val theme = themes[index % themes.size]
                 CommunityThemeCard(

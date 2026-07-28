@@ -37,7 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -53,12 +55,14 @@ import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
+import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCardSkeleton
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
+import com.drdisagree.colorblendr.ui.compose.components.rememberSkeletonPulse
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
@@ -106,6 +110,9 @@ fun CommunityScreen(
         onThemeClick = onThemeClick
     )
 }
+
+private const val CARD_MIN_WIDTH_DP = 160
+private const val CARD_HEIGHT_DP = 180
 
 @Composable
 private fun CommunityScreenContent(
@@ -209,21 +216,21 @@ private fun CommunityScreenContent(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
-                    sorted.isNullOrEmpty() -> {
-                        if (sorted != null) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .hazeSource(hazeState)
-                            ) {
-                                EmptyState()
-                            }
+                    sorted == null -> SkeletonGrid(hazeState = hazeState)
+
+                    sorted.isEmpty() -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .hazeSource(hazeState)
+                        ) {
+                            EmptyState()
                         }
                     }
 
                     else -> LazyVerticalGrid(
                         state = gridState,
-                        columns = GridCells.Adaptive(160.dp),
+                        columns = GridCells.Adaptive(CARD_MIN_WIDTH_DP.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                         contentPadding = PaddingValues(
@@ -256,6 +263,39 @@ private fun CommunityScreenContent(
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun SkeletonGrid(hazeState: HazeState) {
+    val pulse = rememberSkeletonPulse()
+    val containerSize = LocalWindowInfo.current.containerSize
+    val heightDp = with(LocalDensity.current) { containerSize.height.toDp() }
+    val widthDp = with(LocalDensity.current) { containerSize.width.toDp() }
+    val columns = maxOf(1, ((widthDp.value - 32) / (CARD_MIN_WIDTH_DP + 10)).toInt())
+    val rows = (heightDp.value / CARD_HEIGHT_DP).toInt() + 1
+
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(CARD_MIN_WIDTH_DP.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        userScrollEnabled = false,
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 84.dp,
+            bottom = 16.dp + LocalPreviewBottomInset.current
+        ),
+        modifier = Modifier
+            .fillMaxSize()
+            .hazeSource(hazeState)
+    ) {
+        items(columns * rows) {
+            CommunityThemeCardSkeleton(
+                pulse = pulse,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -394,6 +434,14 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@AdaptivePreviews
+@Composable
+private fun SkeletonGridPreview() {
+    ColorBlendrTheme {
+        SkeletonGrid(hazeState = remember { HazeState() })
     }
 }
 
