@@ -175,9 +175,17 @@ fun DevScreen(openPendingTick: Int = 0) {
             }
             composable(Routes.DETAIL) { entry ->
                 val id = entry.arguments?.getString(Routes.ARG_SUBMISSION_ID)
-                val item = pending?.find { it.id == id }
+                val latest = pending?.find { it.id == id }
+                // keep last known item -> approve/reject/block drop it from
+                // pending while detail still animates out
+                val lastKnown = remember { mutableStateOf(latest) }
+                LaunchedEffect(latest) { if (latest != null) lastKnown.value = latest }
+                val item = lastKnown.value
                 if (item == null) {
-                    LaunchedEffect(Unit) { navController.popBackStack() }
+                    // targeted pop -> no-op if detail already left back stack
+                    LaunchedEffect(Unit) {
+                        navController.popBackStack(Routes.DETAIL, inclusive = true)
+                    }
                 } else {
                     SubmissionDetailScreen(
                         item = item,
