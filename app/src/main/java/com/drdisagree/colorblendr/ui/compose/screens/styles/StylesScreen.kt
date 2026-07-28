@@ -156,7 +156,6 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
             Column {
                 AppToolbar(
                     title = stringResource(R.string.styles),
-                    showBackButton = true,
                     lifted = toolbarLifted
                 )
                 val styleItem: @Composable (StyleModel, Modifier?) -> Unit = { style, dragHandle ->

@@ -123,7 +123,6 @@ fun ThemeScreen() {
         Column {
             AppToolbar(
                 title = stringResource(R.string.theme),
-                showBackButton = true,
                 lifted = toolbarLifted
             )
             val twoPane = LocalWidthClass.current == WidthClass.Expanded

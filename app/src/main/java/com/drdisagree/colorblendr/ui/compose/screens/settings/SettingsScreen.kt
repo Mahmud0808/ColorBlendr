@@ -289,7 +289,6 @@ fun SettingsScreen(
             Column {
                 AppToolbar(
                     title = stringResource(R.string.settings),
-                    showBackButton = true,
                     lifted = toolbarLifted,
                     actions = {
                         Box {
