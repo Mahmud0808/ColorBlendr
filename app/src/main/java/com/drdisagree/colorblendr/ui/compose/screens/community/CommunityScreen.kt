@@ -62,7 +62,6 @@ import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
-import com.drdisagree.colorblendr.utils.ai.AiThemeHolder
 import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
@@ -287,9 +286,8 @@ private fun EmptyState() {
 private fun ShareThemeDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val aiTheme = remember { AiThemeHolder.stagedThemeIfCurrent() }
-    var name by rememberSaveable { mutableStateOf(aiTheme?.name ?: "") }
-    var description by rememberSaveable { mutableStateOf(aiTheme?.description ?: "") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
     var author by rememberSaveable { mutableStateOf("") }
     var showChallenge by remember { mutableStateOf(false) }
     var submitting by remember { mutableStateOf(false) }

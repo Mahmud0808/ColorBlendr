@@ -14,7 +14,7 @@ Data Collection and Usage
 ColorBlendr does **not** collect, store, or transmit any personal information or usage data.
 All theming logic and processing occur locally on the device.
 No background tracking, profiling, or analytics are performed.
-The optional Community Creations and AI Theme Builder features transmit only the minimal data described below — and nothing else.
+The optional Community Creations feature transmits only the minimal data described below — and nothing else.
 
 Internet Usage
 --------------
@@ -23,7 +23,6 @@ ColorBlendr uses internet access only for:
 
 1. Displaying images of contributors and translators from remote sources (e.g., GitHub avatars).
 2. The Community Creations feature described in the next section.
-3. The optional AI Theme Builder feature described below.
 
 No network requests are used for analytics, advertising, or user tracking.
 
@@ -39,19 +38,6 @@ The Community Creations feature lets you browse, preview, vote on, and share col
 3. **Sharing a creation**: If you choose to submit a creation, the app uploads only the color configuration itself plus the name, description, and optional author name you enter. Submissions pass through Cloudflare Turnstile (a privacy-respecting bot check) and are published as a public pull request on GitHub for human review. Do not include personal information in these fields — anything you enter becomes public. For rate limiting, the server stores the same irreversible hashes described under Voting (a salted hash of the device identifier and a salted hash of your IP address); the raw IP is never stored or published. The same applies when you report a creation.
 
 Creations are pure color data. They contain no code and cannot access your device.
-
-AI Theme Builder
-----------------
-
-The optional AI Theme Builder lets you generate themes from a text description using Google's Gemini API. It only works if you set it up yourself, and involves the following:
-
-1. **Your own API key**: The feature requires a Gemini API key that you create in Google AI Studio. The key is stored only on your device, in a preference file that is excluded from the app's backup feature, and is sent only to Google's API servers to authenticate your requests. The developer never receives or sees your key. You can delete it at any time with the Reset API Key option.
-
-2. **Your prompt**: When you tap Generate, the theme description you typed is sent directly from your device to the Google Gemini API at generativelanguage.googleapis.com together with the app's theme-format instructions. No server operated by the developer is involved, and the developer never sees your prompts. Do not include personal information in prompts. Google processes this data under its own terms and privacy policy: https://policies.google.com/privacy — depending on your Google account settings, Google may retain API inputs as described in the Gemini API terms.
-
-3. **The response**: The generated theme is pure color data, validated on your device against the same strict schema as community creations before it can be previewed or applied. Generated themes are kept only in memory and disappear when the app process ends.
-
-If you never set up an API key, this feature performs no network activity at all.
 
 Permissions Used and Justifications
 -----------------------------------
@@ -76,7 +62,7 @@ The app requests the following permissions only to enable essential functionalit
 	• The image is processed locally and not stored or uploaded.
 
 5. **Internet Permission**
-	• Purpose: To load profile pictures of app contributors and translators, to power the optional Community Creations feature (browsing, voting, and sharing color configurations), and to send AI Theme Builder prompts to Google's Gemini API when you have configured your own key.
+	• Purpose: To load profile pictures of app contributors and translators, and to power the optional Community Creations feature (browsing, voting, and sharing color configurations).
 	• Beyond that, no user data is sent or received.
 
 External Links
@@ -101,7 +87,6 @@ Data Sharing and Third Parties
 
 ColorBlendr does **not** use analytics, ads, crash reporting, or any third-party SDKs that collect data.
 The Community Creations feature relies on infrastructure providers acting as processors: GitHub (public creation storage and submissions), jsDelivr (content delivery), and Cloudflare (vote handling and bot protection). They receive only the data described in the Community Creations section, subject to their own privacy policies.
-If you enable the optional AI Theme Builder, your prompts are sent directly to Google (Gemini API) as described above, subject to Google's own privacy policy.
 No information is shared with any other third party.
 
 Children's Privacy

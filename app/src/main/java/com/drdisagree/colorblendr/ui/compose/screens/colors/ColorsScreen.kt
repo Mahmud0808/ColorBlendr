@@ -3,7 +3,6 @@ package com.drdisagree.colorblendr.ui.compose.screens.colors
 import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,10 +28,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Colorize
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -70,7 +67,6 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
-import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
@@ -81,9 +77,7 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPalettePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.CommunityShowcase
 import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
-import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
-import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -102,18 +96,14 @@ fun ColorsScreen(
     colorsViewModel: ColorsViewModel,
     onNavigateToColorPalette: () -> Unit,
     onNavigateToCommunity: () -> Unit = {},
-    onNavigateToCommunityTheme: (String) -> Unit = {},
-    onNavigateToAiBuilder: () -> Unit = {}
+    onNavigateToCommunityTheme: (String) -> Unit = {}
 ) {
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
     val isDark = isSystemInDarkTheme()
-    val rootMode = remember { isRootMode() }
 
-    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
-    val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     val wallpaperColors by colorsViewModel.wallpaperColors.collectAsStateWithLifecycle()
     val basicColors by colorsViewModel.basicColors.collectAsStateWithLifecycle()
     val wallpaperPalettes by colorsViewModel.wallpaperColorPalettes.collectAsStateWithLifecycle()
@@ -219,13 +209,7 @@ fun ColorsScreen(
                         .contentWidthLimit()
                         .verticalScroll(scrollState)
                         .padding(bottom = LocalPreviewBottomInset.current)
-                        .padding(
-                            top = 12.dp,
-                            bottom = if (rootMode)
-                                if (previewColors != null && !isApplying) 68.dp else 80.dp
-                            else
-                                0.dp
-                        )
+                        .padding(top = 12.dp)
                 ) {
                     Surface(
                         shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius)),
@@ -366,33 +350,6 @@ fun ColorsScreen(
                 }
             }
 
-            if (rootMode) {
-                val restPadding by animateDpAsState(
-                    targetValue = if (SnackbarVisibility.visible) 76.dp else 16.dp,
-                    animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-                    label = "aiFabSnackbarPush"
-                )
-                val fabBottom = maxOf(
-                    LocalPreviewBottomInset.current,
-                    navBottomInset() + restPadding.coerceAtLeast(0.dp)
-                )
-                FloatingActionButton(
-                    onClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onNavigateToAiBuilder()
-                    },
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 20.dp, bottom = fabBottom)
-                ) {
-                    Icon(
-                        painter = rememberVectorPainter(Icons.Rounded.AutoAwesome),
-                        contentDescription = stringResource(R.string.ai_theme_builder_title)
-                    )
-                }
-            }
         }
     }
 }
