@@ -848,7 +848,7 @@ class RootConnection : RootService() {
 
             private val fobClass: Class<*> by lazy {
                 try {
-                    Class.forName("android.content.om.FabricatedOverlay\$Builder")
+                    Class.forName($$"android.content.om.FabricatedOverlay$Builder")
                 } catch (e: ClassNotFoundException) {
                     Log.e(TAG, "FabricatedOverlay.Builder class not found", e)
                     throw RuntimeException(e)
@@ -857,7 +857,7 @@ class RootConnection : RootService() {
 
             private val omtbClass: Class<*> by lazy {
                 try {
-                    Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
+                    Class.forName($$"android.content.om.OverlayManagerTransaction$Builder")
                 } catch (e: ClassNotFoundException) {
                     Log.e(TAG, "OverlayManagerTransaction.Builder class not found", e)
                     throw RuntimeException(e)
@@ -910,9 +910,8 @@ class RootConnection : RootService() {
                 return try {
                     val method = mActivityManager.javaClass.getMethod("getCurrentUser")
                     method.isAccessible = true
-                    val result = method.invoke(mActivityManager)
 
-                    when (result) {
+                    when (val result = method.invoke(mActivityManager)) {
                         is Int -> result
                         is UserInfo -> result.userHandle.getUserIdentifier()
                         else -> throw IllegalStateException("Unexpected return type from ActivityManager.getCurrentUser(): ${result?.javaClass}")
