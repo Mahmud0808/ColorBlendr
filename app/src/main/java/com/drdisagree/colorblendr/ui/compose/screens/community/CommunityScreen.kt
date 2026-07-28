@@ -64,13 +64,13 @@ import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
+import com.drdisagree.colorblendr.utils.community.CommunityTrending
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
-import kotlin.math.pow
 import android.graphics.Color as AndroidColor
 
 // All community creations: searchable, sortable (upvotes / downloads /
@@ -125,16 +125,7 @@ private fun CommunityScreenContent(
 
     val sorted = remember(themes, sort, query) {
         val base = when (sort) {
-            CommunitySort.TRENDING -> {
-                // Gravity score: engagement decays with age, so fresh themes
-                // gaining votes outrank old winners camping the top.
-                val now = System.currentTimeMillis() / 1000
-                themes?.sortedByDescending {
-                    val ageDays = (now - it.createdAt).coerceAtLeast(0) / 86400.0
-                    (it.upvotes + it.downloads * 0.5) / (ageDays + 2.0).pow(1.5)
-                }
-            }
-
+            CommunitySort.TRENDING -> themes?.let { CommunityTrending.sort(it) }
             CommunitySort.UPVOTES -> themes?.sortedByDescending { it.upvotes }
             CommunitySort.DOWNLOADS -> themes?.sortedByDescending { it.downloads }
             CommunitySort.LATEST -> themes?.sortedByDescending { it.createdAt }

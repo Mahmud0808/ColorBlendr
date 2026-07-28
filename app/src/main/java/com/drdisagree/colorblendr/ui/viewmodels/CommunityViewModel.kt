@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 // Cache-first: emit the Room cache instantly, refresh from the index in the
 // background. null = still loading, empty = nothing to show (offline first
-// run). Showcase slices top-voted cards from this same list.
+// run). Showcase slices trending cards from this same list.
 class CommunityViewModel : ViewModel() {
 
     private val repository = getCommunityThemeRepository()

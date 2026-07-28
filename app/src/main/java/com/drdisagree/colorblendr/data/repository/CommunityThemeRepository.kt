@@ -86,8 +86,9 @@ class CommunityThemeRepository(private val dao: CommunityThemeDao) {
     fun isStale(maxAgeMillis: Long): Boolean =
         System.currentTimeMillis() - getLong(COMMUNITY_LAST_FETCH, 0L) > maxAgeMillis
 
-    suspend fun getThemes(): List<CommunityTheme> =
+    suspend fun getThemes(): List<CommunityTheme> = withContext(Dispatchers.Default) {
         dao.getAll().mapNotNull { it.toTheme() }
+    }
 
     // Reflect a fresh vote count immediately; the daily index rebuild remains
     // the source of truth.

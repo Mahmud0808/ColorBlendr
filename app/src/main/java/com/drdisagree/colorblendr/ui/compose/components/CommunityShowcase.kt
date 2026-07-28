@@ -56,10 +56,13 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
+import com.drdisagree.colorblendr.utils.community.CommunityTrending
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 
 // Community themes showcase: header with View all, then an endlessly
-// drifting carousel of top-voted cards. Count = cards that fit the larger
+// drifting carousel of trending cards. Count = cards that fit the larger
 // screen dimension + 3 extra (or fewer if the cloud has fewer). First run
 // shows shimmer while the first fetch lands.
 @Composable
@@ -102,19 +105,22 @@ fun CommunityShowcase(
     var showcaseIds by rememberSaveable { mutableStateOf<List<String>?>(null) }
     LaunchedEffect(allThemes, showcaseCount) {
         if (showcaseIds == null) {
-            allThemes?.let {
-                showcaseIds = it.sortedByDescending { theme -> theme.upvotes }
-                    .take(showcaseCount)
-                    .map { theme -> theme.id }
+            allThemes?.let { themes ->
+                showcaseIds = withContext(Dispatchers.Default) {
+                    CommunityTrending.top(themes, showcaseCount).map { it.id }
+                }
             }
         }
     }
 
     // Remap latched ids to current themes so vote counts stay live without
-    // changing the set or order.
+    // changing the set or order. Only the latched ids get mapped — no map of
+    // the whole cache.
     val showcase = remember(showcaseIds, allThemes) {
         showcaseIds?.let { ids ->
-            val byId = allThemes.orEmpty().associateBy { it.id }
+            val wanted = ids.toHashSet()
+            val byId = HashMap<String, CommunityTheme>(ids.size)
+            allThemes.orEmpty().forEach { if (it.id in wanted) byId[it.id] = it }
             ids.mapNotNull { byId[it] }
         }
     }
