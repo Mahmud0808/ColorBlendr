@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Button
@@ -309,7 +309,7 @@ private fun DetailsContent(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Box(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             Button(
                                 onClick = {
                                     haptics.performHapticFeedback(HapticFeedbackType.Confirm)
@@ -324,19 +324,24 @@ private fun DetailsContent(
                             }
 
                             if (!rootMode) {
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = MaterialTheme.colorScheme.error,
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .offset(x = 0.dp, y = (-8).dp)
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp)
                                 ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Lock,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = stringResource(R.string.root_required),
-                                        color = MaterialTheme.colorScheme.onError,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.labelMedium
                                     )
                                 }
                             }
