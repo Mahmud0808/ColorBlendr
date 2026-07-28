@@ -28,6 +28,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -48,8 +50,10 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityTrending
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 // Community themes showcase: header with View all, then an endlessly
 // drifting carousel of trending cards. Count = cards that fit the larger
@@ -167,6 +171,8 @@ private fun ShowcaseContent(
     }
 }
 
+private const val RESUME_DELAY_MS = 300L
+
 // One container for loading and loaded states, so spacing is identical:
 // null themes -> pulsing placeholders sized by an invisible real card
 @Composable
@@ -194,22 +200,21 @@ private fun DriftingCarousel(
     }
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = startIndex)
 
-    // Constant drift, paused while the user holds or drags.
     val dragged by listState.interactionSource.collectIsDraggedAsState()
-    // 0.4dp per 60Hz frame = 25dp/s, now refresh-rate independent.
+    var touched by remember { mutableStateOf(false) }
     val driftPerSecondPx = with(LocalDensity.current) { 25.dp.toPx() }
 
-    // Drift only while the screen is resumed and the user isn't dragging.
     val lifecycleState by LocalLifecycleOwner.current.lifecycle
         .currentStateAsState()
     val resumed = lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
 
-    LaunchedEffect(themes, dragged, resumed) {
-        if (!infinite || dragged || !resumed) return@LaunchedEffect
-        // Frame-clock driven: scroll by the real elapsed time each frame so
-        // speed and smoothness match any display refresh rate. Delta clamped
-        // so a stall doesn't cause a jump.
+    LaunchedEffect(themes, dragged, touched, resumed) {
+        if (!infinite || dragged || touched || !resumed) return@LaunchedEffect
+
+        delay(RESUME_DELAY_MS.milliseconds)
+
         var lastFrameNanos = withFrameNanos { it }
+
         while (isActive) {
             val frameNanos = withFrameNanos { it }
             val deltaSeconds = ((frameNanos - lastFrameNanos) / 1_000_000_000f)
@@ -223,6 +228,14 @@ private fun DriftingCarousel(
 
     LazyRow(
         state = listState,
+        modifier = Modifier.pointerInput(Unit) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    touched = event.changes.any { it.pressed }
+                }
+            }
+        },
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         userScrollEnabled = themes != null,
         contentPadding = PaddingValues(
