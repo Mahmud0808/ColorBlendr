@@ -208,7 +208,6 @@ private fun DetailsContent(
 
             Column {
                 AppToolbar(
-                    title = theme.name,
                     showBackButton = true,
                     lifted = toolbarLifted,
                     actions = {
