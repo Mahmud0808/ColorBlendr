@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -58,6 +59,7 @@ import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
 import com.drdisagree.colorblendr.dev.ui.components.BlockReasonDialog
 import com.drdisagree.colorblendr.dev.ui.components.ConfirmDialog
 import com.drdisagree.colorblendr.dev.ui.components.DeviceChip
+import com.drdisagree.colorblendr.dev.ui.components.EditDetailsDialog
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 import com.drdisagree.colorblendr.dev.utils.ThemePayloadDecoder
 import java.text.DateFormat
@@ -71,12 +73,14 @@ fun SubmissionDetailScreen(
     onPreview: () -> Unit,
     onApprove: () -> Unit,
     onReject: () -> Unit,
-    onBlock: (String) -> Unit
+    onBlock: (String) -> Unit,
+    onEdit: (String, String) -> Unit
 ) {
     val payload = remember(item.payloadJson) { ThemePayloadDecoder.decode(item.payloadJson) }
     var confirmApprove by remember { mutableStateOf(false) }
     var confirmReject by remember { mutableStateOf(false) }
     var showBlock by remember { mutableStateOf(false) }
+    var showEdit by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
     val lifted by remember { derivedStateOf { scrollState.value > 0 } }
@@ -96,6 +100,18 @@ fun SubmissionDetailScreen(
             onConfirm = { reason ->
                 showBlock = false
                 onBlock(reason)
+            }
+        )
+    }
+
+    if (showEdit) {
+        EditDetailsDialog(
+            target = item,
+            description = payload?.description.orEmpty(),
+            onDismiss = { showEdit = false },
+            onConfirm = { name, description ->
+                showEdit = false
+                onEdit(name, description)
             }
         )
     }
@@ -145,6 +161,15 @@ fun SubmissionDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { showEdit = true },
+                        shapes = IconButtonDefaults.shapes()
+                    ) {
+                        Icon(
+                            painter = rememberVectorPainter(Icons.Rounded.Edit),
+                            contentDescription = stringResource(R.string.edit_details)
+                        )
+                    }
                     FilledTonalIconButton(
                         onClick = { showBlock = true },
                         shapes = IconButtonDefaults.shapes(),
@@ -219,8 +244,25 @@ fun SubmissionDetailScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp)
             )
-            Row(modifier = Modifier.padding(top = 10.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 10.dp)
+            ) {
                 DeviceChip(device = item.device)
+                if (item.edited) {
+                    Text(
+                        text = stringResource(R.string.edited),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.tertiaryContainer,
+                                RoundedCornerShape(50)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
             }
 
             if (payload != null && payload.description.isNotEmpty()) {
@@ -485,7 +527,8 @@ private fun SubmissionDetailScreenPreview() {
             onPreview = {},
             onApprove = {},
             onReject = {},
-            onBlock = {}
+            onBlock = {},
+            onEdit = { _, _ -> }
         )
     }
 }

@@ -12,6 +12,7 @@ import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
 import com.drdisagree.colorblendr.dev.data.models.PreviewResult
 import com.drdisagree.colorblendr.dev.data.models.StackedMessage
 import com.drdisagree.colorblendr.dev.utils.ThemeForwarder
+import com.drdisagree.colorblendr.dev.utils.ThemePayloadDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import kotlin.time.Duration.Companion.milliseconds
 
 class DevViewModel(application: Application) : AndroidViewModel(application) {
@@ -95,9 +97,32 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         if (message != null) push(string(message))
     }
 
+    fun editSubmission(item: PendingSubmission, name: String, description: String) {
+        val newName = name.trim().take(PendingSubmission.MAX_NAME)
+        val newDescription = description.trim().take(PendingSubmission.MAX_DESCRIPTION)
+        if (newName.isEmpty() || newDescription.isEmpty()) return
+
+        val payloadJson = runCatching {
+            JSONObject(item.payloadJson)
+                .put("name", newName)
+                .put("description", newDescription)
+                .toString()
+        }.getOrNull() ?: return
+
+        _pending.update { list ->
+            list?.map {
+                if (it.id != item.id) {
+                    it
+                } else {
+                    it.copy(name = newName, payloadJson = payloadJson, edited = true)
+                }
+            }
+        }
+    }
+
     fun approve(item: PendingSubmission) {
         _pending.update { it?.filterNot { s -> s.id == item.id } }
-        val job = launchAction({ AdminApi.approve(savedKey, item.id) }) { result ->
+        val job = launchAction({ approveWithEdits(item) }) { result ->
             restorePending(listOf(item))
             push(failureMessage(result))
         }
@@ -163,7 +188,7 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
             var ok = 0
             var failed = 0
             items.forEach { item ->
-                when (runAction { AdminApi.approve(savedKey, item.id) }) {
+                when (runAction { approveWithEdits(item) }) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.id == item.id } }
                         ok++
@@ -229,6 +254,18 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun dismissMessage(id: Long) {
         _messages.update { it.filterNot { m -> m.id == id } }
     }
+
+    private suspend fun approveWithEdits(item: PendingSubmission): ApiResult<String> =
+        if (!item.edited) {
+            AdminApi.approve(savedKey, item.id)
+        } else {
+            AdminApi.approve(
+                adminKey = savedKey,
+                id = item.id,
+                name = item.name,
+                description = ThemePayloadDecoder.decode(item.payloadJson)?.description
+            )
+        }
 
     private suspend fun <T> runAction(action: suspend () -> ApiResult<T>): ApiResult<T> =
         actionMutex.withLock { withContext(NonCancellable) { action() } }

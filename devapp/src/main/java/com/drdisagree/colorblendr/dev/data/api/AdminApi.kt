@@ -56,10 +56,19 @@ object AdminApi {
             }
         }
 
-    suspend fun approve(adminKey: String, id: String): ApiResult<String> =
-        execute(post("approve", adminKey, JSONObject().put("id", id))) { body ->
+    suspend fun approve(
+        adminKey: String,
+        id: String,
+        name: String? = null,
+        description: String? = null
+    ): ApiResult<String> {
+        val payload = JSONObject().put("id", id)
+        name?.let { payload.put("name", it) }
+        description?.let { payload.put("description", it) }
+        return execute(post("approve", adminKey, payload)) { body ->
             JSONObject(body).optString("prUrl").takeIf { it.isNotEmpty() }
         }
+    }
 
     suspend fun reject(adminKey: String, id: String): ApiResult<Unit> =
         execute(post("reject", adminKey, JSONObject().put("id", id))) { body ->
