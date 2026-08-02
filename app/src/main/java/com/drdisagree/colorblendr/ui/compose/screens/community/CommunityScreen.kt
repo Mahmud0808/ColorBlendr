@@ -236,7 +236,7 @@ private fun CommunityScreenContent(
                         contentPadding = PaddingValues(
                             start = 16.dp,
                             end = 16.dp,
-                            top = 84.dp,
+                            top = 68.dp,
                             bottom = 16.dp + LocalPreviewBottomInset.current
                         ),
                         modifier = Modifier

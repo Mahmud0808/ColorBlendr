@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.community
 
+import android.graphics.Color
 import android.util.LruCache
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.utils.colors.ColorModifiers
@@ -13,6 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger
 object CommunityThemePalette {
 
     private val cache = LruCache<String, ArrayList<ArrayList<Int>>>(32)
+
+    // neutral1 + neutral2 rows, shade 900
+    private val NEUTRAL_ROWS = 3..4
+    private const val SHADE_900 = 11
 
     fun derive(theme: CommunityTheme, isDark: Boolean): ArrayList<ArrayList<Int>> {
         val key = "${theme.id}:${theme.createdAt}:$isDark"
@@ -75,6 +80,14 @@ object CommunityThemePalette {
                 val j = row.indexOf(shadeName)
                 if (j >= 0 && i < palette.size && j < palette[i].size) {
                     palette[i][j] = color
+                }
+            }
+        }
+
+        if (theme.pitchBlack) {
+            for (i in NEUTRAL_ROWS) {
+                if (i < palette.size && SHADE_900 < palette[i].size) {
+                    palette[i][SHADE_900] = Color.BLACK
                 }
             }
         }
