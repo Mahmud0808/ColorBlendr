@@ -267,6 +267,7 @@
     <string name="submit">送信</string>
     <string name="close">閉じる</string>
     <string name="ok">OK</string>
+    <!-- Staging Preview -->
     <string name="preview_apply">Apply</string>
     <string name="preview_applying">Applying colors…</string>
     <string name="preview_discard">Discard changes</string>

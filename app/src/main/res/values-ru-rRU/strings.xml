@@ -270,6 +270,7 @@
     <string name="submit">Продолжить</string>
     <string name="close">Закрыть</string>
     <string name="ok">ОК</string>
+    <!-- Staging Preview -->
     <string name="preview_apply">Применить</string>
     <string name="preview_applying">Применение цветов…</string>
     <string name="preview_discard">Отменить изменения</string>

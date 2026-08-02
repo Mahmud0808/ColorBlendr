@@ -267,6 +267,7 @@
     <string name="submit">보내기</string>
     <string name="close">닫기</string>
     <string name="ok">확인</string>
+    <!-- Staging Preview -->
     <string name="preview_apply">Apply</string>
     <string name="preview_applying">Applying colors…</string>
     <string name="preview_discard">Discard changes</string>
