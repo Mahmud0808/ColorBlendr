@@ -37,8 +37,8 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 // TitleLarge title.
 @Composable
 fun AppToolbar(
-    title: String,
     modifier: Modifier = Modifier,
+    title: String = "",
     showBackButton: Boolean = false,
     lifted: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {}
