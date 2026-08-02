@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">Піпетка</string>
+    <string name="colorPickerDialog_wheel">Колесо</string>
     <string name="colorPickerDialog_preset">Пресет</string>
     <string name="colorPickerDialog_image">Зображення</string>
     <string name="colorPickerDialog_imageColorPicker">Взяти колір із зображення</string>

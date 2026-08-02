@@ -1,0 +1,10 @@
+Changelog:
+
+• Rebuilt in Jetpack Compose with Material 3 Expressive design.
+• Live preview of color changes before applying.
+• Browse, search, sort & share community themes.
+• Added Color Spec 2026 & CMF Monet style support.
+• Added Tasker integration and tablet/foldable layouts.
+• Fixed Shizuku permission crashes, backup restores, and silent theming failures.
+
+Translation credit goes to all the contributors on our Crowdin platform.

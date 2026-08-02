@@ -11,7 +11,6 @@ import android.provider.Settings
 import android.widget.Toast
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 object SystemUtil {
@@ -32,8 +31,8 @@ object SystemUtil {
 
     @Suppress("DEPRECATION")
     fun isConnectedToWifi(context: Context): Boolean {
-        val wifiManager =
-            context.getSystemService(Context.WIFI_SERVICE) as WifiManager? ?: return false
+        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+            ?: return false
 
         val wifiInfo = wifiManager.connectionInfo
 
@@ -42,7 +41,7 @@ object SystemUtil {
         }
 
         val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
                 ?: return false
 
         val activeNetwork = connectivityManager.activeNetwork ?: return false
@@ -64,16 +63,8 @@ object SystemUtil {
         val packageManager = context.packageManager
         val canResolve = devOptionsIntent.resolveActivity(packageManager) != null
 
-        if (!AppUtil.hasNotificationPermission(context)) {
-            MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.grant_permission)
-                .setMessage(R.string.notification_access_not_granted)
-                .setNegativeButton(R.string.close, null)
-                .setPositiveButton(R.string.ok) { _, _ ->
-                    AppUtil.openAppNotificationSettings(context)
-                }
-                .show()
-        } else if (canResolve) {
+        // Notification permission gate lives in the caller (PairingScreen).
+        if (canResolve) {
             context.startActivity(devOptionsIntent)
         } else {
             Toast.makeText(

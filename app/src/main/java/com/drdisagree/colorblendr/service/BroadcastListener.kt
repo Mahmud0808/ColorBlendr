@@ -7,7 +7,6 @@ import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
@@ -24,6 +23,8 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
+import com.drdisagree.colorblendr.data.domain.AppEvents
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
@@ -36,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 class BroadcastListener : BroadcastReceiver() {
 
@@ -82,7 +84,7 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
-                    delay(1000)
+                    delay(1000.milliseconds)
 
                     val newConfig = Configuration(context.resources.configuration)
                     val lastUiMode = lastConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
@@ -113,7 +115,7 @@ class BroadcastListener : BroadcastReceiver() {
                     Intent.ACTION_WALLPAPER_CHANGED
                 )
             ) {
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+                AppEvents.emit(intent.action!!)
             }
         }
     }
@@ -126,7 +128,7 @@ class BroadcastListener : BroadcastReceiver() {
         validateRootAndUpdateColors(context) {
             cooldownTime = 10000
             CoroutineScope(Dispatchers.Main).launch {
-                delay(10000)
+                delay(10000.milliseconds)
                 cooldownTime = 5000
             }
             updateAllColors()
@@ -212,13 +214,15 @@ class BroadcastListener : BroadcastReceiver() {
     private fun updateAllColors(force: Boolean = false) {
         if ((!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled())
             || isWorkMethodUnknown()
+            // Never auto-apply while the user is previewing changes.
+            || PreviewController.isPreviewActive
         ) return
 
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()
 
             CoroutineScope(Dispatchers.Main).launch {
-                delay(500)
+                delay(500.milliseconds)
                 applyFabricatedColors()
             }
         }

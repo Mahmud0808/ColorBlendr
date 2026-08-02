@@ -29,7 +29,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /** [ColorSpec] implementation for the 2021 spec. */
-class ColorSpec2021 : ColorSpec {
+open class ColorSpec2021 : ColorSpec {
   // ////////////////////////////////////////////////////////////////
   // Main Palettes //
   // ////////////////////////////////////////////////////////////////
@@ -877,7 +877,7 @@ class ColorSpec2021 : ColorSpec {
   // Color value calculations //
   // ///////////////////////////////////////////////////////////////
   override fun getHct(scheme: DynamicScheme, color: DynamicColor): Hct {
-    // This is crucial for aesthetics: we aren't simply the taking the standard color
+    // This is crucial for aesthetics: we aren't simply taking the standard color
     // and changing its tone for contrast. Rather, we find the tone for contrast, then
     // use the specified chroma from the palette to construct a new color.
     //
@@ -900,8 +900,8 @@ class ColorSpec2021 : ColorSpec {
       val stayTogether = toneDeltaPair.stayTogether
       val aIsNearer =
         (toneDeltaPair.constraint == DeltaConstraint.NEARER ||
-          (polarity == TonePolarity.LIGHTER && !scheme.isDark) ||
-          (polarity == TonePolarity.DARKER && !scheme.isDark))
+                (polarity == TonePolarity.LIGHTER && !scheme.isDark) ||
+                (polarity == TonePolarity.DARKER && !scheme.isDark))
       val nearer = if (aIsNearer) roleA else roleB
       val farther = if (aIsNearer) roleB else roleA
       val amNearer = color.name == nearer.name
@@ -915,10 +915,10 @@ class ColorSpec2021 : ColorSpec {
       val fContrastCurve = farther.contrastCurve?.invoke(scheme)
       if (
         background != null &&
-          nearer.contrastCurve != null &&
-          farther.contrastCurve != null &&
-          nContrastCurve != null &&
-          fContrastCurve != null
+        nearer.contrastCurve != null &&
+        farther.contrastCurve != null &&
+        nContrastCurve != null &&
+        fContrastCurve != null
       ) {
         val bg = background.invoke(scheme)
         if (bg != null) {
@@ -947,11 +947,11 @@ class ColorSpec2021 : ColorSpec {
       // If constraint is not satisfied, try another round.
       if ((fTone - nTone) * expansionDir < delta) {
         // 2nd round: expand farther to match delta.
-        fTone = MathUtils.clampDouble(0.0, 100.0, nTone + delta * expansionDir)
+        fTone = (nTone + delta * expansionDir).coerceIn(0.0, 100.0)
         // If constraint is not satisfied, try another round.
         if ((fTone - nTone) * expansionDir < delta) {
           // 3rd round: contract nearer to match delta.
-          nTone = MathUtils.clampDouble(0.0, 100.0, fTone - delta * expansionDir)
+          nTone = (fTone - delta * expansionDir).coerceIn(0.0, 100.0)
         }
       }
 
@@ -1029,7 +1029,7 @@ class ColorSpec2021 : ColorSpec {
       val lower = min(bgTone1, bgTone2)
       if (
         Contrast.ratioOfTones(upper, answer) >= desiredRatio &&
-          Contrast.ratioOfTones(lower, answer) >= desiredRatio
+        Contrast.ratioOfTones(lower, answer) >= desiredRatio
       ) {
         return answer
       }
@@ -1052,7 +1052,7 @@ class ColorSpec2021 : ColorSpec {
       }
       val prefersLight =
         DynamicColor.tonePrefersLightForeground(bgTone1) ||
-          DynamicColor.tonePrefersLightForeground(bgTone2)
+                DynamicColor.tonePrefersLightForeground(bgTone2)
       if (prefersLight) {
         return lightOption ?: 100.0
       }
@@ -1094,6 +1094,7 @@ class ColorSpec2021 : ColorSpec {
           40.0,
         )
       Variant.VIBRANT -> TonalPalette.fromHueAndChroma(sourceColorHct.hue, 200.0)
+      else -> throw IllegalArgumentException("$variant variant is not supported in current spec.")
     }
   }
 
@@ -1138,6 +1139,7 @@ class ColorSpec2021 : ColorSpec {
           ),
           24.0,
         )
+      else -> throw IllegalArgumentException("$variant variant is not supported in current spec.")
     }
   }
 
@@ -1186,6 +1188,7 @@ class ColorSpec2021 : ColorSpec {
           ),
           32.0,
         )
+      else -> throw IllegalArgumentException("$variant variant is not supported in current spec.")
     }
   }
 
@@ -1208,6 +1211,7 @@ class ColorSpec2021 : ColorSpec {
       Variant.EXPRESSIVE ->
         TonalPalette.fromHueAndChroma(MathUtils.sanitizeDegreesDouble(sourceColorHct.hue + 15), 8.0)
       Variant.VIBRANT -> TonalPalette.fromHueAndChroma(sourceColorHct.hue, 10.0)
+      else -> throw IllegalArgumentException("$variant variant is not supported in current spec.")
     }
   }
 
@@ -1233,6 +1237,7 @@ class ColorSpec2021 : ColorSpec {
           12.0,
         )
       Variant.VIBRANT -> TonalPalette.fromHueAndChroma(sourceColorHct.hue, 12.0)
+      else -> throw IllegalArgumentException("$variant variant is not supported in current spec.")
     }
   }
 

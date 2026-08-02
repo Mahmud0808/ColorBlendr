@@ -180,7 +180,7 @@ class AdbPairingNotification : Service() {
 
         val inputAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
             R.drawable.ic_adb,
-            getString(R.string.submit),
+            getString(R.string.enter_pairing_code),
             submitIntent
         ).addRemoteInput(remoteInput)
             .build()

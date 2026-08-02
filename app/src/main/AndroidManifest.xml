@@ -37,6 +37,10 @@
         </intent>
     </queries>
 
+    <permission
+        android:name="com.drdisagree.colorblendr.permission.PREVIEW_THEME"
+        android:protectionLevel="signature" />
+
     <application
         android:name=".ColorBlendr"
         android:allowBackup="true"
@@ -53,7 +57,8 @@
         android:theme="@style/Base.Theme"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".ui.activities.SplashActivity"
+            android:name=".ui.activities.MainActivity"
+            android:configChanges="orientation|uiMode"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
@@ -81,11 +86,33 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.colorblendr" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.colorblendr" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="theme"
+                    android:scheme="colorblendr" />
+            </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activities.MainActivity"
-            android:configChanges="orientation|uiMode"
-            android:exported="true" />
+
+        <activity-alias
+            android:name=".ui.activities.PreviewAlias"
+            android:exported="true"
+            android:permission="com.drdisagree.colorblendr.permission.PREVIEW_THEME"
+            android:targetActivity=".ui.activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="preview"
+                    android:scheme="colorblendr" />
+            </intent-filter>
+        </activity-alias>
 
         <receiver
             android:name=".service.BroadcastListener"
@@ -112,6 +139,16 @@
             android:name=".service.AdbPairingNotification"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
+
+        <receiver
+            android:name=".service.TaskerIntentReceiver"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.drdisagree.colorblendr.action.APPLY_CONFIG" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".service.RestartBroadcastReceiver"

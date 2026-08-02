@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">カラーピッカー</string>
+    <string name="colorPickerDialog_wheel">Wheel</string>
     <string name="colorPickerDialog_preset">プリセット</string>
     <string name="colorPickerDialog_image">画像</string>
     <string name="colorPickerDialog_imageColorPicker">画像から色を選択</string>

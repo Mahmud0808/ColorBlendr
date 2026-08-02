@@ -26,3 +26,7 @@
 -keepattributes Signature
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
+# WebView JavaScript bridge (Turnstile) — methods called by name from JS
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}

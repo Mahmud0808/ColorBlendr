@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">متنقي الألوان</string>
+    <string name="colorPickerDialog_wheel">Wheel</string>
     <string name="colorPickerDialog_preset">إعدادات</string>
     <string name="colorPickerDialog_image">صورة</string>
     <string name="colorPickerDialog_imageColorPicker">اختيار اللون من الصورة</string>

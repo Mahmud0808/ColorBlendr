@@ -14,6 +14,7 @@ object Constant {
 
     // Database
     const val DATABASE_NAME = "colorblendr_database"
+    const val COMMUNITY_THEME_TABLE = "community_themes"
     const val CUSTOM_STYLE_TABLE = "custom_style_table"
 
     // Package names
@@ -51,7 +52,8 @@ object Constant {
     const val CUSTOM_MONET_STYLE = "userGeneratedMonetStyle"
     const val MODE_SPECIFIC_THEMES = "modeSpecificThemes"
     const val SCREEN_OFF_UPDATE_COLORS = "screenOffUpdateColors"
-    const val COLORSPEC_VERSION_2025 = "colorspecVersion2025"
+    const val TASKER_INTEGRATION = "taskerIntegration"
+    const val COLOR_SPEC_VERSION = "colorSpecVersion"
     const val DARKER_LAUNCHER_ICONS = "darkerLauncherIcons"
     const val SEMI_TRANSPARENT_LAUNCHER_ICONS = "semiTransparentLauncherIcons"
     const val FORCE_PITCH_BLACK_SETTINGS = "forcePitchBlackSettings"
@@ -76,26 +78,34 @@ object Constant {
     const val ADB_SEARCH_NOTIFICATION = "adb_searching_notification"
     const val ADB_PAIR_NOTIFICATION = "adb_pairing_notification"
 
+    // Raw slider pref keys: dark key doubles as the non-mode-specific one.
+    const val MONET_ACCENT_SATURATION_DARK = "monetAccentSaturationValue"
+    const val MONET_ACCENT_SATURATION_LIGHT = "monetAccentSaturationValueLight"
+    const val MONET_BACKGROUND_SATURATION_DARK = "monetBackgroundSaturationValue"
+    const val MONET_BACKGROUND_SATURATION_LIGHT = "monetBackgroundSaturationValueLight"
+    const val MONET_BACKGROUND_LIGHTNESS_DARK = "monetBackgroundLightnessValue"
+    const val MONET_BACKGROUND_LIGHTNESS_LIGHT = "monetBackgroundLightnessValueLight"
+
     val MONET_ACCENT_SATURATION: String
         get() = if (!modeSpecificThemesEnabled()) {
-            "monetAccentSaturationValue"
+            MONET_ACCENT_SATURATION_DARK
         } else {
-            if (SystemUtil.isDarkMode) "monetAccentSaturationValue"
-            else "monetAccentSaturationValueLight"
+            if (SystemUtil.isDarkMode) MONET_ACCENT_SATURATION_DARK
+            else MONET_ACCENT_SATURATION_LIGHT
         }
     val MONET_BACKGROUND_SATURATION: String
         get() = if (!modeSpecificThemesEnabled()) {
-            "monetBackgroundSaturationValue"
+            MONET_BACKGROUND_SATURATION_DARK
         } else {
-            if (SystemUtil.isDarkMode) "monetBackgroundSaturationValue"
-            else "monetBackgroundSaturationValueLight"
+            if (SystemUtil.isDarkMode) MONET_BACKGROUND_SATURATION_DARK
+            else MONET_BACKGROUND_SATURATION_LIGHT
         }
     val MONET_BACKGROUND_LIGHTNESS: String
         get() = if (!modeSpecificThemesEnabled()) {
-            "monetBackgroundLightnessValue"
+            MONET_BACKGROUND_LIGHTNESS_DARK
         } else {
-            if (SystemUtil.isDarkMode) "monetBackgroundLightnessValue"
-            else "monetBackgroundLightnessValueLight"
+            if (SystemUtil.isDarkMode) MONET_BACKGROUND_LIGHTNESS_DARK
+            else MONET_BACKGROUND_LIGHTNESS_LIGHT
         }
 
     @Deprecated("Use of shared preferences for saving custom styles is deprecated, use room database instead")
@@ -105,6 +115,14 @@ object Constant {
     val GSON: Gson = Gson()
     const val PREF_WORKING_METHOD = "workingMethod"
 
+    const val COMMUNITY_INDEX_URL =
+        "https://cdn.jsdelivr.net/gh/Mahmud0808/ColorBlendr-Themes@main/index.json"
+    const val DEVELOPER_MODE = "developerMode"
+    const val COMMUNITY_VOTED_IDS = "communityVotedIds"
+    const val COMMUNITY_LAST_FETCH = "communityLastFetch"
+    const val COMMUNITY_WORKER_URL = "https://colorblendr-themes.drdisagree.workers.dev"
+    const val TURNSTILE_SITE_KEY = "0x4AAAAAADzUgMuegUjZcG6j"
+
     val EXCLUDED_PREFS_FROM_BACKUP: Set<String> = HashSet(
         listOf(
             FIRST_RUN,
@@ -112,7 +130,36 @@ object Constant {
             MONET_LAST_UPDATED,
             THEMING_ENABLED,
             SHIZUKU_THEMING_ENABLED,
-            WALLPAPER_COLOR_LIST
+            WALLPAPER_COLOR_LIST,
+            COMMUNITY_VOTED_IDS,
+            COMMUNITY_LAST_FETCH,
+            DEVELOPER_MODE
+        )
+    )
+
+
+    val ROOT_ONLY_PREFS: Set<String> = HashSet(
+        listOf(
+            MONET_ACCURATE_SHADES,
+            MONET_PITCH_BLACK_THEME,
+            TINT_TEXT_COLOR,
+            MANUAL_OVERRIDE_COLORS,
+            MONET_SECONDARY_COLOR,
+            MONET_TERTIARY_COLOR,
+            COLOR_SPEC_VERSION,
+            MODE_SPECIFIC_THEMES,
+            DARKER_LAUNCHER_ICONS,
+            SEMI_TRANSPARENT_LAUNCHER_ICONS,
+            FORCE_PITCH_BLACK_SETTINGS,
+            FABRICATED_OVERLAY_FOR_APPS_STATE,
+            CUSTOM_MONET_STYLE,
+            MONET_STYLE_ORIGINAL_NAME,
+            MONET_ACCENT_SATURATION_DARK,
+            MONET_ACCENT_SATURATION_LIGHT,
+            MONET_BACKGROUND_SATURATION_DARK,
+            MONET_BACKGROUND_SATURATION_LIGHT,
+            MONET_BACKGROUND_LIGHTNESS_DARK,
+            MONET_BACKGROUND_LIGHTNESS_LIGHT
         )
     )
 

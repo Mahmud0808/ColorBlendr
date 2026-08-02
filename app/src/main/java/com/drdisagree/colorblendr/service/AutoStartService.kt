@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
@@ -16,13 +15,13 @@ import android.os.RemoteException
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.drdisagree.colorblendr.BuildConfig
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.utils.annotations.Test
@@ -63,7 +62,7 @@ class AutoStartService : Service() {
 
         if (isTestingService) {
             // Testing purposes only
-            startTimer(this)
+            startTimer()
         }
 
         return START_STICKY
@@ -215,12 +214,12 @@ class AutoStartService : Service() {
     }
 
     @Test
-    fun startTimer(context: Context) {
+    fun startTimer() {
         timer = Timer()
         timer!!.schedule(object : TimerTask() {
             override fun run() {
                 Log.i(TEST_TAG, "Timer is running " + counter++)
-                broadcastActionTest(context, counter.toString())
+                broadcastActionTest(counter.toString())
             }
         }, 1000, 1000)
     }
@@ -258,11 +257,8 @@ class AutoStartService : Service() {
         val EXTRA_PARAM_A: String = "$packageName.PARAM_A"
 
         @Test
-        fun broadcastActionTest(context: Context, param: String?) {
-            val intent = Intent(ACTION_FOO)
-            intent.putExtra(EXTRA_PARAM_A, param)
-            val bm = LocalBroadcastManager.getInstance(context)
-            bm.sendBroadcast(intent)
+        fun broadcastActionTest(param: String?) {
+            AppEvents.emit("$ACTION_FOO:$param")
         }
     }
 }

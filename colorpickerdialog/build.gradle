@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.agp.library)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace "me.jfenn.colorpickerdialog"
 
     defaultConfig {
         minSdk = 31
-        targetSdk = 36
         aarMetadata {
             minCompileSdk = 31
         }
@@ -18,6 +18,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     publishing {
@@ -31,6 +35,12 @@ android {
 dependencies {
     implementation libs.annotation
     implementation libs.material
-    implementation libs.androidUtils
-    implementation libs.glide
+
+    implementation(platform(libs.compose.bom))
+    implementation libs.compose.ui
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.activity.compose
+    implementation libs.coil.compose
 }

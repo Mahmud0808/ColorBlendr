@@ -56,10 +56,16 @@ class ShizukuConnection : IShizukuConnection.Stub {
      * @param jsonString The JSON string containing the theme customization data. This string is expected to
      *                   be in the format required by the `THEME_CUSTOMIZATION_OVERLAY_PACKAGES` setting.
      */
-    override fun applyFabricatedColors(jsonString: String) {
-        Shell.cmd(
+    override fun applyFabricatedColors(jsonString: String): String? {
+        val result = Shell.cmd(
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
         ).exec()
+
+        return if (result.isSuccess) {
+            null
+        } else {
+            result.err.joinToString("\n").ifBlank { "Command failed (exit ${result.code})" }
+        }
     }
 
     /**
@@ -71,13 +77,14 @@ class ShizukuConnection : IShizukuConnection.Stub {
      * In case of any errors during the color restoration process, the exception is logged
      * with an "ERROR" tag to the console.
      */
-    override fun removeFabricatedColors() {
-        try {
+    override fun removeFabricatedColors(): String? {
+        return try {
             applyFabricatedColors(
                 ThemeOverlayPackage.getOriginalSettings(currentSettings).toString()
             )
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)
+            e.message ?: e.javaClass.simpleName
         }
     }
 

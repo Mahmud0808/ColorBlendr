@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">Выбор цвета</string>
+    <string name="colorPickerDialog_wheel">Колесо</string>
     <string name="colorPickerDialog_preset">Предустановка</string>
     <string name="colorPickerDialog_image">Изображение</string>
     <string name="colorPickerDialog_imageColorPicker">Выбрать цвет с изображения</string>

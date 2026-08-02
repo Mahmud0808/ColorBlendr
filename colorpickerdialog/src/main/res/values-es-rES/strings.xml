@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">Selector de color</string>
+    <string name="colorPickerDialog_wheel">Wheel</string>
     <string name="colorPickerDialog_preset">Preajuste</string>
     <string name="colorPickerDialog_image">Imagen</string>
     <string name="colorPickerDialog_imageColorPicker">Seleccionar color desde la imagen</string>

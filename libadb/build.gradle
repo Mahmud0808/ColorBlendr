@@ -13,7 +13,6 @@ android {
 
     defaultConfig {
         minSdk = 1
-        targetSdk = 35
         aarMetadata {
             minCompileSdk = 1
         }
@@ -42,6 +41,4 @@ dependencies {
     implementation libs.annotation
     implementation libs.bcprov.jdk15to18
     implementation libs.spake2.android
-
-    testImplementation libs.junit
 }

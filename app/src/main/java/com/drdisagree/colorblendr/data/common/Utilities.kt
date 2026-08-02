@@ -2,7 +2,8 @@ package com.drdisagree.colorblendr.data.common
 
 import android.graphics.Color
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
-import com.drdisagree.colorblendr.data.common.Constant.COLORSPEC_VERSION_2025
+import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
+import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_APPS_STATE
@@ -25,6 +26,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
+import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
@@ -47,6 +49,7 @@ import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.data.enums.WorkMethod
+import com.drdisagree.colorblendr.data.repository.CommunityThemeRepository
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.google.gson.reflect.TypeToken
@@ -148,6 +151,14 @@ object Utilities {
         putBoolean(MODE_SPECIFIC_THEMES, enabled)
     }
 
+    fun taskerIntegrationEnabled(): Boolean {
+        return getBoolean(TASKER_INTEGRATION, false)
+    }
+
+    fun setTaskerIntegrationEnabled(enabled: Boolean) {
+        putBoolean(TASKER_INTEGRATION, enabled)
+    }
+
     fun screenOffColorUpdateEnabled(): Boolean {
         return getBoolean(SCREEN_OFF_UPDATE_COLORS, false)
     }
@@ -156,12 +167,12 @@ object Utilities {
         putBoolean(SCREEN_OFF_UPDATE_COLORS, enabled)
     }
 
-    fun getColorSpecVersion2025Enabled(): Boolean {
-        return getBoolean(COLORSPEC_VERSION_2025, false)
+    fun getColorSpecVersion(): Int {
+        return getInt(COLOR_SPEC_VERSION, 0)
     }
 
-    fun setColorSpecVersion2025Enabled(enabled: Boolean) {
-        putBoolean(COLORSPEC_VERSION_2025, enabled)
+    fun setColorSpecVersion(version: Int) {
+        putInt(COLOR_SPEC_VERSION, version)
     }
 
     fun darkerLauncherIconsEnabled(): Boolean {
@@ -393,5 +404,17 @@ object Utilities {
 
     fun getCustomStyleRepository(): CustomStyleRepository {
         return CustomStyleRepository(AppDatabase.getInstance().customStyleDao())
+    }
+
+    fun developerModeEnabled(): Boolean {
+        return getBoolean(DEVELOPER_MODE, false)
+    }
+
+    fun setDeveloperModeEnabled(enabled: Boolean) {
+        putBoolean(DEVELOPER_MODE, enabled)
+    }
+
+    fun getCommunityThemeRepository(): CommunityThemeRepository {
+        return CommunityThemeRepository(AppDatabase.getInstance().communityThemeDao())
     }
 }

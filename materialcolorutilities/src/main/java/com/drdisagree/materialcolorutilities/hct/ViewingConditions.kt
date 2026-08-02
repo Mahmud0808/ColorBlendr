@@ -108,7 +108,7 @@ private constructor(
         } else {
           f * (1.0 - 1.0 / 3.6 * exp((-adaptingLuminance - 42.0) / 92.0))
         }
-      d = MathUtils.clampDouble(0.0, 1.0, d)
+      d = d.coerceIn(0.0, 1.0)
       val nc = f
       val rgbD =
         doubleArrayOf(

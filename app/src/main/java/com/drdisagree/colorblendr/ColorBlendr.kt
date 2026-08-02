@@ -6,6 +6,7 @@ import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
+import com.drdisagree.colorblendr.utils.app.CrashLogger
 import com.google.android.material.color.DynamicColors
 import io.github.muntashirakon.adb.PRNGFixes
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -19,6 +20,7 @@ class ColorBlendr : Application() {
         contextReference = WeakReference(applicationContext)
         DynamicColors.applyToActivitiesIfAvailable(this)
         PRNGFixes.apply()
+        CrashLogger.install(this)
     }
 
     override fun attachBaseContext(base: Context) {
@@ -32,13 +34,20 @@ class ColorBlendr : Application() {
 
         val appContext: Context
             get() {
-                if (!this::contextReference.isInitialized || contextReference.get() == null) {
-                    contextReference = WeakReference(
-                        getInstance().applicationContext
-                    )
-                }
-                return contextReference.get()!!
+                val context = if (this::contextReference.isInitialized) contextReference.get() else null
+                if (context != null) return context
+
+                val inst = getInstance()
+                val fallback = inst.applicationContext ?: inst
+                contextReference = WeakReference(fallback)
+                return fallback
             }
+
+        fun initializeForPreview(context: Context) {
+            if (!this::contextReference.isInitialized || contextReference.get() == null) {
+                contextReference = WeakReference(context.applicationContext ?: context)
+            }
+        }
 
         private fun getInstance(): ColorBlendr {
             if (!this::instance.isInitialized) {

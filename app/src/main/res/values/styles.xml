@@ -19,28 +19,22 @@
         <item name="android:windowSplashScreenBrandingImage">@drawable/ic_branding_image</item>
     </style>
 
-    <style name="Toolbar.TitleText" parent="TextAppearance.Material3.TitleLarge" />
-
-    <style name="Seekbar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:thumb">@null</item>
-        <item name="android:progressDrawable">@drawable/seekbar_track</item>
+    <style name="AppMaterialAlertDialog" parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/DialogPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogNegativeButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogNegativeButton</item>
     </style>
 
-    <style name="PopupMenuStyles" parent="@style/Widget.Material3.PopupMenu">
-        <item name="android:dropDownHorizontalOffset">-16dp</item>
-        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    <style name="DialogPositiveButton" parent="Widget.Material3Expressive.Button">
+        <item name="android:minWidth">@dimen/m3_btn_dialog_btn_min_width</item>
+        <item name="android:layout_marginStart">@dimen/m3_btn_dialog_btn_spacing</item>
+        <item name="android:layout_marginLeft">@dimen/m3_btn_dialog_btn_spacing</item>
     </style>
 
-    <style name="PopupMenuDefault" parent="@style/Widget.Material3.PopupMenu">
-        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    <style name="DialogNegativeButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
+        <item name="android:minWidth">@dimen/m3_btn_dialog_btn_min_width</item>
+        <item name="android:layout_marginStart">@dimen/m3_btn_dialog_btn_spacing</item>
+        <item name="android:layout_marginLeft">@dimen/m3_btn_dialog_btn_spacing</item>
     </style>
 
-    <style name="RoundedTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">16dp</item>
-        <item name="boxCornerRadiusTopEnd">16dp</item>
-        <item name="boxCornerRadiusBottomStart">16dp</item>
-        <item name="boxCornerRadiusBottomEnd">16dp</item>
-    </style>
 </resources>

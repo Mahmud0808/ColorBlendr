@@ -6,6 +6,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
@@ -24,6 +28,7 @@ dependencyResolutionManagement {
 rootProject.name = "ColorBlendr"
 
 include(":app")
+include(":devapp")
 include(":systemstubs")
 include(":libadb")
 include(":colorpickerdialog")

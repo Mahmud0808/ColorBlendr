@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="colorPickerDialog_dialogName">Színválasztó</string>
+    <string name="colorPickerDialog_wheel">Wheel</string>
     <string name="colorPickerDialog_preset">Séma</string>
     <string name="colorPickerDialog_image">Kép</string>
     <string name="colorPickerDialog_imageColorPicker">Szín kiválasztása képből</string>
