@@ -270,6 +270,7 @@
     <string name="submit">Potvrdit</string>
     <string name="close">Zavřít</string>
     <string name="ok">OK</string>
+    <!-- Staging Preview -->
     <string name="preview_apply">Apply</string>
     <string name="preview_applying">Applying colors…</string>
     <string name="preview_discard">Discard changes</string>

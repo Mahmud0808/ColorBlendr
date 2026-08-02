@@ -270,6 +270,7 @@
     <string name="submit">Надіслати</string>
     <string name="close">Закрити</string>
     <string name="ok">ОК</string>
+    <!-- Staging Preview -->
     <string name="preview_apply">Застосувати</string>
     <string name="preview_applying">Застосування кольорів…</string>
     <string name="preview_discard">Відхилити зміни</string>

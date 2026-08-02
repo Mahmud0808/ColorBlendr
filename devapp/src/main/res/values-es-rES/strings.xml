@@ -48,7 +48,7 @@
         <item quantity="one">%d submission is waiting for review</item>
         <item quantity="other">%d submissions are waiting for review</item>
     </plurals>
-    <string name="last_checked">Last checked</string>
+    <string name="last_checked">Last background check</string>
     <string name="last_checked_never">Never</string>
     <string name="undo">Undo</string>
     <string name="preview">Preview</string>

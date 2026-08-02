@@ -254,7 +254,7 @@
     <string name="notification_settings">Ustawienia powiadomień</string>
     <string name="notification_style_error">If you cannot enter the Pairing Code from the notification, then you might need to change the Notification Shade to Android. Go to Notification Settings ~ Notification Style to change the Notification Style.  Otherwise you might not be able to enter the pairing code from the notification.</string>
     <string name="wifi_connection_required">To use the Wireless Debugging feature, your device must be connected to a Wi-Fi network. If your Wi-Fi connection has no Internet access then turn off mobile data for a solid Wi-Fi connection.</string>
-    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will see a six-digit code.</string>
     <string name="wireless_debugging_guide_2">Wprowadź sześciocyfrowy kod parowania do powiadomienia od ColorBlendr.</string>
     <string name="wireless_debugging_guide_3">Wróć do aplikacji i naciśnij w przycisk \"Start\" w poprzednim ekranie.</string>
     <string name="wireless_debugging_important_notice">Pamiętaj, że lewa część opcji Debugowanie Bezprzewodowego jest naciskalna. Naciśnięcie otworzy menu Debugowania Bezprzewodowego.</string>
@@ -270,6 +270,7 @@
     <string name="submit">Potwierdź</string>
     <string name="close">Zamknij</string>
     <string name="ok">OK</string>
+    <!-- Staging Preview -->
     <string name="preview_apply">Apply</string>
     <string name="preview_applying">Applying colors…</string>
     <string name="preview_discard">Discard changes</string>
