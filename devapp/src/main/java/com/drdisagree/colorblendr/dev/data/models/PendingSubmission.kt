@@ -9,5 +9,11 @@ data class PendingSubmission(
     val seedColor: Int?,
     val secondaryColor: Int?,
     val tertiaryColor: Int?,
-    val payloadJson: String
-)
+    val payloadJson: String,
+    val edited: Boolean = false
+) {
+    companion object {
+        const val MAX_NAME = 40
+        const val MAX_DESCRIPTION = 500
+    }
+}

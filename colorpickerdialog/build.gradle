@@ -5,7 +5,7 @@ plugins {
 
 android {
     compileSdk = 37
-    namespace "me.jfenn.colorpickerdialog"
+    namespace = "me.jfenn.colorpickerdialog"
 
     defaultConfig {
         minSdk = 31

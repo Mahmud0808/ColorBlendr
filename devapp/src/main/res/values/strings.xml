@@ -90,4 +90,9 @@
     <string name="hide_search">Hide search</string>
     <string name="sign_out">Sign out</string>
     <string name="sign_out_desc">Forget the admin key on this device.</string>
+    <string name="edit_details">Edit details</string>
+    <string name="theme_name">Name</string>
+    <string name="theme_description">Description</string>
+    <string name="save">Save</string>
+    <string name="edited">Edited</string>
 </resources>

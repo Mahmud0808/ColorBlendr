@@ -12,12 +12,23 @@ import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
 import com.drdisagree.colorblendr.dev.data.models.PreviewResult
 import com.drdisagree.colorblendr.dev.data.models.StackedMessage
 import com.drdisagree.colorblendr.dev.utils.ThemeForwarder
+import com.drdisagree.colorblendr.dev.utils.ThemePayloadDecoder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import kotlin.time.Duration.Companion.milliseconds
 
 class DevViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -86,17 +97,34 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         if (message != null) push(string(message))
     }
 
-    fun approve(item: PendingSubmission) {
-        _pending.update { it?.filterNot { s -> s.id == item.id } }
-        val job = viewModelScope.launch {
-            delay(UNDO_DELAY)
-            when (val result = AdminApi.approve(savedKey, item.id)) {
-                is ApiResult.Success -> Unit
-                is ApiResult.Failure -> {
-                    restorePending(listOf(item))
-                    push(failureMessage(result))
+    fun editSubmission(item: PendingSubmission, name: String, description: String) {
+        val newName = name.trim().take(PendingSubmission.MAX_NAME)
+        val newDescription = description.trim().take(PendingSubmission.MAX_DESCRIPTION)
+        if (newName.isEmpty() || newDescription.isEmpty()) return
+
+        val payloadJson = runCatching {
+            JSONObject(item.payloadJson)
+                .put("name", newName)
+                .put("description", newDescription)
+                .toString()
+        }.getOrNull() ?: return
+
+        _pending.update { list ->
+            list?.map {
+                if (it.id != item.id) {
+                    it
+                } else {
+                    it.copy(name = newName, payloadJson = payloadJson, edited = true)
                 }
             }
+        }
+    }
+
+    fun approve(item: PendingSubmission) {
+        _pending.update { it?.filterNot { s -> s.id == item.id } }
+        val job = launchAction({ approveWithEdits(item) }) { result ->
+            restorePending(listOf(item))
+            push(failureMessage(result))
         }
         pushUndo(string(R.string.theme_approved)) {
             job.cancel()
@@ -106,15 +134,9 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reject(item: PendingSubmission) {
         _pending.update { it?.filterNot { s -> s.id == item.id } }
-        val job = viewModelScope.launch {
-            delay(UNDO_DELAY)
-            when (val result = AdminApi.reject(savedKey, item.id)) {
-                is ApiResult.Success -> Unit
-                is ApiResult.Failure -> {
-                    restorePending(listOf(item))
-                    push(failureMessage(result))
-                }
-            }
+        val job = launchAction({ AdminApi.reject(savedKey, item.id) }) { result ->
+            restorePending(listOf(item))
+            push(failureMessage(result))
         }
         pushUndo(string(R.string.theme_rejected)) {
             job.cancel()
@@ -131,16 +153,10 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         )
         _pending.update { it?.filterNot { s -> s.device == item.device } }
         _blocked.update { (it ?: emptyList()) + entry }
-        val job = viewModelScope.launch {
-            delay(UNDO_DELAY)
-            when (val result = AdminApi.block(savedKey, item.device, reason)) {
-                is ApiResult.Success -> Unit
-                is ApiResult.Failure -> {
-                    _blocked.update { it?.filterNot { b -> b.device == entry.device } }
-                    restorePending(removed)
-                    push(failureMessage(result))
-                }
-            }
+        val job = launchAction({ AdminApi.block(savedKey, item.device, reason) }) { result ->
+            _blocked.update { it?.filterNot { b -> b.device == entry.device } }
+            restorePending(removed)
+            push(failureMessage(result))
         }
         pushUndo(string(R.string.uploader_blocked)) {
             job.cancel()
@@ -168,11 +184,11 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun approveAll(items: List<PendingSubmission>) {
         if (items.isEmpty()) return
         _busy.value = true
-        viewModelScope.launch {
+        actionScope.launch {
             var ok = 0
             var failed = 0
             items.forEach { item ->
-                when (AdminApi.approve(savedKey, item.id)) {
+                when (runAction { approveWithEdits(item) }) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.id == item.id } }
                         ok++
@@ -189,11 +205,11 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun rejectAll(items: List<PendingSubmission>) {
         if (items.isEmpty()) return
         _busy.value = true
-        viewModelScope.launch {
+        actionScope.launch {
             var ok = 0
             var failed = 0
             items.forEach { item ->
-                when (AdminApi.reject(savedKey, item.id)) {
+                when (runAction { AdminApi.reject(savedKey, item.id) }) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.id == item.id } }
                         ok++
@@ -210,11 +226,11 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     fun blockAll(items: List<PendingSubmission>, reason: String) {
         if (items.isEmpty()) return
         _busy.value = true
-        viewModelScope.launch {
+        actionScope.launch {
             var ok = 0
             var failed = 0
             items.distinctBy { it.device }.forEach { item ->
-                when (AdminApi.block(savedKey, item.device, reason)) {
+                when (runAction { AdminApi.block(savedKey, item.device, reason) }) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.device == item.device } }
                         _blocked.update {
@@ -237,6 +253,30 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     fun dismissMessage(id: Long) {
         _messages.update { it.filterNot { m -> m.id == id } }
+    }
+
+    private suspend fun approveWithEdits(item: PendingSubmission): ApiResult<String> =
+        if (!item.edited) {
+            AdminApi.approve(savedKey, item.id)
+        } else {
+            AdminApi.approve(
+                adminKey = savedKey,
+                id = item.id,
+                name = item.name,
+                description = ThemePayloadDecoder.decode(item.payloadJson)?.description
+            )
+        }
+
+    private suspend fun <T> runAction(action: suspend () -> ApiResult<T>): ApiResult<T> =
+        actionMutex.withLock { withContext(NonCancellable) { action() } }
+
+    private fun <T> launchAction(
+        action: suspend () -> ApiResult<T>,
+        onFailure: (ApiResult.Failure) -> Unit
+    ): Job = actionScope.launch {
+        delay(UNDO_DELAY.milliseconds)
+        val result = runAction(action)
+        if (result is ApiResult.Failure) onFailure(result)
     }
 
     private fun restorePending(items: List<PendingSubmission>) {
@@ -295,5 +335,8 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     private companion object {
         const val UNDO_DELAY = 4000L
+
+        val actionScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        val actionMutex = Mutex()
     }
 }

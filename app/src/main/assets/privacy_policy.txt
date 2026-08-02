@@ -31,7 +31,8 @@ Community Creations
 
 The Community Creations feature lets you browse, preview, vote on, and share color configurations ("creations") made by other users. It involves the following network activity:
 
-1. **Browsing**: The app downloads a public list of creations from a content delivery network (jsDelivr, backed by a public GitHub repository). This is a plain download; no account or identifier is required.
+1. **Browsing**: The app downloads a public list of creations from a content delivery network (jsDelivr, backed by a public GitHub repository). This is a plain download; no account or identifier is required. Every published creation, and every submission awaiting review, is visible in that repository:
+https://github.com/Mahmud0808/ColorBlendr-Themes
 
 2. **Voting**: To prevent duplicate votes, when you upvote a creation the app sends a **one-way hashed device identifier** (a SHA-256 hash derived from the Android device ID with an app-specific salt) to a Cloudflare Worker operated by the developer. Alongside it, the server derives and stores a **one-way salted hash of your IP address** (never the raw IP). Both hashes are irreversible, cannot be used to track you across apps, and are stored solely to enforce one vote per person — checking the device hash *or* the IP hash so that a VPN or a device reset cannot stack votes — and to restore your own vote state after a reinstall. Voting is entirely optional.
 
@@ -105,6 +106,9 @@ Open Source Transparency
 
 ColorBlendr is fully open source. You can review the complete source code at:
 https://github.com/Mahmud0808/ColorBlendr
+
+The Community Creations store, including the validation rules applied to every submission, is public as well:
+https://github.com/Mahmud0808/ColorBlendr-Themes
 
 This ensures full transparency and trust.
 
