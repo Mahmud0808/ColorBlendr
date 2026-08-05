@@ -8,6 +8,7 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.BLISS_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
@@ -39,8 +40,8 @@ import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.colors.computeFinalColorOverrides
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignFullPaletteToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
@@ -217,6 +218,9 @@ object OverlayManager {
                     FRAMEWORK_PACKAGE
                 ).also { frameworkOverlay ->
                     frameworkOverlay.apply {
+                        // Mirror the full Material 3 palette
+                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
+
                         for (i in systemPaletteNames.indices) {
                             for (j in systemPaletteNames[i].indices) {
                                 setColor(
@@ -227,9 +231,6 @@ object OverlayManager {
                         }
                         // SurfaceEffectColors
                         generateSurfaceEffectColors(isDarkMode)
-
-                        // Dynamic colors
-                        createDynamicOverlay(paletteLight, paletteDark)
 
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
@@ -272,25 +273,47 @@ object OverlayManager {
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
                     systemuiOverlay.apply {
+                        // Mirror the full Material 3 palette if resources exist
+                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
+
                         setBoolean("flag_monet", false)
+
+                        // Discovered /e/OS specific resources
+                        setColorIfExists("shade_scrim_background_dark", Color.BLACK)
+                        setColorIfExists("notification_ripple_tinted_color", Color.WHITE)
+                        setColorIfExists("system_bar_background_opaque", Color.BLACK)
 
                         if (isDarkMode && pitchBlackTheme) {
                             // QS top part color A16+
-                            setColor(
+                            setColorIfExists(
                                 "shade_panel_base",
                                 ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
                             ) // with blur
-                            setColor("shade_panel_fallback", Color.BLACK) // no blur
+                            setColorIfExists("shade_panel_fallback", Color.BLACK) // no blur
                             // Notification scrim color A16+
-                            setColor(
+                            setColorIfExists(
                                 "notification_scrim_base",
                                 ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt())
                             ) // with blur
-                            setColor("notification_scrim_fallback", Color.BLACK) // no blur
+                            setColorIfExists("notification_scrim_fallback", Color.BLACK) // no blur
                         }
                     }
                 }
             )
+
+            if (SystemUtil.isAppInstalled(BLISS_LAUNCHER)) {
+                add(
+                    FabricatedOverlayResource(
+                        String.format(FABRICATED_OVERLAY_NAME_APPS, BLISS_LAUNCHER),
+                        BLISS_LAUNCHER
+                    ).also { launcherOverlay ->
+                        launcherOverlay.apply {
+                            // Mirror the full Material 3 palette if resources exist
+                            assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
+                        }
+                    }
+                )
+            }
 
             getSelectedFabricatedApps().filter { (packageName, isSelected) ->
                 isSelected == java.lang.Boolean.TRUE && SystemUtil.isAppInstalled(packageName)
@@ -337,6 +360,7 @@ object OverlayManager {
 
             add(FABRICATED_OVERLAY_NAME_SYSTEM)
             add(FABRICATED_OVERLAY_NAME_SYSTEMUI)
+            add(String.format(FABRICATED_OVERLAY_NAME_APPS, BLISS_LAUNCHER))
         }.forEach { unregisterFabricatedOverlay(it) }
     }
 

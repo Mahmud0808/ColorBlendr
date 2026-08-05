@@ -40,6 +40,22 @@ open class FabricatedOverlayResource : Parcelable {
         this.setBoolean(name, value, null)
     }
 
+    fun setBooleanIfExists(name: String, value: Boolean): Boolean {
+        val foundPackage = com.drdisagree.colorblendr.utils.app.ResourceUtil.getResourcePackage(targetPackage, name, "bool")
+        return if (foundPackage != null) {
+            val formattedName = "$foundPackage:bool/$name"
+            entries[formattedName] = FabricatedOverlayEntry(
+                formattedName,
+                TypedValue.TYPE_INT_BOOLEAN,
+                if (value) 1 else 0,
+                null
+            )
+            true
+        } else {
+            false
+        }
+    }
+
     @Suppress("SameParameterValue")
     private fun setBoolean(name: String, value: Boolean, configuration: String?) {
         val formattedName = formatName(name, "bool")
@@ -93,6 +109,26 @@ open class FabricatedOverlayResource : Parcelable {
             value,
             configuration
         )
+    }
+
+    fun setColorIfExists(name: String, value: Int): Boolean {
+        return setColorIfExists(name, value, null)
+    }
+
+    fun setColorIfExists(name: String, value: Int, configuration: String?): Boolean {
+        val foundPackage = com.drdisagree.colorblendr.utils.app.ResourceUtil.getResourcePackage(targetPackage, name, "color")
+        return if (foundPackage != null) {
+            val formattedName = "$foundPackage:color/$name"
+            entries[formattedName] = FabricatedOverlayEntry(
+                formattedName,
+                TypedValue.TYPE_INT_COLOR_ARGB8,
+                value,
+                configuration
+            )
+            true
+        } else {
+            false
+        }
     }
 
     fun getColor(name: String): Int {
