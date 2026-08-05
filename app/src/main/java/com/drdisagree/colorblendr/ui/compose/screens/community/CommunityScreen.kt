@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -129,6 +130,14 @@ private fun CommunityScreenContent(
         }
     }
     var query by remember { mutableStateOf("") }
+
+    var lastSort by remember { mutableStateOf(sort) }
+    LaunchedEffect(sort) {
+        if (sort != lastSort) {
+            lastSort = sort
+            gridState.scrollToItem(0)
+        }
+    }
 
     val sorted = remember(themes, sort, query) {
         val base = when (sort) {
