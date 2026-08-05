@@ -34,6 +34,7 @@ object Constant {
     const val DOLBY_ATMOS = "org.lineageos.dspvolume.xiaomi"
     const val THEME_PICKER = "com.android.wallpaper"
     const val THEME_PICKER_GOOGLE = "com.google.android.apps.wallpaper"
+    const val BLISS_LAUNCHER = "foundation.e.blisslauncher"
 
     // Request codes
     const val SHIZUKU_PERMISSION_REQUEST_ID = 100
