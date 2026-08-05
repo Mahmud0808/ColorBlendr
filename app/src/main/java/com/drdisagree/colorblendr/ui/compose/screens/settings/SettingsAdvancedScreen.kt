@@ -15,7 +15,7 @@ import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FormatPaint
 import androidx.compose.material.icons.rounded.Opacity
-import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.SettingsSuggest
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.Widgets
 import androidx.compose.material3.MaterialTheme
@@ -390,7 +390,7 @@ fun SettingsAdvancedScreen(
                     SwitchItem(
                         title = stringResource(R.string.pitch_black_settings_workaround_title),
                         summary = stringResource(R.string.pitch_black_settings_workaround_desc),
-                        icon = rememberVectorPainter(Icons.Rounded.Tune),
+                        icon = rememberVectorPainter(Icons.Rounded.SettingsSuggest),
                         checked = pitchBlackWorkaround,
                         enabled = rootMode && pitchBlackEnabled,
                         disabledReason = when {
