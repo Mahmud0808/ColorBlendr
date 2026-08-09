@@ -14,7 +14,7 @@
     <string name="reject">Reject</string>
     <string name="block">Block</string>
     <string name="block_uploader">Block uploader</string>
-    <string name="block_reason">Reason</string>
+    <string name="block_reason">Razón</string>
     <string name="unblock">Unblock</string>
     <string name="anonymous">Anonymous</string>
     <string name="no_pending">Queue is empty</string>
@@ -54,7 +54,7 @@
     <string name="preview">Preview</string>
     <string name="submission">Submission</string>
     <string name="detail_id">ID</string>
-    <string name="detail_seed">Seed</string>
+    <string name="detail_seed">Semilla</string>
     <string name="detail_secondary">Secondary</string>
     <string name="detail_tertiary">Tertiary</string>
     <string name="detail_style">Style</string>

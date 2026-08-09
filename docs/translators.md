@@ -42,11 +42,11 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <sub><b>1348 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/VexoVX1"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
+        <a href="https://crowdin.com/profile/HangeulFactorys_HF"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
           <br />
-          <sub><b>VexoVX (VexoVX1)</b></sub></a>
+          <sub><b>dudgowjs1 (HangeulFactorys_HF)</b></sub></a>
         <br />
-        <sub><b>1300 words</b></sub>
+        <sub><b>1315 words</b></sub>
       </td>
     </tr>
     <tr>
@@ -69,7 +69,7 @@ ColorBlendr speaks your language because of these translators and proofreaders:
           <br />
           <sub><b>Alejandro Moctezuma (AlejandroMoc)</b></sub></a>
         <br />
-        <sub><b>792 words</b></sub>
+        <sub><b>796 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/guiq79043"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16732343/medium/3961a1b8d478eb6c59ca7386b2965f99.jpeg" />
@@ -366,7 +366,7 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <sub><b>24 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/Fido6"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17760519/medium/c68ee5e06b7106aef3bec5d0df7e3e1e.jpeg" />
+        <a href="https://crowdin.com/profile/Fido6"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17760519/medium/be05b68e454b774f3096aaee42e12541.png" />
           <br />
           <sub><b>cat LOVE (Fido6)</b></sub></a>
         <br />

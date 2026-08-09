@@ -112,7 +112,7 @@
     <string name="screen_off_update_title">화면 꺼짐 시 색상 업데이트</string>
     <string name="mode_specific_theme_desc">밝은 모드와 어두운 모드에 대해 다양한 채도와 밝기 적용합니다</string>
     <string name="colorspec_title">ColorSpec version</string>
-    <string name="colorspec_desc">Select the version of the Material color specification to use for palette generation.</string>
+    <string name="colorspec_desc">팔레트 생성에 사용할 재질 색상 사양 버전을 선택하세요.</string>
     <string name="darker_launcher_icons_title">어두운 런처 아이콘</string>
     <string name="darker_launcher_icons_desc">픽셀 런처 모노크롬 아이콘에 어두운 배경 적용합니다</string>
     <string name="semitransparent_launcher_title">반투명 런처</string>
