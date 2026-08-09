@@ -52,6 +52,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import java.text.DateFormat
 import java.util.Date
 
+import com.drdisagree.colorblendr.dev.utils.MatchResult
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PendingCard(
@@ -59,11 +61,13 @@ fun PendingCard(
     busy: Boolean,
     selectionMode: Boolean,
     selected: Boolean,
+    matchResult: MatchResult? = null,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onApprove: () -> Unit,
     onReject: () -> Unit,
-    onBlock: () -> Unit
+    onBlock: () -> Unit,
+    onMatchClick: (() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
@@ -177,8 +181,48 @@ fun PendingCard(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 2.dp)
                     )
-                    Row(modifier = Modifier.padding(top = 6.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 6.dp)
+                    ) {
                         DeviceChip(device = item.device)
+                        if (matchResult != null) {
+                            Text(
+                                text = if (matchResult.percentage >= 100) {
+                                    stringResource(
+                                        R.string.duplicate_warning_exact,
+                                        matchResult.matchedTheme.name,
+                                        matchResult.matchedTheme.author.ifEmpty { stringResource(R.string.anonymous) }
+                                    )
+                                } else {
+                                    stringResource(
+                                        R.string.duplicate_warning,
+                                        matchResult.percentage,
+                                        matchResult.matchedTheme.name,
+                                        matchResult.matchedTheme.author.ifEmpty { stringResource(R.string.anonymous) }
+                                    )
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .background(
+                                        MaterialTheme.colorScheme.errorContainer,
+                                        RoundedCornerShape(50)
+                                    )
+                                    .then(
+                                        if (onMatchClick != null) {
+                                            Modifier.combinedClickable(
+                                                onClick = onMatchClick
+                                            )
+                                        } else Modifier
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
                     }
                 }
             }

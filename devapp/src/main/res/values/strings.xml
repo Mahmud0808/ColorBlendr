@@ -95,4 +95,16 @@
     <string name="theme_description">Description</string>
     <string name="save">Save</string>
     <string name="edited">Edited</string>
+    <string name="action_loading">Processing…</string>
+    <string name="approving_theme">Approving theme…</string>
+    <string name="rejecting_theme">Rejecting theme…</string>
+    <string name="blocking_uploader">Blocking uploader…</string>
+    <string name="unblocking_uploader">Unblocking uploader…</string>
+    <string name="duplicate_warning">Matches %1$d%% of %2$s by %3$s</string>
+    <string name="duplicate_warning_exact">Duplicate of %1$s by %2$s (100%% match)</string>
+    <string name="matching_theme_title">Matching Theme Details</string>
+    <string name="source_published">Published Theme</string>
+    <string name="source_pending">Pending Submission</string>
+    <string name="similarity_score">Similarity match: %1$d%%</string>
+    <string name="close">Close</string>
 </resources>

@@ -60,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -72,6 +73,7 @@ import androidx.navigation.compose.rememberNavController
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
+import com.drdisagree.colorblendr.dev.ui.components.ActionLoadingDialog
 import com.drdisagree.colorblendr.dev.ui.components.BlockReasonDialog
 import com.drdisagree.colorblendr.dev.ui.components.BlockedCard
 import com.drdisagree.colorblendr.dev.ui.components.CompactSearchField
@@ -84,6 +86,8 @@ import com.drdisagree.colorblendr.dev.ui.components.StackedSnackbarHost
 import com.drdisagree.colorblendr.dev.ui.navigation.Routes
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 import com.drdisagree.colorblendr.dev.ui.viewmodels.DevViewModel
+import com.drdisagree.colorblendr.dev.utils.MatchResult
+import com.drdisagree.colorblendr.dev.utils.ThemeForwarder
 
 @Composable
 fun DevScreen(openPendingTick: Int = 0) {
@@ -116,10 +120,12 @@ fun DevScreen(openPendingTick: Int = 0) {
     val authorized by devViewModel.authorized.collectAsState()
     val loading by devViewModel.loading.collectAsState()
     val busy by devViewModel.busy.collectAsState()
+    val actionLoading by devViewModel.actionLoading.collectAsState()
     val pending by devViewModel.pending.collectAsState()
     val blocked by devViewModel.blocked.collectAsState()
     val messages by devViewModel.messages.collectAsState()
 
+    val context = LocalContext.current
     val navController = rememberNavController()
 
     LaunchedEffect(Unit) {
@@ -150,6 +156,7 @@ fun DevScreen(openPendingTick: Int = 0) {
                     blocked = blocked,
                     initialKey = devViewModel.savedKey,
                     openPendingTick = openPendingTick,
+                    onGetMatch = devViewModel::getBestMatch,
                     onUnlock = devViewModel::refresh,
                     onRefresh = devViewModel::refresh,
                     onPreview = devViewModel::openPreview,
@@ -176,32 +183,36 @@ fun DevScreen(openPendingTick: Int = 0) {
             composable(Routes.DETAIL) { entry ->
                 val id = entry.arguments?.getString(Routes.ARG_SUBMISSION_ID)
                 val latest = pending?.find { it.id == id }
-                // keep last known item -> approve/reject/block drop it from
-                // pending while detail still animates out
                 val lastKnown = remember { mutableStateOf(latest) }
                 LaunchedEffect(latest) { if (latest != null) lastKnown.value = latest }
                 val item = lastKnown.value
                 if (item == null) {
-                    // targeted pop -> no-op if detail already left back stack
                     LaunchedEffect(Unit) {
                         navController.popBackStack(Routes.DETAIL, inclusive = true)
                     }
                 } else {
                     SubmissionDetailScreen(
                         item = item,
+                        matchResult = devViewModel.getBestMatch(item),
                         onBack = { navController.popBackStack() },
                         onPreview = { devViewModel.openPreview(item) },
+                        onPreviewPayload = { payloadJson ->
+                            ThemeForwarder.openPreview(context, payloadJson)
+                        },
                         onApprove = {
-                            navController.popBackStack()
-                            devViewModel.approve(item)
+                            devViewModel.approve(item, onSuccess = {
+                                navController.popBackStack()
+                            })
                         },
                         onReject = {
-                            navController.popBackStack()
-                            devViewModel.reject(item)
+                            devViewModel.reject(item, onSuccess = {
+                                navController.popBackStack()
+                            })
                         },
                         onBlock = { reason ->
-                            navController.popBackStack()
-                            devViewModel.block(item, reason)
+                            devViewModel.block(item, reason, onSuccess = {
+                                navController.popBackStack()
+                            })
                         },
                         onEdit = { name, description ->
                             devViewModel.editSubmission(item, name, description)
@@ -210,6 +221,8 @@ fun DevScreen(openPendingTick: Int = 0) {
                 }
             }
         }
+
+        ActionLoadingDialog(message = actionLoading)
 
         StackedSnackbarHost(
             messages = messages,
@@ -228,6 +241,7 @@ private fun HomeContent(
     blocked: List<BlockedEntry>?,
     initialKey: String,
     openPendingTick: Int,
+    onGetMatch: ((PendingSubmission) -> MatchResult?)? = null,
     onUnlock: (String) -> Unit,
     onRefresh: () -> Unit,
     onPreview: (PendingSubmission) -> Unit,
@@ -634,6 +648,7 @@ private fun HomeContent(
                                         busy = busy,
                                         selectionMode = selectionMode,
                                         selected = item.id in selectedIds,
+                                        matchResult = onGetMatch?.invoke(item),
                                         onClick = {
                                             if (selectionMode) {
                                                 selectedIds = selectedIds.toggle(item.id)
@@ -649,7 +664,8 @@ private fun HomeContent(
                                         },
                                         onApprove = { confirmApprove = item },
                                         onReject = { confirmReject = item },
-                                        onBlock = { blockTarget = item }
+                                        onBlock = { blockTarget = item },
+                                        onMatchClick = { onOpenDetail(item) }
                                     )
                                 }
                             }

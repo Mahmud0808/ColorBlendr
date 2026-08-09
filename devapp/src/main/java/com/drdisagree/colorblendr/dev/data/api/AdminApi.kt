@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.dev.data.api
 
 import androidx.core.graphics.toColorInt
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
+import com.drdisagree.colorblendr.dev.data.models.ComparableTheme
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,6 +10,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
@@ -53,6 +55,55 @@ object AdminApi {
                     reason = entry.optString("reason"),
                     created = entry.optLong("created")
                 )
+            }
+        }
+
+    suspend fun fetchPublishedThemes(): ApiResult<List<ComparableTheme>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val request = Request.Builder()
+                    .url("https://cdn.jsdelivr.net/gh/Mahmud0808/ColorBlendr-Themes@main/index.json")
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext ApiResult.Failure(
+                        response.code,
+                        "Failed to fetch published index"
+                    )
+                    val body = response.body.string()
+                    val array = JSONArray(body)
+                    val list = (0 until array.length()).mapNotNull { i ->
+                        val entry = array.optJSONObject(i) ?: return@mapNotNull null
+                        val id = entry.optString("id").takeIf { it.isNotEmpty() }
+                            ?: return@mapNotNull null
+                        ComparableTheme(
+                            id = id,
+                            name = entry.optString("name"),
+                            author = entry.optString("author"),
+                            description = entry.optString("description"),
+                            seedColor = entry.color("seedColor"),
+                            secondaryColor = entry.color("secondaryColor"),
+                            tertiaryColor = entry.color("tertiaryColor"),
+                            style = entry.optString("style"),
+                            colorSpecVersion = entry.optInt("colorSpecVersion", 0),
+                            accentSaturation = entry.optInt("accentSaturation", 100),
+                            backgroundSaturation = entry.optInt("backgroundSaturation", 100),
+                            backgroundLightness = entry.optInt("backgroundLightness", 100),
+                            modeSpecificThemes = entry.optBoolean("modeSpecificThemes", false),
+                            accentSaturationLight = entry.optInt("accentSaturationLight", 100),
+                            backgroundSaturationLight = entry.optInt("backgroundSaturationLight", 100),
+                            backgroundLightnessLight = entry.optInt("backgroundLightnessLight", 100),
+                            accurateShades = entry.optBoolean("accurateShades", true),
+                            pitchBlack = entry.optBoolean("pitchBlack", false),
+                            tintText = entry.optBoolean("tintText", true),
+                            colorOverrides = emptyMap(),
+                            payloadJson = entry.toString(),
+                            isPublished = true
+                        )
+                    }
+                    ApiResult.Success(list)
+                }
+            } catch (e: Exception) {
+                ApiResult.Failure(null, e.message)
             }
         }
 

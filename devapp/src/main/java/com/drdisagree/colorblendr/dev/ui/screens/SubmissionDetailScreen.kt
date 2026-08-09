@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
@@ -36,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -60,7 +62,9 @@ import com.drdisagree.colorblendr.dev.ui.components.BlockReasonDialog
 import com.drdisagree.colorblendr.dev.ui.components.ConfirmDialog
 import com.drdisagree.colorblendr.dev.ui.components.DeviceChip
 import com.drdisagree.colorblendr.dev.ui.components.EditDetailsDialog
+import com.drdisagree.colorblendr.dev.ui.components.MatchingThemeDialog
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
+import com.drdisagree.colorblendr.dev.utils.MatchResult
 import com.drdisagree.colorblendr.dev.utils.ThemePayloadDecoder
 import java.text.DateFormat
 import java.util.Date
@@ -69,8 +73,10 @@ import java.util.Date
 @Composable
 fun SubmissionDetailScreen(
     item: PendingSubmission,
+    matchResult: MatchResult? = null,
     onBack: () -> Unit,
     onPreview: () -> Unit,
+    onPreviewPayload: (String) -> Unit = {},
     onApprove: () -> Unit,
     onReject: () -> Unit,
     onBlock: (String) -> Unit,
@@ -81,6 +87,7 @@ fun SubmissionDetailScreen(
     var confirmReject by remember { mutableStateOf(false) }
     var showBlock by remember { mutableStateOf(false) }
     var showEdit by remember { mutableStateOf(false) }
+    var showMatchDialog by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
     val lifted by remember { derivedStateOf { scrollState.value > 0 } }
@@ -92,6 +99,14 @@ fun SubmissionDetailScreen(
         },
         label = "toolbarLift"
     )
+
+    if (showMatchDialog && matchResult != null) {
+        MatchingThemeDialog(
+            matchResult = matchResult,
+            onDismiss = { showMatchDialog = false },
+            onPreview = onPreviewPayload
+        )
+    }
 
     if (showBlock) {
         BlockReasonDialog(
@@ -262,6 +277,57 @@ fun SubmissionDetailScreen(
                             )
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     )
+                }
+            }
+
+            if (matchResult != null) {
+                Surface(
+                    onClick = { showMatchDialog = true },
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(
+                            painter = rememberVectorPainter(Icons.Rounded.Warning),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (matchResult.percentage >= 100) {
+                                    stringResource(
+                                        R.string.duplicate_warning_exact,
+                                        matchResult.matchedTheme.name,
+                                        matchResult.matchedTheme.author.ifEmpty { stringResource(R.string.anonymous) }
+                                    )
+                                } else {
+                                    stringResource(
+                                        R.string.duplicate_warning,
+                                        matchResult.percentage,
+                                        matchResult.matchedTheme.name,
+                                        matchResult.matchedTheme.author.ifEmpty { stringResource(R.string.anonymous) }
+                                    )
+                                },
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                text = stringResource(R.string.matching_theme_title),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
                 }
             }
 

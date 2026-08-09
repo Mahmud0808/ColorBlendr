@@ -8,10 +8,13 @@ import com.drdisagree.colorblendr.dev.data.api.AdminApi
 import com.drdisagree.colorblendr.dev.data.api.ApiResult
 import com.drdisagree.colorblendr.dev.data.config.DevPrefs
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
+import com.drdisagree.colorblendr.dev.data.models.ComparableTheme
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
 import com.drdisagree.colorblendr.dev.data.models.PreviewResult
 import com.drdisagree.colorblendr.dev.data.models.StackedMessage
+import com.drdisagree.colorblendr.dev.utils.MatchResult
 import com.drdisagree.colorblendr.dev.utils.ThemeForwarder
+import com.drdisagree.colorblendr.dev.utils.ThemeMatcher
 import com.drdisagree.colorblendr.dev.utils.ThemePayloadDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,11 +44,17 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
     private val _busy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()
 
+    private val _actionLoading = MutableStateFlow<String?>(null)
+    val actionLoading: StateFlow<String?> = _actionLoading.asStateFlow()
+
     private val _pending = MutableStateFlow<List<PendingSubmission>?>(null)
     val pending: StateFlow<List<PendingSubmission>?> = _pending.asStateFlow()
 
     private val _blocked = MutableStateFlow<List<BlockedEntry>?>(null)
     val blocked: StateFlow<List<BlockedEntry>?> = _blocked.asStateFlow()
+
+    private val _publishedThemes = MutableStateFlow<List<ComparableTheme>>(emptyList())
+    val publishedThemes: StateFlow<List<ComparableTheme>> = _publishedThemes.asStateFlow()
 
     private val _messages = MutableStateFlow(listOf<StackedMessage>())
     val messages: StateFlow<List<StackedMessage>> = _messages.asStateFlow()
@@ -60,6 +69,7 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val fetchedPending = AdminApi.fetchPending(key)
             val fetchedBlocked = AdminApi.fetchBlocked(key)
+            val fetchedPublished = AdminApi.fetchPublishedThemes()
             _loading.value = false
             val failure = (fetchedPending as? ApiResult.Failure)
                 ?: (fetchedBlocked as? ApiResult.Failure)
@@ -74,8 +84,19 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
                 DevPrefs.setAdminKey(getApplication(), key)
                 _pending.value = (fetchedPending as ApiResult.Success).data
                 _blocked.value = (fetchedBlocked as ApiResult.Success).data
+                if (fetchedPublished is ApiResult.Success) {
+                    _publishedThemes.value = fetchedPublished.data
+                }
             }
         }
+    }
+
+    fun getBestMatch(item: PendingSubmission): MatchResult? {
+        val otherPending = _pending.value.orEmpty()
+            .filterNot { it.id == item.id }
+            .map { ThemeMatcher.toComparable(it, null) }
+        val candidates = otherPending + _publishedThemes.value
+        return ThemeMatcher.findBestMatch(item, candidates, threshold = 0.85f)
     }
 
     fun logout() {
@@ -120,62 +141,78 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun approve(item: PendingSubmission) {
-        _pending.update { it?.filterNot { s -> s.id == item.id } }
-        val job = launchAction({ approveWithEdits(item) }) { result ->
-            restorePending(listOf(item))
-            push(failureMessage(result))
-        }
-        pushUndo(string(R.string.theme_approved)) {
-            job.cancel()
-            restorePending(listOf(item))
-        }
-    }
-
-    fun reject(item: PendingSubmission) {
-        _pending.update { it?.filterNot { s -> s.id == item.id } }
-        val job = launchAction({ AdminApi.reject(savedKey, item.id) }) { result ->
-            restorePending(listOf(item))
-            push(failureMessage(result))
-        }
-        pushUndo(string(R.string.theme_rejected)) {
-            job.cancel()
-            restorePending(listOf(item))
+    fun approve(item: PendingSubmission, onSuccess: () -> Unit = {}) {
+        _actionLoading.value = string(R.string.approving_theme)
+        _busy.value = true
+        viewModelScope.launch {
+            val result = approveWithEdits(item)
+            _actionLoading.value = null
+            _busy.value = false
+            when (result) {
+                is ApiResult.Success -> {
+                    _pending.update { it?.filterNot { s -> s.id == item.id } }
+                    push(string(R.string.theme_approved))
+                    onSuccess()
+                }
+                is ApiResult.Failure -> push(failureMessage(result))
+            }
         }
     }
 
-    fun block(item: PendingSubmission, reason: String) {
-        val removed = _pending.value?.filter { it.device == item.device } ?: emptyList()
-        val entry = BlockedEntry(
-            device = item.device,
-            reason = reason,
-            created = System.currentTimeMillis()
-        )
-        _pending.update { it?.filterNot { s -> s.device == item.device } }
-        _blocked.update { (it ?: emptyList()) + entry }
-        val job = launchAction({ AdminApi.block(savedKey, item.device, reason) }) { result ->
-            _blocked.update { it?.filterNot { b -> b.device == entry.device } }
-            restorePending(removed)
-            push(failureMessage(result))
+    fun reject(item: PendingSubmission, onSuccess: () -> Unit = {}) {
+        _actionLoading.value = string(R.string.rejecting_theme)
+        _busy.value = true
+        viewModelScope.launch {
+            val result = AdminApi.reject(savedKey, item.id)
+            _actionLoading.value = null
+            _busy.value = false
+            when (result) {
+                is ApiResult.Success -> {
+                    _pending.update { it?.filterNot { s -> s.id == item.id } }
+                    push(string(R.string.theme_rejected))
+                    onSuccess()
+                }
+                is ApiResult.Failure -> push(failureMessage(result))
+            }
         }
-        pushUndo(string(R.string.uploader_blocked)) {
-            job.cancel()
-            _blocked.update { it?.filterNot { b -> b.device == entry.device } }
-            restorePending(removed)
+    }
+
+    fun block(item: PendingSubmission, reason: String, onSuccess: () -> Unit = {}) {
+        _actionLoading.value = string(R.string.blocking_uploader)
+        _busy.value = true
+        viewModelScope.launch {
+            val result = AdminApi.block(savedKey, item.device, reason)
+            _actionLoading.value = null
+            _busy.value = false
+            when (result) {
+                is ApiResult.Success -> {
+                    val entry = BlockedEntry(
+                        device = item.device,
+                        reason = reason,
+                        created = System.currentTimeMillis()
+                    )
+                    _pending.update { it?.filterNot { s -> s.device == item.device } }
+                    _blocked.update { (it ?: emptyList()) + entry }
+                    push(string(R.string.uploader_blocked))
+                    onSuccess()
+                }
+                is ApiResult.Failure -> push(failureMessage(result))
+            }
         }
     }
 
     fun unblock(entry: BlockedEntry) {
+        _actionLoading.value = string(R.string.unblocking_uploader)
         _busy.value = true
         viewModelScope.launch {
             val result = AdminApi.unblock(savedKey, entry.device)
+            _actionLoading.value = null
             _busy.value = false
             when (result) {
                 is ApiResult.Success -> {
                     _blocked.update { it?.filterNot { b -> b.device == entry.device } }
                     push(string(R.string.uploader_unblocked))
                 }
-
                 is ApiResult.Failure -> push(failureMessage(result))
             }
         }
@@ -183,20 +220,21 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     fun approveAll(items: List<PendingSubmission>) {
         if (items.isEmpty()) return
+        _actionLoading.value = string(R.string.approving_theme)
         _busy.value = true
-        actionScope.launch {
+        viewModelScope.launch {
             var ok = 0
             var failed = 0
             items.forEach { item ->
-                when (runAction { approveWithEdits(item) }) {
+                when (approveWithEdits(item)) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.id == item.id } }
                         ok++
                     }
-
                     is ApiResult.Failure -> failed++
                 }
             }
+            _actionLoading.value = null
             _busy.value = false
             push(bulkResult(R.string.bulk_approved, ok, failed))
         }
@@ -204,20 +242,21 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     fun rejectAll(items: List<PendingSubmission>) {
         if (items.isEmpty()) return
+        _actionLoading.value = string(R.string.rejecting_theme)
         _busy.value = true
-        actionScope.launch {
+        viewModelScope.launch {
             var ok = 0
             var failed = 0
             items.forEach { item ->
-                when (runAction { AdminApi.reject(savedKey, item.id) }) {
+                when (AdminApi.reject(savedKey, item.id)) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.id == item.id } }
                         ok++
                     }
-
                     is ApiResult.Failure -> failed++
                 }
             }
+            _actionLoading.value = null
             _busy.value = false
             push(bulkResult(R.string.bulk_rejected, ok, failed))
         }
@@ -225,12 +264,13 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
 
     fun blockAll(items: List<PendingSubmission>, reason: String) {
         if (items.isEmpty()) return
+        _actionLoading.value = string(R.string.blocking_uploader)
         _busy.value = true
-        actionScope.launch {
+        viewModelScope.launch {
             var ok = 0
             var failed = 0
             items.distinctBy { it.device }.forEach { item ->
-                when (runAction { AdminApi.block(savedKey, item.device, reason) }) {
+                when (AdminApi.block(savedKey, item.device, reason)) {
                     is ApiResult.Success -> {
                         _pending.update { it?.filterNot { s -> s.device == item.device } }
                         _blocked.update {
@@ -242,10 +282,10 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
                         }
                         ok++
                     }
-
                     is ApiResult.Failure -> failed++
                 }
             }
+            _actionLoading.value = null
             _busy.value = false
             push(bulkResult(R.string.bulk_blocked, ok, failed))
         }
