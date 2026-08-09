@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import androidx.annotation.ColorInt
+import androidx.core.graphics.ColorUtils
 import androidx.core.util.component1
 import androidx.core.util.component2
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
@@ -13,6 +14,7 @@ import com.drdisagree.colorblendr.data.common.Constant.SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_LINEAGEOS
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
+import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
@@ -21,6 +23,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.utils.app.SystemUtil.isAppInstalled
+import com.drdisagree.colorblendr.utils.app.SystemUtil.isDarkMode
 import com.drdisagree.colorblendr.utils.colors.ColorMapping
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.adjustLightness
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.convertToMonochrome
@@ -45,20 +48,85 @@ object FabricatedUtil {
         getColorNamesM3(isDynamic = false, prefixG = true)
     )
 
-    fun FabricatedOverlayResource.createDynamicOverlay(
+    fun FabricatedOverlayResource.assignFullPaletteToOverlay(
         paletteLight: ArrayList<ArrayList<Int>>,
-        paletteDark: ArrayList<ArrayList<Int>>
+        paletteDark: ArrayList<ArrayList<Int>>,
+        isDarkMode: Boolean
     ) {
-        assignDynamicPaletteToOverlay(true /* isDark */, paletteDark)
-        assignDynamicPaletteToOverlay(false /* isDark */, paletteLight)
-        assignFixedColorsToOverlay(paletteLight)
-        assignCustomColorsToOverlay(true /* isDark */, paletteDark)
-        assignCustomColorsToOverlay(false /* isDark */, paletteLight)
+        val palette = if (isDarkMode) paletteDark else paletteLight
+        val pitchBlack = pitchBlackThemeEnabled()
+
+        // 1. M3 Tonal Palette (Reference Palette)
+        val m3Shades = mapOf(
+            0 to 12, 10 to 11, 20 to 10, 30 to 9, 40 to 8, 50 to 7,
+            60 to 6, 70 to 5, 80 to 4, 90 to 3, 95 to 2, 98 to 1, 100 to 0
+        )
+
+        val tonalPalettes = listOf(
+            "primary" to 0, "secondary" to 1, "tertiary" to 2,
+            "neutral" to 3, "neutral_variant" to 4, "error" to 5
+        )
+
+        tonalPalettes.forEach { (name, paletteIndex) ->
+            m3Shades.forEach { (m3Shade, monetIndex) ->
+                val lightColor = paletteLight[paletteIndex][monetIndex]
+                val darkColor = paletteDark[paletteIndex][monetIndex]
+
+                val resName = "m3_ref_palette_${name}${m3Shade}"
+                val resNameDynamic = "m3_ref_palette_dynamic_${name}${m3Shade}"
+
+                val adjustedLight = adjustColorForPitchBlackThemeIfRequired(pitchBlack, resName, lightColor)
+                val adjustedDark = adjustColorForPitchBlackThemeIfRequired(pitchBlack, resName, darkColor)
+                val defaultColor = if (isDarkMode) adjustedDark else adjustedLight
+
+                setColor(resName, defaultColor, true)
+                setColor(resName, adjustedDark, "night", true)
+                setColor(resNameDynamic, defaultColor, true)
+                setColor(resNameDynamic, adjustedDark, "night", true)
+
+                setColor("g$resName", defaultColor, true)
+                setColor("g$resName", adjustedDark, "night", true)
+                setColor("g$resNameDynamic", defaultColor, true)
+                setColor("g$resNameDynamic", adjustedDark, "night", true)
+            }
+        }
+
+        // 2. Dynamic Palette Roles (system_*, m3_sys_color_*, etc.)
+        assignDynamicPaletteToOverlay(true, paletteDark, true)
+        assignDynamicPaletteToOverlay(false, paletteLight, true)
+        assignDynamicPalettePascalRolesToOverlay(isDarkMode, paletteLight, paletteDark, true)
+
+        // 3. Fixed Colors
+        assignFixedColorsToOverlay(paletteLight, true)
+
+        // 4. Custom Colors
+        assignCustomColorsToOverlay(true, paletteDark, true)
+        assignCustomColorsToOverlay(false, paletteLight, true)
+        // Mode-aware for /e/OS
+        assignCustomColorsToEOS(isDarkMode, paletteLight, paletteDark, true)
+
+        // 5. M3 Variants
+        colorNamesM3Variants.forEach { variant ->
+            variant.forEachIndexed { i, row ->
+                row.forEachIndexed { j, name ->
+                    setColor(name, palette[i][j], true)
+                }
+            }
+        }
+
+        // 6. Surface Effect colors
+        generateSurfaceEffectColors(isDarkMode, true)
+
+        // 7. Tintless text colors
+        if (!tintedTextEnabled()) {
+            addTintlessTextColors(true)
+        }
     }
 
     private fun FabricatedOverlayResource.assignDynamicPaletteToOverlay(
         isDark: Boolean,
-        palette: ArrayList<ArrayList<Int>>
+        palette: ArrayList<ArrayList<Int>>,
+        useIfExists: Boolean = false
     ) {
         val suffix = if (isDark) "dark" else "light"
         val tintTextColor = tintedTextEnabled()
@@ -98,26 +166,105 @@ object FabricatedUtil {
                 }
 
                 if (!tintTextColor && textColorResources.any { resourceName.contains(it) }) {
-                    addTintLessTextColorsForFramework(resourceName, colorValue)
+                    val tintlessColor = computeTintlessFrameworkTextColor(resourceName, colorValue)
+                    setColor(resourceName, tintlessColor, useIfExists)
                 } else {
-                    setColor(resourceName, colorValue)
+                    setColor(resourceName, colorValue, useIfExists)
                 }
             }
         }
     }
 
-    private fun FabricatedOverlayResource.addTintLessTextColorsForFramework(
-        resourceName: String,
-        colorValue: Int
+    private fun FabricatedOverlayResource.assignDynamicPalettePascalRolesToOverlay(
+        isDark: Boolean,
+        paletteLight: ArrayList<ArrayList<Int>>,
+        paletteDark: ArrayList<ArrayList<Int>>,
+        useIfExists: Boolean = false
     ) {
-        setColor(resourceName, computeTintlessFrameworkTextColor(resourceName, colorValue))
+        val palette = if (isDark) paletteDark else paletteLight
+        val tintTextColor = tintedTextEnabled()
+        val isPitchBlackTheme = pitchBlackThemeEnabled()
+        val prefixSuffix = arrayOf(
+            "media_dialog_" to "",
+            "media_" to ""
+        )
+        val textColorResources = setOf(
+            "on_surface",
+            "on_surface_variant",
+            "on_background",
+            "on_primary_container",
+            "on_secondary_container",
+            "on_tertiary_container",
+            "on_error"
+        )
+
+        ALL_DYNAMIC_COLORS_MAPPED.forEach { colorMapping ->
+            for ((tempPrefix, tempSuffix) in prefixSuffix) {
+                val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
+                    prefix = tempPrefix,
+                    suffix = tempSuffix,
+                    palette = palette,
+                    isDark = isDark
+                ).let { (name, value) ->
+                    name to applyColorAdjustments(
+                        colorMapping,
+                        name,
+                        value,
+                        isDark,
+                        isPitchBlackTheme
+                    )
+                }
+
+                if (!tintTextColor && textColorResources.any { resourceName.contains(it) }) {
+                    val tintlessColor = computeTintlessFrameworkTextColor(resourceName, colorValue)
+                    setColor(resourceName, tintlessColor, useIfExists)
+                } else {
+                    setColor(resourceName, colorValue, useIfExists)
+                }
+            }
+
+            // Handle PascalCase roles for SettingsLib and modern framework
+            val pascalRole = colorMapping.resourceName.split("_").joinToString("") { word ->
+                word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
+            val pascalPrefixes = arrayOf("settingslib_materialColor", "materialColor")
+
+            pascalPrefixes.forEach { prefix ->
+                val resName = "$prefix$pascalRole"
+                val (_, colorValue) = colorMapping.extractResourceFromColorMap(
+                    palette = palette,
+                    isDark = isDark
+                ).let { (_, value) ->
+                    resName to applyColorAdjustments(
+                        colorMapping,
+                        resName,
+                        value,
+                        isDark,
+                        isPitchBlackTheme
+                    )
+                }
+
+                if (!tintTextColor && textColorResources.any {
+                        resName.contains(
+                            it,
+                            ignoreCase = true
+                        )
+                    }) {
+                    val tintlessColor = computeTintlessFrameworkTextColor(resName, colorValue)
+                    setColor(resName, tintlessColor, useIfExists)
+                } else {
+                    setColor(resName, colorValue, useIfExists)
+                }
+            }
+        }
     }
 
     fun computeTintlessFrameworkTextColor(resourceName: String, colorValue: Int): Int {
-        val isDark = resourceName.endsWith("_dark")
-        val isLight = resourceName.endsWith("_light")
-        val isError = resourceName.contains("on_error")
-        val isErrorContainer = resourceName.contains("on_error_container")
+        val isDark = resourceName.contains("_dark", ignoreCase = true)
+                || resourceName.contains("_night", ignoreCase = true)
+        val isLight = resourceName.contains("light", ignoreCase = true)
+        val isError = resourceName.contains("on_error", ignoreCase = true)
+        val isErrorContainer = resourceName.contains("on_error_container", ignoreCase = true)
 
         return when {
             isDark && (!isError || isErrorContainer) -> Color.WHITE
@@ -129,7 +276,8 @@ object FabricatedUtil {
     }
 
     private fun FabricatedOverlayResource.assignFixedColorsToOverlay(
-        paletteLight: ArrayList<ArrayList<Int>>
+        paletteLight: ArrayList<ArrayList<Int>>,
+        useIfExists: Boolean = false
     ) {
         FIXED_COLORS_MAPPED.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
@@ -138,13 +286,16 @@ object FabricatedUtil {
                 isDark = false
             )
 
-            setColor(resourceName, colorValue)
+            setColor(resourceName, colorValue, useIfExists)
         }
     }
 
     fun FabricatedOverlayResource.assignPerAppColorsToOverlay(
-        palette: ArrayList<ArrayList<Int>>
+        paletteLight: ArrayList<ArrayList<Int>>,
+        paletteDark: ArrayList<ArrayList<Int>>,
     ) {
+        val isDark = isDarkMode
+        val palette = if (isDark) paletteDark else paletteLight
         val isPitchBlackTheme = pitchBlackThemeEnabled()
         val tintTextColor = tintedTextEnabled()
 
@@ -162,17 +313,11 @@ object FabricatedUtil {
                 )
             }
 
-            setColor(resourceName, colorValue)
-            setColor("g$resourceName", colorValue)
+            setColor(resourceName, colorValue, true)
+            setColor("g$resourceName", colorValue, true)
         }
 
-        colorNamesM3Variants.forEach { variant ->
-            variant.forEachIndexed { i, row ->
-                row.forEachIndexed { j, name ->
-                    setColor(name, palette[i][j])
-                }
-            }
-        }
+        assignFullPaletteToOverlay(palette, palette, isDarkMode)
 
         replaceColorsPerPackageName(palette, isPitchBlackTheme)
 
@@ -183,7 +328,8 @@ object FabricatedUtil {
 
     private fun FabricatedOverlayResource.assignCustomColorsToOverlay(
         isDark: Boolean,
-        palette: ArrayList<ArrayList<Int>>
+        palette: ArrayList<ArrayList<Int>>,
+        useIfExists: Boolean = false
     ) {
         val suffix = if (isDark) "_dark" else "_light"
 
@@ -203,7 +349,158 @@ object FabricatedUtil {
                 )
             }
 
-            setColor(resourceName, colorValue)
+            setColor(resourceName, colorValue, useIfExists)
+
+            // Handle PascalCase roles for /e/OS customColor...
+            val pascalRole = colorMapping.resourceName.split("_").joinToString("") { word ->
+                word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
+            val customColorResName = "customColor$pascalRole"
+            val (_, customColorValue) = colorMapping.extractResourceFromColorMap(
+                palette = palette,
+                isDark = isDark
+            ).let { (_, value) ->
+                customColorResName to applyColorAdjustments(
+                    colorMapping,
+                    customColorResName,
+                    value,
+                    isDark,
+                    pitchBlackTheme = false
+                )
+            }
+
+            setColor(customColorResName, customColorValue, useIfExists)
+        }
+    }
+
+    private fun FabricatedOverlayResource.assignCustomColorsToEOS(
+        isDarkMode: Boolean,
+        paletteLight: ArrayList<ArrayList<Int>>,
+        paletteDark: ArrayList<ArrayList<Int>>,
+        useIfExists: Boolean = false
+    ) {
+        val primaryIndex = 0
+        val neutralIndex = 3
+
+        // accent_device_default mapping
+        val accentLight = paletteLight[primaryIndex][8]
+        val accentDark = paletteDark[primaryIndex][4]
+        val effAccent = if (isDarkMode) accentDark else accentLight
+
+        setColor("accent_device_default_light", accentLight, useIfExists)
+        setColor("accent_device_default_dark", accentDark, useIfExists)
+        // Some ROMs might use these unqualified with night qualifier
+        setColor("accent_device_default", effAccent, useIfExists)
+        setColor("accent_device_default", accentDark, "night", useIfExists)
+
+        val tileInactiveLight = paletteLight[neutralIndex][3]
+        val tileInactiveDark = paletteDark[neutralIndex][10]
+        val effTileInactive = if (isDarkMode) tileInactiveDark else tileInactiveLight
+
+        setColor("e_qs_tile_inactive_light", tileInactiveLight, useIfExists)
+        setColor("e_qs_tile_inactive_dark", tileInactiveDark, useIfExists)
+        setColor("e_qs_tile_inactive", effTileInactive, useIfExists)
+        setColor("e_qs_tile_inactive", tileInactiveDark, "night", useIfExists)
+
+        // /e/OS Specific Background and Text Colors
+        val surfaceLight = paletteLight[neutralIndex][2]
+        val onSurfaceLight = paletteLight[neutralIndex][11]
+        val onSurfaceVariantLight = paletteLight[neutralIndex][10]
+        val surfaceContainerLight = paletteLight[neutralIndex][3]
+        val surfaceContainerHighLight = paletteLight[neutralIndex][4]
+
+        val surfaceDark = paletteDark[neutralIndex][12]
+        val onSurfaceDark = paletteDark[neutralIndex][2]
+        val onSurfaceVariantDark = paletteDark[neutralIndex][3]
+        val surfaceContainerDark = paletteDark[neutralIndex][11]
+        val surfaceContainerHighDark = paletteDark[neutralIndex][10]
+
+        val effSurface = if (isDarkMode) surfaceDark else surfaceLight
+        val effOnSurface = if (isDarkMode) onSurfaceDark else onSurfaceLight
+        val effOnSurfaceVariant = if (isDarkMode) onSurfaceVariantDark else onSurfaceVariantLight
+        val effSurfaceContainer = if (isDarkMode) surfaceContainerDark else surfaceContainerLight
+        val effSurfaceContainerHigh = if (isDarkMode) surfaceContainerHighDark else surfaceContainerHighLight
+
+        val eBackgroundResNames = arrayOf("e_background", "e_action_bar", "e_drawer_background")
+        eBackgroundResNames.forEach { name ->
+            // Set default (matching current mode) and night qualifier
+            setColor(name, effSurface, useIfExists)
+            setColor(name, surfaceDark, "night", useIfExists)
+
+            // Explicit _dark and _light versions
+            setColor("${name}_dark", surfaceDark, useIfExists)
+            setColor("${name}_light", surfaceLight, useIfExists)
+        }
+
+        // Background Variant
+        setColor("e_background_variant", effSurfaceContainer, useIfExists)
+        setColor("e_background_variant", surfaceContainerDark, "night", useIfExists)
+        setColor("e_background_variant_dark", surfaceContainerDark, useIfExists)
+        setColor("e_background_variant_light", surfaceContainerLight, useIfExists)
+
+        // Notification Background (The cards)
+        setColor("e_notification_background", effSurfaceContainerHigh, useIfExists)
+        setColor("e_notification_background", surfaceContainerHighDark, "night", useIfExists)
+        setColor("e_notification_background_dark", surfaceContainerHighDark, useIfExists)
+        setColor("e_notification_background_light", surfaceContainerHighLight, useIfExists)
+
+        // Primary Text
+        setColor("e_primary_text_color", effOnSurface, useIfExists)
+        setColor("e_primary_text_color", onSurfaceDark, "night", useIfExists)
+        setColor("e_primary_text_color_dark", onSurfaceDark, useIfExists)
+        setColor("e_primary_text_color_light", onSurfaceLight, useIfExists)
+
+        // Secondary Text
+        setColor("e_secondary_text_color", effOnSurfaceVariant, useIfExists)
+        setColor("e_secondary_text_color", onSurfaceVariantDark, "night", useIfExists)
+        setColor("e_secondary_text_color_dark", onSurfaceVariantDark, useIfExists)
+        setColor("e_secondary_text_color_light", onSurfaceVariantLight, useIfExists)
+        setColor("e_secondary_text_color_variant", effOnSurfaceVariant, useIfExists)
+        setColor("e_secondary_text_color_variant", onSurfaceVariantDark, "night", useIfExists)
+        setColor("e_secondary_text_color_variant_dark", onSurfaceVariantDark, useIfExists)
+        setColor("e_secondary_text_color_variant_light", onSurfaceVariantLight, useIfExists)
+
+        // QS Background
+        setColor("e_qs_background", effSurface, useIfExists)
+        setColor("e_qs_background", surfaceDark, "night", useIfExists)
+        setColor("e_qs_background_dark", surfaceDark, useIfExists)
+        setColor("e_qs_background_light", surfaceLight, useIfExists)
+
+        val eAccentColor = if (isDarkMode) accentDark else accentLight
+        val eAccentInverseColor = if (isDarkMode) accentLight else accentDark
+        val eAlphaAccentColor = ColorUtils.setAlphaComponent(eAccentColor, 0x14)
+
+        setColor("e_accent", eAccentColor, useIfExists)
+        setColor("e_accent", accentDark, "night", useIfExists)
+        setColor("e_accent_dark", accentDark, useIfExists)
+        setColor("e_accent_light", accentLight, useIfExists)
+
+        setColor("e_accent_inverse", eAccentInverseColor, useIfExists)
+        setColor("e_accent_inverse", accentLight, "night", useIfExists)
+        setColor("e_accent_inverse_dark", accentLight, useIfExists)
+        setColor("e_accent_inverse_light", accentDark, useIfExists)
+
+        setColor("e_alpha_accent", eAlphaAccentColor, useIfExists)
+        setColor(
+            "e_alpha_accent",
+            ColorUtils.setAlphaComponent(accentDark, 0x14),
+            "night",
+            useIfExists
+        )
+        setColor("e_alpha_accent_dark", ColorUtils.setAlphaComponent(accentDark, 0x14), useIfExists)
+        setColor(
+            "e_alpha_accent_light",
+            ColorUtils.setAlphaComponent(accentLight, 0x14),
+            useIfExists
+        )
+
+        if (targetPackage == SYSTEMUI_PACKAGE) {
+            setColor("brightness_slider_overlay_color", eAccentColor, useIfExists)
+            setColor(
+                "brightness_slider_track",
+                if (isDarkMode) surfaceContainerDark else surfaceContainerLight,
+                useIfExists
+            )
         }
     }
 
@@ -324,7 +621,7 @@ object FabricatedUtil {
         }
     }
 
-    private fun FabricatedOverlayResource.addTintlessTextColors() {
+    private fun FabricatedOverlayResource.addTintlessTextColors(useIfExists: Boolean = false) {
         val prefixes = arrayOf("m3_sys_color_", "m3_sys_color_dynamic_")
         val variants = arrayOf("dark_", "light_")
         val suffixes = arrayOf("on_surface", "on_surface_variant", "on_background")
@@ -334,7 +631,8 @@ object FabricatedUtil {
                 suffixes.forEach { suffix ->
                     setColor(
                         "$prefix$variant$suffix",
-                        if (variant.contains("dark")) Color.WHITE else Color.BLACK
+                        if (variant.contains("dark")) Color.WHITE else Color.BLACK,
+                        useIfExists
                     )
                 }
             }
@@ -366,9 +664,9 @@ object FabricatedUtil {
 
         resources.forEach { (_, pairs) ->
             pairs.forEach { (name, color) ->
-                setColor(name, color)
+                setColor(name, color, useIfExists)
                 if (name.startsWith("m3")) {
-                    setColor("g$name", color)
+                    setColor("g$name", color, useIfExists)
                 }
             }
         }
@@ -377,29 +675,19 @@ object FabricatedUtil {
             targetPackage == SETTINGS -> {
                 when {
                     Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-                        setColor(
-                            "settingslib_text_color_primary_device_default",
-                            Color.WHITE,
-                            "night"
-                        )
-                        setColor(
-                            "settingslib_text_color_secondary_device_default",
-                            -0x4c000001,
-                            "night"
-                        )
+                        val res1 = "settingslib_text_color_primary_device_default"
+                        val res2 = "settingslib_text_color_secondary_device_default"
+
+                        setColor(res1, Color.WHITE, "night", useIfExists)
+                        setColor(res2, -0x4c000001, "night", useIfExists)
                     }
 
                     else -> {
-                        setColor(
-                            "settingslib_materialColorOnSurface",
-                            Color.WHITE,
-                            "night"
-                        )
-                        setColor(
-                            "settingslib_materialColorOnSurfaceVariant",
-                            -0x4c000001,
-                            "night"
-                        )
+                        val res1 = "settingslib_materialColorOnSurface"
+                        val res2 = "settingslib_materialColorOnSurfaceVariant"
+
+                        setColor(res1, Color.WHITE, "night", useIfExists)
+                        setColor(res2, -0x4c000001, "night", useIfExists)
                     }
                 }
             }
@@ -407,7 +695,10 @@ object FabricatedUtil {
     }
 
     // Source: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/packages/SystemUI/src/com/android/systemui/common/shared/colors/SurfaceEffectColors.kt
-    fun FabricatedOverlayResource.generateSurfaceEffectColors(isDark: Boolean) {
+    fun FabricatedOverlayResource.generateSurfaceEffectColors(
+        isDark: Boolean,
+        useIfExists: Boolean = false
+    ) {
         val colorResNames = listOf(
             "surface_effect_0_color",
             "surface_effect_1_color",
@@ -435,14 +726,15 @@ object FabricatedUtil {
         )
 
         colorResNames.forEachIndexed { i, colorResName ->
-            setColor(
-                colorResName,
-                getColor(if (!isDark) sourceColorResNames[i].first else sourceColorResNames[i].second)
+            runCatching {
+                val sourceName = if (!isDark) sourceColorResNames[i].first else sourceColorResNames[i].second
+                val color = getColor(sourceName)
                     .withLStarAndAlpha(
                         if (!isDark) lStarValue[i].first else lStarValue[i].second,
                         if (!isDark) alphaValue[i].first else alphaValue[i].second
                     )
-            )
+                setColor(colorResName, color, useIfExists)
+            }
         }
     }
 }

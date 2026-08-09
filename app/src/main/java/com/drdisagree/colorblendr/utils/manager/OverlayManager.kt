@@ -8,6 +8,7 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.BLISS_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
@@ -39,8 +40,8 @@ import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.colors.computeFinalColorOverrides
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignFullPaletteToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
@@ -225,11 +226,11 @@ object OverlayManager {
                                 )
                             }
                         }
+
+                        // Mirror the full Material 3 palette
+                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
                         // SurfaceEffectColors
                         generateSurfaceEffectColors(isDarkMode)
-
-                        // Dynamic colors
-                        createDynamicOverlay(paletteLight, paletteDark)
 
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
@@ -272,21 +273,31 @@ object OverlayManager {
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
                     systemuiOverlay.apply {
-                        setBoolean("flag_monet", false)
+                        setBoolean("flag_monet", false, ifExists = true)
+
+                        // Mirror the full Material 3 palette if resources exist
+                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
+
+                        // Discovered /e/OS specific resources
+                        setColor("shade_scrim_background_dark", Color.BLACK, true)
+                        setColor("notification_ripple_tinted_color", Color.WHITE, true)
+                        setColor("system_bar_background_opaque", Color.BLACK, true)
 
                         if (isDarkMode && pitchBlackTheme) {
                             // QS top part color A16+
                             setColor(
                                 "shade_panel_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
+                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt()),
+                                true
                             ) // with blur
-                            setColor("shade_panel_fallback", Color.BLACK) // no blur
+                            setColor("shade_panel_fallback", Color.BLACK, true) // no blur
                             // Notification scrim color A16+
                             setColor(
                                 "notification_scrim_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt())
+                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt()),
+                                true
                             ) // with blur
-                            setColor("notification_scrim_fallback", Color.BLACK) // no blur
+                            setColor("notification_scrim_fallback", Color.BLACK, true) // no blur
                         }
                     }
                 }
@@ -295,12 +306,7 @@ object OverlayManager {
             getSelectedFabricatedApps().filter { (packageName, isSelected) ->
                 isSelected == java.lang.Boolean.TRUE && SystemUtil.isAppInstalled(packageName)
             }.forEach { (packageName) ->
-                add(
-                    getFabricatedColorsPerApp(
-                        packageName,
-                        if (isDarkMode) paletteDark else paletteLight
-                    )
-                )
+                add(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
             }
         }.forEach { registerFabricatedOverlay(it) }
 
@@ -310,14 +316,10 @@ object OverlayManager {
 
     fun applyFabricatedColorsPerApp(
         packageName: String,
-        palette: ArrayList<ArrayList<Int>>?
+        paletteDark: ArrayList<ArrayList<Int>>? = null,
+        paletteLight: ArrayList<ArrayList<Int>>? = null
     ) {
-        registerFabricatedOverlay(
-            getFabricatedColorsPerApp(
-                packageName,
-                palette
-            )
-        )
+        registerFabricatedOverlay(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
     }
 
     fun removeFabricatedColors() {
@@ -337,32 +339,41 @@ object OverlayManager {
 
             add(FABRICATED_OVERLAY_NAME_SYSTEM)
             add(FABRICATED_OVERLAY_NAME_SYSTEMUI)
+            add(String.format(FABRICATED_OVERLAY_NAME_APPS, BLISS_LAUNCHER))
         }.forEach { unregisterFabricatedOverlay(it) }
     }
 
     private fun getFabricatedColorsPerApp(
         packageName: String,
-        palette: ArrayList<ArrayList<Int>>?
+        paletteLight: ArrayList<ArrayList<Int>>?,
+        paletteDark: ArrayList<ArrayList<Int>>?
     ): FabricatedOverlayResource {
-        var paletteTemp = palette
-
-        if (paletteTemp == null) {
-            paletteTemp = generateModifiedColors(
-                getCurrentMonetStyle(),
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled(),
-                modifyPitchBlack = false
-            )
-        }
+        val paletteLightTemp = paletteLight ?: generateModifiedColors(
+            getCurrentMonetStyle(),
+            getAccentSaturation(),
+            getBackgroundSaturation(),
+            getBackgroundLightness(),
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled(),
+            modifyPitchBlack = false,
+            isDark = false
+        )
+        val paletteDarkTemp = paletteDark ?: generateModifiedColors(
+            getCurrentMonetStyle(),
+            getAccentSaturation(),
+            getBackgroundSaturation(),
+            getBackgroundLightness(),
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled(),
+            modifyPitchBlack = false,
+            isDark = true
+        )
 
         return FabricatedOverlayResource(
             String.format(FABRICATED_OVERLAY_NAME_APPS, packageName),
             packageName
         ).also { overlay ->
-            overlay.assignPerAppColorsToOverlay(paletteTemp)
+            overlay.assignPerAppColorsToOverlay(paletteLightTemp, paletteDarkTemp)
         }
     }
 
