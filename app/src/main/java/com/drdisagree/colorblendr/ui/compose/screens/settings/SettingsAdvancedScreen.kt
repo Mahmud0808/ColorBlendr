@@ -400,8 +400,10 @@ fun SettingsAdvancedScreen(
                         },
                         onCheckedChange = { isChecked ->
                             pitchBlackWorkaround = isChecked
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
                             setForcePitchBlackSettingsEnabled(isChecked)
-                            applyColorsNow()
+                            updateColors()
                         }
                     )
                 }
