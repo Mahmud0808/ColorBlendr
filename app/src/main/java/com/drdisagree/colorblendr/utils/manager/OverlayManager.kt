@@ -218,9 +218,6 @@ object OverlayManager {
                     FRAMEWORK_PACKAGE
                 ).also { frameworkOverlay ->
                     frameworkOverlay.apply {
-                        // Mirror the full Material 3 palette
-                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
-
                         for (i in systemPaletteNames.indices) {
                             for (j in systemPaletteNames[i].indices) {
                                 setColor(
@@ -229,6 +226,9 @@ object OverlayManager {
                                 )
                             }
                         }
+
+                        // Mirror the full Material 3 palette
+                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
                         // SurfaceEffectColors
                         generateSurfaceEffectColors(isDarkMode)
 
@@ -273,57 +273,40 @@ object OverlayManager {
                     SYSTEMUI_PACKAGE
                 ).also { systemuiOverlay ->
                     systemuiOverlay.apply {
+                        setBoolean("flag_monet", false, ifExists = true)
+
                         // Mirror the full Material 3 palette if resources exist
                         assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
 
-                        setBoolean("flag_monet", false)
-
                         // Discovered /e/OS specific resources
-                        setColorIfExists("shade_scrim_background_dark", Color.BLACK)
-                        setColorIfExists("notification_ripple_tinted_color", Color.WHITE)
-                        setColorIfExists("system_bar_background_opaque", Color.BLACK)
+                        setColor("shade_scrim_background_dark", Color.BLACK, true)
+                        setColor("notification_ripple_tinted_color", Color.WHITE, true)
+                        setColor("system_bar_background_opaque", Color.BLACK, true)
 
                         if (isDarkMode && pitchBlackTheme) {
                             // QS top part color A16+
-                            setColorIfExists(
+                            setColor(
                                 "shade_panel_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
+                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt()),
+                                true
                             ) // with blur
-                            setColorIfExists("shade_panel_fallback", Color.BLACK) // no blur
+                            setColor("shade_panel_fallback", Color.BLACK, true) // no blur
                             // Notification scrim color A16+
-                            setColorIfExists(
+                            setColor(
                                 "notification_scrim_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt())
+                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt()),
+                                true
                             ) // with blur
-                            setColorIfExists("notification_scrim_fallback", Color.BLACK) // no blur
+                            setColor("notification_scrim_fallback", Color.BLACK, true) // no blur
                         }
                     }
                 }
             )
 
-            if (SystemUtil.isAppInstalled(BLISS_LAUNCHER)) {
-                add(
-                    FabricatedOverlayResource(
-                        String.format(FABRICATED_OVERLAY_NAME_APPS, BLISS_LAUNCHER),
-                        BLISS_LAUNCHER
-                    ).also { launcherOverlay ->
-                        launcherOverlay.apply {
-                            // Mirror the full Material 3 palette if resources exist
-                            assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
-                        }
-                    }
-                )
-            }
-
             getSelectedFabricatedApps().filter { (packageName, isSelected) ->
                 isSelected == java.lang.Boolean.TRUE && SystemUtil.isAppInstalled(packageName)
             }.forEach { (packageName) ->
-                add(
-                    getFabricatedColorsPerApp(
-                        packageName,
-                        if (isDarkMode) paletteDark else paletteLight
-                    )
-                )
+                add(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
             }
         }.forEach { registerFabricatedOverlay(it) }
 
@@ -333,14 +316,10 @@ object OverlayManager {
 
     fun applyFabricatedColorsPerApp(
         packageName: String,
-        palette: ArrayList<ArrayList<Int>>?
+        paletteDark: ArrayList<ArrayList<Int>>? = null,
+        paletteLight: ArrayList<ArrayList<Int>>? = null
     ) {
-        registerFabricatedOverlay(
-            getFabricatedColorsPerApp(
-                packageName,
-                palette
-            )
-        )
+        registerFabricatedOverlay(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
     }
 
     fun removeFabricatedColors() {
@@ -366,27 +345,35 @@ object OverlayManager {
 
     private fun getFabricatedColorsPerApp(
         packageName: String,
-        palette: ArrayList<ArrayList<Int>>?
+        paletteLight: ArrayList<ArrayList<Int>>?,
+        paletteDark: ArrayList<ArrayList<Int>>?
     ): FabricatedOverlayResource {
-        var paletteTemp = palette
-
-        if (paletteTemp == null) {
-            paletteTemp = generateModifiedColors(
-                getCurrentMonetStyle(),
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled(),
-                modifyPitchBlack = false
-            )
-        }
+        val paletteLightTemp = paletteLight ?: generateModifiedColors(
+            getCurrentMonetStyle(),
+            getAccentSaturation(),
+            getBackgroundSaturation(),
+            getBackgroundLightness(),
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled(),
+            modifyPitchBlack = false,
+            isDark = false
+        )
+        val paletteDarkTemp = paletteDark ?: generateModifiedColors(
+            getCurrentMonetStyle(),
+            getAccentSaturation(),
+            getBackgroundSaturation(),
+            getBackgroundLightness(),
+            pitchBlackThemeEnabled(),
+            accurateShadesEnabled(),
+            modifyPitchBlack = false,
+            isDark = true
+        )
 
         return FabricatedOverlayResource(
             String.format(FABRICATED_OVERLAY_NAME_APPS, packageName),
             packageName
         ).also { overlay ->
-            overlay.assignPerAppColorsToOverlay(paletteTemp)
+            overlay.assignPerAppColorsToOverlay(paletteLightTemp, paletteDarkTemp)
         }
     }
 

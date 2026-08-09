@@ -31,6 +31,7 @@ object Constant {
     const val SETTINGS_SEARCH_AOSP = "com.android.settings.intelligence"
     const val LINEAGE_PARTS = "org.lineageos.lineageparts"
     const val PIXEL_LAUNCHER = "com.google.android.apps.nexuslauncher"
+    const val LAUNCHER3_LAUNCHER = "com.android.launcher3"
     const val DOLBY_ATMOS = "org.lineageos.dspvolume.xiaomi"
     const val THEME_PICKER = "com.android.wallpaper"
     const val THEME_PICKER_GOOGLE = "com.google.android.apps.wallpaper"

@@ -97,7 +97,6 @@ import com.google.android.material.R as MaterialR
 
 @Composable
 fun PerAppThemeScreen() {
-    val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -190,7 +189,7 @@ fun PerAppThemeScreen() {
                     String.format(FABRICATED_OVERLAY_NAME_APPS, app.packageName)
                 )
             } else {
-                applyFabricatedColorsPerApp(app.packageName, null)
+                applyFabricatedColorsPerApp(app.packageName)
             }
         }
     }

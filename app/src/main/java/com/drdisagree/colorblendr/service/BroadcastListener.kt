@@ -45,7 +45,7 @@ class BroadcastListener : BroadcastReceiver() {
     private var sleepRunnable: Runnable? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    @Suppress("deprecation")
+    @Suppress("DEPRECATION")
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Received intent: " + intent.action)
 
@@ -189,7 +189,7 @@ class BroadcastListener : BroadcastReceiver() {
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
                 validateRootAndUpdateColors(context) {
-                    applyFabricatedColorsPerApp(packageName, null)
+                    applyFabricatedColorsPerApp(packageName)
                 }
             }
         }
