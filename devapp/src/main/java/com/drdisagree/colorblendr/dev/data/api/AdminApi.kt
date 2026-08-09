@@ -95,7 +95,7 @@ object AdminApi {
                             accurateShades = entry.optBoolean("accurateShades", true),
                             pitchBlack = entry.optBoolean("pitchBlack", false),
                             tintText = entry.optBoolean("tintText", true),
-                            colorOverrides = emptyMap(),
+                            colorOverrides = parseColorOverrides(entry.optJSONObject("colorOverrides")),
                             payloadJson = entry.toString(),
                             isPublished = true
                         )
@@ -106,6 +106,24 @@ object AdminApi {
                 ApiResult.Failure(null, e.message)
             }
         }
+
+    private fun parseColorOverrides(json: JSONObject?): Map<String, Int> {
+        if (json == null) return emptyMap()
+        val map = mutableMapOf<String, Int>()
+        val keys = json.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val colorVal = json.optString(key)
+            if (colorVal.isNotEmpty()) {
+                val colorInt = runCatching { colorVal.toColorInt() }.getOrNull()
+                    ?: json.optInt(key).takeIf { it != 0 }
+                if (colorInt != null) {
+                    map[key] = colorInt
+                }
+            }
+        }
+        return map
+    }
 
     suspend fun approve(
         adminKey: String,

@@ -14,5 +14,6 @@ data class ThemePayload(
     val accurateShades: Boolean,
     val pitchBlack: Boolean,
     val tintText: Boolean,
-    val overrideCount: Int
+    val colorOverrides: Map<String, Int> = emptyMap(),
+    val overrideCount: Int = colorOverrides.size
 )

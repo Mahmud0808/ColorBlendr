@@ -38,7 +38,7 @@ object ThemeMatcher {
             accurateShades = p?.accurateShades ?: true,
             pitchBlack = p?.pitchBlack ?: false,
             tintText = p?.tintText ?: true,
-            colorOverrides = emptyMap(),
+            colorOverrides = p?.colorOverrides ?: emptyMap(),
             payloadJson = item.payloadJson,
             isPublished = false
         )
@@ -96,7 +96,15 @@ object ThemeMatcher {
         check(t1.accurateShades == t2.accurateShades)
         check(t1.pitchBlack == t2.pitchBlack)
         check(t1.tintText == t2.tintText)
-        check(t1.colorOverrides == t2.colorOverrides)
+
+        val allOverrideKeys = (t1.colorOverrides.keys + t2.colorOverrides.keys).toSet()
+        if (allOverrideKeys.isEmpty()) {
+            check(true)
+        } else {
+            for (key in allOverrideKeys) {
+                check(t1.colorOverrides[key] == t2.colorOverrides[key])
+            }
+        }
 
         if (totalFields == 0) return 1.0f
         return (matchCount.toFloat() / totalFields.toFloat()).coerceIn(0.0f, 1.0f)
