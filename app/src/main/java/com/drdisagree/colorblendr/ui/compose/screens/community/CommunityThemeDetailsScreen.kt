@@ -74,6 +74,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
+import com.drdisagree.colorblendr.utils.community.CommunityCount
 import com.drdisagree.colorblendr.utils.community.CommunityReporter
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
@@ -417,7 +418,7 @@ private fun StatChip(
                 contentDescription = null,
                 modifier = Modifier.size(16.dp)
             )
-            Text(text = value.toString())
+            Text(text = CommunityCount.compact(value))
         }
     }
 

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.utils.community.CommunityCount
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
 
@@ -122,7 +123,7 @@ fun CommunityThemeCard(
                     modifier = Modifier.size(14.dp)
                 )
                 Text(
-                    text = theme.upvotes.toString(),
+                    text = CommunityCount.compact(theme.upvotes),
                     color = subtle,
                     fontSize = 12.sp
                 )
@@ -135,7 +136,7 @@ fun CommunityThemeCard(
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
-                        text = theme.downloads.toString(),
+                        text = CommunityCount.compact(theme.downloads),
                         color = subtle,
                         fontSize = 12.sp
                     )
