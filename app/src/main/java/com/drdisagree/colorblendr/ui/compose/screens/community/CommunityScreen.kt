@@ -89,6 +89,8 @@ fun CommunityScreen(
             themes = emptyList(),
             sort = CommunitySort.UPVOTES,
             onSortChange = {},
+            query = "",
+            onQueryChange = {},
             onThemeClick = onThemeClick
         )
         return
@@ -97,6 +99,7 @@ fun CommunityScreen(
     val communityViewModel: CommunityViewModel = viewModel()
     val themes by communityViewModel.allThemes.collectAsStateWithLifecycle()
     val sort by communityViewModel.sort.collectAsStateWithLifecycle()
+    val query by communityViewModel.query.collectAsStateWithLifecycle()
 
     LifecycleResumeEffect(Unit) {
         communityViewModel.refreshFromCache()
@@ -108,6 +111,8 @@ fun CommunityScreen(
         themes = themes,
         sort = sort,
         onSortChange = communityViewModel::setSort,
+        query = query,
+        onQueryChange = communityViewModel::setQuery,
         onThemeClick = onThemeClick
     )
 }
@@ -120,6 +125,8 @@ private fun CommunityScreenContent(
     themes: List<CommunityTheme>?,
     sort: CommunitySort,
     onSortChange: (CommunitySort) -> Unit,
+    query: String,
+    onQueryChange: (String) -> Unit,
     onThemeClick: (String) -> Unit
 ) {
     val hazeState = remember { HazeState() }
@@ -129,8 +136,6 @@ private fun CommunityScreenContent(
             gridState.firstVisibleItemIndex > 0 || gridState.firstVisibleItemScrollOffset > 0
         }
     }
-    var query by remember { mutableStateOf("") }
-
     var lastSort by remember { mutableStateOf(sort) }
     LaunchedEffect(sort) {
         if (sort != lastSort) {
@@ -168,7 +173,7 @@ private fun CommunityScreenContent(
             onDismissRequest = { showColorPicker = false },
             onColorPicked = { color ->
                 showColorPicker = false
-                query = String.format("#%06X", 0xFFFFFF and color)
+                onQueryChange(String.format("#%06X", 0xFFFFFF and color))
             },
             alphaEnabled = false,
             pickers = listOf(
@@ -265,7 +270,7 @@ private fun CommunityScreenContent(
 
                 SearchBar(
                     query = query,
-                    onQueryChange = { query = it },
+                    onQueryChange = onQueryChange,
                     onFilterClick = { showSortDialog = true },
                     hazeState = hazeState,
                     onColorPickClick = { showColorPicker = true },

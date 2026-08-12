@@ -23,6 +23,9 @@ class CommunityViewModel : ViewModel() {
     private val _sort = MutableStateFlow(CommunitySort.TRENDING)
     val sort = _sort.asStateFlow()
 
+    private val _query = MutableStateFlow("")
+    val query = _query.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.getThemes().takeIf { it.isNotEmpty() }?.let {
@@ -38,6 +41,10 @@ class CommunityViewModel : ViewModel() {
 
     fun setSort(sort: CommunitySort) {
         _sort.value = sort
+    }
+
+    fun setQuery(query: String) {
+        _query.value = query
     }
 
     // Refetch when the index has gone stale mid-session, so freshly merged
