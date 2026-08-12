@@ -114,10 +114,7 @@ object FabricatedUtil {
             }
         }
 
-        // 6. Surface Effect colors
-        generateSurfaceEffectColors(isDarkMode, true)
-
-        // 7. Tintless text colors
+        // 6. Tintless text colors
         if (!tintedTextEnabled()) {
             addTintlessTextColors(true)
         }
@@ -705,6 +702,12 @@ object FabricatedUtil {
             "surface_effect_2_color",
             "surface_effect_3_color"
         )
+        val newColorResNames = listOf(
+            "system_surface_effect_0_light" to "system_surface_effect_0_dark",
+            "system_surface_effect_1_light" to "system_surface_effect_1_dark",
+            "system_surface_effect_2_light" to "system_surface_effect_2_dark",
+            "system_surface_effect_3_light" to "system_surface_effect_3_dark",
+        )
         // Pair of (light mode, dark mode)
         val sourceColorResNames = listOf(
             "system_accent1_100" to "system_accent1_800",
@@ -726,15 +729,15 @@ object FabricatedUtil {
         )
 
         colorResNames.forEachIndexed { i, colorResName ->
-            runCatching {
-                val sourceName = if (!isDark) sourceColorResNames[i].first else sourceColorResNames[i].second
-                val color = getColor(sourceName)
-                    .withLStarAndAlpha(
-                        if (!isDark) lStarValue[i].first else lStarValue[i].second,
-                        if (!isDark) alphaValue[i].first else alphaValue[i].second
-                    )
-                setColor(colorResName, color, useIfExists)
-            }
+            val lightColorValue = getColor(sourceColorResNames[i].first)
+                .withLStarAndAlpha(lStarValue[i].first, alphaValue[i].first)
+            val darkColorValue = getColor(sourceColorResNames[i].second)
+                .withLStarAndAlpha(lStarValue[i].second, alphaValue[i].second)
+            val colorValue = if (!isDark) lightColorValue else darkColorValue
+
+            setColor(colorResName, colorValue, useIfExists)
+            setColor(newColorResNames[i].first, lightColorValue, useIfExists)
+            setColor(newColorResNames[i].second, darkColorValue, useIfExists)
         }
     }
 }

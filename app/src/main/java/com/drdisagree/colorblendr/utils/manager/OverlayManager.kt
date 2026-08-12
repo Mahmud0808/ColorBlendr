@@ -230,12 +230,12 @@ object OverlayManager {
                         // Mirror the full Material 3 palette
                         assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
                         // SurfaceEffectColors
-                        generateSurfaceEffectColors(isDarkMode)
+                        generateSurfaceEffectColors(isDarkMode, true)
 
                         if (pitchBlackTheme) {
                             setColor("background_dark", Color.BLACK)
                             // QS top part color below A16
-                            setColor("surface_header_dark_sysui", Color.BLACK)
+                            setColor("surface_header_dark_sysui", Color.BLACK, true)
                             if (isDarkMode) {
                                 // QS top part color A16+
                                 setColor(
