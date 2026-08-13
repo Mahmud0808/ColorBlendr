@@ -3,65 +3,41 @@
 * {
 	box-sizing: border-box;
 }
-@property --blob-a {
-	syntax: "<color>";
-	inherits: true;
-	initial-value: #a8cbe7;
-}
-@property --blob-b {
-	syntax: "<color>";
-	inherits: true;
-	initial-value: #dcddff;
-}
 @property --prog {
 	syntax: "<angle>";
 	inherits: false;
 	initial-value: 360deg;
 }
-/* Only the hero-wash vars animate at :root (gradients cannot interpolate).
-   Everything else transitions its own property once - a root transition
-   plus an element transition would double-smooth and desync. */
 :root {
-	transition:
-		--blob-a var(--recolor, 1.6s) ease,
-		--blob-b var(--recolor, 1.6s) ease;
-}
-:root {
-	--bg: #0b0f11;
-	--text: #e0e6ee;
-	--body2: #a5acb3;
-	--subtle: #a5acb3e6;
+	--bg: #14171a;
+	--text: #eff1f5;
+	--body2: #ebf1f9;
+	--subtle: #ebf1f9e6;
 	--accent: #a8cbe7;
-	--on-accent: #20445b;
-	--accent-glow: #a8cbe752;
-	--tonal: #2d3d4a;
-	--on-tonal: #b0c1d1;
-	--card: #151a1e;
-	--card-high: #1b2025;
-	--card-highest: #20272c;
-	--outline-v: #42494f;
-	--grad-c: #dcddff;
-	--blob-a: #a8cbe7;
-	--blob-b: #dcddff;
+	--on-accent: #0b344a;
+	--tonal: #384956;
+	--on-tonal: #d3e5f5;
+	--card: #1c1f22;
+	--card-high: #2e3134;
+	--card-highest: #34373a;
+	--outline-v: #41484e;
+	--grad-c: #c0c3f2;
 }
 /* First-paint fallbacks only; JS re-derives real values immediately. */
 html.light {
-	--bg: #f7f9ff;
-	--text: #181c20;
-	--body2: #42474e;
-	--subtle: #42474ee6;
-	--accent: #31628d;
+	--bg: #f9f9fc;
+	--text: #2e3134;
+	--body2: #2a3137;
+	--subtle: #2a3137e6;
+	--accent: #326383;
 	--on-accent: #ffffff;
-	--accent-glow: #31628d3d;
-	--tonal: #d4e4f6;
-	--on-tonal: #0d3c61;
-	--card: #ebeef4;
-	--card-high: #e5e8ee;
-	--card-highest: #dfe2e8;
-	--outline-v: #c2c7cf;
-	--grad-c: #64597b;
-	--blob-a: #31628d;
-	--blob-b: #64597b;
+	--tonal: #d3e5f5;
+	--on-tonal: #0c1d29;
+	--card: #eaecf0;
+	--card-high: #f0f1f4;
+	--card-highest: #f6f6f9;
+	--outline-v: #c1c7cf;
+	--grad-c: #575b84;
 }
 body {
 	margin: 0;
@@ -86,44 +62,6 @@ main {
 	z-index: 1;
 }
 
-/* One seed-tinted wash behind the hero, anchored to the page top rather
-   than floating. Ends where the hero ends; the rest is flat tonal surface. */
-.blobs {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 760px;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(
-			120% 78% at 78% 6%,
-			color-mix(in srgb, var(--blob-a) 22%, transparent),
-			transparent 62%
-		),
-		radial-gradient(
-			90% 62% at 8% 0%,
-			color-mix(in srgb, var(--blob-b) 14%, transparent),
-			transparent 66%
-		);
-	mask-image: linear-gradient(#000 55%, transparent);
-	-webkit-mask-image: linear-gradient(#000 55%, transparent);
-}
-html.light .blobs {
-	background:
-		radial-gradient(
-			120% 78% at 78% 6%,
-			color-mix(in srgb, var(--blob-a) 16%, transparent),
-			transparent 62%
-		),
-		radial-gradient(
-			90% 62% at 8% 0%,
-			color-mix(in srgb, var(--blob-b) 11%, transparent),
-			transparent 66%
-		);
-}
-
 /* Light/dark toggle */
 .modebtn {
 	position: fixed;
@@ -135,12 +73,11 @@ html.light .blobs {
 	border-radius: 999px;
 	border: none;
 	cursor: pointer;
-	background: var(--card-high);
+	background: var(--card-highest);
 	color: var(--text);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 	transition:
 		background-color var(--recolor, 1.6s) ease,
 		color var(--recolor, 1.6s) ease,
@@ -176,13 +113,33 @@ html.light .blobs {
 	.modebtn {
 		top: 10px;
 		right: 10px;
-		width: 40px;
-		height: 40px;
+		width: 44px;
+		height: 44px;
 	}
 	.modebtn svg {
 		width: 20px;
 		height: 20px;
 	}
+}
+.skiplink {
+	position: fixed;
+	top: 12px;
+	left: 12px;
+	z-index: 100;
+	padding: 12px 20px;
+	border-radius: 999px;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	transform: translateY(-200%);
+	transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.skiplink:focus-visible {
+	transform: none;
+	outline: 2px solid var(--text);
+	outline-offset: 3px;
 }
 .modebtn .ic-moon {
 	display: none;
@@ -225,8 +182,6 @@ header.hero {
 	width: 96px;
 	height: 96px;
 	margin-bottom: 26px;
-	filter: drop-shadow(0 12px 36px var(--accent-glow));
-	transition: filter var(--recolor, 1.6s) ease;
 }
 h1.title {
 	margin: 0 0 14px;
@@ -244,16 +199,25 @@ h1.title {
 	line-height: 1.65;
 	transition: color var(--recolor, 1.6s) ease;
 }
+.hero-note {
+	margin: -24px 0 30px;
+	max-width: 38ch;
+	color: var(--body2);
+	font-size: 15.5px;
+	font-weight: 600;
+	line-height: 1.5;
+	transition: color var(--recolor, 1.6s) ease;
+}
 .cta {
 	display: flex;
-	gap: 14px;
+	gap: 12px;
 	flex-wrap: wrap;
 }
 a.btn {
 	display: inline-flex;
 	align-items: center;
 	gap: 9px;
-	padding: 16px 30px;
+	padding: 16px 26px;
 	border-radius: 999px;
 	text-decoration: none;
 	font-size: 15px;
@@ -290,8 +254,17 @@ a.btn:active {
 /* Hero stat strip; weight carries the emphasis, not a gradient. */
 .stats {
 	display: flex;
-	gap: 38px;
+	flex-wrap: wrap;
+	gap: 20px 38px;
 	margin-top: 36px;
+}
+@media (max-width: 400px) {
+	.stats {
+		gap: 16px 24px;
+	}
+	.stat b {
+		font-size: 22px;
+	}
 }
 .stat b {
 	display: block;
@@ -313,15 +286,6 @@ a.btn:active {
 .hero-phone {
 	display: flex;
 	justify-content: center;
-	perspective: 1500px;
-}
-.phone-float {
-	animation: ph-float 7s ease-in-out infinite alternate;
-}
-@keyframes ph-float {
-	to {
-		transform: translateY(-12px);
-	}
 }
 .phone {
 	user-select: none;
@@ -333,29 +297,20 @@ a.btn:active {
 	outline: 1px solid var(--outline-v);
 	outline-offset: -1px;
 	background: var(--card);
-	box-shadow:
-		0 34px 90px rgba(0, 0, 0, 0.5),
-		0 0 130px var(--accent-glow);
+	box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
 	padding: 12px 14px 14px;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
 	position: relative;
 	overflow: hidden;
-	transform: rotateY(-13deg) rotateX(5deg);
 	transition:
-		transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
 		background-color var(--recolor, 1.6s) ease,
 		border-color var(--recolor, 1.6s) ease,
 		box-shadow var(--recolor, 1.6s) ease;
 }
-.hero-phone:hover .phone {
-	transform: none;
-}
 html.light .phone {
-	box-shadow:
-		0 34px 90px rgba(0, 0, 0, 0.2),
-		0 0 130px var(--accent-glow);
+	box-shadow: 0 30px 70px rgba(0, 0, 0, 0.18);
 }
 .phone i,
 .phone span,
@@ -560,79 +515,12 @@ html.light .ph-cam {
 	.hero-phone {
 		margin-top: 22px;
 	}
-	.phone {
-		transform: rotateY(-8deg) rotateX(3deg);
-	}
 }
 
-/* M3 Expressive shapes: JS fills each with a generated polar path;
-   anchored to sections, spun slowly, seed-tinted. */
 header.hero,
 .shots,
 .faq {
 	position: relative;
-}
-.deco {
-	position: absolute;
-	z-index: -1;
-	pointer-events: none;
-	color: var(--accent);
-	opacity: 0.1;
-	transition: color var(--recolor, 1.6s) ease;
-}
-.deco svg {
-	width: 100%;
-	height: 100%;
-	display: block;
-	fill: currentColor;
-	animation: deco-spin 70s linear infinite;
-}
-.deco-b svg,
-.deco-d svg {
-	animation-direction: reverse;
-	animation-duration: 55s;
-}
-@keyframes deco-spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
-.deco-a {
-	width: 150px;
-	height: 150px;
-	left: -128px;
-	top: -48px;
-}
-.deco-b {
-	width: 96px;
-	height: 96px;
-	right: -36px;
-	bottom: 6px;
-	color: var(--grad-c);
-}
-.deco-c {
-	width: 120px;
-	height: 120px;
-	right: -92px;
-	top: -54px;
-}
-.deco-d {
-	width: 130px;
-	height: 130px;
-	left: -140px;
-	bottom: 90px;
-	color: var(--grad-c);
-}
-@media (max-width: 1240px) {
-	.deco-c,
-	.deco-d {
-		display: none;
-	}
-}
-@media (max-width: 900px) {
-	.deco {
-		display: none;
-	}
 }
 
 /* Section headings outrank the copy under them: size and weight, no
@@ -647,7 +535,7 @@ header.hero,
 	transition: color var(--recolor, 1.6s) ease;
 }
 .lead {
-	max-width: 660px;
+	max-width: min(660px, 62ch);
 	margin: 0 auto 36px;
 	color: var(--body2);
 	font-size: 15.5px;
@@ -834,6 +722,336 @@ html.light .menu {
 		center/contain no-repeat;
 }
 
+.proofs {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-bottom: 28px;
+}
+.proof {
+	background: var(--card);
+	border-radius: 28px;
+	padding: 22px 26px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+	align-items: center;
+	gap: 40px;
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.proof:nth-child(even) .proof-copy {
+	order: 2;
+}
+.closer {
+	margin: 72px 0 8px;
+	padding: 48px 32px;
+	border-radius: 28px;
+	background: var(--card);
+	text-align: center;
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.closer h2 {
+	margin: 0 0 12px;
+	font-size: clamp(24px, 3.2vw, 30px);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	color: var(--text);
+	transition: color var(--recolor, 1.6s) ease;
+}
+.closer p {
+	margin: 0 auto 28px;
+	max-width: 46ch;
+	color: var(--body2);
+	font-size: 15.5px;
+	line-height: 1.7;
+	transition: color var(--recolor, 1.6s) ease;
+}
+.closer .cta {
+	justify-content: center;
+}
+
+.mbackup {
+	gap: 5px;
+}
+.marrow {
+	display: grid;
+	place-items: center;
+	height: 20px;
+}
+.marrow svg {
+	width: 16px;
+	height: 16px;
+	fill: var(--body2);
+	display: block;
+	transition: fill var(--recolor, 1.6s) ease;
+}
+.mfile {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 11px;
+	border-radius: 14px;
+	background: var(--card-highest);
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mfile svg {
+	width: 15px;
+	height: 15px;
+	flex-shrink: 0;
+	fill: var(--accent);
+	display: block;
+	transition: fill var(--recolor, 1.6s) ease;
+}
+.proof h3 {
+	margin: 0 0 10px;
+	font-size: 19px;
+	letter-spacing: -0.01em;
+}
+.proof p {
+	margin: 0;
+	max-width: 52ch;
+	color: var(--body2);
+	font-size: 14.5px;
+	line-height: 1.65;
+	transition: color var(--recolor, 1.6s) ease;
+}
+.pair {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+.pair.pair-one {
+	grid-template-columns: minmax(0, 260px);
+	justify-content: center;
+}
+.pane {
+	margin: 0;
+	min-width: 0;
+	padding: 14px 14px 12px;
+	border-radius: 22px;
+	background: var(--frame);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.pane figcaption {
+	font-size: 11.5px;
+	font-weight: 600;
+	text-align: center;
+	color: var(--frame-text);
+	transition: color var(--recolor, 1.6s) ease;
+}
+.pane figcaption.after {
+	color: var(--frame-accent);
+}
+.pane .mcard {
+	flex: 1;
+}
+.mini {
+	display: block;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.mini,
+.mini * {
+	transition:
+		background-color var(--recolor, 1.6s) ease,
+		color var(--recolor, 1.6s) ease,
+		fill var(--recolor, 1.6s) ease,
+		outline-color var(--recolor, 1.6s) ease;
+}
+.mtrack::before,
+.mswitch::after,
+.mcard::before {
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mcard {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 11px;
+	max-width: 210px;
+	margin-inline: auto;
+	width: 100%;
+	border-radius: 16px;
+	background: var(--card-high);
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mrow {
+	display: flex;
+	gap: 4px;
+}
+.mrow i {
+	flex: 1;
+	aspect-ratio: 1;
+	border-radius: 50%;
+	display: block;
+}
+.mrow.marked i:nth-child(3) {
+	outline: 2px solid var(--text);
+	outline-offset: 2px;
+}
+.mtrack {
+	position: relative;
+	height: 10px;
+	border-radius: 999px;
+	background: var(--card-highest);
+	margin-top: 3px;
+	overflow: hidden;
+}
+.mtrack::before {
+	content: "";
+	position: absolute;
+	inset: 0 40% 0 0;
+	border-radius: 999px;
+	background: var(--accent);
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mtrack.low::before {
+	inset: 0 65% 0 0;
+	background: var(--tonal);
+}
+.msurface {
+	background: var(--bg);
+	gap: 8px;
+	outline: 1px solid var(--outline-v);
+	outline-offset: -1px;
+}
+.mhead {
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--text);
+	transition: color var(--recolor, 1.6s) ease;
+}
+.mtext {
+	flex: 1;
+	min-width: 0;
+	font-size: 10.5px;
+	font-weight: 600;
+	color: var(--body2);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: color var(--recolor, 1.6s) ease;
+}
+.mline {
+	height: 8px;
+	border-radius: 4px;
+	background: var(--text);
+	opacity: 0.55;
+	display: block;
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mline.w75 {
+	width: 75%;
+}
+.mline.w60 {
+	width: 60%;
+}
+.mline.w45 {
+	width: 45%;
+}
+.mtile {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 8px 10px;
+	border-radius: 14px;
+	background: var(--card-high);
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mtile .mline {
+	flex: 1;
+}
+.mswitch {
+	width: 30px;
+	height: 18px;
+	border-radius: 999px;
+	background: var(--accent);
+	position: relative;
+	flex-shrink: 0;
+	transition: background-color var(--recolor, 1.6s) ease;
+}
+.mswitch::after {
+	content: "";
+	position: absolute;
+	top: 3px;
+	right: 3px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: var(--on-accent);
+}
+.mswitch.off {
+	background: var(--card-highest);
+}
+.mswitch.off::after {
+	right: auto;
+	left: 3px;
+	background: var(--body2);
+}
+@media (max-width: 760px) {
+	.proof {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 22px;
+		padding: 24px;
+	}
+	.pane figcaption {
+		font-size: 12px;
+	}
+}
+@media (max-width: 520px) {
+	.proof {
+		padding: 18px;
+		gap: 18px;
+	}
+	.pair {
+		gap: 8px;
+	}
+	.pane {
+		padding: 10px 8px 8px;
+		border-radius: 18px;
+	}
+	.mcard {
+		padding: 8px;
+		gap: 5px;
+		border-radius: 14px;
+	}
+	.mrow {
+		gap: 3px;
+	}
+	.mtile {
+		padding: 6px 7px;
+		gap: 6px;
+		border-radius: 11px;
+	}
+	.mswitch {
+		width: 24px;
+		height: 15px;
+	}
+	.mswitch::after {
+		width: 9px;
+		height: 9px;
+	}
+	.mfile {
+		padding: 7px 8px;
+		gap: 6px;
+	}
+	.pane figcaption {
+		font-size: 11px;
+	}
+	.mtext {
+		font-size: 9.5px;
+	}
+	.mhead {
+		font-size: 10px;
+	}
+	.proof:nth-child(even) .proof-copy {
+		order: 0;
+	}
+}
+
 /* Feature grid */
 .grid {
 	display: grid;
@@ -852,24 +1070,6 @@ html.light .menu {
 /* M3 state layer, not a lift. */
 .info:hover {
 	background: var(--card-high);
-}
-/* Backup is a utility, not a color feature: it closes the row on its own
-   terms instead of orphaning a seventh equal card. */
-.info.wide {
-	grid-column: 1 / -1;
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 6px 26px;
-}
-.info.wide .mode-icon {
-	margin-bottom: 0;
-}
-.info.wide h3 {
-	margin: 0;
-}
-.info.wide p {
-	flex: 1 1 380px;
 }
 .info h3 {
 	margin: 0 0 10px;
@@ -914,8 +1114,6 @@ html.light .menu {
 	transition: background-color var(--recolor, 1.6s) ease;
 }
 
-/* Screenshot band: features.png sliced into per-panel rounded cards.
-   Source 7000x3400, panels 1600x3200 at x 128/1843/3558/5273, y 100. */
 .shots {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
@@ -923,23 +1121,29 @@ html.light .menu {
 	margin-bottom: 28px;
 }
 .shot {
-	aspect-ratio: 1 / 2;
+	margin: 0;
 	border-radius: 28px;
-	background-image: url("https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/features.png");
-	background-size: 437.5% auto;
-	background-repeat: no-repeat;
+	background: var(--card);
+	padding: 16px 16px 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	transition: background-color var(--recolor, 1.6s) ease;
 }
-.shot:nth-child(1) {
-	background-position: 2.37% 50%;
+.shot figcaption {
+	order: -1;
+	color: var(--body2);
+	font-size: 13px;
+	font-weight: 600;
+	text-align: center;
+	transition: color var(--recolor, 1.6s) ease;
 }
-.shot:nth-child(2) {
-	background-position: 34.13% 50%;
-}
-.shot:nth-child(3) {
-	background-position: 65.9% 50%;
-}
-.shot:nth-child(4) {
-	background-position: 97.65% 50%;
+.shot img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 20px 20px 0 0;
 }
 @media (max-width: 768px) {
 	.shots {
@@ -961,19 +1165,44 @@ html.light .menu {
 	.grid {
 		grid-template-columns: minmax(0, 1fr);
 	}
-	.info.wide {
-		display: block;
+	header.hero {
+		padding: 56px 0 48px;
 	}
-	.info.wide .mode-icon {
-		margin-bottom: 12px;
+	.logo {
+		width: 72px;
+		height: 72px;
+		margin-bottom: 18px;
 	}
-	.info.wide h3 {
-		margin-bottom: 10px;
+	h1.title {
+		font-size: clamp(34px, 9vw, 44px);
+	}
+	.tagline {
+		margin-bottom: 18px;
+	}
+	.hero-note {
+		margin: -6px 0 22px;
+	}
+	.stats {
+		margin-top: 26px;
+	}
+	.hero .cta {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
+	.hero .cta .btn {
+		justify-content: center;
+		padding: 15px 12px;
+	}
+	.hero .cta .primary {
+		grid-column: 1 / -1;
 	}
 }
 
 /* Endless drifting rail (community cross-promo). */
 .marquee {
+	max-width: 1440px;
+	margin-inline: auto;
 	overflow: hidden;
 	padding: 20px 0 56px;
 	margin-bottom: -32px;
@@ -1003,6 +1232,17 @@ html.light .menu {
 .marquee:hover .marquee-track,
 .marquee:focus-within .marquee-track {
 	animation-play-state: paused;
+}
+.on-touch {
+	display: none;
+}
+@media (hover: none) {
+	.on-hover {
+		display: none;
+	}
+	.on-touch {
+		display: inline;
+	}
 }
 @keyframes drift {
 	from {
@@ -1090,6 +1330,42 @@ a.tcard:hover .tswatch {
 	width: 100%;
 	transition: color var(--recolor, 1.6s) ease;
 }
+.loading a {
+	color: var(--accent);
+	text-decoration: none;
+}
+.loading a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.retry {
+	border: none;
+	cursor: pointer;
+	border-radius: 999px;
+	background: var(--card-high);
+	color: var(--text);
+	font: 600 13.5px/1 inherit;
+	font-family: inherit;
+	padding: 10px 16px;
+	margin: 0 2px;
+	transition:
+		background-color var(--recolor, 1.6s) ease,
+		color var(--recolor, 1.6s) ease,
+		transform 0.12s ease;
+}
+.retry:hover {
+	filter: brightness(1.08);
+}
+.retry:active {
+	transform: scale(0.97);
+}
+.retry:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+}
+.mq-half {
+	display: contents;
+}
 
 /* Mode comparison table */
 .tablewrap {
@@ -1098,6 +1374,30 @@ a.tcard:hover .tswatch {
 	background: var(--card);
 	margin-bottom: 28px;
 	transition: background-color var(--recolor, 1.6s) ease;
+}
+.compare thead th {
+	padding-top: 20px;
+}
+.compare tr:last-child th,
+.compare tr:last-child td {
+	padding-bottom: 20px;
+}
+.compare th:first-child {
+	padding-left: 24px;
+}
+.compare th:last-child,
+.compare td:last-child {
+	padding-right: 24px;
+}
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 .compare {
 	border-collapse: collapse;
@@ -1150,6 +1450,75 @@ a.tcard:hover .tswatch {
 }
 .tablewrap::-webkit-scrollbar-thumb {
 	border-color: var(--card);
+}
+
+@media (max-width: 768px) {
+	.tablewrap {
+		overflow-x: visible;
+		background: none;
+		padding: 0;
+	}
+	.compare,
+	.compare tbody,
+	.compare tr,
+	.compare th,
+	.compare td {
+		display: block;
+		min-width: 0;
+	}
+	.compare thead {
+		display: none;
+	}
+	.compare tr {
+		background: var(--card);
+		border-radius: 24px;
+		padding: 16px 18px;
+		margin-bottom: 12px;
+		transition: background-color var(--recolor, 1.6s) ease;
+	}
+	.compare tbody th,
+	.compare th:first-child {
+		position: static;
+		background: none;
+		padding: 0 0 10px;
+		border: none;
+		font-size: 15px;
+		white-space: normal;
+	}
+	.compare td,
+	.compare td:nth-child(2) {
+		background: none;
+		border: none;
+		padding: 5px 0;
+		font-weight: 400;
+		display: flex;
+		gap: 12px;
+		justify-content: space-between;
+		align-items: baseline;
+	}
+	.compare td::before {
+		content: attr(data-m);
+		flex: 0 0 auto;
+		color: var(--subtle);
+		font-size: 12.5px;
+	}
+	.compare thead th,
+	.compare tr:last-child th,
+	.compare tr:last-child td,
+	.compare th:last-child,
+	.compare td:last-child {
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-right: 0;
+	}
+	.compare tbody th,
+	.compare th:first-child {
+		padding-left: 0;
+	}
+	.compare td:nth-child(2) {
+		color: var(--accent);
+		font-weight: 600;
+	}
 }
 
 /* Requirements strip */
@@ -1217,6 +1586,7 @@ a.tcard:hover .tswatch {
 }
 .faq .answer {
 	padding: 0 22px 20px;
+	max-width: 72ch;
 	color: var(--body2);
 	font-size: 14.5px;
 	line-height: 1.7;
@@ -1245,21 +1615,26 @@ a.tcard:hover .tswatch {
 }
 
 footer {
-	display: flex;
-	gap: 12px;
-	justify-content: center;
-	align-items: center;
-	flex-wrap: wrap;
-	text-align: center;
 	padding: 48px 0 56px;
 	color: var(--subtle);
 	font-size: 14px;
 	transition: color var(--recolor, 1.6s) ease;
 }
+.footlinks {
+	display: flex;
+	gap: 4px 12px;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	text-align: center;
+}
 footer a {
 	color: var(--accent);
 	text-decoration: none;
-	padding: 8px 2px;
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0 4px;
 	transition: color var(--recolor, 1.6s) ease;
 }
 footer a:hover {
@@ -1311,37 +1686,6 @@ html {
 	}
 }
 
-.logo {
-	animation:
-		rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.05s forwards,
-		breathe 7s ease-in-out 1.2s infinite alternate;
-}
-@keyframes breathe {
-	from {
-		transform: translateY(0);
-	}
-	to {
-		transform: translateY(-7px);
-	}
-}
-
-/* Sections settle in, they don't all slide the same 22px. The authored
-   motion on this page is the hero entrance and the screenshot stagger.
-   Animation, not transition: a transition here would REPLACE the element's
-   own list (.info etc.) and kill its recolor. */
-.reveal {
-	opacity: 0;
-}
-.reveal.in {
-	opacity: 1;
-	animation: reveal-in 0.45s ease-out;
-}
-@keyframes reveal-in {
-	from {
-		opacity: 0;
-	}
-}
-
 /* Scroll-driven parallax (progressive enhancement). `translate` keeps
    out of the way of hover-tilt transforms. */
 @supports (animation-timeline: view()) {
@@ -1363,23 +1707,6 @@ html {
 	.shot:nth-child(4) {
 		animation-range: entry 0% cover 40%;
 	}
-	/* Fade per part via view() exit: fixed scroll() range faded the phone
-     mid-screen on mobile, where the stacked hero is taller than a viewport. */
-	.hero-copy {
-		animation: hero-out linear both;
-		animation-timeline: view();
-		animation-range: exit 35% exit 90%;
-	}
-	.hero-phone {
-		animation:
-			rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
-			hero-out linear both;
-		animation-delay: 0.45s, 0s;
-		animation-timeline: auto, view();
-		animation-range:
-			normal,
-			exit 35% exit 90%;
-	}
 }
 @keyframes shot-rise {
 	from {
@@ -1389,13 +1716,6 @@ html {
 		translate: 0 0;
 	}
 }
-@keyframes hero-out {
-	to {
-		opacity: 0.25;
-		scale: 0.96;
-	}
-}
-
 a.btn:focus-visible,
 a.tcard:focus-visible,
 .faq summary:focus-visible,
@@ -1419,8 +1739,7 @@ footer a:focus-visible {
 		transition-duration: 0.01s !important;
 	}
 	.hero-copy > *,
-	.hero-phone,
-	.reveal {
+	.hero-phone {
 		opacity: 1;
 		transform: none;
 	}
@@ -1485,6 +1804,16 @@ footer a:focus-visible {
 	gap: 16px;
 	width: max-content;
 	padding-left: 16px;
+}
+/* The rail runs two rows on phones; the skeleton should hold both. */
+.sk-row2 {
+	display: none;
+}
+@media (max-width: 768px) {
+	.sk-row2 {
+		display: flex;
+		margin-top: 16px;
+	}
 }
 .sk-card {
 	position: relative;

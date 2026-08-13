@@ -67,159 +67,182 @@ function adjustSaturation(hex, saturation) {
 	return hexFromArgb(Hct.from(hct.hue, chroma, hct.tone).toInt());
 }
 
-function shiftLightness(hex, lightness, minTone = 0, maxTone = 100) {
-	const hct = Hct.fromInt(argbFromHex(hex));
-	const tone = Math.max(
-		minTone,
-		Math.min(maxTone, hct.tone + (lightness - 100) / 10),
-	);
-	if (tone === hct.tone) return hex;
-	return hexFromArgb(Hct.from(hct.hue, hct.chroma, tone).toInt());
+const relLum = (hex) => {
+	const c = [1, 3, 5].map((i) => {
+		const v = parseInt(hex.slice(i, i + 2), 16) / 255;
+		return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+	});
+	return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+};
+
+const contrast = (a, b) => {
+	const [x, y] = [relLum(a), relLum(b)].sort((p, q) => q - p);
+	return (x + 0.05) / (y + 0.05);
+};
+
+function ensureContrast(fg, bg, min = 4.5) {
+	if (contrast(fg, bg) >= min) return fg;
+	const hct = Hct.fromInt(argbFromHex(fg));
+	const dir = relLum(bg) > 0.18 ? -1 : 1;
+	let out = fg;
+	for (let t = hct.tone + dir * 3; t >= 0 && t <= 100; t += dir * 3) {
+		out = hexFromArgb(Hct.from(hct.hue, hct.chroma, t).toInt());
+		if (contrast(out, bg) >= min) return out;
+	}
+	return out;
 }
 
-// ---- Shade overrides --------------------------------------------------------
+let siteDark = true;
 
-// colorOverrides keys are Android palette resources, system_<row>_<step>.
-// Steps are fixed tonal stops; MCU roles land between them (dark surface is
-// tone 6, surfaceContainer 12), so overrides act as hue/chroma anchors and
-// the role keeps its own tone. Exact stops are used verbatim.
-const STEP_TONE = {
-	0: 100,
-	10: 99,
-	50: 95,
-	100: 90,
-	200: 80,
-	300: 70,
-	400: 60,
-	500: 50,
-	600: 40,
-	700: 30,
-	800: 20,
-	900: 10,
-	1000: 0,
+// Port of the app's palette pipeline (ColorSchemeUtil.generateColorPalette,
+// ColorModifiers.modifyColors, CommunityThemePalette.derive, DynamicColors).
+// Order matters: palette, then modifiers, then the theme's own hexes, then
+// pitch black. Roles read fixed indices out of the finished palette.
+const TONES = [100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
+const TINTS = TONES.map((t) => t / 100);
+const SHADES = [
+	"0",
+	"10",
+	"50",
+	"100",
+	"200",
+	"300",
+	"400",
+	"500",
+	"600",
+	"700",
+	"800",
+	"900",
+	"1000",
+];
+const ROW_NAMES = [
+	"system_accent1",
+	"system_accent2",
+	"system_accent3",
+	"system_neutral1",
+	"system_neutral2",
+	"system_error",
+];
+
+// Tones the phone mockup's palette grid samples.
+const PH_TONES = [95, 80, 60, 40, 20, 5];
+
+// [row, darkIndex, lightIndex, darkLightnessAdjustment, lightLightnessAdjustment]
+const ROLE_MAP = {
+	primary: [0, 4, 8],
+	primaryContainer: [0, 9, 3],
+	onPrimaryContainer: [0, 3, 11],
+	onPrimary: [0, 10, 0],
+	secondaryContainer: [1, 9, 3],
+	onSecondaryContainer: [1, 3, 11],
+	tertiary: [2, 4, 8],
+	surface: [3, 11, 1, -25, -1],
+	onSurface: [3, 2, 10],
+	surfaceContainer: [3, 10, 2, -42, -2],
+	surfaceContainerHigh: [3, 10, 1, null, -4],
+	surfaceContainerHighest: [3, 10, 1, 3, -5],
+	surfaceBright: [3, 10, 1, 13, -2],
+	onSurfaceVariant: [4, 2, 10],
+	outlineVariant: [4, 9, 4],
 };
 
-const ROW_PALETTE = {
-	system_accent1: "primaryPalette",
-	system_accent2: "secondaryPalette",
-	system_accent3: "tertiaryPalette",
-	system_neutral1: "neutralPalette",
-	system_neutral2: "neutralVariantPalette",
-};
+function toneOf(hex) {
+	return Hct.fromInt(argbFromHex(hex)).tone;
+}
 
-// MCU role -> the Android palette row the app draws it from.
-const ROLE_ROW = {
-	surface: "system_neutral1",
-	surfaceContainer: "system_neutral1",
-	surfaceContainerHigh: "system_neutral1",
-	surfaceContainerHighest: "system_neutral1",
-	onSurface: "system_neutral1",
-	onSurfaceVariant: "system_neutral2",
-	outlineVariant: "system_neutral2",
-	primary: "system_accent1",
-	onPrimary: "system_accent1",
-	secondaryContainer: "system_accent2",
-	onSecondaryContainer: "system_accent2",
-	tertiary: "system_accent3",
-};
+function atTone(hex, tone) {
+	const h = Hct.fromInt(argbFromHex(hex));
+	return hexFromArgb(
+		Hct.from(h.hue, h.chroma, Math.max(0, Math.min(100, tone))).toInt(),
+	);
+}
 
-function anchorsByRow(overrides) {
-	const rows = {};
-	for (const [key, hex] of Object.entries(overrides ?? {})) {
-		if (!HEX.test(hex)) continue;
-		const cut = key.lastIndexOf("_");
-		const row = key.slice(0, cut);
-		const tone = STEP_TONE[key.slice(cut + 1)];
-		// system_error has no palette on the site; skip it.
-		if (tone == null || !ROW_PALETTE[row]) continue;
-		(rows[row] ??= []).push({ tone, hex });
+function shiftLightness(hex, lightness, idx) {
+	let f = (lightness - 100) / 1000;
+	if (idx === 0 || idx === 12) f = 0;
+	else if (idx === 1) f /= 10;
+	else if (idx === 2) f /= 2;
+	return atTone(hex, 100 * (TINTS[idx] + f));
+}
+
+function adjustLightness(hex, percent) {
+	const tone = toneOf(hex);
+	const pct = Math.max(-100, Math.min(100, percent));
+	return atTone(hex, tone + tone * (pct / 100));
+}
+
+function buildPalette(seedHex, style, spec, dark, sliders, theme) {
+	const Ctor = SCHEME_BY_STYLE[style] ?? SchemeTonalSpot;
+	const toneList = (palette) => TONES.map((t) => hexFromArgb(palette.tone(t)));
+	const scheme = new Ctor(Hct.fromInt(argbFromHex(seedHex)), dark, 0, spec);
+	const rows = [
+		scheme.primaryPalette,
+		scheme.secondaryPalette,
+		scheme.tertiaryPalette,
+		scheme.neutralPalette,
+		scheme.neutralVariantPalette,
+		scheme.errorPalette,
+	].map(toneList);
+
+	const ownPalette = (hex) =>
+		toneList(
+			new Ctor(Hct.fromInt(argbFromHex(hex)), dark, 0, spec).primaryPalette,
+		);
+	if (HEX.test(theme?.secondaryColor ?? "")) {
+		rows[1] = ownPalette(theme.secondaryColor);
 	}
-	for (const list of Object.values(rows)) list.sort((a, b) => a.tone - b.tone);
+	if (HEX.test(theme?.tertiaryColor ?? "")) {
+		rows[2] = ownPalette(theme.tertiaryColor);
+	}
+
+	const { accentSat, bgSat, bgLight } = sliders;
+	const mono = style === "MONOCHROMATIC";
+	const rainbow = style === "RAINBOW";
+	const pitch = Boolean(theme?.pitchBlack);
+
+	rows.forEach((row, i) => {
+		const accent = i <= 2 || i === 5;
+		const neutral = i === 3 || i === 4;
+		// The app modifies shades 1..12; shade 0 is left alone.
+		for (let j = 1; j < row.length; j++) {
+			if (accent && accentSat !== 100 && !mono) {
+				row[j] = adjustSaturation(row[j], accentSat);
+			} else if (neutral) {
+				if (bgLight !== 100 && !mono) {
+					row[j] = shiftLightness(row[j], bgLight, j);
+				}
+				if (bgSat !== 100 && !mono && !rainbow) {
+					row[j] = adjustSaturation(row[j], bgSat);
+				}
+			}
+			if (mono) row[j] = shiftLightness(row[j], bgLight, j);
+		}
+		if (neutral && pitch) row[11] = "#000000";
+	});
+
+	for (const [name, hex] of Object.entries(theme?.colorOverrides ?? {})) {
+		if (!HEX.test(hex)) continue;
+		const cut = name.lastIndexOf("_");
+		const row = ROW_NAMES.indexOf(name.slice(0, cut));
+		const idx = SHADES.indexOf(name.slice(cut + 1));
+		if (row >= 0 && idx >= 0) rows[row][idx] = hex;
+	}
+
+	if (pitch) {
+		rows[3][11] = "#000000";
+		rows[4][11] = "#000000";
+	}
+
 	return rows;
 }
 
-// Hue/chroma interpolated between the surrounding anchors, tone untouched so
-// role contrast survives. Past the last anchor the nearest one is extended.
-// `snap` takes an anchor verbatim when the wanted tone is that close to it,
-// so a role sitting near an Android step shows the theme's literal hex.
-function toneFromAnchors(anchors, tone, snap = 0) {
-	let lo = null;
-	let hi = null;
-	for (const a of anchors) {
-		if (a.tone <= tone) lo = a;
-		if (a.tone >= tone && !hi) hi = a;
-	}
-	if (lo?.tone === tone) return lo.hex;
-	if (snap) {
-		const near = [lo, hi]
-			.filter(Boolean)
-			.sort((a, b) => Math.abs(a.tone - tone) - Math.abs(b.tone - tone))[0];
-		if (near && Math.abs(near.tone - tone) <= snap) return near.hex;
-	}
-	const hct = (a) => Hct.fromInt(argbFromHex(a.hex));
-	if (!lo || !hi) {
-		const edge = hct(lo ?? hi);
-		return hexFromArgb(Hct.from(edge.hue, edge.chroma, tone).toInt());
-	}
-	const a = hct(lo);
-	const b = hct(hi);
-	const f = (tone - lo.tone) / (hi.tone - lo.tone);
-	const dh = ((b.hue - a.hue + 540) % 360) - 180;
-	return hexFromArgb(
-		Hct.from(
-			(a.hue + dh * f + 360) % 360,
-			a.chroma + (b.chroma - a.chroma) * f,
-			tone,
-		).toInt(),
-	);
-}
-
-// Resolves a palette shade to the theme's real color: overrides win, then a
-// custom secondary/tertiary seed, then the scheme. `fixed` marks values that
-// already carry the theme's own numbers, so the saturation and lightness
-// sliders must not be applied to them a second time.
-function makeResolver(scheme, theme, spec, Ctor) {
-	const rows = anchorsByRow(theme?.colorOverrides);
-	const customPalette = (hex) =>
-		HEX.test(hex ?? "")
-			? new Ctor(Hct.fromInt(argbFromHex(hex)), true, 0, spec).primaryPalette
-			: null;
-	const swapped = {
-		system_accent2: customPalette(theme?.secondaryColor),
-		system_accent3: customPalette(theme?.tertiaryColor),
+function roleReader(rows, dark) {
+	return (name) => {
+		const [row, darkIdx, lightIdx, darkAdj, lightAdj] = ROLE_MAP[name];
+		const hex = rows[row][dark ? darkIdx : lightIdx];
+		const adj = dark ? darkAdj : lightAdj;
+		return adj == null ? hex : adjustLightness(hex, adj);
 	};
-	const shade = (row, tone, snap) => {
-		if (rows[row]?.length) {
-			return { hex: toneFromAnchors(rows[row], tone, snap), fixed: true };
-		}
-		const palette = swapped[row] ?? scheme[ROW_PALETTE[row]];
-		return { hex: hexFromArgb(palette.tone(tone)), fixed: false };
-	};
-	// A role's tone comes from the scheme itself, so this tracks whichever
-	// spec (2021/2025) built it instead of a hardcoded tone table. Accent
-	// roles land within a few tones of an Android step, so they snap to the
-	// theme's literal hex; neutrals must not, or the surface elevation tiers
-	// (tone 4/9/12/15 in dark) would all collapse onto one override.
-	const role = (name) => {
-		const base = hexFromArgb(scheme[name]);
-		const row = ROLE_ROW[name];
-		if (!row) return { hex: base, fixed: false };
-		const tone = Math.round(Hct.fromInt(argbFromHex(base)).tone);
-		return shade(row, tone, row.startsWith("system_accent") ? 5 : 0);
-	};
-	return { shade, role };
-}
-
-// A flat override ramp can leave two elevation tiers on the same tone (Nova
-// Ember pins neutral1 90 and 95 to near-identical grays), which reads as one
-// sheet. Nudge each tier away from the one below it. dir: +1 dark, -1 light.
-function separate(hex, belowHex, dir, min = 3) {
-	const hct = Hct.fromInt(argbFromHex(hex));
-	const below = Hct.fromInt(argbFromHex(belowHex)).tone;
-	const need = below + dir * min;
-	if (dir > 0 ? hct.tone >= need : hct.tone <= need) return hex;
-	const tone = Math.max(0, Math.min(100, need));
-	return hexFromArgb(Hct.from(hct.hue, hct.chroma, tone).toInt());
 }
 
 // Slider values for the active mode; the app ignores them for MONOCHROMATIC.
@@ -227,7 +250,7 @@ function themeSliders(theme) {
 	if (!theme || theme.style === "MONOCHROMATIC") {
 		return { accentSat: 100, bgSat: 100, bgLight: 100 };
 	}
-	const light = !darkMode && theme.modeSpecificThemes;
+	const light = !siteDark && theme.modeSpecificThemes;
 	return {
 		accentSat:
 			(light ? theme.accentSaturationLight : theme.accentSaturation) ?? 100,
@@ -242,119 +265,78 @@ function themeSliders(theme) {
 	};
 }
 
-// ---- Site-wide dynamic coloring -------------------------------------------
-
-let darkMode = true;
-
-// Phone mockup palette rows; one CSS var per cell.
-const PH_TONES = [95, 80, 60, 40, 20, 5];
-
-// `opts.theme` is the full catalog entry when a card drives the tint; the
-// playground passes style/spec on their own and the page just renders the
-// seed with library defaults.
-function applySiteSeed(seedHex, opts) {
-	const { style, spec, sliders, theme } = opts ?? {};
-	const Ctor = SCHEME_BY_STYLE[style ?? theme?.style] ?? SchemeTonalSpot;
+function computeVars(seedHex, opts) {
+	const { style, spec, sliders, theme, dark } = opts ?? {};
+	const resolvedStyle = style ?? theme?.style ?? "TONAL_SPOT";
 	const resolvedSpec =
 		spec ?? SPEC_BY_VERSION[theme?.colorSpecVersion] ?? DEFAULT_SPEC;
-	const scheme = new Ctor(
-		Hct.fromInt(argbFromHex(seedHex)),
-		darkMode,
-		0,
+	const darkMode = dark ?? siteDark;
+	const rows = buildPalette(
+		seedHex,
+		resolvedStyle,
 		resolvedSpec,
+		darkMode,
+		sliders ?? themeSliders(theme),
+		theme,
 	);
-	const { accentSat, bgSat, bgLight } = sliders ?? themeSliders(theme);
-	const { shade, role } = makeResolver(scheme, theme, resolvedSpec, Ctor);
+	const role = roleReader(rows, darkMode);
 
-	const plain = (name) => role(name).hex;
-	const accent = (name) => {
-		const r = role(name);
-		return r.fixed ? r.hex : adjustSaturation(r.hex, accentSat);
+	const tint = (hex) => {
+		if (!theme?.tintText) return hex;
+		const h = Hct.fromInt(argbFromHex(hex));
+		const a = Hct.fromInt(argbFromHex(role("primary")));
+		return hexFromArgb(Hct.from(a.hue, Math.max(h.chroma, 12), h.tone).toInt());
 	};
-	// Tone clamps keep slider-shifted surfaces off pure black/white and
-	// separated; ranges flip per mode. Overridden shades skip the sliders:
-	// the theme already baked them in.
-	const surf = (name, minTone, maxTone) => {
-		const r = role(name);
-		return r.fixed
-			? r.hex
-			: shiftLightness(
-					adjustSaturation(r.hex, bgSat),
-					bgLight,
-					minTone,
-					maxTone,
-				);
-	};
-	const dm = darkMode;
-	const dir = dm ? 1 : -1;
 
-	const bg = dm ? surf("surface", 4, 99) : surf("surface", 70, 100);
-	const card = separate(
-		dm
-			? surf("surfaceContainer", 10, 96)
-			: surf("surfaceContainer", 66, 98),
-		bg,
-		dir,
-	);
-	const cardHigh = separate(
-		dm
-			? surf("surfaceContainerHigh", 14, 93)
-			: surf("surfaceContainerHigh", 62, 97),
-		card,
-		dir,
-	);
-	const cardHighest = separate(
-		dm
-			? surf("surfaceContainerHighest", 16, 91)
-			: surf("surfaceContainerHighest", 58, 96),
-		cardHigh,
-		dir,
-	);
+	const accentBg = role("primary");
+	const tonalBg = role("primaryContainer");
 
 	const vars = {
-		"--bg": bg,
-		"--text": plain("onSurface"),
+		"--bg": role("surface"),
+		"--text": tint(role("onSurface")),
 		// 0.9, not 0.75: --subtle carries real text (stat labels, table
 		// headers) that has to clear 4.5:1 in light mode.
-		"--subtle": alpha(plain("onSurfaceVariant"), 0.9),
-		"--body2": plain("onSurfaceVariant"),
-		"--accent": accent("primary"),
-		"--on-accent": plain("onPrimary"),
-		"--accent-glow": alpha(accent("primary"), dm ? 0.32 : 0.24),
-		"--tonal": plain("secondaryContainer"),
-		"--on-tonal": plain("onSecondaryContainer"),
-		"--card": card,
-		"--card-high": cardHigh,
-		"--card-highest": cardHighest,
-		"--outline-v": plain("outlineVariant"),
-		"--grad-c": accent("tertiary"),
-		"--blob-a": accent("primary"),
-		"--blob-b": accent("tertiary"),
-		"--ph-sat": `${accentSat / 2}%`,
+		"--subtle": alpha(tint(role("onSurfaceVariant")), 0.9),
+		"--body2": tint(role("onSurfaceVariant")),
+		"--accent": accentBg,
+		// A theme is free to put red on red; a button still has to be read.
+		"--on-accent": ensureContrast(role("onPrimary"), accentBg),
+		"--tonal": tonalBg,
+		"--on-tonal": ensureContrast(role("onSurface"), tonalBg),
+		"--card": role("surfaceContainer"),
+		"--card-high": role("surfaceContainerHigh"),
+		"--card-highest": role("surfaceBright"),
+		"--outline-v": role("outlineVariant"),
+		"--grad-c": role("tertiary"),
+		"--ph-sat": `${(sliders ?? themeSliders(theme)).accentSat / 2}%`,
 	};
-	const root = document.documentElement;
-	for (const [k, v] of Object.entries(vars)) {
-		root.style.setProperty(k, v);
+
+	// Phone mockup palette grid reads the finished rows directly.
+	const phRows = { p: 0, s: 1, t: 2, n: 4 };
+	for (const [key, row] of Object.entries(phRows)) {
+		PH_TONES.forEach((tone) => {
+			vars[`--ph-${key}-${tone}`] = rows[row][TONES.indexOf(tone)];
+		});
 	}
 
-	// Phone mockup palette grid (accent rows honor accentSat, neutral bgSat).
-	const phRows = {
-		p: ["system_accent1", true],
-		s: ["system_accent2", true],
-		t: ["system_accent3", true],
-		n: ["system_neutral2", false],
-	};
-	for (const [key, [row, isAccent]] of Object.entries(phRows)) {
-		for (const t of PH_TONES) {
-			const s = shade(row, t);
-			root.style.setProperty(
-				`--ph-${key}-${t}`,
-				s.fixed
-					? s.hex
-					: adjustSaturation(s.hex, isAccent ? accentSat : bgSat),
-			);
-		}
-	}
+	const logo = [4, 8].map((idx) => rows[0][idx]);
+
+	return { vars, logo };
+}
+
+function paint(el, seedHex, opts) {
+	const { vars } = computeVars(seedHex, opts);
+	for (const [k, v] of Object.entries(vars)) el.style.setProperty(k, v);
+	return vars;
+}
+
+function applySiteSeed(seedHex, opts) {
+	const { vars, logo } = computeVars(seedHex, opts);
+	const root = document.documentElement;
+	for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
+	root.style.setProperty("--frame", vars["--card-high"]);
+	root.style.setProperty("--frame-text", vars["--body2"]);
+	root.style.setProperty("--frame-accent", vars["--accent"]);
 
 	document
 		.querySelector('meta[name="theme-color"]')
@@ -363,14 +345,128 @@ function applySiteSeed(seedHex, opts) {
 	// Hero logo disc follows the seed (launcher gradient formula).
 	const stops = document.querySelectorAll("#lg stop");
 	if (stops.length === 2) {
-		[70, 40].forEach((tone, i) => {
-			const s = shade("system_accent1", tone);
-			stops[i].style.setProperty(
-				"stop-color",
-				s.fixed ? s.hex : adjustSaturation(s.hex, accentSat),
-			);
-		});
+		stops.forEach((s, i) => s.style.setProperty("stop-color", logo[i]));
 	}
+	repaintProofs();
+}
+
+// ---- Proof pairs ------------------------------------------------------------
+
+const BASELINE_SEED = "#1B6EF3";
+const OVERRIDE_SLOT = "#FF7043";
+
+const paletteRow = (key) =>
+	`<span class="mrow">${PH_TONES.map(
+		(t) => `<i style="background:var(--ph-${key}-${t})"></i>`,
+	).join("")}</span>`;
+
+const MINI = {
+	palette: () =>
+		`<span class="mcard">${["p", "s", "t", "n"].map(paletteRow).join("")}</span>`,
+	shades: () =>
+		`<span class="mcard">${["p", "s", "t", "n"]
+			.map((key) =>
+				key === "p"
+					? `<span class="mrow marked">${PH_TONES.map(
+							(t) => `<i style="background:var(--ph-p-${t})"></i>`,
+						).join("")}</span>`
+					: paletteRow(key),
+			)
+			.join("")}</span>`,
+	slider: () =>
+		`<span class="mcard">${paletteRow("p")}${paletteRow("s")}` +
+		`<span class="mtrack"></span><span class="mtrack low"></span></span>`,
+	backup: () =>
+		`<span class="mcard mbackup">${paletteRow("p")}${paletteRow("s")}${paletteRow("t")}` +
+		`<span class="marrow"><svg viewBox="0 0 24 24" aria-hidden="true">` +
+		`<path d="M12 3a1 1 0 0 1 1 1v9.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.4l3.3 3.3V4a1 1 0 0 1 1-1z"/></svg></span>` +
+		`<span class="mfile"><svg viewBox="0 0 24 24" aria-hidden="true">` +
+		`<path d="M6 2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V8h4.5L13 3.5z"/></svg>` +
+		`<span class="mtext">Backup file</span></span></span>`,
+	surface: () =>
+		`<span class="mcard msurface"><span class="mhead">Settings</span>` +
+		`<span class="mtile"><span class="mtext">Pitch black</span><span class="mswitch"></span></span>` +
+		`<span class="mtile"><span class="mtext">Tint text</span><span class="mswitch"></span></span>` +
+		`<span class="mtile"><span class="mtext">Accurate shades</span><span class="mswitch off"></span></span></span>`,
+};
+
+const PROOFS = {
+	seed: {
+		widget: "palette",
+		before: () => [BASELINE_SEED, { sliders: DEFAULT_SLIDERS }],
+		after: () => [resting.seed, resting],
+	},
+	sliders: {
+		widget: "slider",
+		before: () => [resting.seed, { ...resting, sliders: DEFAULT_SLIDERS }],
+		after: () => [
+			resting.seed,
+			{ ...resting, sliders: { accentSat: 200, bgSat: 175, bgLight: 88 } },
+		],
+	},
+	styles: {
+		widget: "palette",
+		before: () => [resting.seed, { ...resting, style: "MONOCHROMATIC" }],
+		after: () => [
+			resting.seed,
+			{ ...resting, style: resting.style === "FRUIT_SALAD" ? "RAINBOW" : "FRUIT_SALAD" },
+		],
+	},
+	shades: {
+		widget: "shades",
+		before: () => [resting.seed, resting],
+		after: () => [resting.seed, { ...resting, slot: OVERRIDE_SLOT }],
+	},
+	backup: {
+		widget: "backup",
+		after: () => [resting.seed, resting],
+	},
+	dark: {
+		widget: "surface",
+		before: () => [resting.seed, { ...resting, dark: true }],
+		after: () => [
+			resting.seed,
+			{
+				...resting,
+				dark: true,
+				theme: { ...resting.theme, pitchBlack: true },
+			},
+		],
+	},
+};
+
+const DEFAULT_SLIDERS = { accentSat: 100, bgSat: 100, bgLight: 100 };
+
+function paintPane(pane, seed, opts) {
+	const vars = paint(pane, seed, opts);
+	if (opts?.slot) pane.style.setProperty("--ph-p-60", opts.slot);
+}
+
+function repaintProofs() {
+	document.querySelectorAll(".pair[data-proof]").forEach((pair) => {
+		const proof = PROOFS[pair.dataset.proof];
+		if (!proof) return;
+		pair.querySelectorAll(".pane").forEach((pane) => {
+			const [seed, opts] = proof[pane.dataset.side]();
+			paintPane(pane, seed, opts);
+		});
+	});
+	const label = document.querySelector('[data-proof="styles"] .after-label');
+	if (label) {
+		label.textContent =
+			resting.style === "FRUIT_SALAD" ? "Rainbow" : "Fruit Salad";
+	}
+}
+
+function initProofs() {
+	document.querySelectorAll(".pair[data-proof]").forEach((pair) => {
+		const proof = PROOFS[pair.dataset.proof];
+		if (!proof) return;
+		pair.querySelectorAll(".mini").forEach((mini) => {
+			mini.innerHTML = MINI[proof.widget]();
+		});
+	});
+	repaintProofs();
 }
 
 // Boot color; matches the :root CSS fallbacks so first paint = first seed.
@@ -422,6 +518,15 @@ const DEMO_SEEDS = [
 	"#7C4DFF",
 	"#EC407A",
 ];
+const SEED_NAMES = {
+	"#51BDFF": "Sky blue",
+	"#F44336": "Red",
+	"#FFB300": "Amber",
+	"#4CAF50": "Green",
+	"#26A69A": "Teal",
+	"#7C4DFF": "Violet",
+	"#EC407A": "Pink",
+};
 const DEMO_STYLES = [
 	["TONAL_SPOT", "Tonal Spot"],
 	["VIBRANT", "Vibrant"],
@@ -464,21 +569,26 @@ function initDemo() {
 	const renderSeeds = () => {
 		seedsEl.innerHTML = DEMO_SEEDS.map(
 			(s) =>
-				`<button class="demo-swatch" data-seed="${s}" aria-label="Seed ${s}">${swatch(s)}</button>`,
+				`<button class="demo-swatch" data-seed="${s}" aria-pressed="false" aria-label="${SEED_NAMES[s] ?? s} seed">${swatch(s)}</button>`,
 		).join("");
 		updateSelection();
 	};
 
 	// Class toggle, not a rebuild: the ring cross-fades between swatches.
 	const updateSelection = () => {
-		seedsEl
-			.querySelectorAll(".demo-swatch")
-			.forEach((b) => b.classList.toggle("on", b.dataset.seed === seed));
+		seedsEl.querySelectorAll(".demo-swatch").forEach((b) => {
+			const on = b.dataset.seed === seed;
+			b.classList.toggle("on", on);
+			b.setAttribute("aria-pressed", String(on));
+		});
 	};
 
-	const apply = (rebuildSwatches) => {
-		demoHold = true;
-		seedsEl.classList.remove("rotating");
+	let resumeTimer = null;
+	const apply = (rebuildSwatches, pause) => {
+		if (pause) {
+			demoHold = true;
+			seedsEl.classList.remove("rotating");
+		}
 		resting = { seed, style, spec };
 		if (clearTimer) clearTimeout(clearTimer);
 		root.style.setProperty("--recolor", ".5s");
@@ -489,13 +599,20 @@ function initDemo() {
 		);
 		if (rebuildSwatches) renderSeeds();
 		else updateSelection();
+		if (resumeTimer) clearTimeout(resumeTimer);
+		if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			resumeTimer = setTimeout(() => {
+				demoHold = false;
+				seedsEl.classList.add("rotating");
+			}, 45000);
+		}
 	};
 
 	seedsEl.addEventListener("click", (e) => {
 		const btn = e.target.closest(".demo-swatch");
 		if (!btn) return;
 		seed = btn.dataset.seed;
-		apply(false);
+		apply(false, true);
 	});
 
 	// Custom dropdowns: native select popups ignore theming.
@@ -508,13 +625,14 @@ function initDemo() {
 				menu.innerHTML = items
 					.map(([v, l]) => {
 						const on = v === getValue();
-						return `<button class="menuitem${on ? " selected" : ""}" role="option" aria-selected="${on}" data-value="${v}">${l}</button>`;
+						return `<button class="menuitem${on ? " selected" : ""}"${on ? ' aria-current="true"' : ""} data-value="${v}">${l}</button>`;
 					})
 					.join("");
 			}
 			menu.hidden = !open;
 			wrap.classList.toggle("open", open);
 			btn.setAttribute("aria-expanded", String(open));
+			if (open) menu.querySelector(".selected, .menuitem")?.focus();
 		};
 		btn.addEventListener("click", () => setOpen(menu.hidden));
 		menu.addEventListener("click", (e) => {
@@ -604,13 +722,13 @@ function initHoverTheming(container, byId) {
 function initMode() {
 	try {
 		const stored = localStorage.cbMode;
-		darkMode = stored
+		siteDark = stored
 			? stored === "dark"
 			: !matchMedia("(prefers-color-scheme: light)").matches;
 	} catch {
-		darkMode = true;
+		siteDark = true;
 	}
-	document.documentElement.classList.toggle("light", !darkMode);
+	document.documentElement.classList.toggle("light", !siteDark);
 }
 
 // Phones only: the toggle has no gutter to sit in, so hide it on the way
@@ -634,16 +752,22 @@ function initToggleTuck(btn) {
 function initModeToggle() {
 	const btn = document.getElementById("modeToggle");
 	if (!btn) return;
+	const syncLabel = () => {
+		btn.setAttribute("aria-pressed", String(siteDark));
+		btn.setAttribute("aria-label", siteDark ? "Dark theme" : "Light theme");
+	};
+	syncLabel();
 	initToggleTuck(btn);
 	btn.addEventListener("click", () => {
-		darkMode = !darkMode;
+		siteDark = !siteDark;
+		syncLabel();
 		try {
-			localStorage.cbMode = darkMode ? "dark" : "light";
+			localStorage.cbMode = siteDark ? "dark" : "light";
 		} catch {
 			/* private mode */
 		}
 		const root = document.documentElement;
-		root.classList.toggle("light", !darkMode);
+		root.classList.toggle("light", !siteDark);
 		root.style.setProperty("--recolor", ".5s");
 		applySiteSeed(resting.seed, resting);
 		setTimeout(() => root.style.removeProperty("--recolor"), 600);
@@ -658,28 +782,27 @@ function initModeToggle() {
 // center dot = seed. Overrides + sliders honored per cell.
 function cardData(theme) {
 	const seed = HEX.test(theme.seedColor ?? "") ? theme.seedColor : "#6750A4";
-	const Ctor = SCHEME_BY_STYLE[theme.style] ?? SchemeTonalSpot;
-	const spec = SPEC_BY_VERSION[theme.colorSpecVersion] ?? DEFAULT_SPEC;
-	const scheme = new Ctor(Hct.fromInt(argbFromHex(seed)), darkMode, 0, spec);
-	const { accentSat, bgSat, bgLight } = themeSliders(theme);
-	const { shade, role } = makeResolver(scheme, theme, spec, Ctor);
-
-	const accentCell = (row, tone) => {
-		const s = shade(row, tone);
-		return s.fixed ? s.hex : adjustSaturation(s.hex, accentSat);
-	};
-	const surfCell = (s) =>
-		s.fixed ? s.hex : shiftLightness(adjustSaturation(s.hex, bgSat), bgLight);
+	const rows = buildPalette(
+		seed,
+		theme.style ?? "TONAL_SPOT",
+		SPEC_BY_VERSION[theme.colorSpecVersion] ?? DEFAULT_SPEC,
+		siteDark,
+		themeSliders(theme),
+		theme,
+	);
+	const role = roleReader(rows, siteDark);
+	const at = (row, tone) => rows[row][TONES.indexOf(tone)];
+	const container = role("surfaceContainerHigh");
 
 	return {
-		halfCircle: accentCell("system_accent1", 80),
-		firstQuarter: accentCell("system_accent3", 70),
-		secondQuarter: accentCell("system_accent2", 60),
-		square: surfCell(shade("system_neutral2", 30)),
+		halfCircle: at(0, 80),
+		firstQuarter: at(2, 70),
+		secondQuarter: at(1, 60),
+		square: at(4, 30),
 		center: seed,
-		container: surfCell(role("surfaceContainerHigh")),
-		text: role("onSurface").hex,
-		subtle: role("onSurfaceVariant").hex,
+		container,
+		text: ensureContrast(role("onSurface"), container),
+		subtle: ensureContrast(role("onSurfaceVariant"), container),
 	};
 }
 
@@ -724,108 +847,6 @@ const trendingScore = (t) => {
 	);
 };
 
-const SHOTS_SPRITE =
-	"https://raw.githubusercontent.com/Mahmud0808/ColorBlendr/master/.github/resources/features.png";
-
-// Slice the screenshot sprite by measuring panel bounds from the actual
-// bitmap - hand-tuned percentages break whenever the sprite is re-exported
-// or a stale copy sits in a cache. The same blob feeds the CSS background,
-// so measurement and render can't diverge. CSS values stay as fallback.
-async function initShots() {
-	const shots = [...document.querySelectorAll(".shot")];
-	if (!shots.length) return;
-	try {
-		const blob = await (
-			await fetch(SHOTS_SPRITE, { cache: "no-cache" })
-		).blob();
-		const url = URL.createObjectURL(blob);
-		const img = new Image();
-		img.src = url;
-		await img.decode();
-		const c = document.createElement("canvas");
-		c.width = img.naturalWidth;
-		c.height = img.naturalHeight;
-		const ctx = c.getContext("2d");
-		ctx.drawImage(img, 0, 0);
-		const data = ctx.getImageData(0, 0, c.width, c.height).data;
-		const opaque = (x, y) => data[(y * c.width + x) * 4 + 3] > 10;
-		// horizontal panel runs along the middle row
-		const midY = Math.floor(c.height / 2);
-		const runs = [];
-		let start = null;
-		for (let x = 0; x <= c.width; x++) {
-			const on = x < c.width && opaque(x, midY);
-			if (on && start === null) start = x;
-			if (!on && start !== null) {
-				runs.push([start, x]);
-				start = null;
-			}
-		}
-		if (runs.length !== shots.length) return;
-		// shared vertical band, probed on the first panel
-		const mx = Math.floor((runs[0][0] + runs[0][1]) / 2);
-		let top = 0,
-			bottom = c.height;
-		while (top < c.height && !opaque(mx, top)) top++;
-		while (bottom > top && !opaque(mx, bottom - 1)) bottom--;
-		const h = bottom - top;
-		shots.forEach((el, i) => {
-			const [x0, x1] = runs[i];
-			const w = x1 - x0;
-			el.style.aspectRatio = `${w} / ${h}`;
-			el.style.backgroundImage = `url("${url}")`;
-			el.style.backgroundSize = `${(c.width / w) * 100}% auto`;
-			el.style.backgroundPosition = `${(x0 / (c.width - w)) * 100}% ${(top / (c.height - h)) * 100}%`;
-		});
-	} catch {
-		/* keep CSS fallback */
-	}
-}
-
-// M3 Expressive decorative shapes: polar cosine-modulated outlines
-// (cookie/sunny/flower/clover), generated once per placeholder.
-const DECO_SHAPES = {
-	cookie: { k: 12, a: 0.09 },
-	sunny: { k: 8, a: 0.22 },
-	flower: { k: 6, a: 0.18 },
-	clover: { k: 4, a: 0.28 },
-};
-
-function decoPath(k, a, steps = 240) {
-	let d = "";
-	for (let i = 0; i <= steps; i++) {
-		const th = (i / steps) * Math.PI * 2;
-		const r = (50 * (1 + a * Math.cos(k * th))) / (1 + a);
-		const x = 50 + r * Math.cos(th);
-		const y = 50 + r * Math.sin(th);
-		d += `${i ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`;
-	}
-	return d + "Z";
-}
-
-function initDeco() {
-	document.querySelectorAll(".deco").forEach((el) => {
-		const { k, a } = DECO_SHAPES[el.dataset.shape] ?? DECO_SHAPES.cookie;
-		el.innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${decoPath(k, a)}"/></svg>`;
-	});
-}
-
-// Scroll-in reveal for sections below the fold.
-function initReveal() {
-	const observer = new IntersectionObserver(
-		(entries) => {
-			for (const entry of entries) {
-				if (entry.isIntersecting) {
-					entry.target.classList.add("in");
-					observer.unobserve(entry.target);
-				}
-			}
-		},
-		{ threshold: 0.12 },
-	);
-	document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
-}
-
 // Live stars + release download totals, counted up when they arrive;
 // markup values stay for no-JS / fetch failure.
 function initStats() {
@@ -834,20 +855,14 @@ function initStats() {
 	const ossEl = document.getElementById("statOss");
 	if (!dlEl || !starsEl || !ossEl) return;
 	const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-	// Markup holds final-looking values for no-JS; zero for the build-up.
-	// Stash them first: the API is rate limited to 60/hour per IP, and a
-	// 403 must fall back to the markup rather than leave a live "0".
-	const fallback = new Map([
-		[dlEl, dlEl.textContent],
-		[starsEl, starsEl.textContent],
-	]);
 	const restore = (el) => {
-		el.textContent = fallback.get(el);
+		el.textContent = "";
+		el.removeAttribute("aria-hidden");
 	};
+	for (const el of [dlEl, starsEl]) el.setAttribute("aria-hidden", "true");
 	if (!reduced) {
 		dlEl.textContent = "0";
 		starsEl.textContent = "0";
-		ossEl.textContent = "0%";
 	}
 	const compact = (n) => {
 		if (n >= 10000) return `${Math.floor(n / 1000)}K+`;
@@ -858,6 +873,7 @@ function initStats() {
 	const countTo = (el, target, fmt) => {
 		if (reduced) {
 			el.textContent = fmt(target);
+			el.removeAttribute("aria-hidden");
 			return;
 		}
 		const t0 = performance.now();
@@ -866,32 +882,64 @@ function initStats() {
 			const eased = 1 - (1 - p) ** 3;
 			el.textContent = fmt(Math.round(target * eased));
 			if (p < 1) requestAnimationFrame(tick);
+			else el.removeAttribute("aria-hidden");
 		};
 		requestAnimationFrame(tick);
 	};
 	// Hold count-up until the hero entrance settles.
 	const settled = new Promise((resolve) => setTimeout(resolve, 500));
-	settled.then(() => countTo(ossEl, 100, (n) => `${n}%`));
+	ossEl.textContent = "100%";
 	const REPO = "https://api.github.com/repos/Mahmud0808/ColorBlendr";
+	const TTL = 6 * 3600 * 1000;
+
+	const cached = () => {
+		try {
+			const c = JSON.parse(localStorage.cbStats);
+			return Date.now() - c.at < TTL ? c : null;
+		} catch {
+			return null;
+		}
+	};
+	const store = (key, value) => {
+		try {
+			const c = cached() ?? { at: Date.now() };
+			localStorage.cbStats = JSON.stringify({ ...c, [key]: value, at: Date.now() });
+		} catch {
+			/* private mode */
+		}
+	};
+	const show = async (el, value, key) => {
+		if (!value) return restore(el);
+		store(key, value);
+		await settled;
+		countTo(el, value, compact);
+	};
+
+	// Cached figures spare the 60/hour rate limit and a 157KB releases page.
+	const hit = cached();
+	if (hit?.stars && hit?.downloads) {
+		show(starsEl, hit.stars, "stars");
+		show(dlEl, hit.downloads, "downloads");
+		return;
+	}
+
 	fetch(REPO)
 		.then((r) => (r.ok ? r.json() : null))
-		.then(async (repo) => {
-			if (!repo?.stargazers_count) return restore(starsEl);
-			await settled;
-			countTo(starsEl, repo.stargazers_count, compact);
-		})
+		.then((repo) => show(starsEl, repo?.stargazers_count, "stars"))
 		.catch(() => restore(starsEl));
 	fetch(`${REPO}/releases?per_page=100`)
 		.then((r) => (r.ok ? r.json() : null))
-		.then(async (releases) => {
-			if (!Array.isArray(releases)) return restore(dlEl);
-			const total = releases
-				.flatMap((rel) => rel.assets ?? [])
-				.reduce((sum, a) => sum + (a.download_count ?? 0), 0);
-			if (!total) return restore(dlEl);
-			await settled;
-			countTo(dlEl, total, compact);
-		})
+		.then((releases) =>
+			show(
+				dlEl,
+				Array.isArray(releases)
+					? releases
+							.flatMap((rel) => rel.assets ?? [])
+							.reduce((sum, a) => sum + (a.download_count ?? 0), 0)
+					: 0,
+				"downloads",
+			),
+		)
 		.catch(() => restore(dlEl));
 }
 
@@ -962,17 +1010,9 @@ function initFaq() {
 	});
 }
 
-export async function initApp() {
-	initMode();
-	applySiteSeed(INITIAL_SEED);
-	initDeco();
-	initShots();
-	initReveal();
-	initFaq();
-	initDemo();
-	startSeedRotation();
-	initModeToggle();
-	initStats();
+async function loadRail() {
+	const rail = document.getElementById("rail");
+	if (!rail) return;
 	try {
 		const themes = await (await fetch(THEMES_INDEX)).json();
 		const top = [...themes]
@@ -985,20 +1025,20 @@ export async function initApp() {
 		const setWidth = top.length * 296;
 		let builtPerHalf = 0;
 		const buildRail = () => {
-			const perHalf = Math.max(
-				1,
-				Math.ceil(window.innerWidth / setWidth),
-			);
+			const perHalf = Math.max(1, Math.ceil(window.innerWidth / setWidth));
 			if (perHalf <= builtPerHalf) return;
 			builtPerHalf = perHalf;
 			const set = top.map(cardHtml).join("");
 			const setReversed = [...top].reverse().map(cardHtml).join("");
 			const half = set.repeat(perHalf);
 			const halfReversed = setReversed.repeat(perHalf);
+			const untab = (h) => h.replaceAll('<a class="tcard"', '<a tabindex="-1" class="tcard"');
+			const clone = (h) =>
+				`<div class="mq-half" aria-hidden="true">${untab(h)}</div>`;
 			// Second row: mobile only, reversed list, opposite drift.
-			document.getElementById("rail").innerHTML =
-				`<div class="marquee-track">${half}${half}</div>` +
-				`<div class="marquee-track track2">${halfReversed}${halfReversed}</div>`;
+			rail.innerHTML =
+				`<div class="marquee-track">${half}${clone(half)}</div>` +
+				`<div class="marquee-track track2" aria-hidden="true">${untab(halfReversed)}${untab(halfReversed)}</div>`;
 		};
 		buildRail();
 		window.addEventListener("resize", buildRail);
@@ -1006,12 +1046,30 @@ export async function initApp() {
 			builtPerHalf = 0;
 			buildRail();
 		};
-		initHoverTheming(
-			document.getElementById("rail"),
-			new Map(themes.map((t) => [t.id, t])),
-		);
+		initHoverTheming(rail, new Map(themes.map((t) => [t.id, t])));
 	} catch {
-		document.getElementById("rail").innerHTML =
-			'<div class="loading">Could not load community themes right now.</div>';
+		rail.innerHTML =
+			'<div class="loading" role="status">' +
+			"Could not load community themes right now. " +
+			'<button class="retry" type="button">Try again</button> or ' +
+			'<a href="https://mahmud0808.github.io/ColorBlendr-Themes/">browse the gallery</a>.' +
+			"</div>";
+		rail.querySelector(".retry")?.addEventListener("click", () => {
+			rail.innerHTML =
+				'<div class="loading" role="status">Loading themes…</div>';
+			loadRail();
+		});
 	}
+}
+
+export async function initApp() {
+	initMode();
+	initProofs();
+	applySiteSeed(INITIAL_SEED);
+	initFaq();
+	initDemo();
+	startSeedRotation();
+	initModeToggle();
+	initStats();
+	await loadRail();
 }
