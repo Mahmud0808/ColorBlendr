@@ -334,14 +334,6 @@ function applySiteSeed(seedHex, opts) {
 	const { vars, logo } = computeVars(seedHex, opts);
 	const root = document.documentElement;
 	for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
-	// A theme may paint the page and its containers identically (pitch black);
-	// only then does a card need an edge to exist at all.
-	root.style.setProperty(
-		"--card-line",
-		contrast(vars["--card"], vars["--bg"]) < 1.04
-			? vars["--outline-v"]
-			: "transparent",
-	);
 	root.style.setProperty("--frame", vars["--card-high"]);
 	root.style.setProperty("--frame-text", vars["--body2"]);
 	root.style.setProperty("--frame-accent", vars["--accent"]);

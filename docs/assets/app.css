@@ -737,7 +737,6 @@ html.light .menu {
 	align-items: center;
 	gap: 40px;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .proof:nth-child(even) .proof-copy {
 	order: 2;
@@ -749,7 +748,6 @@ html.light .menu {
 	background: var(--card);
 	text-align: center;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .closer h2 {
 	margin: 0 0 12px;
@@ -835,7 +833,6 @@ html.light .menu {
 	flex-direction: column;
 	gap: 10px;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .pane figcaption {
 	font-size: 11.5px;
@@ -1069,7 +1066,6 @@ html.light .menu {
 	position: relative;
 	overflow: hidden;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 /* M3 state layer, not a lift. */
 .info:hover {
@@ -1134,7 +1130,6 @@ html.light .menu {
 	flex-direction: column;
 	gap: 12px;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .shot figcaption {
 	order: -1;
@@ -1271,7 +1266,6 @@ a.tcard {
 	display: flex;
 	align-items: center;
 	gap: 16px;
-	border: 1px solid var(--card-line, transparent);
 }
 a.tcard:hover {
 	transform: translateY(-4px);
@@ -1380,7 +1374,6 @@ a.tcard:hover .tswatch {
 	background: var(--card);
 	margin-bottom: 28px;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .compare thead th {
 	padding-top: 20px;
@@ -1463,7 +1456,6 @@ a.tcard:hover .tswatch {
 	.tablewrap {
 		overflow-x: visible;
 		background: none;
-		border: none;
 		padding: 0;
 	}
 	.compare,
@@ -1568,7 +1560,6 @@ a.tcard:hover .tswatch {
 	margin-bottom: 12px;
 	overflow: hidden;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .faq details[open] {
 	background: var(--card-high);
@@ -1838,7 +1829,6 @@ footer a:focus-visible {
 	align-items: center;
 	gap: 16px;
 	transition: background-color var(--recolor, 1.6s) ease;
-	border: 1px solid var(--card-line, transparent);
 }
 .sk-swatch {
 	width: 64px;
