@@ -6,6 +6,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -259,15 +262,18 @@ fun SubmissionDetailScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp)
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(top = 10.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
             ) {
                 DeviceChip(device = item.device)
                 if (item.edited) {
                     Text(
                         text = stringResource(R.string.edited),
+                        maxLines = 1,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
                         modifier = Modifier
@@ -434,8 +440,10 @@ fun SubmissionDetailScreen(
                 Text(text = stringResource(R.string.preview))
             }
 
-            Row(
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                maxItemsInEachRow = 2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
@@ -443,6 +451,7 @@ fun SubmissionDetailScreen(
                 Button(
                     onClick = { confirmApprove = true },
                     shapes = ButtonDefaults.shapes(),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
@@ -451,11 +460,12 @@ fun SubmissionDetailScreen(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text(text = stringResource(R.string.approve))
+                    Text(text = stringResource(R.string.approve), maxLines = 1)
                 }
                 FilledTonalButton(
                     onClick = { confirmReject = true },
                     shapes = ButtonDefaults.shapes(),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
@@ -464,7 +474,7 @@ fun SubmissionDetailScreen(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text(text = stringResource(R.string.reject))
+                    Text(text = stringResource(R.string.reject), maxLines = 1)
                 }
             }
         }

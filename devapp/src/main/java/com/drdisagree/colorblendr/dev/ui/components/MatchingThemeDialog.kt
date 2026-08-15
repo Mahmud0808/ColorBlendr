@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.utils.MatchResult
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MatchingThemeDialog(
     matchResult: MatchResult,
@@ -65,13 +68,16 @@ fun MatchingThemeDialog(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Row(
+                FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.similarity_score, matchResult.percentage),
+                        maxLines = 1,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -87,6 +93,7 @@ fun MatchingThemeDialog(
                             if (matched.isPublished) R.string.source_published
                             else R.string.source_pending
                         ),
+                        maxLines = 1,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
