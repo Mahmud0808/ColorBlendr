@@ -458,7 +458,8 @@ const DEFAULT_SLIDERS = { accentSat: 100, bgSat: 100, bgLight: 100 };
 
 function paintPane(pane, seed, opts) {
 	const vars = paint(pane, seed, opts);
-	if (opts?.slot) pane.style.setProperty("--ph-p-60", opts.slot);
+	// Tone 50 = shade 500 = the circle .mrow.marked rings.
+	if (opts?.slot) pane.style.setProperty("--ph-p-50", opts.slot);
 }
 
 function repaintProofs() {
