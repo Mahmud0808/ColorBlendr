@@ -291,8 +291,22 @@ function computeVars(seedHex, opts) {
 	const accentBg = role("primary");
 	const tonalBg = role("primaryContainer");
 
+	// Pitch black (and themes that override the neutral shades to #000) can
+	// flatten surface and every container role onto the same black, which
+	// erases the phone frame and the cards drawn on top of the page. Lift the
+	// containers to a tone floor above the surface so the elevation stays
+	// readable; themes with real separation already clear it untouched.
+	const surfaceBg = role("surface");
+	const surfaceTone = toneOf(surfaceBg);
+	const elevated = (name, floor) => {
+		const hex = role(name);
+		if (!darkMode) return hex;
+		const min = surfaceTone + floor;
+		return toneOf(hex) >= min ? hex : atTone(hex, min);
+	};
+
 	const vars = {
-		"--bg": role("surface"),
+		"--bg": surfaceBg,
 		"--text": tint(role("onSurface")),
 		// 0.9, not 0.75: --subtle carries real text (stat labels, table
 		// headers) that has to clear 4.5:1 in light mode.
@@ -303,9 +317,9 @@ function computeVars(seedHex, opts) {
 		"--on-accent": ensureContrast(role("onPrimary"), accentBg),
 		"--tonal": tonalBg,
 		"--on-tonal": ensureContrast(role("onPrimaryContainer"), tonalBg),
-		"--card": role("surfaceContainer"),
-		"--card-high": role("surfaceContainerHigh"),
-		"--card-highest": role("surfaceBright"),
+		"--card": elevated("surfaceContainer", 4),
+		"--card-high": elevated("surfaceContainerHigh", 7),
+		"--card-highest": elevated("surfaceBright", 11),
 		"--outline-v": role("outlineVariant"),
 		"--grad-c": role("tertiary"),
 		"--ph-sat": `${(sliders ?? themeSliders(theme)).accentSat / 2}%`,
