@@ -125,7 +125,7 @@ const ROW_NAMES = [
 ];
 
 // Tones the phone mockup's palette grid samples.
-const PH_TONES = [95, 80, 60, 40, 20, 5];
+const PH_TONES = [90, 70, 50, 30, 10, 0];
 
 // [row, darkIndex, lightIndex, darkLightnessAdjustment, lightLightnessAdjustment]
 const ROLE_MAP = {
@@ -229,8 +229,13 @@ function buildPalette(seedHex, style, spec, dark, sliders, theme) {
 	}
 
 	if (pitch) {
-		rows[3][11] = "#000000";
-		rows[4][11] = "#000000";
+		// Shade 900 is the page itself; 800 feeds every container step, so a
+		// pitch-black theme has to pull it down too or the cards stay at
+		// ordinary dark-mode tone on a pure black page.
+		for (const row of [3, 4]) {
+			rows[row][11] = "#000000";
+			rows[row][10] = atTone(rows[row][10], 8);
+		}
 	}
 
 	return rows;
@@ -552,6 +557,31 @@ const DEMO_STYLES = [
 ];
 const DEMO_SPECS = ["2021", "2025"];
 
+// Hue at a fixed chroma and tone reads as a seed the app would accept, and
+// keeps the wheel's colour and the swatch it produces recognisably related.
+const hueToHex = (hue) =>
+	hexFromArgb(Hct.from(((hue % 360) + 360) % 360, 48, 62).toInt());
+
+const HUE_RING = Array.from({ length: 13 }, (_, i) => hueToHex(i * 30)).join(", ");
+
+const popover = (hex, hue, open) =>
+	`<div class="pickerpop${open ? " shown" : ""}" role="dialog" aria-label="Pick a seed color"${open ? "" : " hidden"}>
+	<div class="hue" tabindex="0" role="slider" aria-label="Hue" aria-valuemin="0" aria-valuemax="359" aria-valuenow="${Math.round(hue)}" style="background: conic-gradient(from 0deg, ${HUE_RING})">
+		<span class="huethumb"></span>
+	</div>
+	<label class="hexrow">
+		<span class="hexdot" aria-hidden="true"></span>
+		<input
+			class="hexinput"
+			type="text"
+			spellcheck="false"
+			maxlength="7"
+			aria-label="Hex color"
+			value="${hex}"
+		/>
+	</label>
+</div>`;
+
 function initDemo() {
 	const seedsEl = document.getElementById("demoSeeds");
 	const styleWrap = document.getElementById("styleWrap");
@@ -561,6 +591,9 @@ function initDemo() {
 	let seed = INITIAL_SEED;
 	let style = "TONAL_SPOT";
 	let spec = DEFAULT_SPEC;
+	let customSeed = hueToHex(212);
+	let customHue = 212;
+	let pickerOpen = false;
 	const root = document.documentElement;
 	let clearTimer = null;
 
@@ -581,10 +614,13 @@ function initDemo() {
 	};
 
 	const renderSeeds = () => {
-		seedsEl.innerHTML = DEMO_SEEDS.map(
-			(s) =>
-				`<button class="demo-swatch" data-seed="${s}" aria-pressed="false" aria-label="${SEED_NAMES[s] ?? s} seed">${swatch(s)}</button>`,
-		).join("");
+		seedsEl.innerHTML =
+			DEMO_SEEDS.map(
+				(s) =>
+					`<button class="demo-swatch" data-seed="${s}" aria-pressed="false" aria-label="${SEED_NAMES[s] ?? s} seed">${swatch(s)}</button>`,
+			).join("") +
+			`<span class="pickwrap"><button class="demo-swatch seedpick" data-seed="${customSeed}" aria-pressed="false" aria-haspopup="dialog" aria-expanded="false" aria-label="Custom seed color">${swatch(customSeed)}<span class="pickdot" aria-hidden="true"></span></button>${popover(customSeed, customHue, pickerOpen)}</span>`;
+		paintPicker();
 		updateSelection();
 	};
 
@@ -598,7 +634,7 @@ function initDemo() {
 	};
 
 	let resumeTimer = null;
-	const apply = (rebuildSwatches, pause) => {
+	const apply = (rebuildSwatches, pause, hold) => {
 		if (pause) {
 			demoHold = true;
 			seedsEl.classList.remove("rotating");
@@ -614,6 +650,7 @@ function initDemo() {
 		if (rebuildSwatches) renderSeeds();
 		else updateSelection();
 		if (resumeTimer) clearTimeout(resumeTimer);
+		if (hold) return;
 		if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
 			resumeTimer = setTimeout(() => {
 				demoHold = false;
@@ -625,8 +662,122 @@ function initDemo() {
 	seedsEl.addEventListener("click", (e) => {
 		const btn = e.target.closest(".demo-swatch");
 		if (!btn) return;
+		if (btn.classList.contains("seedpick")) {
+			togglePicker(btn.getAttribute("aria-expanded") !== "true");
+			return;
+		}
+		closePicker();
 		seed = btn.dataset.seed;
 		apply(false, true);
+	});
+
+	// The picker is the visitor's own colour: the rotation never lands on it,
+	// and choosing one holds the page until they pick something else.
+	const pickerEls = () => ({
+		wrap: seedsEl.querySelector(".pickwrap"),
+		btn: seedsEl.querySelector(".seedpick"),
+		pop: seedsEl.querySelector(".pickerpop"),
+		hue: seedsEl.querySelector(".hue"),
+		thumb: seedsEl.querySelector(".huethumb"),
+		dot: seedsEl.querySelector(".hexdot"),
+		input: seedsEl.querySelector(".hexinput"),
+	});
+
+	const paintPicker = () => {
+		const { wrap, thumb, dot, input, hue } = pickerEls();
+		if (!wrap) return;
+		wrap.style.setProperty("--hue-angle", `${customHue}deg`);
+		wrap.style.setProperty("--pick", customSeed);
+		if (thumb) thumb.style.setProperty("background", customSeed);
+		if (dot) dot.style.setProperty("background", customSeed);
+		if (input && document.activeElement !== input) input.value = customSeed;
+		if (hue) hue.setAttribute("aria-valuenow", String(Math.round(customHue)));
+	};
+
+	// Repaint the picker's face in place: a full renderSeeds() would replace the
+	// popover node and replay its open animation mid-pick.
+	const useCustom = (hex) => {
+		customSeed = hex;
+		seed = hex;
+		const { btn } = pickerEls();
+		if (btn) {
+			btn.dataset.seed = hex;
+			const face = btn.querySelector(".tswatch");
+			if (face) face.outerHTML = swatch(hex);
+		}
+		apply(false, true, true);
+		paintPicker();
+	};
+
+	const closePicker = () => togglePicker(false);
+
+	function togglePicker(open) {
+		const { btn, pop } = pickerEls();
+		if (!btn || !pop) return;
+		pickerOpen = open;
+		pop.hidden = !open;
+		btn.setAttribute("aria-expanded", String(open));
+		if (!open) {
+			pop.classList.remove("shown");
+			return;
+		}
+		paintPicker();
+		pop.querySelector(".hue")?.focus();
+	}
+
+	const hueFromPointer = (e, el) => {
+		const r = el.getBoundingClientRect();
+		const x = e.clientX - (r.left + r.width / 2);
+		const y = e.clientY - (r.top + r.height / 2);
+		return (((Math.atan2(y, x) * 180) / Math.PI + 90) % 360 + 360) % 360;
+	};
+
+	seedsEl.addEventListener("pointerdown", (e) => {
+		const wheel = e.target.closest(".hue");
+		if (!wheel) return;
+		const drag = (ev) => {
+			customHue = hueFromPointer(ev, wheel);
+			useCustom(hueToHex(customHue));
+		};
+		drag(e);
+		wheel.setPointerCapture(e.pointerId);
+		const stop = () => {
+			wheel.removeEventListener("pointermove", drag);
+			wheel.removeEventListener("pointerup", stop);
+			paintPicker();
+		};
+		wheel.addEventListener("pointermove", drag);
+		wheel.addEventListener("pointerup", stop);
+	});
+
+	seedsEl.addEventListener("keydown", (e) => {
+		if (!e.target.classList?.contains("hue")) return;
+		const step = e.key === "ArrowRight" || e.key === "ArrowUp" ? 4 : e.key === "ArrowLeft" || e.key === "ArrowDown" ? -4 : 0;
+		if (!step) return;
+		e.preventDefault();
+		customHue = (customHue + step + 360) % 360;
+		useCustom(hueToHex(customHue));
+	});
+
+	seedsEl.addEventListener("input", (e) => {
+		if (!e.target.classList?.contains("hexinput")) return;
+		let v = e.target.value.trim();
+		if (v && v[0] !== "#") v = `#${v}`;
+		if (!HEX.test(v)) return;
+		customHue = Hct.fromInt(argbFromHex(v)).hue;
+		useCustom(v);
+	});
+
+	document.addEventListener("click", (e) => {
+		if (!seedsEl.contains(e.target)) closePicker();
+	});
+	document.addEventListener("keydown", (e) => {
+		if (e.key !== "Escape") return;
+		const { btn, pop } = pickerEls();
+		if (pop && !pop.hidden) {
+			closePicker();
+			btn?.focus();
+		}
 	});
 
 	// Custom dropdowns: native select popups ignore theming.
