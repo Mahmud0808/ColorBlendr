@@ -99,7 +99,7 @@ fun EditDetailsDialog(
 @Composable
 private fun Counter(length: Int, max: Int) {
     Text(
-        text = "$length / $max",
+        text = stringResource(R.string.char_counter, length, max),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier

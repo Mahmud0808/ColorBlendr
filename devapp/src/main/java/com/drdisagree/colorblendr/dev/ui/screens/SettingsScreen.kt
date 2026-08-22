@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.dev.ui.screens
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -9,7 +12,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +44,7 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -52,21 +55,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.data.config.DevPrefs
 import com.drdisagree.colorblendr.dev.ui.viewmodels.SettingsViewModel
+import com.drdisagree.colorblendr.dev.utils.PendingNotifier
 
 private val NOTIFY_INTERVALS = listOf(6, 12, 24, 48, 72)
 
-private fun formatInterval(hours: Int): String = when {
-    hours < 24 -> "Every $hours hours"
-    hours == 24 -> "Every day"
-    hours % 24 == 0 -> "Every ${hours / 24} days"
-    else -> "Every $hours hours"
+private fun Context.findActivity(): Activity? {
+    var ctx: Context? = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
+}
+
+@Composable
+private fun formatInterval(hours: Int): String = if (hours >= 24 && hours % 24 == 0) {
+    val days = hours / 24
+    pluralStringResource(R.plurals.notify_every_days, days, days)
+} else {
+    pluralStringResource(R.plurals.notify_every_hours, hours, hours)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,19 +95,55 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
     val notifyEnabled by settingsViewModel.notifyEnabled.collectAsState()
     val notifyInterval by settingsViewModel.notifyInterval.collectAsState()
 
+    val context = LocalContext.current
+    // recheck on resume - permission can be revoked (or granted) outside app
+    var canNotify by remember { mutableStateOf(PendingNotifier.canNotify(context)) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                canNotify = PendingNotifier.canNotify(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
+        canNotify = PendingNotifier.canNotify(context)
         settingsViewModel.setNotifyEnabled(granted)
+        val activity = context.findActivity()
+        if (!granted && activity != null &&
+            !ActivityCompat.shouldShowRequestPermissionRationale(
+                activity, Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            PendingNotifier.openNotificationSettings(context)
+        }
     }
 
     fun toggleNotify(enable: Boolean) {
-        if (enable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (!enable) {
+            settingsViewModel.setNotifyEnabled(false)
+            return
+        }
+        if (canNotify) {
+            settingsViewModel.setNotifyEnabled(true)
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !PendingNotifier.hasPermission(context)
+        ) {
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
-            settingsViewModel.setNotifyEnabled(enable)
+            settingsViewModel.setNotifyEnabled(true)
+            PendingNotifier.openNotificationSettings(context)
         }
     }
+
+    val notifyActive = notifyEnabled && canNotify
 
     var showDialog by remember { mutableStateOf(false) }
 
@@ -158,7 +213,11 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = stringResource(R.string.notify_daily_desc),
+                        text = if (notifyEnabled && !canNotify) {
+                            stringResource(R.string.notify_blocked_desc)
+                        } else {
+                            stringResource(R.string.notify_daily_desc)
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 2.dp)
@@ -166,7 +225,7 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Switch(
-                    checked = notifyEnabled,
+                    checked = notifyActive,
                     onCheckedChange = { toggleNotify(it) }
                 )
             }
@@ -181,13 +240,13 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
                         MaterialTheme.colorScheme.surfaceContainer,
                         RoundedCornerShape(20.dp)
                     )
-                    .clickable(enabled = notifyEnabled) { showDialog = true }
+                    .clickable(enabled = notifyActive) { showDialog = true }
                     .padding(horizontal = 18.dp, vertical = 14.dp)
             ) {
                 Icon(
                     painter = rememberVectorPainter(Icons.Rounded.Schedule),
                     contentDescription = null,
-                    tint = if (notifyEnabled) {
+                    tint = if (notifyActive) {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
@@ -197,7 +256,7 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
                 Text(
                     text = stringResource(R.string.notify_interval),
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (notifyEnabled) {
+                    color = if (notifyActive) {
                         MaterialTheme.colorScheme.onSurface
                     } else {
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
@@ -207,7 +266,7 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
                 Text(
                     text = formatInterval(notifyInterval),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (notifyEnabled) {
+                    color = if (notifyActive) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
@@ -217,7 +276,6 @@ fun SettingsScreen(onBack: () -> Unit, onLogout: () -> Unit) {
 
             Spacer(modifier = Modifier.size(12.dp))
 
-            val context = LocalContext.current
             val lastCheck = DevPrefs.lastCheck(context)
             val lastCheckText = if (lastCheck <= 0L) {
                 stringResource(R.string.last_checked_never)

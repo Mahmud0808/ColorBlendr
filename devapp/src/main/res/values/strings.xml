@@ -16,6 +16,9 @@
     <string name="block_reason">Reason</string>
     <string name="unblock">Unblock</string>
     <string name="anonymous">Anonymous</string>
+    <string name="submission_meta">%1$s · %2$s</string>
+    <string name="char_counter">%1$d / %2$d</string>
+    <string name="empty_pending_subtitle">New submissions will show up here.</string>
     <string name="no_pending">Queue is empty</string>
     <string name="no_blocked">No blocked uploaders</string>
     <string name="search_hint">Search here…</string>
@@ -38,7 +41,16 @@
     <string name="back">Back</string>
     <string name="notify_daily">Pending reminder</string>
     <string name="notify_daily_desc">Notify me at a set interval if submissions are waiting for review.</string>
+    <string name="notify_blocked_desc">Notifications are blocked. Tap the switch to grant permission.</string>
     <string name="notify_interval">Reminder interval</string>
+    <plurals name="notify_every_hours">
+        <item quantity="one">Every %d hour</item>
+        <item quantity="other">Every %d hours</item>
+    </plurals>
+    <plurals name="notify_every_days">
+        <item quantity="one">Every day</item>
+        <item quantity="other">Every %d days</item>
+    </plurals>
     <string name="cancel">Cancel</string>
     <string name="notify_channel_name">Pending submissions</string>
     <string name="notify_channel_desc">Daily reminder about themes awaiting review.</string>
@@ -58,6 +70,10 @@
     <string name="detail_tertiary">Tertiary</string>
     <string name="detail_style">Style</string>
     <string name="detail_spec">Color spec</string>
+    <string name="detail_spec_2021">2021</string>
+    <string name="detail_spec_2025">2025</string>
+    <string name="detail_spec_2026">2026</string>
+    <string name="detail_spec_generic">v%1$d</string>
     <string name="detail_accent_sat">Accent saturation</string>
     <string name="detail_bg_sat">Background saturation</string>
     <string name="detail_bg_light">Background lightness</string>

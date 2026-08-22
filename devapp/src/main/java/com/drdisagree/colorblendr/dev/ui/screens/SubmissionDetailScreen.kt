@@ -256,8 +256,11 @@ fun SubmissionDetailScreen(
                 modifier = Modifier.padding(top = 20.dp)
             )
             Text(
-                text = "${item.author.ifEmpty { stringResource(R.string.anonymous) }} · " +
-                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(item.created)),
+                text = stringResource(
+                    R.string.submission_meta,
+                    item.author.ifEmpty { stringResource(R.string.anonymous) },
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(item.created))
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp)
@@ -569,11 +572,12 @@ private fun BoolInfoRow(label: String, enabled: Boolean) {
 private fun prettyStyle(style: String): String =
     style.replace('_', ' ').lowercase().replaceFirstChar { it.uppercase() }
 
+@Composable
 private fun specLabel(version: Int): String = when (version) {
-    0 -> "2021"
-    1 -> "2025"
-    2 -> "2026"
-    else -> "v$version"
+    0 -> stringResource(R.string.detail_spec_2021)
+    1 -> stringResource(R.string.detail_spec_2025)
+    2 -> stringResource(R.string.detail_spec_2026)
+    else -> stringResource(R.string.detail_spec_generic, version)
 }
 
 private fun hex(color: Int): String = "#%06X".format(0xFFFFFF and color)

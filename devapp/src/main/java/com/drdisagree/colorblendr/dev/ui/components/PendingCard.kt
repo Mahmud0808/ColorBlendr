@@ -172,9 +172,12 @@ fun PendingCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "${item.author.ifEmpty { stringResource(R.string.anonymous) }} · " +
-                                DateFormat.getDateInstance(DateFormat.MEDIUM)
-                                    .format(Date(item.created)),
+                        text = stringResource(
+                            R.string.submission_meta,
+                            item.author.ifEmpty { stringResource(R.string.anonymous) },
+                            DateFormat.getDateInstance(DateFormat.MEDIUM)
+                                .format(Date(item.created))
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
