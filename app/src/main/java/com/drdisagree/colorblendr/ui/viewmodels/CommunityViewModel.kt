@@ -28,10 +28,10 @@ class CommunityViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository.getThemes().takeIf { it.isNotEmpty() }?.let {
-                _allThemes.value = it
-            }
-            if (repository.refreshIndex()) {
+            val cached = repository.getThemes()
+            if (cached.isNotEmpty()) _allThemes.value = cached
+            val needsFetch = cached.isEmpty() || repository.isStale(STALE_AFTER_MILLIS)
+            if (needsFetch && repository.refreshIndex()) {
                 _allThemes.value = repository.getThemes()
             } else if (_allThemes.value == null) {
                 _allThemes.value = emptyList()
@@ -68,6 +68,6 @@ class CommunityViewModel : ViewModel() {
     }
 
     companion object {
-        private const val STALE_AFTER_MILLIS = 10L * 60 * 1000
+        private const val STALE_AFTER_MILLIS = 6L * 60 * 60 * 1000
     }
 }
