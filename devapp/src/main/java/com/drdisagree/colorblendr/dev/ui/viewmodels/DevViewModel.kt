@@ -96,7 +96,7 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
             .filterNot { it.id == item.id }
             .map { ThemeMatcher.toComparable(it, null) }
         val candidates = otherPending + _publishedThemes.value
-        return ThemeMatcher.findBestMatch(item, candidates, threshold = 0.85f)
+        return ThemeMatcher.findBestMatch(item, candidates)
     }
 
     fun logout() {

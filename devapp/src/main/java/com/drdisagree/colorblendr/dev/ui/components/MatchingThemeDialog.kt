@@ -57,9 +57,9 @@ fun MatchingThemeDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState())
                     .heightIn(max = 540.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp)
             ) {
                 Text(
                     text = stringResource(R.string.matching_theme_title),
