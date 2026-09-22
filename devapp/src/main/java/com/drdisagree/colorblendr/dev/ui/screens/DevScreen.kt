@@ -2,7 +2,10 @@ package com.drdisagree.colorblendr.dev.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -69,6 +72,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -141,13 +145,27 @@ fun DevScreen(openPendingTick: Int = 0) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        fun AnimatedContentTransitionScope<NavBackStackEntry>.isPop(): Boolean {
+            val current = navController.currentBackStackEntry
+            val previous = navController.previousBackStackEntry
+            return targetState == previous || (initialState != current && initialState != previous)
+        }
+
+        fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition =
+            slideInHorizontally { if (isPop()) -it else it }
+
+        fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition =
+            slideOutHorizontally { if (isPop()) it else -it }
+
         NavHost(
             navController = navController,
             startDestination = Routes.HOME,
-            enterTransition = { slideInHorizontally { it } },
-            exitTransition = { slideOutHorizontally { -it } },
-            popEnterTransition = { slideInHorizontally { -it } },
-            popExitTransition = { slideOutHorizontally { it } }
+            enterTransition = { enter() },
+            exitTransition = { exit() },
+            popEnterTransition = { enter() },
+            popExitTransition = { exit() },
+            predictivePopEnterTransition = { enter() },
+            predictivePopExitTransition = { exit() }
         ) {
             composable(Routes.HOME) {
                 HomeContent(

@@ -82,6 +82,7 @@ import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.navigation.Routes
+import com.drdisagree.colorblendr.ui.compose.navigation.isPop
 import com.drdisagree.colorblendr.ui.compose.navigation.navigateSingleTop
 import com.drdisagree.colorblendr.ui.compose.navigation.tabGroup
 import com.drdisagree.colorblendr.ui.compose.screens.about.AboutScreen
@@ -110,10 +111,10 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun HomeScreen(
@@ -402,10 +403,12 @@ fun HomeScreen(
                         NavHost(
                             navController = nestedNavController,
                             startDestination = Routes.COLORS,
-                            enterTransition = { enter(pop = false) },
-                            exitTransition = { exit(pop = false) },
-                            popEnterTransition = { enter(pop = true) },
-                            popExitTransition = { exit(pop = true) },
+                            enterTransition = { enter(pop = isPop(nestedNavController)) },
+                            exitTransition = { exit(pop = isPop(nestedNavController)) },
+                            popEnterTransition = { enter(pop = isPop(nestedNavController)) },
+                            popExitTransition = { exit(pop = isPop(nestedNavController)) },
+                            predictivePopEnterTransition = { enter(pop = isPop(nestedNavController)) },
+                            predictivePopExitTransition = { exit(pop = isPop(nestedNavController)) },
                             modifier = Modifier.fillMaxSize()
                         ) {
                             composable(Routes.COLORS) {

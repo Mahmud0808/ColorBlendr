@@ -1,6 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.navigation
 
 import android.net.Uri
+import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.MaterialTheme
@@ -11,10 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -143,21 +147,21 @@ fun AppNavHost(
         }
     }
 
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition =
+        slideInHorizontally(spatialSpec) { if (isPop(navController)) -it else it }
+
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition =
+        slideOutHorizontally(spatialSpec) { if (isPop(navController)) it else -it }
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        enterTransition = {
-            slideInHorizontally(spatialSpec) { it }
-        },
-        exitTransition = {
-            slideOutHorizontally(spatialSpec) { -it }
-        },
-        popEnterTransition = {
-            slideInHorizontally(spatialSpec) { -it }
-        },
-        popExitTransition = {
-            slideOutHorizontally(spatialSpec) { it }
-        }
+        enterTransition = { enter() },
+        exitTransition = { exit() },
+        popEnterTransition = { enter() },
+        popExitTransition = { exit() },
+        predictivePopEnterTransition = { enter() },
+        predictivePopExitTransition = { exit() }
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
