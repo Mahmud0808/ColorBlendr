@@ -74,7 +74,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
@@ -89,6 +88,7 @@ import com.drdisagree.colorblendr.dev.ui.components.KeyGate
 import com.drdisagree.colorblendr.dev.ui.components.PendingCard
 import com.drdisagree.colorblendr.dev.ui.components.SegmentedTabs
 import com.drdisagree.colorblendr.dev.ui.components.StackedSnackbarHost
+import com.drdisagree.colorblendr.dev.ui.components.screen
 import com.drdisagree.colorblendr.dev.ui.navigation.Routes
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 import com.drdisagree.colorblendr.dev.ui.viewmodels.DevViewModel
@@ -167,7 +167,7 @@ fun DevScreen(openPendingTick: Int = 0) {
             predictivePopEnterTransition = { enter() },
             predictivePopExitTransition = { exit() }
         ) {
-            composable(Routes.HOME) {
+            screen(Routes.HOME) {
                 HomeContent(
                     authorized = authorized,
                     loading = loading,
@@ -191,7 +191,7 @@ fun DevScreen(openPendingTick: Int = 0) {
                     onOpenDetail = { navController.navigate(Routes.detail(it.id)) }
                 )
             }
-            composable(Routes.SETTINGS) {
+            screen(Routes.SETTINGS) {
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
                     onLogout = {
@@ -200,7 +200,7 @@ fun DevScreen(openPendingTick: Int = 0) {
                     }
                 )
             }
-            composable(Routes.DETAIL) { entry ->
+            screen(Routes.DETAIL) { entry ->
                 val id = entry.arguments?.getString(Routes.ARG_SUBMISSION_ID)
                 val latest = pending?.find { it.id == id }
                 val lastKnown = remember { mutableStateOf(latest) }

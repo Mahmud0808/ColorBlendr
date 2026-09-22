@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
@@ -163,7 +162,7 @@ fun AppNavHost(
         predictivePopEnterTransition = { enter() },
         predictivePopExitTransition = { exit() }
     ) {
-        composable(Routes.ONBOARDING) {
+        screen(Routes.ONBOARDING) {
             OnboardingScreen(
                 actionState = onboardingAction,
                 onError = { onboardingAction = OnboardingActionState.Error(it) },
@@ -176,13 +175,13 @@ fun AppNavHost(
                 onFinishActivity = { activity?.finish() }
             )
         }
-        composable(Routes.PAIRING) {
+        screen(Routes.PAIRING) {
             PairingScreen(
                 onPairDevice = { (activity as? MainActivity)?.pairThisDevice() },
                 onDeviceConnected = { navController.popBackStack() }
             )
         }
-        composable(Routes.HOME) {
+        screen(Routes.HOME) {
             HomeScreen(
                 success = success || onboardedSuccess,
                 pendingRestoreUri = pendingRestoreUri,
