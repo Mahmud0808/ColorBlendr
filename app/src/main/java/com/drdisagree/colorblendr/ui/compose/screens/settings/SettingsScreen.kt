@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.ui.compose.screens.settings
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -103,6 +104,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 import android.R as AndroidR
+
+private const val TAG = "SettingsScreen"
 
 @Composable
 fun SettingsScreen(
@@ -345,7 +348,7 @@ fun SettingsScreen(
                             updateColorAppliedTimestamp()
 
                             AppScope.launch {
-                                try {
+                                val applied = try {
                                     delay(300.milliseconds)
                                     withContext(Dispatchers.IO) {
                                         if (isChecked) {
@@ -355,27 +358,21 @@ fun SettingsScreen(
                                             removeFabricatedColors()
                                         }
                                     }
-
-                                    val isOverlayActive =
-                                        isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
-                                                || isShizukuThemingEnabled()
-                                                || isWirelessAdbThemingEnabled()
-                                    masterChecked = isOverlayActive
-
-                                    if (isChecked != isOverlayActive) {
-                                        // Specific overlay errors are already
-                                        // reported; this is the fallback.
-                                        ThemingErrorReporter.report(
-                                            context.getString(R.string.something_went_wrong)
-                                        )
-                                    }
                                 } catch (e: Exception) {
-                                    masterChecked = !isChecked
+                                    Log.e(TAG, "Failed to toggle theming", e)
                                     ThemingErrorReporter.report(
                                         e.message?.takeIf { it.isNotBlank() }
                                             ?: context.getString(R.string.something_went_wrong)
                                     )
+                                    false
                                 }
+
+                                if (!applied) {
+                                    setThemingEnabled(false)
+                                    setShizukuThemingEnabled(false)
+                                    setWirelessAdbThemingEnabled(false)
+                                }
+                                masterChecked = applied && isChecked
                             }
                         }
                     )

@@ -27,7 +27,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.setWorkingMethod
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
-import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.ui.compose.screens.home.HomeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.onboarding.OnboardingActionState
@@ -37,8 +36,6 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.requestShizukuPermission
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
@@ -120,10 +117,7 @@ fun AppNavHost(
             onboardingAction = OnboardingActionState.Connecting
             requestShizukuPermission(fragmentActivity) { granted ->
                 if (granted) {
-                    bindUserService(
-                        getUserServiceArgs(ShizukuConnection::class.java),
-                        ShizukuConnectionProvider.serviceConnection
-                    )
+                    ShizukuConnectionProvider.bind()
                     goToHome()
                 } else {
                     onboardingAction = OnboardingActionState.Error(

@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
-import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.BLISS_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
@@ -32,6 +31,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
+import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
 import com.drdisagree.colorblendr.utils.app.MiscUtil
@@ -49,7 +49,7 @@ import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 @Suppress("unused")
 object OverlayManager {
 
-    private val TAG: String = OverlayManager::class.java.simpleName
+    private const val TAG = "OverlayManager"
     private lateinit var mRootConnection: IRootConnection
     private lateinit var mShizukuConnection: IShizukuConnection
 
@@ -64,18 +64,20 @@ object OverlayManager {
         return true
     }
 
-    private fun ensureShizukuConnection(): Boolean {
+    private fun shizukuConnectionError(): String? {
         if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
             Log.w(TAG, "Shizuku permission not available")
-            return false
-        } else if (::mShizukuConnection.isInitialized.not()) {
-            if (shizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
-                return false
-            }
-            mShizukuConnection = shizukuConnection!!
+            return appContext.getString(R.string.error_shizuku_unavailable)
         }
-        return true
+
+        val connection = ShizukuConnectionProvider.connect()
+        if (connection == null) {
+            Log.w(TAG, "Shizuku service connection is null")
+            return appContext.getString(R.string.error_shizuku_service_unavailable)
+        }
+
+        mShizukuConnection = connection
+        return null
     }
 
     fun enableOverlay(packageName: String) {
@@ -145,41 +147,45 @@ object OverlayManager {
         }
     }
 
-    private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (!isRootMode()) return
+    private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource): Boolean {
+        if (!isRootMode()) return false
         if (!ensureRootConnection()) {
             reportError(appContext.getString(R.string.error_root_unavailable))
-            return
+            return false
         }
 
-        try {
+        return try {
             mRootConnection.registerFabricatedOverlay(fabricatedOverlay)
             mRootConnection.enableOverlayWithIdentifier(listOf(fabricatedOverlay.overlayName))
+            true
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to register fabricated overlay: " + fabricatedOverlay.overlayName, e)
             reportError(overlayError(e))
+            false
         }
     }
 
-    fun unregisterFabricatedOverlay(packageName: String) {
-        if (!isRootMode()) return
+    fun unregisterFabricatedOverlay(packageName: String): Boolean {
+        if (!isRootMode()) return false
         if (!ensureRootConnection()) {
             reportError(appContext.getString(R.string.error_root_unavailable))
-            return
+            return false
         }
 
-        try {
+        return try {
             mRootConnection.unregisterFabricatedOverlay(packageName)
+            true
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to unregister fabricated overlay: $packageName", e)
             reportError(overlayError(e))
+            false
         }
     }
 
-    fun applyFabricatedColors() {
-        if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) return
+    fun applyFabricatedColors(): Boolean {
+        if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) return true
 
-        if (applyFabricatedColorsNonRoot()) return
+        applyFabricatedColorsNonRoot()?.let { return it }
 
         val style = getCurrentMonetStyle()
         val monetAccentSaturation = getAccentSaturation()
@@ -211,7 +217,7 @@ object OverlayManager {
             isDark = true
         )
 
-        ArrayList<FabricatedOverlayResource>().apply {
+        val success = ArrayList<FabricatedOverlayResource>().apply {
             add(
                 FabricatedOverlayResource(
                     FABRICATED_OVERLAY_NAME_SYSTEM,
@@ -308,10 +314,12 @@ object OverlayManager {
             }.forEach { (packageName) ->
                 add(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
             }
-        }.forEach { registerFabricatedOverlay(it) }
+        }.map { registerFabricatedOverlay(it) }.all { it }
 
         // Trigger a refresh to all the viewmodels
         RefreshCoordinator.triggerRefresh()
+
+        return success
     }
 
     fun applyFabricatedColorsPerApp(
@@ -322,10 +330,10 @@ object OverlayManager {
         registerFabricatedOverlay(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
     }
 
-    fun removeFabricatedColors() {
-        if (removeFabricatedColorsNonRoot()) return
+    fun removeFabricatedColors(): Boolean {
+        removeFabricatedColorsNonRoot()?.let { return it }
 
-        ArrayList<String>().apply {
+        return ArrayList<String>().apply {
             getSelectedFabricatedApps().filter { (_, isSelected) ->
                 isSelected == java.lang.Boolean.TRUE
             }.forEach { (packageName) ->
@@ -340,7 +348,7 @@ object OverlayManager {
             add(FABRICATED_OVERLAY_NAME_SYSTEM)
             add(FABRICATED_OVERLAY_NAME_SYSTEMUI)
             add(String.format(FABRICATED_OVERLAY_NAME_APPS, BLISS_LAUNCHER))
-        }.forEach { unregisterFabricatedOverlay(it) }
+        }.map { unregisterFabricatedOverlay(it) }.all { it }
     }
 
     private fun getFabricatedColorsPerApp(
@@ -377,19 +385,20 @@ object OverlayManager {
         }
     }
 
-    private fun applyFabricatedColorsNonRoot(): Boolean {
+    private fun applyFabricatedColorsNonRoot(): Boolean? {
         val isShizukuMode = isShizukuMode()
         val isWirelessAdbMode = isWirelessAdbMode()
 
-        if (!isShizukuMode && !isWirelessAdbMode) return false
+        if (!isShizukuMode && !isWirelessAdbMode) return null
 
         val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
         val samsungPaletteName = "android:SemWT_G_MonetPalette"
+        var success = true
 
         if (isShizukuMode) {
-            if (!ensureShizukuConnection()) {
-                reportError(appContext.getString(R.string.error_shizuku_unavailable))
-                return true
+            shizukuConnectionError()?.let { error ->
+                reportError(error)
+                return false
             }
 
             try {
@@ -411,17 +420,19 @@ object OverlayManager {
                         reportError(
                             appContext.getString(R.string.error_overlay_operation, error)
                         )
+                        success = false
                     }
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+                Log.e(TAG, "applyFabricatedColorsNonRoot: ", e)
                 reportError(overlayError(e))
+                success = false
             }
         } else {
             if (!WifiAdbShell.isMyDeviceConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
                 reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
-                return true
+                return false
             }
 
             try {
@@ -431,7 +442,7 @@ object OverlayManager {
                     reportError(
                         appContext.getString(R.string.error_overlay_operation, current.output)
                     )
-                    return true
+                    return false
                 }
 
                 if (themeJson.isNotEmpty()) {
@@ -453,32 +464,35 @@ object OverlayManager {
                         reportError(
                             appContext.getString(R.string.error_overlay_operation, put.output)
                         )
+                        success = false
                     }
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
+                Log.e(TAG, "applyFabricatedColorsNonRoot: ", e)
                 reportError(overlayError(e))
+                success = false
             }
         }
 
         // Trigger a refresh to all the viewmodels
         RefreshCoordinator.triggerRefresh()
 
-        return true
+        return success
     }
 
-    private fun removeFabricatedColorsNonRoot(): Boolean {
+    private fun removeFabricatedColorsNonRoot(): Boolean? {
         val isShizukuMode = isShizukuMode()
         val isWirelessAdbMode = isWirelessAdbMode()
 
-        if (!isShizukuMode && !isWirelessAdbMode) return false
+        if (!isShizukuMode && !isWirelessAdbMode) return null
 
         val samsungPaletteName = "android:SemWT_G_MonetPalette"
+        var success = true
 
         if (isShizukuMode) {
-            if (!ensureShizukuConnection()) {
-                reportError(appContext.getString(R.string.error_shizuku_unavailable))
-                return true
+            shizukuConnectionError()?.let { error ->
+                reportError(error)
+                return false
             }
 
             try {
@@ -496,16 +510,18 @@ object OverlayManager {
                     reportError(
                         appContext.getString(R.string.error_overlay_operation, error)
                     )
+                    success = false
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
+                Log.e(TAG, "removeFabricatedColorsNonRoot: ", e)
                 reportError(overlayError(e))
+                success = false
             }
         } else {
             if (!WifiAdbShell.isMyDeviceConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
                 reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
-                return true
+                return false
             }
 
             try {
@@ -515,7 +531,7 @@ object OverlayManager {
                     reportError(
                         appContext.getString(R.string.error_overlay_operation, current.output)
                     )
-                    return true
+                    return false
                 }
 
                 // Grep exit 1 = palette absent; only the output matters.
@@ -537,14 +553,16 @@ object OverlayManager {
                     reportError(
                         appContext.getString(R.string.error_overlay_operation, put.output)
                     )
+                    success = false
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
+                Log.e(TAG, "removeFabricatedColorsNonRoot: ", e)
                 reportError(overlayError(e))
+                success = false
             }
         }
 
-        return true
+        return success
     }
 
     private fun reportError(message: String) {

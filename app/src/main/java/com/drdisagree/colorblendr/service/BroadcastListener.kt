@@ -221,7 +221,7 @@ class BroadcastListener : BroadcastReceiver() {
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()
 
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 delay(500.milliseconds)
                 applyFabricatedColors()
             }

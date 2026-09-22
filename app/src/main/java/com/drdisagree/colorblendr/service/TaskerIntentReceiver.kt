@@ -37,6 +37,7 @@ import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedCo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import kotlin.random.Random
 
@@ -142,7 +143,7 @@ class TaskerIntentReceiver : BroadcastReceiver() {
                 RootConnectionProvider
                     .builder(context)
                     .onSuccess {
-                        CoroutineScope(Dispatchers.Main).launch {
+                        CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 applyFabricatedColors()
                             } finally {
@@ -153,10 +154,12 @@ class TaskerIntentReceiver : BroadcastReceiver() {
                     .onFailure { pending.finish() }
                     .run()
             } else {
-                try {
-                    applyFabricatedColors()
-                } finally {
-                    pending.finish()
+                withContext(Dispatchers.IO) {
+                    try {
+                        applyFabricatedColors()
+                    } finally {
+                        pending.finish()
+                    }
                 }
             }
         }

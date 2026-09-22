@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +45,6 @@ import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
-import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
@@ -56,8 +56,6 @@ import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import org.json.JSONObject
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
@@ -108,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
         splashScreen.setKeepOnScreenCondition { initSuccess == null }
 
-        if (savedInstanceState?.containsKey(KEY_INIT_SUCCESS) == true) {
+        if (savedInstanceState?.containsKey(KEY_INIT_SUCCESS) == true && isBackendConnected()) {
             initSuccess = savedInstanceState.getBoolean(KEY_INIT_SUCCESS)
         } else {
             bootstrap()
@@ -203,11 +201,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 isShizukuMode() -> {
-                    if (isShizukuAvailable && hasShizukuPermission()) {
-                        ShizukuUtil.bindUserService(
-                            getUserServiceArgs(ShizukuConnection::class.java),
-                            ShizukuConnectionProvider.serviceConnection
-                        )
+                    if (awaitShizukuBinder() && hasShizukuPermission()) {
+                        ShizukuConnectionProvider.bind()
                         success.set(true)
                     } else {
                         success.set(false)
@@ -243,6 +238,22 @@ class MainActivity : AppCompatActivity() {
             success.set(false)
             countDownLatch.countDown()
         }
+    }
+
+    private fun isBackendConnected(): Boolean = when {
+        isRootMode() -> !RootConnectionProvider.isNotConnected
+        isShizukuMode() -> !ShizukuConnectionProvider.isNotConnected
+        isWirelessAdbMode() -> WifiAdbShell.isMyDeviceConnected()
+        else -> false
+    }
+
+    private fun awaitShizukuBinder(): Boolean {
+        val deadline = SystemClock.uptimeMillis() + SHIZUKU_BINDER_TIMEOUT_MS
+        while (!isShizukuAvailable) {
+            if (SystemClock.uptimeMillis() >= deadline) return false
+            SystemClock.sleep(SHIZUKU_BINDER_POLL_MS)
+        }
+        return true
     }
 
     private fun setupEdgeToEdge() {
@@ -364,5 +375,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_INIT_SUCCESS = "initSuccess"
+        private const val SHIZUKU_BINDER_TIMEOUT_MS = 2000L
+        private const val SHIZUKU_BINDER_POLL_MS = 100L
     }
 }

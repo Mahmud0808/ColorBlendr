@@ -12,7 +12,7 @@ import kotlin.system.exitProcess
 class ShizukuConnection : IShizukuConnection.Stub {
 
     companion object {
-        private val TAG: String = ShizukuConnection::class.java.simpleName
+        private const val TAG = "ShizukuConnection"
     }
 
     @Suppress("unused")

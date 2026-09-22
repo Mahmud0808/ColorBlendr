@@ -21,6 +21,7 @@ class ColorBlendr : Application() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         PRNGFixes.apply()
         CrashLogger.install(this)
+        ShizukuConnectionProvider.registerBinderListeners()
     }
 
     override fun attachBaseContext(base: Context) {
