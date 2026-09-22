@@ -429,7 +429,7 @@ object OverlayManager {
                 success = false
             }
         } else {
-            if (!WifiAdbShell.isMyDeviceConnected()) {
+            if (!WifiAdbShell.ensureConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
                 reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
                 return false
@@ -518,7 +518,7 @@ object OverlayManager {
                 success = false
             }
         } else {
-            if (!WifiAdbShell.isMyDeviceConnected()) {
+            if (!WifiAdbShell.ensureConnected()) {
                 Log.w(TAG, "Device not connected in wireless ADB mode")
                 reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
                 return false

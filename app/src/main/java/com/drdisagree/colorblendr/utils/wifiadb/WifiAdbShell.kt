@@ -27,12 +27,15 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.withLock
 
 object WifiAdbShell {
 
     private val TAG = WifiAdbShell::class.java.simpleName
     private val executor: ExecutorService = Executors.newFixedThreadPool(3)
+    private val connectLock = ReentrantLock()
     private var adbShellStream: AdbStream? = null
     private val commandOutput = MutableLiveData<CharSequence?>()
 
@@ -45,6 +48,27 @@ object WifiAdbShell {
         } catch (e: Exception) {
             Log.e(TAG, "isMyDeviceConnected: ", e)
             false
+        }
+    }
+
+    @WorkerThread
+    fun ensureConnected(): Boolean {
+        if (isMyDeviceConnected()) return true
+
+        connectLock.withLock {
+            if (isMyDeviceConnected()) return true
+
+            Log.i(TAG, "Wireless ADB not connected; reconnecting")
+            var connected = false
+            autoConnectInternal(object : ConnectionListener {
+                override fun onConnectionSuccess() {
+                    connected = true
+                }
+
+                override fun onConnectionFailed() {}
+            })
+            Log.i(TAG, "Wireless ADB reconnect ${if (connected) "succeeded" else "failed"}")
+            return connected
         }
     }
 
@@ -264,7 +288,7 @@ object WifiAdbShell {
     // Blocking - call from IO.
     @WorkerThread
     fun exec(command: String): AdbCommandResult {
-        if (!isMyDeviceConnected()) {
+        if (!ensureConnected()) {
             return AdbCommandResult(success = false, output = "Device not connected")
         }
 
