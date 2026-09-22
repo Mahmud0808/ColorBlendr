@@ -914,7 +914,8 @@ class RootConnection : RootService() {
                     when (val result = method.invoke(mActivityManager)) {
                         is Int -> result
                         is UserInfo -> result.userHandle.getUserIdentifier()
-                        else -> throw IllegalStateException("Unexpected return type from ActivityManager.getCurrentUser(): ${result?.javaClass}")
+                        null -> throw IllegalStateException("ActivityManager.getCurrentUser() returned null")
+                        else -> throw IllegalStateException("Unexpected return type from ActivityManager.getCurrentUser(): ${result.javaClass}")
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get current foreground user", e)

@@ -1,12 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Colorize
-import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +10,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,23 +39,24 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
+import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
-import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.hazeBlur
 import android.R as AndroidR
 
 // 48dp outlined pill over Haze-blurred backdrop; pass screen's HazeState
 // whose source is content scrolling underneath.
 @Composable
 fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
+    state: TextFieldState,
     onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
     hazeState: HazeState? = null,
     onColorPickClick: (() -> Unit)? = null
 ) {
+    val query = state.text
     val overlayColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f)
     val secondaryTextColor = themeAttrColor(AndroidR.attr.textColorSecondary)
     val primaryTextColor = themeAttrColor(AndroidR.attr.textColorPrimary)
@@ -60,12 +65,13 @@ fun SearchBar(
     val blurModifier = if (hazeState != null) {
         Modifier
             .clip(shape)
-            .hazeEffect(state = hazeState) {
-                style = HazeStyle(
-                    backgroundColor = overlayColor,
-                    tint = HazeTint(overlayColor)
-                )
-            }
+            .hazeBlur(
+                HazeInput.Sources(hazeState),
+                HazeBlurStyle {
+                    backgroundColor(overlayColor)
+                    colorEffects(listOf(HazeColorEffect.tint(overlayColor)))
+                }
+            )
     } else {
         Modifier
     }
@@ -111,9 +117,8 @@ fun SearchBar(
                     )
                 }
                 BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChange,
-                    singleLine = true,
+                    state = state,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 16.sp,
                         color = primaryTextColor
@@ -124,7 +129,7 @@ fun SearchBar(
             }
             if (query.isNotEmpty()) {
                 IconButton(
-                    onClick = { onQueryChange("") },
+                    onClick = { state.clearText() },
                     modifier = Modifier.padding(end = 4.dp)
                 ) {
                     Icon(
@@ -161,6 +166,6 @@ fun SearchBar(
 @Composable
 private fun SearchBarPreview() {
     ColorBlendrTheme {
-        SearchBar(query = "", onQueryChange = {}, onFilterClick = {})
+        SearchBar(state = rememberTextFieldState(), onFilterClick = {})
     }
 }

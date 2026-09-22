@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.Palette
@@ -34,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -89,8 +93,7 @@ fun CommunityScreen(
             themes = emptyList(),
             sort = CommunitySort.UPVOTES,
             onSortChange = {},
-            query = "",
-            onQueryChange = {},
+            searchState = rememberTextFieldState(),
             onThemeClick = onThemeClick
         )
         return
@@ -99,7 +102,11 @@ fun CommunityScreen(
     val communityViewModel: CommunityViewModel = viewModel()
     val themes by communityViewModel.allThemes.collectAsStateWithLifecycle()
     val sort by communityViewModel.sort.collectAsStateWithLifecycle()
-    val query by communityViewModel.query.collectAsStateWithLifecycle()
+    val searchState = rememberTextFieldState(communityViewModel.query.value)
+
+    LaunchedEffect(searchState) {
+        snapshotFlow { searchState.text.toString() }.collect(communityViewModel::setQuery)
+    }
 
     LifecycleResumeEffect(Unit) {
         communityViewModel.refreshFromCache()
@@ -111,8 +118,7 @@ fun CommunityScreen(
         themes = themes,
         sort = sort,
         onSortChange = communityViewModel::setSort,
-        query = query,
-        onQueryChange = communityViewModel::setQuery,
+        searchState = searchState,
         onThemeClick = onThemeClick
     )
 }
@@ -125,10 +131,10 @@ private fun CommunityScreenContent(
     themes: List<CommunityTheme>?,
     sort: CommunitySort,
     onSortChange: (CommunitySort) -> Unit,
-    query: String,
-    onQueryChange: (String) -> Unit,
+    searchState: TextFieldState,
     onThemeClick: (String) -> Unit
 ) {
+    val query = searchState.text.toString()
     val hazeState = remember { HazeState() }
     val gridState = rememberLazyGridState()
     val toolbarLifted by remember {
@@ -173,7 +179,7 @@ private fun CommunityScreenContent(
             onDismissRequest = { showColorPicker = false },
             onColorPicked = { color ->
                 showColorPicker = false
-                onQueryChange(String.format("#%06X", 0xFFFFFF and color))
+                searchState.setTextAndPlaceCursorAtEnd(String.format("#%06X", 0xFFFFFF and color))
             },
             alphaEnabled = false,
             pickers = listOf(
@@ -269,8 +275,7 @@ private fun CommunityScreenContent(
                 }
 
                 SearchBar(
-                    query = query,
-                    onQueryChange = onQueryChange,
+                    state = searchState,
                     onFilterClick = { showSortDialog = true },
                     hazeState = hazeState,
                     onColorPickClick = { showColorPicker = true },

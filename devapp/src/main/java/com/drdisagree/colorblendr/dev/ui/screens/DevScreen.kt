@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -259,9 +261,9 @@ private fun HomeContent(
     val pendingListState = rememberLazyListState()
     val blockedListState = rememberLazyListState()
 
-    var adminKey by rememberSaveable { mutableStateOf(initialKey) }
+    val keyState = rememberTextFieldState(initialKey)
     var tab by rememberSaveable { mutableIntStateOf(0) }
-    var query by rememberSaveable { mutableStateOf("") }
+    val searchState = rememberTextFieldState()
     var searchVisible by rememberSaveable { mutableStateOf(false) }
     var newestFirst by rememberSaveable { mutableStateOf(true) }
     var blockTarget by remember { mutableStateOf<PendingSubmission?>(null) }
@@ -321,10 +323,9 @@ private fun HomeContent(
             target = selectedItems.first(),
             onDismiss = { bulkBlock = false },
             onConfirm = { reason ->
-                val targets = selectedItems
                 bulkBlock = false
                 selectedIds = emptySet()
-                onBlockAll(targets, reason)
+                onBlockAll(selectedItems, reason)
             }
         )
     }
@@ -459,7 +460,7 @@ private fun HomeContent(
                             IconButton(
                                 onClick = {
                                     searchVisible = !searchVisible
-                                    if (!searchVisible) query = ""
+                                    if (!searchVisible) searchState.clearText()
                                 },
                                 shapes = IconButtonDefaults.shapes()
                             ) {
@@ -491,10 +492,9 @@ private fun HomeContent(
     ) { innerPadding ->
         if (!authorized) {
             KeyGate(
-                adminKey = adminKey,
-                onKeyChange = { adminKey = it },
+                keyState = keyState,
                 loading = loading,
-                onUnlock = { onUnlock(adminKey) },
+                onUnlock = { onUnlock(keyState.text.toString()) },
                 modifier = Modifier.padding(innerPadding)
             )
             return@Scaffold
@@ -541,8 +541,7 @@ private fun HomeContent(
                         .padding(top = 8.dp)
                 ) {
                     CompactSearchField(
-                        query = query,
-                        onQueryChange = { query = it },
+                        state = searchState,
                         modifier = Modifier.weight(1f)
                     )
                     Box {
@@ -608,7 +607,7 @@ private fun HomeContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 AnimatedContent(
-                    targetState = Pair(tab, query.trim()),
+                    targetState = Pair(tab, searchState.text.trim().toString()),
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
                     label = "devTabs"
                 ) { (currentTab, trimmedQuery) ->

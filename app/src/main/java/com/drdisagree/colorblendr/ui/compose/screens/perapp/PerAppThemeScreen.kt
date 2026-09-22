@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.ContainedLoadingIndicator
@@ -87,12 +88,12 @@ import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
-import kotlin.time.Duration.Companion.milliseconds
 import com.google.android.material.R as MaterialR
 
 @Composable
@@ -110,7 +111,8 @@ fun PerAppThemeScreen() {
     var filterMethod by remember { mutableIntStateOf(getAppListFilteringMethod()) }
     var appList by remember { mutableStateOf<List<AppInfoModel>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var query by remember { mutableStateOf("") }
+    val searchState = rememberTextFieldState()
+    val query = searchState.text.toString()
     var warningVisible by rememberPrefState(SHOW_PER_APP_THEME_WARN) { showPerAppThemeWarning() }
     var reloadTrigger by remember { mutableIntStateOf(0) }
     val selections = remember { mutableStateMapOf<String, Boolean>() }
@@ -273,8 +275,7 @@ fun PerAppThemeScreen() {
                     }
 
                     SearchBar(
-                        query = query,
-                        onQueryChange = { query = it },
+                        state = searchState,
                         onFilterClick = { showFilterDialog = true },
                         hazeState = hazeState,
                         modifier = Modifier

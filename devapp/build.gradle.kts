@@ -13,6 +13,7 @@ plugins {
 configure<ApplicationExtension> {
     namespace = "com.drdisagree.colorblendr.dev"
     compileSdk = 37
+    compileSdkMinor = 1
 
     defaultConfig {
         minSdk = 31
@@ -87,6 +88,7 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.activity.compose)
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.navigation.compose)
     implementation(libs.work.runtime)

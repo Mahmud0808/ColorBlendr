@@ -15,6 +15,7 @@ plugins {
 configure<ApplicationExtension> {
     namespace = "com.drdisagree.colorblendr"
     compileSdk = 37
+    compileSdkMinor = 1
 
     defaultConfig {
         minSdk = 31
@@ -201,6 +202,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.haze)
+    implementation(libs.haze.blur)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.okhttp)

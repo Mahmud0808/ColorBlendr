@@ -3,6 +3,7 @@ package me.jfenn.colorpickerdialog.compose.dialogs
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -12,11 +13,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.SizeTransform
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -31,13 +30,18 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +53,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,21 +79,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import java.util.Locale
+import kotlin.math.min
+import kotlin.math.roundToInt
 import me.jfenn.colorpickerdialog.R
 import me.jfenn.colorpickerdialog.compose.components.HorizontalSmoothColorView
 import me.jfenn.colorpickerdialog.compose.components.SmoothColorView
 import me.jfenn.colorpickerdialog.compose.components.VerticalSmoothColorView
-import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 import me.jfenn.colorpickerdialog.compose.pickers.DEFAULT_PRESETS
 import me.jfenn.colorpickerdialog.compose.pickers.HsvPickerPage
 import me.jfenn.colorpickerdialog.compose.pickers.ImagePickerPage
 import me.jfenn.colorpickerdialog.compose.pickers.PresetPickerPage
 import me.jfenn.colorpickerdialog.compose.pickers.RgbPickerPage
 import me.jfenn.colorpickerdialog.compose.pickers.WheelPickerPage
-import java.util.Locale
-import kotlin.math.min
-import kotlin.math.roundToInt
+import me.jfenn.colorpickerdialog.compose.theme.PickerColors
 import android.graphics.Color as AndroidColor
+import androidx.core.graphics.toColorInt
 
 // Color band with centered hex field, tabbed pickers (tab clicks only, no
 // swipe), 64dp M3 expressive button bar. Portrait stacks band on top;
@@ -250,18 +256,42 @@ private fun HexField(
     alphaEnabled: Boolean,
     onColorParsed: (Int) -> Unit
 ) {
-    val length = if (alphaEnabled) 9 else 7
+    val hexLength = if (alphaEnabled) 9 else 7
     val formatted = if (alphaEnabled) {
         String.format("#%08X", color)
     } else {
         String.format("#%06X", 0xFFFFFF and color)
     }
 
-    var text by remember { mutableStateOf(formatted) }
+    val state = rememberTextFieldState(formatted)
     var lastColor by remember { mutableIntStateOf(color) }
-    if (lastColor != color) {
-        lastColor = color
-        text = formatted
+    LaunchedEffect(color) {
+        if (lastColor != color) {
+            lastColor = color
+            state.setTextAndPlaceCursorAtEnd(formatted)
+        }
+    }
+    LaunchedEffect(state, hexLength) {
+        snapshotFlow { state.text.toString() }.collect { value ->
+            if (value.length != hexLength) return@collect
+            runCatching { value.toColorInt() }
+                .getOrNull()
+                ?.takeIf { it != lastColor }
+                ?.let { parsed ->
+                    lastColor = parsed
+                    onColorParsed(parsed)
+                }
+        }
+    }
+    val hexTransformation = remember(hexLength) {
+        InputTransformation {
+            val sanitized = "#" + asCharSequence().toString()
+                .removePrefix("#")
+                .filter { it.isDigit() || it in 'a'..'f' || it in 'A'..'F' }
+                .take(hexLength - 1)
+                .uppercase(Locale.getDefault())
+            if (sanitized != asCharSequence().toString()) replace(0, length, sanitized)
+        }
     }
 
     val textColor = if (
@@ -273,25 +303,9 @@ private fun HexField(
     }
 
     BasicTextField(
-        value = text,
-        onValueChange = { value ->
-            val sanitized = "#" + value
-                .removePrefix("#")
-                .filter { it.isDigit() || it in 'a'..'f' || it in 'A'..'F' }
-                .take(length - 1)
-                .uppercase(Locale.getDefault())
-            text = sanitized
-
-            if (sanitized.length == length) {
-                runCatching { AndroidColor.parseColor(sanitized) }
-                    .getOrNull()
-                    ?.let { parsed ->
-                        lastColor = parsed
-                        onColorParsed(parsed)
-                    }
-            }
-        },
-        singleLine = true,
+        state = state,
+        inputTransformation = hexTransformation,
+        lineLimits = TextFieldLineLimits.SingleLine,
         textStyle = TextStyle(
             color = textColor,
             fontSize = 24.sp,
