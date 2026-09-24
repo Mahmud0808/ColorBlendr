@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
@@ -37,6 +38,7 @@ import com.drdisagree.colorblendr.data.common.Constant.ADB_PAIR_NOTIFICATION
 import com.drdisagree.colorblendr.data.common.Constant.ADB_SEARCH_NOTIFICATION
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
+import com.drdisagree.colorblendr.data.common.Utilities.isNullGateMode
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
@@ -56,6 +58,7 @@ import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import org.json.JSONObject
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.nullgate.NullGateThemeClient
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
@@ -73,6 +76,12 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
 
+    private val nullGateResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        NullGateThemeClient.handleResult(result.resultCode, result.data)
+    }
+
     private val timeoutHandler: Handler = Handler(Looper.getMainLooper())
     private var timeoutRunnable: Runnable? = null
     private val colorsViewModel: ColorsViewModel by viewModels()
@@ -89,6 +98,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         DynamicColors.applyToActivityIfAvailable(this)
         setupEdgeToEdge()
+        NullGateThemeClient.bind(
+            context = this,
+            launchForResult = nullGateResult::launch,
+            notifyUser = { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        )
 
         // colorblendr://theme/<id> opens a community creation by id;
         // colorblendr://preview?data=<base64 payload> previews an arbitrary
@@ -143,6 +159,16 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
 
         initSuccess?.let { outState.putBoolean(KEY_INIT_SUCCESS, it) }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        NullGateThemeClient.setForeground(true)
+    }
+
+    override fun onStop() {
+        NullGateThemeClient.setForeground(false)
+        super.onStop()
     }
 
     private fun loadPreviewFromDeepLink(encoded: String?): String? {
@@ -229,6 +255,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+                isNullGateMode() -> {
+                    success.set(NullGateThemeClient.trustedControllerInstalled(applicationContext))
+                    countDownLatch.countDown()
+                }
+
                 else -> {
                     success.set(false)
                     countDownLatch.countDown()
@@ -244,6 +275,7 @@ class MainActivity : AppCompatActivity() {
         isRootMode() -> !RootConnectionProvider.isNotConnected
         isShizukuMode() -> !ShizukuConnectionProvider.isNotConnected
         isWirelessAdbMode() -> WifiAdbShell.isMyDeviceConnected()
+        isNullGateMode() -> NullGateThemeClient.trustedControllerInstalled(applicationContext)
         else -> false
     }
 
@@ -356,6 +388,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         cancelTimeout()
+        NullGateThemeClient.unbind()
 
         super.onDestroy()
     }

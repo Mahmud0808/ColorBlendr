@@ -253,6 +253,10 @@
     <string name="mode_two_desc">Use shizuku to work without root. Limited customization options will be available.</string>
     <string name="mode_three_title">Wireless ADB</string>
     <string name="mode_three_desc">Use ADB via Wireless Debugging. Limited customization options will be available.</string>
+    <string name="mode_four_title" translatable="false">NullGate</string>
+    <string name="mode_four_desc" translatable="false">Request narrow, temporary theme leases from the trusted NullGate controller. ColorBlendr receives no root shell.</string>
+    <string name="nullgate_service_not_found" translatable="false">The trusted NullGate controller is not installed.</string>
+    <string name="error_nullgate_unavailable" translatable="false">NullGate is unavailable, another request is active, or ColorBlendr is not in the foreground.</string>
     <string name="shizuku_service_not_found">Shizuku permission not granted.</string>
     <string name="grant_all_permissions">Please grant all permissions to proceed</string>
     <string name="wireless_adb_not_connected">Wireless ADB not connected.</string>
