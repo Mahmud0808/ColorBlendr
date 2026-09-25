@@ -26,6 +26,7 @@ spake2Android = "-SNAPSHOT"
 sunSecurityAndroid = "1.1"
 workRuntime = "2.11.2"
 zip4j = "2.11.6"
+junit = "4.13.2"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
@@ -71,3 +72,4 @@ spake2-android = { module = "com.github.Mahmud0808.spake2-java:spake2-android", 
 sun-security-android = { module = "com.github.MuntashirAkon:sun-security-android", version.ref = "sunSecurityAndroid" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
+junit = { module = "junit:junit", version.ref = "junit" }
