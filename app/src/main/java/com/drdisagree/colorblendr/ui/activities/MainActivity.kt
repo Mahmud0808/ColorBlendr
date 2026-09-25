@@ -166,6 +166,11 @@ class MainActivity : AppCompatActivity() {
         NullGateThemeClient.setForeground(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (isNullGateMode()) NullGateThemeClient.reconcileIfNeededOnResume()
+    }
+
     override fun onStop() {
         NullGateThemeClient.setForeground(false)
         super.onStop()

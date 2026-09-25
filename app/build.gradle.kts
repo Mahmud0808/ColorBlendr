@@ -189,6 +189,7 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.zip4j)
     implementation(libs.sun.security.android)
+    testImplementation(libs.junit)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

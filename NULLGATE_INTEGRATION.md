@@ -18,6 +18,9 @@ execution.
 5. ColorBlendr stores only the returned lease ID and expiry receipt. It revokes
    an existing lease before requesting a replacement.
 6. Removing ColorBlendr's fabricated colors requests immediate revocation.
+7. Lost, malformed, mismatched, or unconfirmed results remain blocked as
+   uncertain. The next foreground resume opens NullGate's reconciliation path;
+   ColorBlendr never treats an unknown grant or failed revoke as clean.
 
 The current NullGate policy reviews ColorBlendr version code 42 and the official
 ColorBlendr signer. A future upstream release must be reviewed and its new
@@ -37,6 +40,7 @@ version code admitted by NullGate before the release can use the integration.
 ## Host verification
 
 ```text
+./gradlew :app:testDebugUnitTest
 ./gradlew :app:compileDebugKotlin
 ./gradlew :app:assembleDebug
 ./gradlew :app:lintDebug
