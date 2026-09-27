@@ -17,6 +17,9 @@
     <string name="block_reason">Reason</string>
     <string name="unblock">Unblock</string>
     <string name="anonymous">Anonymous</string>
+    <string name="submission_meta">%1$s · %2$s</string>
+    <string name="char_counter">%1$d / %2$d</string>
+    <string name="empty_pending_subtitle">New submissions will show up here.</string>
     <string name="no_pending">Queue is empty</string>
     <string name="no_blocked">No blocked uploaders</string>
     <string name="search_hint">Search here…</string>
@@ -39,7 +42,18 @@
     <string name="back">Back</string>
     <string name="notify_daily">Pending reminder</string>
     <string name="notify_daily_desc">Notify me at a set interval if submissions are waiting for review.</string>
+    <string name="notify_blocked_desc">Notifications are blocked. Tap the switch to grant permission.</string>
     <string name="notify_interval">Reminder interval</string>
+    <plurals name="notify_every_hours">
+        <item quantity="one">Every %d hour</item>
+        <item quantity="two">Every %d hours</item>
+        <item quantity="other">Every %d hours</item>
+    </plurals>
+    <plurals name="notify_every_days">
+        <item quantity="one">Every day</item>
+        <item quantity="two">Every %d days</item>
+        <item quantity="other">Every %d days</item>
+    </plurals>
     <string name="cancel">Cancel</string>
     <string name="notify_channel_name">Pending submissions</string>
     <string name="notify_channel_desc">Daily reminder about themes awaiting review.</string>
@@ -47,7 +61,6 @@
     <plurals name="notify_body">
         <item quantity="one">%d submission is waiting for review</item>
         <item quantity="two">%d submissions are waiting for review</item>
-        <item quantity="many">%d submissions are waiting for review</item>
         <item quantity="other">%d submissions are waiting for review</item>
     </plurals>
     <string name="last_checked">Last background check</string>
@@ -61,6 +74,10 @@
     <string name="detail_tertiary">Tertiary</string>
     <string name="detail_style">Style</string>
     <string name="detail_spec">Color spec</string>
+    <string name="detail_spec_2021">2021</string>
+    <string name="detail_spec_2025">2025</string>
+    <string name="detail_spec_2026">2026</string>
+    <string name="detail_spec_generic">v%1$d</string>
     <string name="detail_accent_sat">Accent saturation</string>
     <string name="detail_bg_sat">Background saturation</string>
     <string name="detail_bg_light">Background lightness</string>
@@ -93,4 +110,21 @@
     <string name="hide_search">Hide search</string>
     <string name="sign_out">Sign out</string>
     <string name="sign_out_desc">Forget the admin key on this device.</string>
+    <string name="edit_details">Edit details</string>
+    <string name="theme_name">Name</string>
+    <string name="theme_description">Description</string>
+    <string name="save">Save</string>
+    <string name="edited">Edited</string>
+    <string name="action_loading">Processing…</string>
+    <string name="approving_theme">Approving theme…</string>
+    <string name="rejecting_theme">Rejecting theme…</string>
+    <string name="blocking_uploader">Blocking uploader…</string>
+    <string name="unblocking_uploader">Unblocking uploader…</string>
+    <string name="duplicate_warning">Matches %1$d%% of %2$s by %3$s</string>
+    <string name="duplicate_warning_exact">Duplicate of %1$s by %2$s (100%% match)</string>
+    <string name="matching_theme_title">Matching Theme Details</string>
+    <string name="source_published">Published Theme</string>
+    <string name="source_pending">Pending Submission</string>
+    <string name="similarity_score">Similarity match: %1$d%%</string>
+    <string name="close">Close</string>
 </resources>

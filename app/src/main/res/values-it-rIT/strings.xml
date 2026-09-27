@@ -188,6 +188,7 @@
     <string name="something_went_wrong">Qualcosa è andato storto.</string>
     <string name="error_root_unavailable">Root service is not connected. Grant root access and restart the app.</string>
     <string name="error_shizuku_unavailable">Shizuku is not running or permission is missing.</string>
+    <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
     <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">Cerca qui…</string>
@@ -252,7 +253,7 @@
     <string name="notification_settings">Impostazioni notifiche</string>
     <string name="notification_style_error">Se non è possibile inserire il codice di accoppiamento dalla notifica, allora potrebbe essere necessario modificare l\'ombra di notifica in Android. Vai alle impostazioni di notifica ~ Stile di notifica per cambiare lo stile di notifica. Altrimenti potrebbe non essere possibile inserire il codice di accoppiamento dalla notifica.</string>
     <string name="wifi_connection_required">Per utilizzare la funzione di debug wireless, il dispositivo deve essere connesso a una rete Wi-Fi. Se la tua connessione Wi-Fi non ha accesso a Internet, disattiva i dati mobili per una connessione Wi-Fi solida.</string>
-    <string name="wireless_debugging_guide_1">Vai in \"Opzioni sviluppatore\" &gt; \"Wireless Debugging\". Tappa su \"Accoppia dispositivo con codice di accoppiamento\", vedrai un codice a sei cifre.</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
     <string name="wireless_debugging_guide_2">Inserisci il codice di accoppiamento a sei cifre nella notifica inviata da ColorBlendr.</string>
     <string name="wireless_debugging_guide_3">Torna all\'app e clicca sul pulsante \"Start\" nella schermata precedente.</string>
     <string name="wireless_debugging_important_notice">Si prega di notare che la parte sinistra dell\'opzione di debug wireless è cliccabile. Toccando su di essa aprirà il menu di accoppiamento debug wireless.</string>

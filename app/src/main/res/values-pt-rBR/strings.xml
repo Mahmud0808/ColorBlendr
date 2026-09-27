@@ -188,6 +188,7 @@
     <string name="something_went_wrong">Algo deu errado.</string>
     <string name="error_root_unavailable">Serviço root não está conectado. Dê acesso de root e reinicie o app.</string>
     <string name="error_shizuku_unavailable">Shizuku não está funcionando ou permissão está faltando.</string>
+    <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">ADB sem fio não está conectado.</string>
     <string name="error_overlay_operation">Operação de sobreposição falhada: %1$s</string>
     <string name="search_hint">Procure aqui…</string>
@@ -252,7 +253,7 @@
     <string name="notification_settings">Configurações de notificação</string>
     <string name="notification_style_error">Se você não conseguir inserir o código de pareamento na notificação, talvez seja necessário alterar a Área de notificações para Android. Vá em Configurações &gt; Notificações e barra de status &gt; Estilo das notificações para alterar o estilo da notificação.</string>
     <string name="wifi_connection_required">Para usar o recurso de Depuração sem fios, seu dispositivo precisa estar conectado a uma rede Wi-Fi. Se sua conexão Wi-Fi não tiver acesso à internet, desative os dados móveis para obter uma conexão Wi-Fi estável.</string>
-    <string name="wireless_debugging_guide_1">Acesse \"Opções do desenvolvedor\" &gt; \"Depuração sem fios\". Toque em \"Emparelhar dispositivo com código de pareamento\" e você verá um código de seis dígitos.</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
     <string name="wireless_debugging_guide_2">Digite o código de pareamento de seis dígitos na notificação enviada pelo ColorBlendr.</string>
     <string name="wireless_debugging_guide_3">Volte ao app e clique no botão \"Começar\" na tela anterior.</string>
     <string name="wireless_debugging_important_notice">Observe que a parte esquerda da opção Depuração sem fios pode ser clicada. Ao tocar nela, o menu de pareamento da Depuração sem fios será aberto.</string>
