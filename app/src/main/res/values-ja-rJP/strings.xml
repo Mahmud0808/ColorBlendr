@@ -187,6 +187,7 @@
     <string name="something_went_wrong">問題が発生しました。</string>
     <string name="error_root_unavailable">ルートサービスが接続されていません。ルートアクセスを許可してアプリを再起動してください。</string>
     <string name="error_shizuku_unavailable">Shizukuが実行されていないか、権限が付与されていません。</string>
+    <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">ワイヤレスADBが接続されていません。</string>
     <string name="error_overlay_operation">オーバーレイの操作に失敗しました: %1$s</string>
     <string name="search_hint">検索…</string>
@@ -251,7 +252,7 @@
     <string name="notification_settings">通知設定</string>
     <string name="notification_style_error">通知に対してペアリングコードを入力できない場合は、通知シェードをAndroidのものに変更する必要がある場合があります。[通知設定] - [通知のスタイル] から通知のスタイルを変更してください。そうしない場合、通知からペアリングコードを入力できない場合があります。</string>
     <string name="wifi_connection_required">ワイヤレスデバッグを使用するには、お使いのデバイスがWi-Fiネットワークに接続されている必要があります。Wi-Fi接続にてインターネットアクセスがない場合はWi-Fi接続を維持するためにモバイルデータ通信をオフにしてください。</string>
-    <string name="wireless_debugging_guide_1">[開発者向けオプション] &gt; [ワイヤレス デバッグ] を開き、 [ペア設定コードによるデバイスのペア設定] をタップすると、6桁のコードが表示されます。</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
     <string name="wireless_debugging_guide_2">ColorBlendrから送信された通知に6桁のペアリングコードを入力してください。</string>
     <string name="wireless_debugging_guide_3">アプリに戻り、前の画面で [開始] ボタンをクリックしてください。</string>
     <string name="wireless_debugging_important_notice">[ワイヤレス デバッグ] の項目の左側の部分はクリックすることができます。それをタップするとワイヤレスデバッグのペアリングメニューが開きます。</string>

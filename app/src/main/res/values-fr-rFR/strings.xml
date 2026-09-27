@@ -188,6 +188,7 @@
     <string name="something_went_wrong">Une erreur s\'est produite.</string>
     <string name="error_root_unavailable">Root service is not connected. Grant root access and restart the app.</string>
     <string name="error_shizuku_unavailable">Shizuku is not running or permission is missing.</string>
+    <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
     <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">Rechercher ici…</string>
@@ -252,7 +253,7 @@
     <string name="notification_settings">Paramètres de notifications</string>
     <string name="notification_style_error">Si vous ne parvenez pas à saisir le code d\'appairage à partir de la notification, vous devrez peut-être changer le volet de notifications pour Android. Allez dans Paramètres de notification ~ Style de notification pour modifier le style de notification.  Sinon, vous ne pourrez peut-être pas saisir le code d\'appairage à partir de la notification.</string>
     <string name="wifi_connection_required">Pour utiliser la fonctionnalité de débogage sans fil, votre appareil doit être connecté à un réseau Wi-Fi. Si votre connexion Wi-Fi n\'a pas accès à Internet, désactivez les données mobiles pour bénéficier d\'une connexion Wi-Fi stable.</string>
-    <string name="wireless_debugging_guide_1">Allez dans \"Options développeur\" &gt; \"Débogage sans fil\". Appuyez sur \"Associer l\'appareil avec le code d\'appairage\", vous obtiendrez un code à six chiffres.</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
     <string name="wireless_debugging_guide_2">Entrez le code d\'appairage à six chiffres dans la notification envoyée par ColorBlendr.</string>
     <string name="wireless_debugging_guide_3">Revenez sur l\'application et cliquez sur le bouton « Démarrer » dans l\'écran précédent.</string>
     <string name="wireless_debugging_important_notice">Veuillez noter que la partie gauche de l\'option de débogage sans fil est cliquable. Appuyer dessus ouvrira le menu d\'appairage de débogage sans fil.</string>

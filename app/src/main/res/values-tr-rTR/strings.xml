@@ -188,6 +188,7 @@
     <string name="something_went_wrong">Bir hata oluştu.</string>
     <string name="error_root_unavailable">Root service is not connected. Grant root access and restart the app.</string>
     <string name="error_shizuku_unavailable">Shizuku is not running or permission is missing.</string>
+    <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
     <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">Burada arayın…</string>
@@ -252,7 +253,7 @@
     <string name="notification_settings">Bildirim ayarları</string>
     <string name="notification_style_error">Eşleştirme Kodunu bildirimden giremiyorsanız, Bildirim Gölgesini Android olarak değiştirmeniz gerekebilir. Bildirim Stilini değiştirmek için Bildirim Ayarları ~ Bildirim Stili\'ne gidin. Aksi takdirde eşleştirme kodunu bildirimden giremeyebilirsiniz.</string>
     <string name="wifi_connection_required">Kablosuz Hata Ayıklama özelliğini kullanmak için cihazınızın bir Wi-Fi ağına bağlı olması gerekir. Wi-Fi bağlantınızda internet erişimi yoksa, stabil bir bağlantı için mobil veriyi kapatın.</string>
-    <string name="wireless_debugging_guide_1">\"Geliştirici seçenekleri\" &gt; \"Kablosuz hata ayıklama\" bölümüne gidin. \"Cihazı eşleştirme koduyla eşleştir\" seçeneğine dokunduğunuzda altı haneli bir kod göreceksiniz.</string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will se a six-digit code.</string>
     <string name="wireless_debugging_guide_2">Altı haneli Eşleştirme Kodunu ColorBlendr tarafından gönderilen bildirime girin.</string>
     <string name="wireless_debugging_guide_3">Uygulamaya geri dönün ve önceki ekrandaki \"Başlat\" düğmesine tıklayın.</string>
     <string name="wireless_debugging_important_notice">Lütfen Kablosuz Hata Ayıklama seçeneğinin sol kısmının tıklanabilir olduğunu unutmayın. Buraya dokunmak Kablosuz Hata Ayıklama Eşleştirme menüsünü açacaktır.</string>
