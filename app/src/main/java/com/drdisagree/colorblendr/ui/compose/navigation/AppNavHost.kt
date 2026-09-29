@@ -39,6 +39,7 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.nullgate.NullGateThemeClient
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.requestShizukuPermission
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
@@ -146,6 +147,17 @@ fun AppNavHost(
         }
     }
 
+    fun checkNullGateConnection() {
+        if (NullGateThemeClient.trustedControllerInstalled(context)) {
+            onboardingAction = OnboardingActionState.Connecting
+            goToHome()
+        } else {
+            onboardingAction = OnboardingActionState.Error(
+                context.getString(R.string.nullgate_service_not_found)
+            )
+        }
+    }
+
     fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition =
         slideInHorizontally(spatialSpec) { if (isPop(navController)) -it else it }
 
@@ -170,6 +182,7 @@ fun AppNavHost(
                 onCheckRootConnection = ::checkRootConnection,
                 onCheckShizukuConnection = ::checkShizukuConnection,
                 onCheckAdbConnection = ::checkAdbConnection,
+                onCheckNullGateConnection = ::checkNullGateConnection,
                 onNavigateToPairing = { navController.navigateSingleTop(Routes.PAIRING) },
                 popActivityBackStack = { false },
                 onFinishActivity = { activity?.finish() }

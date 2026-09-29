@@ -106,6 +106,7 @@ fun OnboardingScreen(
     onCheckRootConnection: () -> Unit,
     onCheckShizukuConnection: () -> Unit,
     onCheckAdbConnection: () -> Unit,
+    onCheckNullGateConnection: () -> Unit,
     onNavigateToPairing: () -> Unit,
     popActivityBackStack: () -> Boolean,
     onFinishActivity: () -> Unit
@@ -181,6 +182,7 @@ fun OnboardingScreen(
                             WorkMethod.ROOT -> onCheckRootConnection()
                             WorkMethod.SHIZUKU -> onCheckShizukuConnection()
                             WorkMethod.WIRELESS_ADB -> onCheckAdbConnection()
+                            WorkMethod.NULLGATE -> onCheckNullGateConnection()
                         }
                         return@Button
                     }
@@ -689,6 +691,17 @@ private fun OnboardingPage4(onNavigateToPairing: () -> Unit) {
                     } else {
                         selectedMethod = WorkMethod.WIRELESS_ADB
                     }
+                },
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            SelectableCard(
+                title = stringResource(R.string.mode_four_title),
+                description = stringResource(R.string.mode_four_desc),
+                selected = selectedMethod == WorkMethod.NULLGATE,
+                onSelect = {
+                    WORKING_METHOD = WorkMethod.NULLGATE
+                    selectedMethod = WorkMethod.NULLGATE
+                    WifiAdbShell.disconnect()
                 }
             )
         }
@@ -706,6 +719,7 @@ private fun OnboardingScreenPreview() {
             onCheckRootConnection = {},
             onCheckShizukuConnection = {},
             onCheckAdbConnection = {},
+            onCheckNullGateConnection = {},
             onNavigateToPairing = {},
             popActivityBackStack = { false },
             onFinishActivity = {}
