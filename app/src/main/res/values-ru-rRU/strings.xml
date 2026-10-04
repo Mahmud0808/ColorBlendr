@@ -190,6 +190,7 @@
     <string name="something_went_wrong">Что-то пошло не так.</string>
     <string name="error_root_unavailable">Служба root не подключена. Предоставьте root доступ и перезапустите приложение.</string>
     <string name="error_shizuku_unavailable">Shizuku не запущен или отсутствует разрешение.</string>
+    <string name="error_shizuku_service_unavailable">Не удалось подключиться к сервису Shizuku. Убедитесь, что Shizuku запущена, а затем попробуйте ещё раз.</string>
     <string name="error_wireless_adb_unavailable">Беспроводной ADB не подключен.</string>
     <string name="error_overlay_operation">Операция наложения не удалась: %1$s</string>
     <string name="search_hint">Искать здесь…</string>
@@ -254,7 +255,7 @@
     <string name="notification_settings">Настройки уведомлений</string>
     <string name="notification_style_error">Если вы не можете ввести код сопряжения из уведомления, возможно, вам потребуется изменить стиль уведомлений на Android. Перейдите в раздел «Настройки уведомлений» ~ «Стиль уведомлений», чтобы изменить стиль уведомлений. В противном случае вы не сможете ввести код сопряжения из уведомления.</string>
     <string name="wifi_connection_required">Для использования функции беспроводной отладки ваше устройство должно быть подключено к сети Wi-Fi. Если у вашего Wi-Fi-подключения нет доступа в Интернет, отключите мобильную передачу данных для обеспечения стабильного Wi-Fi-соединения.</string>
-    <string name="wireless_debugging_guide_1">Перейдите в раздел «Параметры разработчика» &gt; «Отладка по беспроводной сети». Нажмите «Связать устройство с кодом сопряжения», и вы увидите шестизначный код.</string>
+    <string name="wireless_debugging_guide_1">Перейти к \"Параметры разработчика\" &gt; \"Беспроводная отладка\". Нажмите на \"Подключить устройство с помощью кода сопряжения\", вы увидите шестизначный код.</string>
     <string name="wireless_debugging_guide_2">Введите шестизначный код сопряжения в уведомление, отправленное ColorBlendr.</string>
     <string name="wireless_debugging_guide_3">Вернитесь в приложение и нажмите кнопку \"Начать\" на предыдущем экране.</string>
     <string name="wireless_debugging_important_notice">Обратите внимание, что левая часть опции «Беспроводная отладка» является кликабельной. При нажатии на неё откроется меню сопряжения для беспроводной отладки.</string>
