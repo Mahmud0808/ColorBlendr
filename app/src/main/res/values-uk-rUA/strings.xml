@@ -190,6 +190,7 @@
     <string name="something_went_wrong">Щось пішло не так.</string>
     <string name="error_root_unavailable">Служба root не підключена. Надайте root доступ і перезапустіть застосунок.</string>
     <string name="error_shizuku_unavailable">Shizuku не працює або немає дозволу.</string>
+    <string name="error_shizuku_service_unavailable">Не вдалося встановити з’єднання зі службою Shizuku. Переконайтеся, що Shizuku працює, а потім спробуйте ще раз.</string>
     <string name="error_wireless_adb_unavailable">Бездротовий ADB не під\'єднано.</string>
     <string name="error_overlay_operation">Помилка операції накладання: %1$s</string>
     <string name="search_hint">Шукайте тут…</string>
@@ -254,7 +255,7 @@
     <string name="notification_settings">Налаштування сповіщень</string>
     <string name="notification_style_error">Якщо ви не можете ввести код сполучення зі сповіщення, можливо, вам потрібно буде змінити панель сповіщень на Android. Перейдіть до налаштувань сповіщень ~ Notification Style, щоб змінити стиль сповіщень.  Інакше ви не зможете ввести код сполучення зі сповіщення.</string>
     <string name="wifi_connection_required">Щоб використовувати функцію бездротового налагодження, ваш пристрій має бути під\'єднано до мережі Wi-Fi. Якщо ваше з’єднання Wi-Fi не має доступу до Інтернету, вимкніть мобільні дані, щоб з’єднання Wi-Fi було надійним.</string>
-    <string name="wireless_debugging_guide_1">Перейти до \"Параметри розробника\" &gt; \"Бездротове налагодження\". Торкніться \"З’єднайте пристрій за допомогою коду сполучення\", ви побачите шестизначний код.</string>
+    <string name="wireless_debugging_guide_1">Перейти до \"Параметри розробника\" &gt; \"Бездротове налагодження\". Натисніть на \"Під\'єднати пристрій за допомогою коду сполучення\", Ви побачите шестизначний код.</string>
     <string name="wireless_debugging_guide_2">Введіть шестизначний код сполучення в сповіщенні, надісланому ColorBlendr.</string>
     <string name="wireless_debugging_guide_3">Поверніться до програми та натисніть кнопку «Пуск» на попередньому екрані.</string>
     <string name="wireless_debugging_important_notice">Будь ласка, зверніть увагу, що ліва частина опції Wireless Debugging доступна для натискання. Натискання на нього відкриє меню бездротового налагодження та сполучення.</string>

@@ -17,6 +17,9 @@
     <string name="block_reason">Причина</string>
     <string name="unblock">Разблокировать</string>
     <string name="anonymous">Аноним</string>
+    <string name="submission_meta">%1$s · %2$s</string>
+    <string name="char_counter">%1$d / %2$d</string>
+    <string name="empty_pending_subtitle">Новые материалы будут появляться здесь.</string>
     <string name="no_pending">Очередь пуста</string>
     <string name="no_blocked">Нет заблокированных отправителей</string>
     <string name="search_hint">Искать здесь…</string>
@@ -39,7 +42,20 @@
     <string name="back">Назад</string>
     <string name="notify_daily">Напоминание о незавершённых заявках</string>
     <string name="notify_daily_desc">Уведомлять меня через заданный промежуток времени, если есть заявки, ожидающие рассмотрения.</string>
+    <string name="notify_blocked_desc">Уведомления заблокированы. Нажмите на переключатель, чтобы предоставить разрешение.</string>
     <string name="notify_interval">Интервал между напоминаниями</string>
+    <plurals name="notify_every_hours">
+        <item quantity="one">Каждый %d час</item>
+        <item quantity="few">Каждые %d часа</item>
+        <item quantity="many">Каждые %d часов</item>
+        <item quantity="other">Каждые %d часов</item>
+    </plurals>
+    <plurals name="notify_every_days">
+        <item quantity="one">Каждый день</item>
+        <item quantity="few">Каждые %d дня</item>
+        <item quantity="many">Каждые %d дней</item>
+        <item quantity="other">Каждые %d дней</item>
+    </plurals>
     <string name="cancel">Отмена</string>
     <string name="notify_channel_name">Ожидающие рассмотрения материалы</string>
     <string name="notify_channel_desc">Ежедневное напоминание о темах, ожидающих рассмотрения.</string>
@@ -61,6 +77,10 @@
     <string name="detail_tertiary">Третичный</string>
     <string name="detail_style">Стиль</string>
     <string name="detail_spec">Спецификация цвета</string>
+    <string name="detail_spec_2021">2021</string>
+    <string name="detail_spec_2025">2025</string>
+    <string name="detail_spec_2026">2026</string>
+    <string name="detail_spec_generic">v%1$d</string>
     <string name="detail_accent_sat">Насыщенность акцента</string>
     <string name="detail_bg_sat">Насыщенность фона</string>
     <string name="detail_bg_light">Яркость фона</string>
@@ -93,4 +113,21 @@
     <string name="hide_search">Скрыть поиск</string>
     <string name="sign_out">Выйти</string>
     <string name="sign_out_desc">Забыть ключ администратора на этом устройстве.</string>
+    <string name="edit_details">Редактировать сведения</string>
+    <string name="theme_name">Имя</string>
+    <string name="theme_description">Описание</string>
+    <string name="save">Сохранить</string>
+    <string name="edited">Отредактировано</string>
+    <string name="action_loading">Обработка…</string>
+    <string name="approving_theme">Утверждение темы…</string>
+    <string name="rejecting_theme">Отказ от темы…</string>
+    <string name="blocking_uploader">Блокировка загрузчика…</string>
+    <string name="unblocking_uploader">Разблокировка загрузчика…</string>
+    <string name="duplicate_warning">Матчи %1$d%% из %2$s по %3$s</string>
+    <string name="duplicate_warning_exact">Дубликаты из %1$s по %2$s (100%% матч)</string>
+    <string name="matching_theme_title">Подробная информация о теме</string>
+    <string name="source_published">Опубликованная тема</string>
+    <string name="source_pending">Ожидается подача</string>
+    <string name="similarity_score">Совпадение по схожести: %1$d%%</string>
+    <string name="close">Закрыть</string>
 </resources>

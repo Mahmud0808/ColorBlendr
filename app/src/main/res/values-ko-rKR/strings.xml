@@ -187,6 +187,7 @@
     <string name="something_went_wrong">뭔가 잘못되었습니다.</string>
     <string name="error_root_unavailable">Root service is not connected. Grant root access and restart the app.</string>
     <string name="error_shizuku_unavailable">Shizuku is not running or permission is missing.</string>
+    <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
     <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
     <string name="search_hint">여기에 검색…</string>
@@ -251,7 +252,7 @@
     <string name="notification_settings">알림 설정</string>
     <string name="notification_style_error">알림에서 페어링 코드를 입력할 수 없는 경우 알림 음영을 Android로 변경해야 할 수도 있습니다. 알림 설정 ~ 알림 스타일로 이동하여 알림 스타일을 변경하세요. 그렇지 않으면 알림에서 페어링 코드를 입력할 수 없을 수도 있습니다.</string>
     <string name="wifi_connection_required">무선 디버깅 기능을 사용하려면 기기가 Wi-Fi 네트워크에 연결되어 있어야 합니다. Wi-Fi 연결에 인터넷 액세스가 없는 경우 모바일 데이터를 끄면 견고한 Wi-Fi 연결이 가능합니다.</string>
-    <string name="wireless_debugging_guide_1">\"개발자 옵션\" > \"무선 디버깅\"으로 이동하세요. \"페어링 코드로 장치 페어링\"을 탭하면 6자리 코드가 표시됩니다. </string>
+    <string name="wireless_debugging_guide_1">Go to \"Developer options\" &gt; \"Wireless Debugging\". Tap on \"Pair device with Pairing Code\", you will see a six-digit code.</string>
     <string name="wireless_debugging_guide_2">ColorBlendr가 보낸 알림에 여섯 자리 페어링 코드를 입력합니다.</string>
     <string name="wireless_debugging_guide_3">앱으로 돌아와서 이전 화면에서 \"시작\" 버튼을 클릭하세요.</string>
     <string name="wireless_debugging_important_notice">무선 디버깅 옵션의 왼쪽 부분은 클릭할 수 있습니다. 이 옵션을 탭하면 무선 디버깅 페어링 메뉴가 열립니다.</string>
