@@ -39,7 +39,7 @@ ColorBlendr speaks your language because of these translators and proofreaders:
           <br />
           <sub><b>Andrea Ferrario (strange977)</b></sub></a>
         <br />
-        <sub><b>1348 words</b></sub>
+        <sub><b>1441 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/HangeulFactorys_HF"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
