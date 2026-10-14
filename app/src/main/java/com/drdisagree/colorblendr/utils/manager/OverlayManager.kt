@@ -19,8 +19,10 @@ import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.isNullGateMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
@@ -44,6 +46,7 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignFullPale
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
+import com.drdisagree.colorblendr.utils.nullgate.NullGateThemeClient
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 
 @Suppress("unused")
@@ -386,6 +389,17 @@ object OverlayManager {
     }
 
     private fun applyFabricatedColorsNonRoot(): Boolean? {
+        if (isNullGateMode()) {
+            val accepted = NullGateThemeClient.requestTheme(
+                seedArgb = getSeedColorValue(Color.BLUE),
+                themeStyle = getCurrentMonetStyle().name
+            )
+            if (!accepted) {
+                reportError(appContext.getString(R.string.error_nullgate_unavailable))
+            }
+            return accepted
+        }
+
         val isShizukuMode = isShizukuMode()
         val isWirelessAdbMode = isWirelessAdbMode()
 
@@ -481,6 +495,14 @@ object OverlayManager {
     }
 
     private fun removeFabricatedColorsNonRoot(): Boolean? {
+        if (isNullGateMode()) {
+            val accepted = NullGateThemeClient.revokeActiveLease()
+            if (!accepted) {
+                reportError(appContext.getString(R.string.error_nullgate_unavailable))
+            }
+            return accepted
+        }
+
         val isShizukuMode = isShizukuMode()
         val isWirelessAdbMode = isWirelessAdbMode()
 
