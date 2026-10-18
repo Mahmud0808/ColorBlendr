@@ -18,7 +18,7 @@ ColorBlendr speaks your language because of these translators and proofreaders:
           <br />
           <sub><b>𝗛𝗼𝗹𝗶 (mikropsoft)</b></sub></a>
         <br />
-        <sub><b>4240 words</b></sub>
+        <sub><b>5510 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/RoyaleOne"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17492162/medium/cbb8b4b4e1968135e4636b37643c27fa.png" />
