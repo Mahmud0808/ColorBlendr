@@ -15,25 +15,6 @@ import java.util.Locale
 object MiscUtil {
 
     @Throws(JSONException::class)
-    fun mergeJsonStrings(target: String?, source: String?): String {
-        var targetTemp = target
-        var sourceTemp = source
-
-        if (target.isNullOrEmpty()) {
-            targetTemp = JSONObject().toString()
-        }
-
-        if (source.isNullOrEmpty()) {
-            sourceTemp = JSONObject().toString()
-        }
-
-        val targetJson = JSONObject(targetTemp)
-        val sourceJson = JSONObject(sourceTemp)
-
-        return mergeJsonObjects(targetJson, sourceJson).toString()
-    }
-
-    @Throws(JSONException::class)
     fun mergeJsonObjects(target: JSONObject, source: JSONObject): JSONObject {
         val keys = source.keys()
         while (keys.hasNext()) {

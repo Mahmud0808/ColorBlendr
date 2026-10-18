@@ -34,7 +34,7 @@ class LegacyShizukuConnection : IShizukuConnection.Stub() {
     override fun removeFabricatedColors(): String? {
         return try {
             applyFabricatedColors(
-                ThemeOverlayPackage.getOriginalSettings(currentSettings).toString()
+                ThemeOverlayPackage.getOriginalSettings(currentSettings)
             )
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)

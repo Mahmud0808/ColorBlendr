@@ -5,8 +5,10 @@ import android.os.Build
 import android.util.Log
 import com.drdisagree.colorblendr.data.common.Utilities.getOriginalStyleName
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
+import com.drdisagree.colorblendr.utils.app.MiscUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColorNoHash
 import org.json.JSONObject
+import org.json.JSONTokener
 
 object ThemeOverlayPackage {
 
@@ -51,8 +53,15 @@ object ThemeOverlayPackage {
             }
         }
 
-    fun getOriginalSettings(currentSettings: String): JSONObject {
-        return JSONObject(currentSettings).apply {
+    fun mergeIntoSettings(currentSettings: String?, source: String): String {
+        val json = decodeSettings(currentSettings)
+        MiscUtil.mergeJsonObjects(json, JSONObject(source.ifEmpty { "{}" }))
+        return json.toString()
+    }
+
+    fun getOriginalSettings(currentSettings: String?): String {
+        val json = decodeSettings(currentSettings)
+        json.apply {
             val keysToRemove = arrayOf(
                 THEME_STYLE,
                 COLOR_SOURCE,
@@ -70,6 +79,21 @@ object ThemeOverlayPackage {
             putOpt(COLOR_BOTH, "0")
             putOpt(COLOR_SOURCE, "home_wallpaper")
             putOpt(APPLIED_TIMESTAMP, System.currentTimeMillis())
+        }
+        return json.toString()
+    }
+
+    private fun decodeSettings(raw: String?): JSONObject {
+        val text = raw?.trim().takeUnless { it.isNullOrEmpty() || it == "null" } ?: return JSONObject()
+        return runCatching {
+            when (val value = JSONTokener(text).nextValue()) {
+                is JSONObject -> value
+                is String -> JSONObject(value)
+                else -> JSONObject()
+            }
+        }.getOrElse {
+            Log.w(TAG, "decodeSettings: discarding unparsable value: $text", it)
+            JSONObject()
         }
     }
 }

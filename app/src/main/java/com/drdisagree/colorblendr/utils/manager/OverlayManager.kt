@@ -34,7 +34,6 @@ import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
-import com.drdisagree.colorblendr.utils.app.MiscUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -414,7 +413,7 @@ object OverlayManager {
 
                     // Null on success, shell error message on failure.
                     mShizukuConnection.applyFabricatedColors(
-                        MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                        ThemeOverlayPackage.mergeIntoSettings(currentSettings, themeJson)
                     )?.let { error ->
                         Log.e(TAG, "applyFabricatedColorsNonRoot: $error")
                         reportError(
@@ -454,9 +453,8 @@ object OverlayManager {
                         WifiAdbShell.exec("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
                     }
 
-                    val currentSettings = current.output
-                        .takeUnless { it == "null" || it.isEmpty() } ?: "{}"
-                    val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
+                    val jsonString =
+                        ThemeOverlayPackage.mergeIntoSettings(current.output, themeJson)
                     val put = WifiAdbShell
                         .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
                     if (!put.success) {
@@ -541,11 +539,7 @@ object OverlayManager {
                     WifiAdbShell.exec("cmd overlay enable $samsungPaletteName")
                 }
 
-                val currentSettings = current.output
-                    .takeUnless { it == "null" || it.isEmpty() } ?: "{}"
-                val jsonString = ThemeOverlayPackage
-                    .getOriginalSettings(currentSettings)
-                    .toString()
+                val jsonString = ThemeOverlayPackage.getOriginalSettings(current.output)
                 val put = WifiAdbShell
                     .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
                 if (!put.success) {
