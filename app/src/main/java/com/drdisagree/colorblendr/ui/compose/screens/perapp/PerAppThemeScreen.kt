@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -191,8 +192,18 @@ fun PerAppThemeScreen() {
                 unregisterFabricatedOverlay(
                     String.format(FABRICATED_OVERLAY_NAME_APPS, app.packageName)
                 )
-            } else {
-                applyFabricatedColorsPerApp(app.packageName)
+            } else if (!applyFabricatedColorsPerApp(app.packageName)) {
+                withContext(Dispatchers.Main) {
+                    selections[app.packageName] = false
+                    app.isSelected = false
+                    selectedApps[app.packageName] = false
+                    setSelectedFabricatedApps(selectedApps)
+                    Toast.makeText(
+                        appContext,
+                        appContext.getString(R.string.per_app_overlay_rejected, app.appName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }

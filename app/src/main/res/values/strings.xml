@@ -210,6 +210,7 @@
     <string name="error_shizuku_service_unavailable">Could not connect to the Shizuku service. Make sure Shizuku is running, then try again.</string>
     <string name="error_wireless_adb_unavailable">Wireless ADB is not connected.</string>
     <string name="error_overlay_operation">Overlay operation failed: %1$s</string>
+    <string name="per_app_overlay_rejected">%1$s has no themeable colors to override</string>
     <string name="search_hint">Search here…</string>
     <string name="search_by_color">Search by color</string>
     <string name="saved_styles_divider">Your styles</string>

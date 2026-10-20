@@ -338,9 +338,11 @@ object OverlayManager {
         packageName: String,
         paletteDark: ArrayList<ArrayList<Int>>? = null,
         paletteLight: ArrayList<ArrayList<Int>>? = null
-    ) {
+    ): Boolean {
         ResourceUtil.clearLookupCache()
-        registerFabricatedOverlay(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
+        return registerFabricatedOverlay(
+            getFabricatedColorsPerApp(packageName, paletteLight, paletteDark)
+        )
     }
 
     fun removeFabricatedColors(): Boolean {
