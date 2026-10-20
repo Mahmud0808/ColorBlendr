@@ -34,6 +34,7 @@ import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
+import com.drdisagree.colorblendr.utils.app.ResourceUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
@@ -186,6 +187,8 @@ object OverlayManager {
 
         applyFabricatedColorsNonRoot()?.let { return it }
 
+        ResourceUtil.clearLookupCache()
+
         val style = getCurrentMonetStyle()
         val monetAccentSaturation = getAccentSaturation()
         val monetBackgroundSaturation = getBackgroundSaturation()
@@ -326,6 +329,7 @@ object OverlayManager {
         paletteDark: ArrayList<ArrayList<Int>>? = null,
         paletteLight: ArrayList<ArrayList<Int>>? = null
     ) {
+        ResourceUtil.clearLookupCache()
         registerFabricatedOverlay(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
     }
 

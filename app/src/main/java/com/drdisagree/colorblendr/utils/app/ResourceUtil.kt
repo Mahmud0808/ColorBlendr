@@ -1,11 +1,28 @@
 package com.drdisagree.colorblendr.utils.app
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.LAUNCHER3_LAUNCHER
 
 object ResourceUtil {
+
+    private val resourcesCache = HashMap<String, Resources?>()
+    private val packageCache = HashMap<String, String?>()
+
+    @Synchronized
+    fun clearLookupCache() {
+        resourcesCache.clear()
+        packageCache.clear()
+    }
+
+    private fun resourcesFor(packageName: String): Resources? =
+        resourcesCache.getOrPut(packageName) {
+            runCatching {
+                appContext.packageManager.getResourcesForApplication(packageName)
+            }.getOrNull()
+        }
 
     /**
      * Checks if a resource exists in a given package.
@@ -16,10 +33,13 @@ object ResourceUtil {
      * @return True if the resource exists, false otherwise.
      */
     @SuppressLint("DiscouragedApi")
+    @Synchronized
     fun getResourcePackage(packageName: String, resourceName: String, type: String): String? {
-        return try {
-            val resources = appContext.packageManager.getResourcesForApplication(packageName)
+        val key = "$packageName\u0000$resourceName\u0000$type"
+        if (packageCache.containsKey(key)) return packageCache[key]
 
+        val resources = resourcesFor(packageName)
+        val result = if (resources == null) null else runCatching {
             // Try the provided package name
             var resId = resources.getIdentifier(resourceName, type, packageName)
 
@@ -35,15 +55,19 @@ object ResourceUtil {
                 // If targeting an app, we only want resources belonging to that app (or its base launcher class),
                 // not framework resources inherited by the app.
                 if (packageName == FRAMEWORK_PACKAGE && foundPackage == FRAMEWORK_PACKAGE) {
-                    return FRAMEWORK_PACKAGE
+                    FRAMEWORK_PACKAGE
                 } else if (packageName != FRAMEWORK_PACKAGE && foundPackage != FRAMEWORK_PACKAGE) {
-                    return foundPackage
+                    foundPackage
+                } else {
+                    null
                 }
+            } else {
+                null
             }
-            null
-        } catch (_: Exception) {
-            null
-        }
+        }.getOrNull()
+
+        packageCache[key] = result
+        return result
     }
 
     fun resourceExists(packageName: String, resourceName: String, type: String): Boolean {
