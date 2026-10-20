@@ -307,6 +307,37 @@ object DynamicColors {
                 tonalPalette = TonalPalette.NEUTRAL_VARIANT,
                 lightModeColorIndex = 4,
                 darkModeColorIndex = 8
+            ),
+            // [Android 15+]
+            ColorMapping(
+                resourceName = "primary_dim",
+                tonalPalette = TonalPalette.PRIMARY,
+                lightModeColorIndex = 7,
+                darkModeColorIndex = 5
+            ),
+            ColorMapping(
+                resourceName = "secondary_dim",
+                tonalPalette = TonalPalette.SECONDARY,
+                lightModeColorIndex = 7,
+                darkModeColorIndex = 5
+            ),
+            ColorMapping(
+                resourceName = "tertiary_dim",
+                tonalPalette = TonalPalette.TERTIARY,
+                lightModeColorIndex = 7,
+                darkModeColorIndex = 5
+            ),
+            ColorMapping(
+                resourceName = "error_dim",
+                colorCode = "#FF5540".toColorInt(),
+                lightModeLStarAdjustment = 30.0,
+                darkModeLStarAdjustment = 70.0
+            ),
+            ColorMapping(
+                resourceName = "palette_key_color_error",
+                colorCode = "#FF5540".toColorInt(),
+                lightModeLStarAdjustment = 50.0,
+                darkModeLStarAdjustment = 50.0
             )
         )
     }

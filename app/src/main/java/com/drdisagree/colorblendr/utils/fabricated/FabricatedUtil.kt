@@ -276,6 +276,8 @@ object FabricatedUtil {
         paletteLight: ArrayList<ArrayList<Int>>,
         useIfExists: Boolean = false
     ) {
+        val pascalPrefixes = arrayOf("settingslib_materialColor", "materialColor")
+
         FIXED_COLORS_MAPPED.forEach { colorMapping ->
             val (resourceName, colorValue) = colorMapping.extractResourceFromColorMap(
                 prefix = "system_",
@@ -283,7 +285,23 @@ object FabricatedUtil {
                 isDark = false
             )
 
+            // [Fixed Colors]
             setColor(resourceName, colorValue, useIfExists)
+
+            // [Android 15+]
+            setColor("${resourceName}_light", colorValue, useIfExists)
+            setColor("${resourceName}_dark", colorValue, useIfExists)
+
+            // [PascalCase]
+            val pascalRole = colorMapping.resourceName.split("_").joinToString("") { word ->
+                word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
+            pascalPrefixes.forEach { prefix ->
+                val basePascal = "$prefix$pascalRole"
+                setColor(basePascal, colorValue, useIfExists)
+                setColor("${basePascal}Light", colorValue, useIfExists)
+                setColor("${basePascal}Dark", colorValue, useIfExists)
+            }
         }
     }
 
