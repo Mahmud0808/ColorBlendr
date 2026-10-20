@@ -168,8 +168,6 @@ object OverlayManager {
 
         return try {
             mRootConnection.registerFabricatedOverlay(fabricatedOverlay)
-            mRootConnection.enableOverlayWithIdentifier(listOf(fabricatedOverlay.overlayName))
-            true
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to register fabricated overlay: " + fabricatedOverlay.overlayName, e)
             reportError(overlayError(e))

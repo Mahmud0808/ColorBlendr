@@ -360,82 +360,127 @@ class RootConnection : RootService() {
          */
         @Suppress("DEPRECATION")
         @Throws(RemoteException::class)
-        override fun registerFabricatedOverlay(overlay: FabricatedOverlayResource) {
-            try {
-                val fobInstance = fobClass.getConstructor(
-                    String::class.java,
-                    String::class.java,
-                    String::class.java
-                ).newInstance(
-                    overlay.sourcePackage,
-                    overlay.overlayName,
-                    overlay.targetPackage
-                )
+        override fun registerFabricatedOverlay(overlay: FabricatedOverlayResource): Boolean {
+            if (overlay.getEntries().isEmpty()) {
+                Log.w(TAG, "Skipping overlay with no entries: ${overlay.overlayName}")
+                return false
+            }
 
-                val setResourceValueMethod = fobClass.getMethod(
+            return try {
+                registerAndEnableInOneTransaction(overlay)
+
+                if (overlayEnabledInternal(overlay.overlayName)) {
+                    true
+                } else {
+                    registerAndEnableInOneTransaction(overlay)
+                    overlayEnabledInternal(overlay.overlayName)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "registerFabricatedOverlay: ", e)
+                false
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        private fun registerAndEnableInOneTransaction(overlay: FabricatedOverlayResource) {
+            val fobInstance = fobClass.getConstructor(
+                String::class.java,
+                String::class.java,
+                String::class.java
+            ).newInstance(
+                overlay.sourcePackage,
+                overlay.overlayName,
+                overlay.targetPackage
+            )
+
+            val setResourceValueMethod = fobClass.getMethod(
+                "setResourceValue",
+                String::class.java,
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            )
+
+            val isA14orHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+            var setResourceValueMethodWithConfig: Method? = null
+
+            if (isA14orHigher) {
+                setResourceValueMethodWithConfig = fobClass.getMethod(
                     "setResourceValue",
                     String::class.java,
                     Int::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType
+                    Int::class.javaPrimitiveType,
+                    String::class.java
                 )
+            }
 
-                val isA14orHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                var setResourceValueMethodWithConfig: Method? = null
-
-                if (isA14orHigher) {
-                    setResourceValueMethodWithConfig = fobClass.getMethod(
-                        "setResourceValue",
-                        String::class.java,
-                        Int::class.javaPrimitiveType,
-                        Int::class.javaPrimitiveType,
-                        String::class.java
+            for ((_, overlayEntry) in overlay.getEntries()) {
+                if (isA14orHigher &&
+                    overlayEntry.getConfiguration() != null &&
+                    setResourceValueMethodWithConfig != null
+                ) {
+                    setResourceValueMethodWithConfig.invoke(
+                        fobInstance,
+                        overlayEntry.resourceName,
+                        overlayEntry.resourceType,
+                        overlayEntry.resourceValue,
+                        overlayEntry.getConfiguration()
+                    )
+                } else {
+                    setResourceValueMethod.invoke(
+                        fobInstance,
+                        overlayEntry.resourceName,
+                        overlayEntry.resourceType,
+                        overlayEntry.resourceValue
                     )
                 }
-
-                for ((_, overlayEntry) in overlay.getEntries()) {
-                    if (isA14orHigher &&
-                        overlayEntry.getConfiguration() != null &&
-                        setResourceValueMethodWithConfig != null
-                    ) {
-                        setResourceValueMethodWithConfig.invoke(
-                            fobInstance,
-                            overlayEntry.resourceName,
-                            overlayEntry.resourceType,
-                            overlayEntry.resourceValue,
-                            overlayEntry.getConfiguration()
-                        )
-                    } else {
-                        setResourceValueMethod.invoke(
-                            fobInstance,
-                            overlayEntry.resourceName,
-                            overlayEntry.resourceType,
-                            overlayEntry.resourceValue
-                        )
-                    }
-                }
-
-                val foInstance = fobClass.getMethod(
-                    "build"
-                ).invoke(fobInstance)
-
-                val omtbInstance = omtbClass.newInstance()
-
-                omtbClass.getMethod(
-                    "registerFabricatedOverlay",
-                    foClass
-                ).invoke(
-                    omtbInstance,
-                    foInstance
-                )
-
-                val omtInstance = omtbClass.getMethod(
-                    "build"
-                ).invoke(omtbInstance)
-
-                commit(omtInstance)
-            } catch (e: Exception) {
-                Log.e(TAG, "registerFabricatedOverlay: ", e)
             }
+
+            val foInstance = fobClass.getMethod("build").invoke(fobInstance)
+
+            val omtbInstance = omtbClass.newInstance()
+
+            omtbClass.getMethod(
+                "registerFabricatedOverlay",
+                foClass
+            ).invoke(
+                omtbInstance,
+                foInstance
+            )
+
+            val identifier = generateOverlayIdentifier(overlay.overlayName)
+            val setEnabledMethod = omtbClass.getMethod(
+                "setEnabled",
+                oiClass,
+                Boolean::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            )
+
+            val thisUserId = currentUserId
+            var currentUserListed = false
+
+            mUserManager.getProfiles(thisUserId, true).forEach { userInfo ->
+                try {
+                    val userId = userInfo.userHandle.getUserIdentifier()
+
+                    if (userInfo.isProfile || userId == thisUserId) {
+                        setEnabledMethod.invoke(omtbInstance, identifier, true, userId)
+
+                        if (userId == thisUserId) {
+                            currentUserListed = true
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error enabling overlay for user ${userInfo.userHandle}", e)
+                }
+            }
+
+            if (!currentUserListed) {
+                setEnabledMethod.invoke(omtbInstance, identifier, true, thisUserId)
+            }
+
+            val omtInstance = omtbClass.getMethod("build").invoke(omtbInstance)
+
+            commit(omtInstance)
         }
 
         /**

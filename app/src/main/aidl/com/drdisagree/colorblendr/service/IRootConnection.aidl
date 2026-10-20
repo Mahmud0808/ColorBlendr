@@ -15,7 +15,7 @@ interface IRootConnection {
     boolean enableOverlayExclusiveInCategory(in String packageName);
     void disableOverlay(in List<String> packages);
     void disableOverlayWithIdentifier(in List<String> packages);
-    void registerFabricatedOverlay(in FabricatedOverlayResource fabricatedOverlay);
+    boolean registerFabricatedOverlay(in FabricatedOverlayResource fabricatedOverlay);
     void unregisterFabricatedOverlay(in String packageName);
     boolean setHighestPriority(String packageName);
     boolean setLowestPriority(String packageName);
