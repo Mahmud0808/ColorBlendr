@@ -4,7 +4,8 @@ enum class WorkMethod {
     NULL,
     ROOT,
     SHIZUKU,
-    WIRELESS_ADB;
+    WIRELESS_ADB,
+    NULLGATE;
 
     companion object {
         fun fromString(str: String?): WorkMethod {

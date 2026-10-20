@@ -113,6 +113,10 @@ object Utilities {
         return getWorkingMethod() == WorkMethod.WIRELESS_ADB
     }
 
+    fun isNullGateMode(): Boolean {
+        return getWorkingMethod() == WorkMethod.NULLGATE
+    }
+
     fun isWorkMethodUnknown(): Boolean {
         return getWorkingMethod() == WorkMethod.NULL
     }
