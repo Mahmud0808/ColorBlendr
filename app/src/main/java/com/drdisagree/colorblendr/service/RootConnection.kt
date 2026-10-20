@@ -137,27 +137,33 @@ class RootConnection : RootService() {
          */
         @Throws(RemoteException::class)
         override fun isOverlayEnabled(packageName: String): Boolean {
+            return overlayEnabledInternal(packageName)
+        }
+
+        @Throws(RemoteException::class)
+        override fun areOverlaysEnabled(packageNames: List<String>): BooleanArray {
+            return BooleanArray(packageNames.size) { overlayEnabledInternal(packageNames[it]) }
+        }
+
+        private fun overlayEnabledInternal(packageName: String): Boolean {
             val overlay = mOverlayManager.getOverlayInfoByIdentifier(
                 generateOverlayIdentifier(packageName),
                 currentUserId
-            )
+            ) ?: return false
 
-            if (overlay == null) {
-                return false
-            }
-
-            try {
-                val isEnabled = overlay.javaClass.getDeclaredMethod("isEnabled")
-                return isEnabled.invoke(overlay) as Boolean
+            return try {
+                val method = isEnabledMethod ?: overlay.javaClass.getDeclaredMethod("isEnabled")
+                    .also { isEnabledMethod = it }
+                method.invoke(overlay) as Boolean
             } catch (e: NoSuchMethodException) {
                 Log.e(TAG, "Failed to get isEnabled method", e)
-                return false
+                false
             } catch (e: InvocationTargetException) {
                 Log.e(TAG, "Failed to invoke isEnabled method", e)
-                return false
+                false
             } catch (e: IllegalAccessException) {
                 Log.e(TAG, "Failed to access isEnabled method", e)
-                return false
+                false
             }
         }
 
@@ -798,6 +804,9 @@ class RootConnection : RootService() {
         @SuppressLint("PrivateApi", "NewApi", "StaticFieldLeak", "RestrictedApi")
         companion object {
             private val TAG: String = RootConnectionImpl::class.java.simpleName
+
+            @Volatile
+            private var isEnabledMethod: Method? = null
 
             private val currentUserId: Int
                 get() = getForegroundUserId()

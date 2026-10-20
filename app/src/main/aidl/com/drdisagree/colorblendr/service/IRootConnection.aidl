@@ -8,6 +8,7 @@ interface IRootConnection {
     void setSystemUIRestartListener();
     boolean isOverlayInstalled(String packageName);
     boolean isOverlayEnabled(String packageName);
+    boolean[] areOverlaysEnabled(in List<String> packageNames);
     void enableOverlay(in List<String> packages);
     void enableOverlayWithIdentifier(in List<String> packages);
     boolean enableOverlayExclusive(in String packageName);

@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -38,12 +37,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -83,8 +84,8 @@ import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.manager.OverlayManager
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
-import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
@@ -300,8 +301,15 @@ private fun AppListItem(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val appIcon = remember(app.packageName) {
-        app.appIcon.toBitmap().asImageBitmap()
+    val context = LocalContext.current
+    val appIcon by produceState<ImageBitmap?>(initialValue = null, app.packageName) {
+        value = withContext(Dispatchers.IO) {
+            runCatching {
+                context.packageManager.getApplicationIcon(app.packageName)
+                    .toBitmap()
+                    .asImageBitmap()
+            }.getOrNull()
+        }
     }
 
     val radius = dimensionResource(R.dimen.container_corner_radius)
@@ -355,13 +363,20 @@ private fun AppListItem(
                 .fillMaxWidth()
                 .padding(start = 6.dp, end = 16.dp)
         ) {
-            Image(
-                bitmap = appIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-                    .size(48.dp)
-            )
+            val iconModifier = Modifier
+                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+                .size(48.dp)
+            appIcon.let { icon ->
+                if (icon != null) {
+                    Image(
+                        bitmap = icon,
+                        contentDescription = null,
+                        modifier = iconModifier
+                    )
+                } else {
+                    Box(modifier = iconModifier)
+                }
+            }
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -415,38 +430,32 @@ private fun filterList(appList: List<AppInfoModel>, query: String): List<AppInfo
 }
 
 private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
-    val appList: MutableList<AppInfoModel> = ArrayList()
     val packageManager = appContext.packageManager
 
-    val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+    val applications = packageManager.getInstalledApplications(0)
 
-    for (appInfo in applications) {
-        val packageName = appInfo.packageName
+    val filtered = applications.filter { appInfo ->
+        when (appType) {
+            AppType.LAUNCHABLE ->
+                packageManager.getLaunchIntentForPackage(appInfo.packageName) != null
 
-        if (appType == AppType.LAUNCHABLE) {
-            packageManager.getLaunchIntentForPackage(packageName) ?: continue
-        }
-
-        val appName = appInfo.loadLabel(packageManager).toString()
-        val appIcon = appInfo.loadIcon(packageManager)
-        val isSelected = isOverlayEnabled(
-            String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
-        )
-
-        val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-
-        val includeApp = when (appType) {
-            AppType.SYSTEM -> isSystemApp
-            AppType.USER -> !isSystemApp
-            AppType.LAUNCHABLE, AppType.ALL -> true
-        }
-
-        if (includeApp) {
-            val app = AppInfoModel(appName, packageName, appIcon)
-            app.isSelected = isSelected
-            appList.add(app)
+            AppType.SYSTEM -> (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+            AppType.USER -> (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0
+            AppType.ALL -> true
         }
     }
+
+    val enabled = OverlayManager.areOverlaysEnabled(
+        filtered.map { String.format(FABRICATED_OVERLAY_NAME_APPS, it.packageName) }
+    )
+
+    val appList = filtered.mapIndexed { index, appInfo ->
+        AppInfoModel(
+            appName = appInfo.loadLabel(packageManager).toString(),
+            packageName = appInfo.packageName,
+            isSelected = enabled[index]
+        )
+    }.toMutableList()
 
     appList.sortWith(compareBy<AppInfoModel> { !it.isSelected }.thenBy { it.appName.lowercase() })
 

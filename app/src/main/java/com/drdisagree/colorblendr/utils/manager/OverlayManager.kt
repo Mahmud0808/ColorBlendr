@@ -132,6 +132,18 @@ object OverlayManager {
         }
     }
 
+    fun areOverlaysEnabled(packageNames: List<String>): BooleanArray {
+        if (packageNames.isEmpty()) return BooleanArray(0)
+        if (!isRootMode() || !ensureRootConnection()) return BooleanArray(packageNames.size)
+
+        return try {
+            mRootConnection.areOverlaysEnabled(packageNames)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Failed to check if overlays are enabled", e)
+            BooleanArray(packageNames.size)
+        }
+    }
+
     fun uninstallOverlayUpdates(packageName: String) {
         if (!isRootMode()) return
         if (!ensureRootConnection()) {

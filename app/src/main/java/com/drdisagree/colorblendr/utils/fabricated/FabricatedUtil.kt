@@ -525,15 +525,14 @@ object FabricatedUtil {
         val packageManager = context.packageManager
         val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
 
-        val selectedApps = HashMap<String, Boolean>().apply {
-            applications.forEach { appInfo ->
-                val packageName = appInfo.packageName
-                val isSelected = OverlayManager.isOverlayEnabled(
-                    String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
-                )
+        val enabled = OverlayManager.areOverlaysEnabled(
+            applications.map { String.format(FABRICATED_OVERLAY_NAME_APPS, it.packageName) }
+        )
 
-                if (isSelected) {
-                    put(packageName, true)
+        val selectedApps = HashMap<String, Boolean>().apply {
+            applications.forEachIndexed { index, appInfo ->
+                if (enabled[index]) {
+                    put(appInfo.packageName, true)
                 }
             }
         }

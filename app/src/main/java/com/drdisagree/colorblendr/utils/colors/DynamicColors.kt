@@ -18,15 +18,20 @@ enum class TonalPalette(val index: Int) {
  */
 object DynamicColors {
 
-    val ALL_DYNAMIC_COLORS_MAPPED: MutableList<ColorMapping> get() = getAllDynamicColorsMapped()
-    val FIXED_COLORS_MAPPED: MutableList<ColorMapping> get() = getAllFixedColorsMapped()
-    val CUSTOM_COLORS_MAPPED: MutableList<ColorMapping> get() = getAllCustomColorsMapped()
-    val M3_REF_PALETTE: MutableList<ColorMapping> get() = getAllM3RefPalette()
+    private val dynamicColorsMono: MutableList<ColorMapping> by lazy { getAllDynamicColorsMapped(true) }
+    private val dynamicColorsNonMono: MutableList<ColorMapping> by lazy { getAllDynamicColorsMapped(false) }
+
+    val ALL_DYNAMIC_COLORS_MAPPED: MutableList<ColorMapping>
+        get() = if (getCurrentMonetStyle() == MONET.MONOCHROMATIC) dynamicColorsMono else dynamicColorsNonMono
+
+    val FIXED_COLORS_MAPPED: MutableList<ColorMapping> by lazy { getAllFixedColorsMapped() }
+    val CUSTOM_COLORS_MAPPED: MutableList<ColorMapping> by lazy { getAllCustomColorsMapped() }
+    val M3_REF_PALETTE: MutableList<ColorMapping> by lazy { getAllM3RefPalette() }
 
     /*
      * List of all public Dynamic Color (Light and Dark) resources
      */
-    private fun getAllDynamicColorsMapped(): MutableList<ColorMapping> {
+    private fun getAllDynamicColorsMapped(monochromatic: Boolean): MutableList<ColorMapping> {
         return mutableListOf(
             ColorMapping(
                 resourceName = "primary_container",
@@ -228,7 +233,7 @@ object DynamicColors {
             ColorMapping(
                 resourceName = "on_error_container",
                 colorCode = "#FF5540".toColorInt(),
-                lightModeLStarAdjustment = if (getCurrentMonetStyle() == MONET.MONOCHROMATIC) 10.0 else 30.0,
+                lightModeLStarAdjustment = if (monochromatic) 10.0 else 30.0,
                 darkModeLStarAdjustment = 90.0
             ),
             ColorMapping(
