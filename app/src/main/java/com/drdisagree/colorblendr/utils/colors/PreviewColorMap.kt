@@ -66,7 +66,10 @@ fun computeSystemColorMap(
             palette = paletteLight,
             isDark = false
         )
+        // [Fixed Colors]
         map[resourceName] = colorValue
+        map["${resourceName}_light"] = colorValue
+        map["${resourceName}_dark"] = colorValue
     }
 
     map.putAll(
