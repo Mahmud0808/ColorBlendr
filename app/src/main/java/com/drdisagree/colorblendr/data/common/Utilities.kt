@@ -26,6 +26,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.PER_APP_DEFAULTS_SEEDED
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
+import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
@@ -80,6 +81,22 @@ object Utilities {
 
     fun setPerAppDefaultsSeeded(seeded: Boolean) {
         putBoolean(PER_APP_DEFAULTS_SEEDED, seeded)
+    }
+
+    fun getSamsungPaletteOriginalState(): Boolean? {
+        return when (getInt(SAMSUNG_PALETTE_ORIGINAL_STATE, -1)) {
+            0 -> false
+            1 -> true
+            else -> null
+        }
+    }
+
+    fun setSamsungPaletteOriginalState(enabled: Boolean?) {
+        if (enabled == null) {
+            clearPref(SAMSUNG_PALETTE_ORIGINAL_STATE)
+        } else {
+            putInt(SAMSUNG_PALETTE_ORIGINAL_STATE, if (enabled) 1 else 0)
+        }
     }
 
     fun isShizukuThemingEnabled(defaultValue: Boolean = true): Boolean {

@@ -19,6 +19,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getSamsungPaletteOriginalState
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
@@ -27,6 +28,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSamsungPaletteOriginalState
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
@@ -449,6 +451,9 @@ object OverlayManager {
                         mShizukuConnection.run("cmd overlay list | grep \"$samsungPaletteName\"")
                     if (output.contains(samsungPaletteName)) {
                         val isEnabled = output.contains("[x]")
+                        if (getSamsungPaletteOriginalState() == null) {
+                            setSamsungPaletteOriginalState(isEnabled)
+                        }
                         mShizukuConnection.run("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
                     }
 
@@ -491,6 +496,9 @@ object OverlayManager {
                         WifiAdbShell.exec("cmd overlay list | grep \"$samsungPaletteName\"")
                     if (list.output.contains(samsungPaletteName)) {
                         val isEnabled = list.output.contains("[x]")
+                        if (getSamsungPaletteOriginalState() == null) {
+                            setSamsungPaletteOriginalState(isEnabled)
+                        }
                         WifiAdbShell.exec("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
                     }
 
@@ -539,8 +547,10 @@ object OverlayManager {
                         .run("cmd overlay list | grep \"$samsungPaletteName\"")
                         .contains(samsungPaletteName)
                 ) {
-                    mShizukuConnection.run("cmd overlay disable $samsungPaletteName")
-                    mShizukuConnection.run("cmd overlay enable $samsungPaletteName")
+                    samsungPaletteRestoreSteps().forEach { step ->
+                        mShizukuConnection.run("cmd overlay $step $samsungPaletteName")
+                    }
+                    setSamsungPaletteOriginalState(null)
                 }
 
                 // Null on success, shell error message on failure.
@@ -576,8 +586,10 @@ object OverlayManager {
                 // Grep exit 1 = palette absent; only the output matters.
                 val list = WifiAdbShell.exec("cmd overlay list | grep \"$samsungPaletteName\"")
                 if (list.output.contains(samsungPaletteName)) {
-                    WifiAdbShell.exec("cmd overlay disable $samsungPaletteName")
-                    WifiAdbShell.exec("cmd overlay enable $samsungPaletteName")
+                    samsungPaletteRestoreSteps().forEach { step ->
+                        WifiAdbShell.exec("cmd overlay $step $samsungPaletteName")
+                    }
+                    setSamsungPaletteOriginalState(null)
                 }
 
                 val jsonString = ThemeOverlayPackage.getOriginalSettings(current.output)
@@ -599,6 +611,13 @@ object OverlayManager {
 
         return success
     }
+
+    private fun samsungPaletteRestoreSteps(): List<String> =
+        if (getSamsungPaletteOriginalState() == false) {
+            listOf("enable", "disable")
+        } else {
+            listOf("disable", "enable")
+        }
 
     private fun reportError(message: String) {
         ThemingErrorReporter.report(message)

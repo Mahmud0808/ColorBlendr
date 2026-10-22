@@ -123,6 +123,7 @@ object Constant {
     const val COMMUNITY_VOTED_IDS = "communityVotedIds"
     const val COMMUNITY_LAST_FETCH = "communityLastFetch"
     const val PER_APP_DEFAULTS_SEEDED = "perAppDefaultsSeeded"
+    const val SAMSUNG_PALETTE_ORIGINAL_STATE = "samsungPaletteOriginalState"
     const val COMMUNITY_WORKER_URL = "https://colorblendr-themes.drdisagree.workers.dev"
     const val TURNSTILE_SITE_KEY = "0x4AAAAAADzUgMuegUjZcG6j"
 
@@ -137,6 +138,7 @@ object Constant {
             COMMUNITY_VOTED_IDS,
             COMMUNITY_LAST_FETCH,
             PER_APP_DEFAULTS_SEEDED,
+            SAMSUNG_PALETTE_ORIGINAL_STATE,
             DEVELOPER_MODE
         )
     )
