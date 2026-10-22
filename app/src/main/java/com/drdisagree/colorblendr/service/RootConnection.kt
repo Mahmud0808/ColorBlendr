@@ -856,13 +856,14 @@ class RootConnection : RootService() {
             private val currentUserId: Int
                 get() = getForegroundUserId()
 
-            private val SystemUI_UID: Int
-                get() = try {
+            private val SystemUI_UID: Int by lazy {
+                try {
                     Utils.getContext().packageManager.getPackageUid(SYSTEMUI_PACKAGE, 0)
                 } catch (e: PackageManager.NameNotFoundException) {
                     Log.e(TAG, "SystemUI_UID", e)
                     -1
                 }
+            }
 
             private val mUserManager: IUserManager by lazy {
                 IUserManager.Stub.asInterface(
