@@ -29,6 +29,16 @@ object ColorOverrideCodec {
     fun decodeTokens(json: String?): TokenOverrides =
         decodeModes(parse(json)) { tokensByName[it] }
 
+    fun tokenModesToJson(overrides: TokenOverrides): JSONObject =
+        encodeModes(overrides) { it.resourceName }
+
+    fun tokenModesFromJson(json: JSONObject): TokenOverrides? {
+        if (json.keys().asSequence().any { it != LIGHT && it != DARK }) return null
+        val light = strictMode(json, LIGHT) ?: return null
+        val dark = strictMode(json, DARK) ?: return null
+        return TokenOverrides(light = light, dark = dark)
+    }
+
     fun encodeApps(overrides: Map<String, ResourceOverrides>): String = JSONObject().apply {
         overrides.forEach { (packageName, modes) ->
             if (!modes.isEmpty && isValidName(packageName)) {
@@ -71,6 +81,18 @@ object ColorOverrideCodec {
                 else -> alpha.takeIf { it.length == 2 }?.toIntOrNull(16)?.let { shade.copy(alpha = it) }
             }
         }
+    }
+
+    private fun strictMode(json: JSONObject, key: String): Map<Token, ColorOverride>? {
+        if (!json.has(key)) return emptyMap()
+        val mode = json.optJSONObject(key) ?: return null
+        val overrides = HashMap<Token, ColorOverride>()
+        for (name in mode.keys()) {
+            val value = mode.opt(name) as? String ?: return null
+            val override = decodeValue(value) ?: return null
+            tokensByName[name]?.let { overrides[it] = override }
+        }
+        return overrides
     }
 
     private fun isValidName(name: String): Boolean =

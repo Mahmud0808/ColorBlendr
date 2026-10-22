@@ -14,15 +14,26 @@ object CommunityThemePalette {
     fun derive(theme: CommunityTheme, isDark: Boolean): List<List<Int>> = scheme(theme, isDark).shades
 
     fun scheme(theme: CommunityTheme, isDark: Boolean): ResolvedScheme {
-        val key = "${theme.id}:${theme.createdAt}:$isDark"
+        val key = "${key(theme)}:$isDark"
         cache.get(key)?.let { return it }
-        return ThemeEngine.scheme(source(theme), adjustments(theme, isDark), isDark)
+        val adjustments = adjustments(theme, isDark).copy(
+            tokenOverrides = theme.tokenOverrides,
+            legacyTokens = usesLegacyTokens(theme)
+        )
+        return ThemeEngine.scheme(source(theme), adjustments, isDark)
             .also { scheme ->
                 scheme.shades
                 scheme.colors
                 cache.put(key, scheme)
             }
     }
+
+    fun usesLegacyTokens(theme: CommunityTheme): Boolean =
+        theme.schemaVersion == CommunityThemeCodec.SCHEMA_VERSION &&
+                theme.engineVersion < CommunityThemeCodec.ENGINE_VERSION_TOKENS &&
+                theme.colorOverrides.isNotEmpty()
+
+    private fun key(theme: CommunityTheme) = "${theme.id}:${theme.createdAt}"
 
     private fun source(theme: CommunityTheme) = ThemeSource(
         style = theme.style,
@@ -48,6 +59,7 @@ object CommunityThemePalette {
             },
             accurateShades = theme.accurateShades,
             pitchBlack = theme.pitchBlack,
+            pitchBlackContainers = theme.pitchBlackContainers,
             tintedText = theme.tintText,
             shadeOverrides = theme.colorOverrides
         )

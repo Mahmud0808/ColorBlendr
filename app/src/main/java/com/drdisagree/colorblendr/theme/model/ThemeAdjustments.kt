@@ -11,7 +11,8 @@ data class ThemeAdjustments(
     val pitchBlackContainers: Boolean = false,
     val tintedText: Boolean = true,
     val shadeOverrides: Map<String, Int> = emptyMap(),
-    val tokenOverrides: TokenOverrides = TokenOverrides()
+    val tokenOverrides: TokenOverrides = TokenOverrides(),
+    val legacyTokens: Boolean = false
 ) {
     fun shadeOverridesFor(role: PaletteRole): Map<Int, Int> = buildMap {
         ShadeScale.indices.forEach { index ->

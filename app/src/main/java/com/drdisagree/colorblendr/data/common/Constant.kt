@@ -73,6 +73,7 @@ object Constant {
     const val SHOW_PALETTE_ROOT_HINT = "showPaletteRootHint"
     const val SHOW_PALETTE_ROOTLESS_HINT = "showPaletteRootlessHint"
     const val TOKEN_OVERRIDES = "tokenOverrides"
+    const val LEGACY_TOKENS = "legacyTokens"
     const val APP_COLOR_OVERRIDES = "appColorOverrides"
     const val TINT_TEXT_COLOR = "tintTextColor"
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
@@ -169,6 +170,7 @@ object Constant {
             MONET_PITCH_BLACK_THEME,
             TINT_TEXT_COLOR,
             TOKEN_OVERRIDES,
+            LEGACY_TOKENS,
             APP_COLOR_OVERRIDES,
             MONET_SECONDARY_COLOR,
             MONET_TERTIARY_COLOR,

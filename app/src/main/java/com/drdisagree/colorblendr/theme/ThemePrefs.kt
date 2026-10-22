@@ -15,6 +15,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getTokenOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
+import com.drdisagree.colorblendr.data.common.Utilities.legacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tertiaryColorEnabled
@@ -57,7 +58,8 @@ object ThemePrefs {
                 forcePitchBlackSettingsEnabled(),
         tintedText = tintedTextEnabled(),
         shadeOverrides = if (includeOverrides) shadeOverrides() else emptyMap(),
-        tokenOverrides = if (includeOverrides) getTokenOverrides() else TokenOverrides()
+        tokenOverrides = if (includeOverrides) getTokenOverrides() else TokenOverrides(),
+        legacyTokens = includeOverrides && legacyTokensEnabled()
     )
 
     fun resolve(): ResolvedTheme = ThemeEngine.resolve(source(), adjustments())

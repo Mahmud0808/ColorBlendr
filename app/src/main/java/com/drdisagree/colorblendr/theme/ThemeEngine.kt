@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.theme
 
+import com.drdisagree.colorblendr.theme.legacy.LegacyTokenRule
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeSource
@@ -48,6 +49,10 @@ object ThemeEngine {
     }
 
     private fun rules(adjustments: ThemeAdjustments, scheme: DynamicScheme): List<ThemeRule> = buildList {
+        if (adjustments.legacyTokens) {
+            val roles = LegacyTokenRule.rolesOf(adjustments.shadeOverrides)
+            if (roles.isNotEmpty()) add(LegacyTokenRule(roles))
+        }
         if (adjustments.pitchBlack) {
             add(
                 PitchBlackRule(

@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.data.common
 
 import android.graphics.Color
+import com.drdisagree.colorblendr.data.common.Constant.APP_COLOR_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
@@ -10,6 +11,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_AP
 import com.drdisagree.colorblendr.data.common.Constant.FIRST_RUN
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.GSON
+import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
@@ -36,7 +38,6 @@ import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.TOKEN_OVERRIDES
-import com.drdisagree.colorblendr.data.common.Constant.APP_COLOR_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
@@ -354,6 +355,14 @@ object Utilities {
 
     fun getTokenOverrides(): TokenOverrides {
         return ColorOverrideCodec.decodeTokens(getString(TOKEN_OVERRIDES))
+    }
+
+    fun legacyTokensEnabled(): Boolean {
+        return getBoolean(LEGACY_TOKENS, false)
+    }
+
+    fun setLegacyTokensEnabled(enabled: Boolean) {
+        if (enabled) putBoolean(LEGACY_TOKENS, true) else clearPref(LEGACY_TOKENS)
     }
 
     fun getAppColorOverrides(): Map<String, ResourceOverrides> {

@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.data.models
 
 import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.theme.override.TokenOverrides
 
 // Validated community theme. Data only — colors, style, modifiers; nothing
 // executable. Counters/createdAt come from server index, 0 when absent.
@@ -27,5 +28,9 @@ data class CommunityTheme(
     val colorOverrides: Map<String, Int>,
     val upvotes: Int,
     val downloads: Int,
-    val createdAt: Long
+    val createdAt: Long,
+    val schemaVersion: Int = 1,
+    val tokenOverrides: TokenOverrides = TokenOverrides(),
+    val pitchBlackContainers: Boolean = false,
+    val engineVersion: Int = 1
 )
