@@ -332,7 +332,7 @@ object FabricatedUtil {
             setColor("g$resourceName", colorValue, true)
         }
 
-        assignFullPaletteToOverlay(palette, palette, isDarkMode)
+        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
 
         replaceColorsPerPackageName(palette, isPitchBlackTheme)
 
