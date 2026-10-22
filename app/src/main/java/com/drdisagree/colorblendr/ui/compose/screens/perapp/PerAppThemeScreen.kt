@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.util.LruCache
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -50,6 +51,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -121,6 +123,7 @@ fun PerAppThemeScreen() {
     val selections = remember { mutableStateMapOf<String, Boolean>() }
     val selectedApps = remember { HashMap<String, Boolean>() }
     val toggleGenerations = remember { HashMap<String, Int>() }
+    val iconCache = remember { LruCache<String, ImageBitmap>(128) }
 
     LaunchedEffect(filterMethod, reloadTrigger) {
         isLoading = true
@@ -265,6 +268,7 @@ fun PerAppThemeScreen() {
                         ) { index, app ->
                             AppListItem(
                                 app = app,
+                                iconCache = iconCache,
                                 selected = selections[app.packageName] == true,
                                 position = when {
                                     filteredList.size == 1 -> WidgetPosition.Single
@@ -312,6 +316,7 @@ fun PerAppThemeScreen() {
 @Composable
 private fun AppListItem(
     app: AppInfoModel,
+    iconCache: LruCache<String, ImageBitmap>,
     selected: Boolean,
     position: WidgetPosition,
     onClick: () -> Unit
@@ -322,12 +327,15 @@ private fun AppListItem(
         MaterialTheme.colorScheme.onSurface
     }
     val context = LocalContext.current
-    val appIcon by produceState<ImageBitmap?>(initialValue = null, app.packageName) {
+    val iconSizePx = with(LocalDensity.current) { 48.dp.roundToPx() }
+    val appIcon by produceState(iconCache.get(app.packageName), app.packageName) {
+        if (value != null) return@produceState
         value = withContext(Dispatchers.IO) {
             runCatching {
                 context.packageManager.getApplicationIcon(app.packageName)
-                    .toBitmap()
+                    .toBitmap(iconSizePx, iconSizePx)
                     .asImageBitmap()
+                    .also { iconCache.put(app.packageName, it) }
             }.getOrNull()
         }
     }
