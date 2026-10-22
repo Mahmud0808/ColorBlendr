@@ -4,7 +4,6 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ShadeScale
-import com.drdisagree.materialcolorutilities.hct.Hct
 import com.drdisagree.materialcolorutilities.palettes.TonalPalette
 
 class AdjustedPalette(
@@ -38,11 +37,12 @@ class AdjustedPalette(
 
     private fun tunedColor(tone: Double, chromaMultiplier: Double): Int {
         if (tuning.isIdentity && chromaMultiplier == 1.0) return palette.getHct(tone).toInt()
-
-        val tunedTone = tuning.tone(tone)
-        val requestedChroma = palette.chroma * chromaMultiplier * tuning.chromaBoost
-        val tunedChroma = tuning.chroma(palette.hue, requestedChroma, tunedTone)
-        return hctColor(palette.hue, tunedChroma, tunedTone)
+        return GamutClipper.scaled(
+            palette.hue,
+            palette.chroma * chromaMultiplier,
+            tuning.tone(tone),
+            tuning.chromaFactor
+        )
     }
 
     private fun correctionAt(tone: Double): DoubleArray? {
@@ -61,13 +61,6 @@ class AdjustedPalette(
         return DoubleArray(3) { start[it] + (end[it] - start[it]) * fraction }
     }
 
-    private fun hctColor(hue: Double, chroma: Double, tone: Double): Int =
-        if (tone == YELLOW_FIX_TONE && Hct.isYellow(hue)) {
-            TonalPalette.fromHueAndChroma(hue, chroma).tone(YELLOW_FIX_TONE.toInt())
-        } else {
-            Hct.from(hue, chroma, tone).toInt()
-        }
-
     private fun lab(color: Int): DoubleArray = DoubleArray(3).also { ColorUtils.colorToLAB(color, it) }
 
     private operator fun DoubleArray.plus(other: DoubleArray) = DoubleArray(3) { this[it] + other[it] }
@@ -75,7 +68,6 @@ class AdjustedPalette(
     private operator fun DoubleArray.minus(other: DoubleArray) = DoubleArray(3) { this[it] - other[it] }
 
     private companion object {
-        const val YELLOW_FIX_TONE = 99.0
         val ZERO = DoubleArray(3)
     }
 }

@@ -4,54 +4,56 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments.Companion.NEUTRAL_LEVEL
-import com.drdisagree.materialcolorutilities.hct.Hct
+import kotlin.math.abs
 
 class PaletteTuning(
     private val saturation: Int = NEUTRAL_LEVEL,
     private val lightness: Int = NEUTRAL_LEVEL,
-    val chromaBoost: Double = 1.0
+    accurateShades: Boolean = true
 ) {
+    val vivid: Boolean = !accurateShades
+
+    val chromaFactor: Double =
+        saturation / NEUTRAL_LEVEL.toDouble() * (if (vivid) VIVID_SHADES_FACTOR else 1.0)
+
     val isIdentity: Boolean
-        get() = saturation == NEUTRAL_LEVEL && lightness == NEUTRAL_LEVEL && chromaBoost == 1.0
+        get() = lightness == NEUTRAL_LEVEL && chromaFactor == 1.0 && !vivid
+
+    private val toneBlend: Double = (NEUTRAL_LEVEL - lightness) / NEUTRAL_LEVEL.toDouble()
 
     fun tone(tone: Double): Double {
+        val shifted = lightnessTone(tone)
+        return if (vivid) vividTone(shifted) else shifted
+    }
+
+    private fun lightnessTone(tone: Double): Double {
         if (lightness == NEUTRAL_LEVEL) return tone
-        val shift = (lightness - NEUTRAL_LEVEL) / LIGHTNESS_STEPS_PER_TONE * damping(tone)
-        return (tone + shift).coerceIn(0.0, 100.0)
+        val clamped = tone.coerceIn(0.0, 100.0)
+        val curve = if (toneBlend > 0) DARKEST_CURVE else BRIGHTEST_CURVE
+        return clamped + abs(toneBlend) * (curve.map(clamped) - clamped)
     }
 
-    fun chroma(hue: Double, chroma: Double, tone: Double): Double {
-        if (saturation == NEUTRAL_LEVEL) return chroma
-        val amount = (saturation - NEUTRAL_LEVEL) / NEUTRAL_LEVEL.toDouble()
-        val available = Hct.from(hue, chroma, tone).chroma
-        return if (amount > 0) {
-            available + (Hct.from(hue, MAX_CHROMA, tone).chroma - available) * amount
-        } else {
-            available * (1 + amount)
-        }
+    private fun vividTone(tone: Double): Double {
+        if (tone <= MID_TONE) return tone
+        val fromWhite = ((100.0 - tone) / VIVID_TAPER_TONES).coerceIn(0.0, 1.0)
+        val fromMid = ((tone - MID_TONE) / VIVID_TAPER_TONES).coerceIn(0.0, 1.0)
+        return tone - VIVID_TONE_SHIFT * fromWhite * fromMid
     }
 
-    private fun damping(tone: Double): Double {
-        val upper = DAMPING.indexOfFirst { it.first >= tone }
-        if (upper <= 0) return DAMPING.first().second
-        val (toneA, valueA) = DAMPING[upper - 1]
-        val (toneB, valueB) = DAMPING[upper]
-        return valueA + (valueB - valueA) * (tone - toneA) / (toneB - toneA)
+    private fun List<Pair<Double, Double>>.map(tone: Double): Double {
+        val upper = indexOfFirst { it.first >= tone }.coerceAtLeast(1)
+        val (fromA, toA) = this[upper - 1]
+        val (fromB, toB) = this[upper]
+        return toA + (toB - toA) * (tone - fromA) / (fromB - fromA)
     }
 
     companion object {
-        private const val MAX_CHROMA = 200.0
-        private const val LIGHTNESS_STEPS_PER_TONE = 10.0
-        private const val ACCENT_VIBRANCE = 1.2
-
-        private val DAMPING = listOf(
-            0.0 to 0.0,
-            10.0 to 1.0,
-            90.0 to 1.0,
-            95.0 to 0.5,
-            99.0 to 0.1,
-            100.0 to 0.0
-        )
+        private val DARKEST_CURVE = listOf(0.0 to 0.0, 6.0 to 0.0, 12.0 to 2.0, 90.0 to 80.0, 100.0 to 100.0)
+        private val BRIGHTEST_CURVE = listOf(0.0 to 0.0, 10.0 to 20.0, 88.0 to 98.0, 100.0 to 100.0)
+        private const val VIVID_SHADES_FACTOR = 1.25
+        private const val VIVID_TONE_SHIFT = 6.0
+        private const val VIVID_TAPER_TONES = 10.0
+        private const val MID_TONE = 50.0
 
         fun forRole(role: PaletteRole, style: MONET, adjustments: ThemeAdjustments): PaletteTuning {
             val monochrome = style == MONET.MONOCHROMATIC
@@ -66,12 +68,11 @@ class PaletteTuning(
             } else {
                 NEUTRAL_LEVEL
             }
-            val chromaBoost = if (role.isAccent && !adjustments.accurateShades) {
-                ACCENT_VIBRANCE
-            } else {
-                1.0
-            }
-            return PaletteTuning(saturation, lightness, chromaBoost)
+            return PaletteTuning(
+                saturation = saturation,
+                lightness = lightness,
+                accurateShades = adjustments.accurateShades || monochrome || !role.isAccent
+            )
         }
     }
 }
