@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger
 // identically on any device, including the payload's color spec version.
 object CommunityThemePalette {
 
-    private val cache = LruCache<String, ArrayList<ArrayList<Int>>>(32)
+    private val cache = LruCache<String, ArrayList<ArrayList<Int>>>(256)
 
     // neutral1 + neutral2 rows, shade 900
     private val NEUTRAL_ROWS = 3..4

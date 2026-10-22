@@ -5,8 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
+import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 // Cache-first: emit the Room cache instantly, refresh from the index in the
@@ -35,6 +41,16 @@ class CommunityViewModel : ViewModel() {
                 _allThemes.value = repository.getThemes()
             } else if (_allThemes.value == null) {
                 _allThemes.value = emptyList()
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            allThemes.filterNotNull().collectLatest { themes ->
+                val isDark = SystemUtil.isDarkMode
+                themes.forEach { theme ->
+                    ensureActive()
+                    CommunityThemePalette.derive(theme, isDark)
+                }
             }
         }
     }
