@@ -46,11 +46,14 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppCo
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 @Suppress("unused")
 object OverlayManager {
 
     private const val TAG = "OverlayManager"
+    private val overlayLock = ReentrantLock()
     private lateinit var mRootConnection: IRootConnection
     private lateinit var mShizukuConnection: IShizukuConnection
 
@@ -175,7 +178,10 @@ object OverlayManager {
         }
     }
 
-    fun unregisterFabricatedOverlay(packageName: String): Boolean {
+    fun unregisterFabricatedOverlay(packageName: String): Boolean =
+        overlayLock.withLock { unregisterFabricatedOverlayLocked(packageName) }
+
+    private fun unregisterFabricatedOverlayLocked(packageName: String): Boolean {
         if (!isRootMode()) return false
         if (!ensureRootConnection()) {
             reportError(appContext.getString(R.string.error_root_unavailable))
@@ -192,7 +198,9 @@ object OverlayManager {
         }
     }
 
-    fun applyFabricatedColors(): Boolean {
+    fun applyFabricatedColors(): Boolean = overlayLock.withLock { applyFabricatedColorsLocked() }
+
+    private fun applyFabricatedColorsLocked(): Boolean {
         if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) return true
 
         applyFabricatedColorsNonRoot()?.let { return it }
@@ -342,6 +350,14 @@ object OverlayManager {
         packageName: String,
         paletteDark: ArrayList<ArrayList<Int>>? = null,
         paletteLight: ArrayList<ArrayList<Int>>? = null
+    ): Boolean = overlayLock.withLock {
+        applyFabricatedColorsPerAppLocked(packageName, paletteDark, paletteLight)
+    }
+
+    private fun applyFabricatedColorsPerAppLocked(
+        packageName: String,
+        paletteDark: ArrayList<ArrayList<Int>>?,
+        paletteLight: ArrayList<ArrayList<Int>>?
     ): Boolean {
         if (!isThemingEnabled() || PreviewController.isPreviewActive) return true
 
@@ -351,7 +367,9 @@ object OverlayManager {
         )
     }
 
-    fun removeFabricatedColors(): Boolean {
+    fun removeFabricatedColors(): Boolean = overlayLock.withLock { removeFabricatedColorsLocked() }
+
+    private fun removeFabricatedColorsLocked(): Boolean {
         removeFabricatedColorsNonRoot()?.let { return it }
 
         return ArrayList<String>().apply {
