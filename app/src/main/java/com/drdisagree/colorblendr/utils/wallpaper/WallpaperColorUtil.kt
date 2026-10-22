@@ -36,8 +36,8 @@ object WallpaperColorUtil {
     private const val MAX_BITMAP_SIZE = 112
     private const val MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE
 
-    suspend fun updateWallpaperColorList(context: Context) {
-        if (!AppUtil.permissionsGranted(context)) return
+    suspend fun updateWallpaperColorList(context: Context) = withContext(Dispatchers.Default) {
+        if (!AppUtil.permissionsGranted(context)) return@withContext
 
         val wallpaperColors = getWallpaperColors(context)
         val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
@@ -52,7 +52,7 @@ object WallpaperColorUtil {
         }
     }
 
-    suspend fun getWallpaperColors(context: Context): ArrayList<Int> {
+    suspend fun getWallpaperColors(context: Context): ArrayList<Int> = withContext(Dispatchers.Default) {
         val mergedColors = mutableSetOf<Int>()
         val wallpaperManager = WallpaperManager.getInstance(context)
         val isLiveWallpaper = wallpaperManager.wallpaperInfo != null
@@ -77,7 +77,7 @@ object WallpaperColorUtil {
             mergedColors.addSystemWallpaperColors(wallpaperManager)
         }
 
-        return if (mergedColors.isNotEmpty()) {
+        if (mergedColors.isNotEmpty()) {
             ArrayList(mergedColors)
         } else {
             getWallpaperColorList().takeIf { it.isNotEmpty() } ?: ColorUtil.monetAccentColors
