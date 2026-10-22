@@ -8,13 +8,12 @@ import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.data.dao.CommunityThemeDao
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.data.models.CommunityThemeEntity
+import com.drdisagree.colorblendr.utils.community.CommunityHttp
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 
 // Cache-first store for community themes. Index fetch replaces the Room
 // cache; browse/showcase read only from cache.
@@ -24,10 +23,6 @@ class CommunityThemeRepository(private val daoProvider: () -> CommunityThemeDao)
         get() = daoProvider()
 
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .callTimeout(30, TimeUnit.SECONDS)
-        .build()
 
     suspend fun refreshIndex(): Boolean = withContext(Dispatchers.IO) {
         val body = try {
@@ -130,5 +125,6 @@ class CommunityThemeRepository(private val daoProvider: () -> CommunityThemeDao)
 
     companion object {
         private const val MAX_INDEX_BYTES = 20L * 1024 * 1024
+        private val client = CommunityHttp.withCallTimeout(30)
     }
 }

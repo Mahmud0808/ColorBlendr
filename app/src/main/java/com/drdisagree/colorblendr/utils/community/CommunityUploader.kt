@@ -4,20 +4,15 @@ import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_WORKER_URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 
 // Submits a theme payload to the worker's review queue; the owner approves
 // before anything reaches GitHub. Returns false on any failure.
 object CommunityUploader {
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .callTimeout(45, TimeUnit.SECONDS)
-        .build()
+    private val client = CommunityHttp.withCallTimeout(45)
 
     suspend fun upload(payload: JSONObject, turnstileToken: String): Boolean =
         withContext(Dispatchers.IO) {
