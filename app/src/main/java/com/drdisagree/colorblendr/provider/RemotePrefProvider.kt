@@ -8,4 +8,8 @@ import com.drdisagree.colorblendr.data.common.Constant
 class RemotePrefProvider : RemotePreferenceProvider(
     BuildConfig.APPLICATION_ID,
     arrayOf(RemotePreferenceFile(Constant.SHARED_PREFS, true))
-)
+) {
+    override fun checkAccess(prefFileName: String, prefKey: String, write: Boolean): Boolean {
+        return !write
+    }
+}
