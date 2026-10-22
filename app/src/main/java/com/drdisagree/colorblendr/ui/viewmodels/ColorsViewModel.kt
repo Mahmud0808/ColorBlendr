@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Job
 
 class ColorsViewModel : ViewModel() {
 
@@ -46,6 +47,9 @@ class ColorsViewModel : ViewModel() {
 
     private val _seedColor = MutableStateFlow(getSeedColorValue(0))
     val seedColor: StateFlow<Int> = _seedColor.asStateFlow()
+
+    private var wallpaperJob: Job? = null
+    private var basicJob: Job? = null
 
     init {
         refreshData()
@@ -71,7 +75,8 @@ class ColorsViewModel : ViewModel() {
     }
 
     fun loadWallpaperColors() {
-        viewModelScope.launch(Dispatchers.IO) {
+        wallpaperJob?.cancel()
+        wallpaperJob = viewModelScope.launch(Dispatchers.IO) {
             val wallpaperColors = getWallpaperColors()
             if (wallpaperColors != _wallpaperColors.value) {
                 _wallpaperColors.value = wallpaperColors
@@ -85,7 +90,8 @@ class ColorsViewModel : ViewModel() {
     }
 
     fun loadBasicColors() {
-        viewModelScope.launch(Dispatchers.IO) {
+        basicJob?.cancel()
+        basicJob = viewModelScope.launch(Dispatchers.IO) {
             val basicColors: List<Int> = appContext.resources
                 .getStringArray(R.array.basic_color_codes)
                 .map { it.toColorInt() }

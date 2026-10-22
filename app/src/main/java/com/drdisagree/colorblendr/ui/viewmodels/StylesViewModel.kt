@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Job
 
 class StylesViewModel(
     private val customStyleRepository: CustomStyleRepository
@@ -40,6 +41,8 @@ class StylesViewModel(
 
     private val _stylePalettes = MutableStateFlow<Map<String, List<List<Int>>>>(emptyMap())
     val stylePalettes: StateFlow<Map<String, List<List<Int>>>> = _stylePalettes.asStateFlow()
+
+    private var paletteJob: Job? = null
 
     init {
         refreshData()
@@ -59,7 +62,8 @@ class StylesViewModel(
         // Before onboarding there is no wallpaper color list to generate from.
         if (isFirstRun() || isWorkMethodUnknown()) return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        paletteJob?.cancel()
+        paletteJob = viewModelScope.launch(Dispatchers.IO) {
             val styleList = getStyleList()
             if (styleList != _styleList.value) {
                 _styleList.value = styleList

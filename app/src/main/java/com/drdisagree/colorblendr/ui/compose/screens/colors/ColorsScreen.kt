@@ -141,7 +141,6 @@ fun ColorsScreen(
             seedColor = getSeedColorValue(0)
             showWallpaperColors =
                 !customColorPref && getWallpaperColorList().contains(getSeedColorValue())
-            colorsViewModel.refreshData()
         }
     }
 
@@ -179,7 +178,6 @@ fun ColorsScreen(
                 showSeedColorPicker = false
                 if (seedColor != color || !customColor) {
                     applyColor(color, isWallpaperColor = false, alreadySelected = customColor)
-                    scope.launch { colorsViewModel.refreshData() }
                 }
             },
             alphaEnabled = false,

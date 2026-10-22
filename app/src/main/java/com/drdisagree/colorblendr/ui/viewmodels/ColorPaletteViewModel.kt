@@ -20,11 +20,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 class ColorPaletteViewModel : ViewModel() {
 
     private val _colorPalette = MutableStateFlow<List<List<Int>>>(emptyList())
     val colorPalette: StateFlow<List<List<Int>>> = _colorPalette.asStateFlow()
+
+    private var paletteJob: Job? = null
 
     init {
         refreshData()
@@ -44,7 +47,8 @@ class ColorPaletteViewModel : ViewModel() {
         // Before onboarding there is no wallpaper color list to generate from.
         if (isFirstRun() || isWorkMethodUnknown()) return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        paletteJob?.cancel()
+        paletteJob = viewModelScope.launch(Dispatchers.IO) {
             // Pending changes show the staged palette; otherwise show the
             // actual colors the device currently resolves.
             val colorList = if (PreviewController.isPreviewActive) {
