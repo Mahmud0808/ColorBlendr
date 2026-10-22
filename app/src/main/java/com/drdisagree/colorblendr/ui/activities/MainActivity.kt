@@ -43,6 +43,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
@@ -55,6 +56,7 @@ import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
@@ -68,8 +70,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
@@ -161,83 +163,67 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bootstrap() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val success = AtomicBoolean(false)
-            val countDownLatch = CountDownLatch(1)
-
-            handleInitialization(success, countDownLatch)
-
-            try {
-                countDownLatch.await()
-            } catch (_: InterruptedException) {
-            }
-
-            withContext(Dispatchers.Main) {
-                initSuccess = success.get()
+        lifecycleScope.launch {
+            initSuccess = withContext(Dispatchers.IO) {
+                suspendCancellableCoroutine { continuation ->
+                    val resumed = AtomicBoolean(false)
+                    handleInitialization { result ->
+                        if (resumed.compareAndSet(false, true) && continuation.isActive) {
+                            continuation.resume(result)
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun handleInitialization(
-        success: AtomicBoolean,
-        countDownLatch: CountDownLatch
-    ) {
+    private fun handleInitialization(onResult: (Boolean) -> Unit) {
+        val appContext = applicationContext
+
         if (!isFirstRun() && !isWorkMethodUnknown()) {
             when {
                 isRootMode() -> {
-                    RootConnectionProvider.builder(applicationContext)
+                    RootConnectionProvider.builder(appContext)
                         .onSuccess {
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                updateWallpaperColorList(applicationContext)
-                                updateFabricatedAppList(applicationContext)
-                                success.set(true)
-                                countDownLatch.countDown()
+                            AppScope.launch(Dispatchers.IO) {
+                                updateWallpaperColorList(appContext)
+                                updateFabricatedAppList(appContext)
+                                onResult(true)
                             }
                         }
-                        .onFailure {
-                            success.set(false)
-                            countDownLatch.countDown()
-                        }
+                        .onFailure { onResult(false) }
                         .run()
                 }
 
                 isShizukuMode() -> {
                     if (awaitShizukuBinder() && hasShizukuPermission()) {
                         ShizukuConnectionProvider.bind()
-                        success.set(true)
+                        onResult(true)
                     } else {
-                        success.set(false)
+                        onResult(false)
                     }
-                    countDownLatch.countDown()
                 }
 
                 isWirelessAdbMode() -> {
                     if (WifiAdbShell.isMyDeviceConnected()) {
-                        success.set(true)
-                        countDownLatch.countDown()
+                        onResult(true)
                     } else {
                         WifiAdbShell.autoConnect(object : WifiAdbShell.ConnectionListener {
                             override fun onConnectionSuccess() {
-                                success.set(true)
-                                countDownLatch.countDown()
+                                onResult(true)
                             }
 
                             override fun onConnectionFailed() {
-                                success.set(false)
-                                countDownLatch.countDown()
+                                onResult(false)
                             }
                         })
                     }
                 }
 
-                else -> {
-                    success.set(false)
-                    countDownLatch.countDown()
-                }
+                else -> onResult(false)
             }
         } else {
-            success.set(false)
-            countDownLatch.countDown()
+            onResult(false)
         }
     }
 
