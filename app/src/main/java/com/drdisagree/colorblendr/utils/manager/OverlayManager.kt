@@ -54,13 +54,12 @@ object OverlayManager {
     private lateinit var mShizukuConnection: IShizukuConnection
 
     private fun ensureRootConnection(): Boolean {
-        if (::mRootConnection.isInitialized.not()) {
-            if (rootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return false
-            }
-            mRootConnection = rootConnection!!
+        val connection = rootConnection?.takeIf { it.asBinder().isBinderAlive }
+        if (connection == null) {
+            Log.w(TAG, "Root service connection is unavailable")
+            return false
         }
+        mRootConnection = connection
         return true
     }
 
