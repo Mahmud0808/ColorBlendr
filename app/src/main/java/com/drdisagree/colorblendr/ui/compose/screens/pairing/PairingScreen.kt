@@ -91,8 +91,13 @@ fun PairingScreen(
         )
     }
 
+    var pairingStarted by rememberSaveable { mutableStateOf(false) }
+
     DisposableEffect(Unit) {
-        onPairDevice()
+        if (!pairingStarted) {
+            pairingStarted = true
+            onPairDevice()
+        }
 
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

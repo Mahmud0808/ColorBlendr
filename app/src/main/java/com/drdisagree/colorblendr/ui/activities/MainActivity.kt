@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.activities
 
+import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
@@ -272,43 +273,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pairThisDevice() {
-        showPairingNotification(true)
+        showPairingNotification(applicationContext, true)
         startPairingCodeSearch()
     }
 
     private fun startPairingCodeSearch() {
+        val appContext = applicationContext
         WifiAdbShell.getPairingAddress(
             object : WifiAdbShell.IpAddressListener {
                 override fun onPortDetected(ip: String?, port: Int) {
                     if (ip != null && port != -1) {
                         Prefs.putString(ADB_IP, ip)
                         Prefs.putString(ADB_PAIRING_PORT, port.toString())
-                        showPairingNotification()
+                        showPairingNotification(appContext)
                     }
                 }
             }
         )
         startTimeout()
-    }
-
-    private fun showPairingNotification(isSearching: Boolean = false) {
-        val workManager = WorkManager.getInstance(this)
-
-        val workRequest = OneTimeWorkRequest
-            .Builder(AdbPairingNotificationWorker::class.java)
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .setInputData(
-                Data.Builder()
-                    .putString("message", if (isSearching) "searching" else null)
-                    .build()
-            )
-            .build()
-
-        workManager.enqueueUniqueWork(
-            if (isSearching) ADB_SEARCH_NOTIFICATION else ADB_PAIR_NOTIFICATION,
-            ExistingWorkPolicy.REPLACE,
-            workRequest
-        )
     }
 
     // We run a timeout after which the pairing code searching will stop
@@ -365,5 +347,25 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_INIT_SUCCESS = "initSuccess"
         private const val SHIZUKU_BINDER_TIMEOUT_MS = 2000L
         private const val SHIZUKU_BINDER_POLL_MS = 100L
+
+        fun showPairingNotification(context: Context, isSearching: Boolean = false) {
+            val workManager = WorkManager.getInstance(context)
+
+            val workRequest = OneTimeWorkRequest
+                .Builder(AdbPairingNotificationWorker::class.java)
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .setInputData(
+                    Data.Builder()
+                        .putString("message", if (isSearching) "searching" else null)
+                        .build()
+                )
+                .build()
+
+            workManager.enqueueUniqueWork(
+                if (isSearching) ADB_SEARCH_NOTIFICATION else ADB_PAIR_NOTIFICATION,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
+        }
     }
 }
