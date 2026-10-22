@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 // Defers user color/setting selections: changes are staged in memory (never
 // persisted) and only restyle the in-app theme, until the user applies them —
@@ -68,6 +69,8 @@ object PreviewController {
     private var refreshOthersPending = false
 
     private val sessionLock = Any()
+
+    private val busy = AtomicBoolean(false)
 
     @Volatile
     private var previewSession = 0
@@ -139,8 +142,10 @@ object PreviewController {
     }
 
     fun applyChanges() {
+        if (!isPreviewActive || !busy.compareAndSet(false, true)) return
+
+        _isApplying.value = true
         controllerScope.launch {
-            _isApplying.value = true
             try {
                 Prefs.commitStaged()
                 if (takeSystemUpdatePending()) syncWallpaperSeed()
@@ -158,11 +163,14 @@ object PreviewController {
             } finally {
                 endPreviewSession()
                 _isApplying.value = false
+                busy.set(false)
             }
         }
     }
 
     fun discardChanges() {
+        if (busy.get()) return
+
         controllerScope.launch {
             abandonPreview()
         }
@@ -172,8 +180,10 @@ object PreviewController {
     // a just-updated style) with the same "applying" dialog + overlay push
     // applyChanges shows.
     fun reapply(prepare: suspend () -> Unit) {
+        if (!busy.compareAndSet(false, true)) return
+
+        _isApplying.value = true
         controllerScope.launch {
-            _isApplying.value = true
             try {
                 abandonPreview(applyPending = false)
                 if (takeSystemUpdatePending()) syncWallpaperSeed()
@@ -184,6 +194,7 @@ object PreviewController {
                 Log.e(TAG, "Error reapplying colors", e)
             } finally {
                 _isApplying.value = false
+                busy.set(false)
             }
         }
     }
