@@ -93,6 +93,7 @@ import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityThemeDetailsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorPaletteScreen
 import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorTokensScreen
+import com.drdisagree.colorblendr.ui.compose.screens.palette.TokenGuideScreen
 import com.drdisagree.colorblendr.ui.compose.screens.perapp.AppColorsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.perapp.PerAppThemeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.privacypolicy.PrivacyPolicyScreen
@@ -482,7 +483,14 @@ fun HomeScreen(
                                     }
                                 )
                             }
-                            screen(Routes.COLOR_TOKENS) { ColorTokensScreen() }
+                            screen(Routes.COLOR_TOKENS) {
+                                ColorTokensScreen(
+                                    onOpenGuide = {
+                                        nestedNavController.navigateSingleTop(Routes.COLOR_TOKENS_GUIDE)
+                                    }
+                                )
+                            }
+                            screen(Routes.COLOR_TOKENS_GUIDE) { TokenGuideScreen() }
                             screen(Routes.PER_APP_THEME) {
                                 PerAppThemeScreen(
                                     onEditColors = { packageName ->

@@ -2,8 +2,8 @@ package com.drdisagree.colorblendr.ui.compose.screens.palette
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,13 +11,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,8 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +52,7 @@ import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideRow
 import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideSheet
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
+import com.drdisagree.colorblendr.ui.compose.components.ListSectionHeader
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.ThemeModeToggle
@@ -71,7 +72,8 @@ private const val FILTER_CATEGORY_OFFSET = 2
 
 @Composable
 fun ColorTokensScreen(
-    viewModel: ColorTokensViewModel = viewModel()
+    viewModel: ColorTokensViewModel = viewModel(),
+    onOpenGuide: () -> Unit = {}
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val overrides by viewModel.overrides.collectAsStateWithLifecycle()
@@ -80,7 +82,8 @@ fun ColorTokensScreen(
         theme = theme,
         overrides = overrides,
         onOverride = viewModel::setOverride,
-        onClear = viewModel::clearOverrides
+        onClear = viewModel::clearOverrides,
+        onOpenGuide = onOpenGuide
     )
 }
 
@@ -90,9 +93,14 @@ private fun ColorTokensContent(
     theme: ResolvedTheme?,
     overrides: TokenOverrides,
     onOverride: (isDark: Boolean, token: Token, override: ColorOverride?) -> Unit,
-    onClear: (isDark: Boolean) -> Unit
+    onClear: (isDark: Boolean) -> Unit,
+    onOpenGuide: () -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
+    val resources = LocalContext.current.resources
+    val usages = remember(resources) {
+        Token.entries.associateWith { resources.getString(it.usageRes) }
+    }
     val listState = rememberLazyListState()
     val hazeState = remember { HazeState() }
     val searchState = rememberTextFieldState()
@@ -119,7 +127,8 @@ private fun ColorTokensContent(
                 }
                 matchesFilter && (query.isEmpty() ||
                         token.displayName.contains(query, ignoreCase = true) ||
-                        token.resourceName.contains(query, ignoreCase = true))
+                        token.resourceName.contains(query, ignoreCase = true) ||
+                        usages[token].orEmpty().contains(query, ignoreCase = true))
             }
             if (tokens.isEmpty()) null else category to tokens
         }
@@ -182,7 +191,14 @@ private fun ColorTokensContent(
                 showBackButton = true,
                 lifted = toolbarLifted,
                 actions = {
+                    ToolbarIconPill(
+                        icon = rememberVectorPainter(Icons.AutoMirrored.Rounded.HelpOutline),
+                        width = 40.dp,
+                        contentDescription = stringResource(R.string.color_tokens_guide_title),
+                        onClick = onOpenGuide
+                    )
                     if (modeOverrides.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(8.dp))
                         ToolbarIconPill(
                             icon = rememberVectorPainter(Icons.Rounded.RestartAlt),
                             width = 40.dp,
@@ -216,7 +232,7 @@ private fun ColorTokensContent(
                     if (scheme != null) {
                         sections.forEach { (category, tokens) ->
                             item(key = "header_${category.name}") {
-                                SectionHeader(text = stringResource(category.labelRes))
+                                ListSectionHeader(text = stringResource(category.labelRes))
                             }
                             itemsIndexed(tokens, key = { _, token -> token.name }) { index, token ->
                                 ColorOverrideRow(
@@ -265,20 +281,6 @@ private fun ColorTokensContent(
     }
 }
 
-@Composable
-private fun SectionHeader(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(
-            start = dimensionResource(R.dimen.container_margin_horizontal) + 16.dp,
-            top = 12.dp,
-            bottom = 8.dp
-        )
-    )
-}
-
 @AdaptivePreviews
 @Composable
 private fun ColorTokensContentPreview() {
@@ -293,7 +295,8 @@ private fun ColorTokensContentPreview() {
                 light = mapOf(Token.SURFACE to ColorOverride.Custom(0xFFFAF7F2.toInt()))
             ),
             onOverride = { _, _, _ -> },
-            onClear = {}
+            onClear = {},
+            onOpenGuide = {}
         )
     }
 }
