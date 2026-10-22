@@ -41,12 +41,14 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -79,6 +81,8 @@ import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.parseContributors
 import com.drdisagree.colorblendr.utils.app.parseTranslators
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AboutScreen(
@@ -90,8 +94,12 @@ fun AboutScreen(
             listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
         }
     }
-    val contributors = remember { parseContributors() }
-    val translators = remember { parseTranslators() }
+    val contributors by produceState(emptyList<AboutAppModel>()) {
+        value = withContext(Dispatchers.IO) { parseContributors() }
+    }
+    val translators by produceState(emptyList<AboutAppModel>()) {
+        value = withContext(Dispatchers.IO) { parseTranslators() }
+    }
     val contributorsHeader = stringResource(R.string.contributors)
     val translatorsHeader = stringResource(R.string.translators)
     val animatedHeaders = remember { mutableStateListOf<String>() }
@@ -127,8 +135,12 @@ fun AboutScreen(
                         )
                     }
                 }
-                creditsSection(contributorsHeader, contributors, animatedHeaders)
-                creditsSection(translatorsHeader, translators, animatedHeaders)
+                if (contributors.isNotEmpty()) {
+                    creditsSection(contributorsHeader, contributors, animatedHeaders)
+                }
+                if (translators.isNotEmpty()) {
+                    creditsSection(translatorsHeader, translators, animatedHeaders)
+                }
                 item {
                     Spacer(
                         modifier = Modifier.height(dimensionResource(R.dimen.container_margin_bottom))
@@ -217,12 +229,14 @@ private fun LazyListScope.creditsSection(
 @Composable
 private fun AboutAppHeader(animatedHeaders: MutableList<String>) {
     val context = LocalContext.current
-    val appIcon = remember(context) {
-        try {
-            context.packageManager.getApplicationIcon(context.packageName)
-        } catch (_: PackageManager.NameNotFoundException) {
-            null
-        }?.toBitmap()?.asImageBitmap()
+    val appIcon by produceState<ImageBitmap?>(null, context) {
+        value = withContext(Dispatchers.IO) {
+            try {
+                context.packageManager.getApplicationIcon(context.packageName)
+            } catch (_: PackageManager.NameNotFoundException) {
+                null
+            }?.toBitmap()?.asImageBitmap()
+        }
     }
 
     Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp)) {
