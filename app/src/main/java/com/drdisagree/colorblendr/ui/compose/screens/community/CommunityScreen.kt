@@ -312,7 +312,7 @@ private fun SkeletonGrid(hazeState: HazeState) {
     ) {
         items(columns * rows) {
             CommunityThemeCardSkeleton(
-                pulse = pulse,
+                pulse = { pulse.value },
                 modifier = Modifier.fillMaxWidth()
             )
         }

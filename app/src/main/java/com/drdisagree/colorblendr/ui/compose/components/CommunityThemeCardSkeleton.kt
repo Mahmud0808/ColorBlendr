@@ -10,17 +10,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 
 @Composable
 fun CommunityThemeCardSkeleton(
-    pulse: Float,
+    pulse: () -> Float,
     modifier: Modifier = Modifier
 ) {
     Box {
@@ -32,7 +33,7 @@ fun CommunityThemeCardSkeleton(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .alpha(pulse)
+                .graphicsLayer { alpha = pulse() }
                 .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
         )
@@ -40,8 +41,8 @@ fun CommunityThemeCardSkeleton(
 }
 
 @Composable
-fun rememberSkeletonPulse(): Float {
-    val pulse by rememberInfiniteTransition(label = "communitySkeleton").animateFloat(
+fun rememberSkeletonPulse(): State<Float> {
+    return rememberInfiniteTransition(label = "communitySkeleton").animateFloat(
         initialValue = 0.4f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -50,13 +51,12 @@ fun rememberSkeletonPulse(): Float {
         ),
         label = "communitySkeletonAlpha"
     )
-    return pulse
 }
 
 @Preview
 @Composable
 private fun CommunityThemeCardSkeletonPreview() {
     ColorBlendrTheme {
-        CommunityThemeCardSkeleton(pulse = 0.7f)
+        CommunityThemeCardSkeleton(pulse = { 0.7f })
     }
 }

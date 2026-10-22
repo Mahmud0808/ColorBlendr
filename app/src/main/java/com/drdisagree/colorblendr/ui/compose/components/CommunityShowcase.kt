@@ -224,7 +224,7 @@ private fun DriftingCarousel(
         }
     }
 
-    val pulse = rememberSkeletonPulse()
+    val pulse = if (themes == null) rememberSkeletonPulse() else null
 
     LazyRow(
         state = listState,
@@ -246,7 +246,7 @@ private fun DriftingCarousel(
     ) {
         items(itemCount) { index ->
             if (themes == null) {
-                CommunityThemeCardSkeleton(pulse = pulse)
+                CommunityThemeCardSkeleton(pulse = { pulse?.value ?: 1f })
             } else {
                 val theme = themes[index % themes.size]
                 CommunityThemeCard(
