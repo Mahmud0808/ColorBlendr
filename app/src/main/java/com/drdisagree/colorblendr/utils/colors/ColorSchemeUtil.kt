@@ -153,7 +153,7 @@ object ColorSchemeUtil {
                 sourceColorHct = Hct.fromInt(color),
                 isDark = isDark,
                 contrastLevel = contrast.toDouble(),
-                specVersion = specVersion,
+                specVersion = ColorSpec.SpecVersion.SPEC_2026,
                 platform = platform
             )
         }
