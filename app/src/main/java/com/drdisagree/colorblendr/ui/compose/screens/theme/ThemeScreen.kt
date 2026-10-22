@@ -80,18 +80,7 @@ fun ThemeScreen() {
 
     val preview by PreviewController.previewColors.collectAsState()
 
-    var committedPalette by remember {
-        mutableStateOf(
-            ColorUtil.generateModifiedColors(
-                getCurrentMonetStyle(),
-                accentSaturation,
-                backgroundSaturation,
-                backgroundLightness,
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            ).map { it.toList() }
-        )
-    }
+    var committedPalette by remember { mutableStateOf(emptyList<List<Int>>()) }
     LaunchedEffect(preview == null, accentSaturation, backgroundSaturation, backgroundLightness) {
         if (preview != null) return@LaunchedEffect
 
