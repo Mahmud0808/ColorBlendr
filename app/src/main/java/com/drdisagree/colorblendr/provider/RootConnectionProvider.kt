@@ -11,6 +11,7 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.rootModeSelected
+import com.drdisagree.colorblendr.service.AutoStartService
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.RootConnection
 import com.topjohnwu.superuser.ipc.RootService
@@ -47,6 +48,12 @@ class RootConnectionProvider private constructor(private val context: Context) :
         isServiceConnected = true
         mServiceConnectionTimer.countDown()
         Log.i(TAG, "Service connected")
+
+        if (isRootMode() && !AutoStartService.isServiceNotRunning) {
+            CoroutineScope(Dispatchers.IO).launch {
+                runCatching { serviceProvider?.setSystemUIRestartListener() }
+            }
+        }
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
