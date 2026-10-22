@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.data.domain
 
+import android.graphics.Color
 import android.util.Log
 import com.drdisagree.colorblendr.utils.community.CommunityVotes
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
@@ -245,9 +246,19 @@ object PreviewController {
             isDark = true
         )
 
+        val lightMap = computeSystemColorMap(paletteLight, paletteDark, isDark = false)
+        val darkMap = computeSystemColorMap(paletteLight, paletteDark, isDark = true)
+
+        if (pitchBlackTheme) {
+            listOf(paletteLight, paletteDark).forEach { palette ->
+                palette[3][11] = Color.BLACK
+                palette[4][11] = Color.BLACK
+            }
+        }
+
         return PreviewColors(
-            lightMap = computeSystemColorMap(paletteLight, paletteDark, isDark = false),
-            darkMap = computeSystemColorMap(paletteLight, paletteDark, isDark = true),
+            lightMap = lightMap,
+            darkMap = darkMap,
             paletteLight = paletteLight,
             paletteDark = paletteDark
         )
