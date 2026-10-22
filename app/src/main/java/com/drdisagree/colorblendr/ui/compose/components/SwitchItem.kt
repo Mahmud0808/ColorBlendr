@@ -209,6 +209,7 @@ private fun SwitchItemContent(
             checked = checked,
             onCheckedChange = { if (enabled) onCheckedChange(it) },
             enabled = enabled,
+            colors = SwitchDefaults.colors(checkedIconColor = MaterialTheme.colorScheme.primary),
             thumbContent = {
                 Icon(
                     painter = if (checked) {
