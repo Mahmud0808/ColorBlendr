@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.utils.app
 
-import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.res.AssetManager
 import android.content.res.Configuration
@@ -21,6 +20,7 @@ object AppColorResources {
     private const val MAX_GAP = 64
     private const val OBFUSCATED_NAME = "0_resource_name_obfuscated"
     private const val DEFAULT_THEME = AndroidR.style.Theme_DeviceDefault_DayNight
+    private val OVERLAY_FIELDS = listOf("resourceDirs", "overlayPaths")
 
     private val availability = ConcurrentHashMap<String, Boolean>()
 
@@ -36,10 +36,11 @@ object AppColorResources {
     }
 
     fun load(packageName: String): List<AppColorResource> = runCatching {
-        val context = appContext.createPackageContext(packageName, 0)
-        if (context.applicationInfo.isResourceOverlay()) return emptyList()
-        val light = context.themedResources(night = false)
-        val dark = context.themedResources(night = true)
+        val info = appContext.packageManager.getApplicationInfo(packageName, 0)
+        if (info.isResourceOverlay()) return emptyList()
+        val resources = appContext.packageManager.getResourcesForApplication(info.withoutOverlays())
+        val light = resources.themed(info, night = false)
+        val dark = resources.themed(info, night = true)
 
         val ids = LinkedHashMap<String, Int>()
         colorTypes(light.first, packageName).forEach { base ->
@@ -60,15 +61,22 @@ object AppColorResources {
         ApplicationInfo::class.java.getMethod("isResourceOverlay").invoke(this) as Boolean
     }.getOrDefault(false)
 
-    private fun Context.themedResources(night: Boolean): Pair<Resources, Resources.Theme?> {
-        val configuration = Configuration(resources.configuration).apply {
+    private fun ApplicationInfo.withoutOverlays(): ApplicationInfo = ApplicationInfo(this).apply {
+        OVERLAY_FIELDS.forEach { field ->
+            runCatching { ApplicationInfo::class.java.getField(field).set(this, null) }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun Resources.themed(info: ApplicationInfo, night: Boolean): Pair<Resources, Resources.Theme?> {
+        val configuration = Configuration(appContext.resources.configuration).apply {
             val mode = if (night) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
             uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or mode
         }
-        val resources = createConfigurationContext(configuration).resources
+        val resources = Resources(assets, displayMetrics, configuration)
         val theme = runCatching {
             resources.newTheme().apply {
-                applyStyle(applicationInfo.theme.takeIf { it != 0 } ?: DEFAULT_THEME, true)
+                applyStyle(info.theme.takeIf { it != 0 } ?: DEFAULT_THEME, true)
             }
         }.getOrNull()
         return resources to theme

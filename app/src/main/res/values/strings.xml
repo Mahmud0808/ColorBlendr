@@ -36,6 +36,13 @@
     <string name="app_colors_reset_message">Every edited color in %1$s mode returns to the app\'s own color.</string>
     <string name="app_colors_empty">No colors found</string>
     <string name="app_colors_empty_desc">This app has no color resources that can be read.</string>
+    <string name="community_dark_only">Dark mode only</string>
+    <string name="community_light_only">Light mode only</string>
+    <string name="community_low_contrast">Low contrast</string>
+    <string name="color_original">Original</string>
+    <string name="app_restart_hint">Restart %1$s to see the changes</string>
+    <string name="app_restart">Restart</string>
+    <string name="app_restart_failed">Couldn\'t restart %1$s</string>
     <string name="app_colors_apply_failed">Couldn\'t apply colors to %1$s</string>
     <string name="token_usage_palette_key_color_primary">Source color of the primary palette</string>
     <string name="token_usage_palette_key_color_secondary">Source color of the secondary palette</string>

@@ -114,6 +114,7 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.openAppSettings
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
+import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -169,7 +170,9 @@ fun HomeScreen(
     val isDark = isSystemInDarkTheme()
     val baseScheme = MaterialTheme.colorScheme
     val navBarScheme = remember(detailsTheme, isDark, baseScheme) {
-        detailsTheme?.let { communityColorScheme(it, isDark, baseScheme) } ?: baseScheme
+        detailsTheme?.let {
+            communityColorScheme(it, CommunityThemePalette.displayDark(it, isDark), baseScheme)
+        } ?: baseScheme
     }
 
     val permissionMustBeGrantedText = stringResource(R.string.permission_must_be_granted)

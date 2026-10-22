@@ -7,6 +7,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.manager.backend.OverlayBackend
 import com.drdisagree.colorblendr.utils.manager.backend.RootOverlayBackend
 import com.drdisagree.colorblendr.utils.manager.backend.ShizukuOverlayBackend
@@ -41,6 +42,12 @@ object OverlayManager {
 
     fun unregisterFabricatedOverlay(overlayName: String): Boolean = lock.withLock {
         RootOverlayBackend.unregister(overlayName)
+    }
+
+    fun restartApp(packageName: String): Boolean {
+        if (!RootOverlayBackend.forceStop(packageName)) return false
+        SystemUtil.launchApp(packageName)
+        return true
     }
 
     fun isOverlayEnabled(overlayName: String): Boolean = RootOverlayBackend.isEnabled(overlayName)

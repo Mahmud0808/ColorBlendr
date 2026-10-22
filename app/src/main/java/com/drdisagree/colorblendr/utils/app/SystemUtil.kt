@@ -29,6 +29,13 @@ object SystemUtil {
         }
     }
 
+    fun launchApp(packageName: String): Boolean {
+        val intent = appContext.packageManager.getLaunchIntentForPackage(packageName) ?: return false
+        return runCatching {
+            appContext.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }.isSuccess
+    }
+
     @Suppress("DEPRECATION")
     fun isConnectedToWifi(context: Context): Boolean {
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as? WifiManager

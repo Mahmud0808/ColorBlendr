@@ -21,6 +21,7 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 object RootOverlayBackend : OverlayBackend {
 
     private const val TAG = "RootOverlayBackend"
+    private val PACKAGE_NAME = Regex("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+")
 
     override fun apply(): Boolean {
         ResourceUtil.clearLookupCache()
@@ -55,6 +56,14 @@ object RootOverlayBackend : OverlayBackend {
     fun unregister(overlayName: String): Boolean = command(false, overlayName) {
         it.unregisterFabricatedOverlay(overlayName)
         true
+    }
+
+    fun forceStop(packageName: String): Boolean {
+        if (!PACKAGE_NAME.matches(packageName)) return false
+        return command(false, packageName) {
+            it.runCommand(listOf("am force-stop $packageName"))
+            true
+        }
     }
 
     fun isEnabled(overlayName: String): Boolean = query(false) { it.isOverlayEnabled(overlayName) }

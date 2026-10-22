@@ -32,6 +32,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -82,6 +85,7 @@ import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.theme.overlay.writer.PerPackageColorWriter
 import com.drdisagree.colorblendr.ui.compose.components.AnimatedCheckIcon
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
@@ -89,7 +93,9 @@ import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -138,6 +144,7 @@ fun PerAppThemeScreen(
     val iconCache = remember { LruCache<String, ImageBitmap>(128) }
     val rootMode = remember { isRootMode() }
     val editedApps = remember(reloadTrigger) { getAppColorOverrides().keys }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(filterMethod, reloadTrigger) {
         isLoading = true
@@ -239,6 +246,31 @@ fun PerAppThemeScreen(
                     pendingToggles.remove(app.packageName)
                 }
                 touchedSinceLoad += app.packageName
+
+                if (!isSelected && !rejected && rootMode && isThemingEnabled() &&
+                    toggleGenerations[app.packageName] == generation
+                ) {
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbarReplacing(
+                            message = appContext.getString(R.string.app_restart_hint, app.appName),
+                            actionLabel = appContext.getString(R.string.app_restart),
+                            duration = SnackbarDuration.Long
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            AppScope.launch(Dispatchers.IO) {
+                                if (!OverlayManager.restartApp(app.packageName)) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            appContext,
+                                            appContext.getString(R.string.app_restart_failed, app.appName),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
                 if (rejected && toggleGenerations[app.packageName] == generation) {
                     selections[app.packageName] = false
@@ -354,6 +386,13 @@ fun PerAppThemeScreen(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .contentWidthLimit()
+                    )
+
+                    AppSnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = navBottomInset())
                     )
                 }
             }

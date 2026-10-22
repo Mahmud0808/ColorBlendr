@@ -6,6 +6,7 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Utilities.getAppColorOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setAppColorOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.domain.PreviewController
@@ -52,6 +53,9 @@ class AppColorsViewModel(val packageName: String) : ViewModel() {
 
     private val _messages = MutableSharedFlow<Int>(extraBufferCapacity = 1)
     val messages: SharedFlow<Int> = _messages.asSharedFlow()
+
+    private val _applied = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val applied: SharedFlow<Unit> = _applied.asSharedFlow()
 
     private var applyJob: Job? = null
 
@@ -112,12 +116,21 @@ class AppColorsViewModel(val packageName: String) : ViewModel() {
             val applied = runCatching { OverlayManager.applyFabricatedColorsPerApp(packageName) }
                 .getOrDefault(false)
             _themingEnabled.value = applied || wasSelected
+            if (applied && isThemingEnabled()) _applied.tryEmit(Unit)
             if (!applied) {
                 if (!wasSelected) {
                     selected[packageName] = false
                     setSelectedFabricatedApps(selected)
                 }
                 _messages.tryEmit(R.string.app_colors_apply_failed)
+            }
+        }
+    }
+
+    fun restartApp() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!OverlayManager.restartApp(packageName)) {
+                _messages.tryEmit(R.string.app_restart_failed)
             }
         }
     }

@@ -1,5 +1,8 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -35,6 +38,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -53,15 +57,19 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_WORKER_URL
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.data.enums.ThemeModeSupport
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
@@ -74,6 +82,8 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.icon
+import com.drdisagree.colorblendr.ui.compose.utils.labelRes
 import com.drdisagree.colorblendr.utils.community.CommunityCount
 import com.drdisagree.colorblendr.utils.community.CommunityReporter
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
@@ -161,7 +171,9 @@ private fun DetailsContent(
     upvotes: Int,
     onUpvoteToggle: (() -> Unit)?
 ) {
-    val isDark = isSystemInDarkTheme()
+    val systemDark = isSystemInDarkTheme()
+    val modeSupport = remember(theme) { CommunityThemePalette.modeSupport(theme) }
+    val isDark = remember(theme, systemDark) { CommunityThemePalette.displayDark(theme, systemDark) }
     val baseScheme = MaterialTheme.colorScheme
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
     val scopedScheme = remember(theme, isDark, baseScheme) {
@@ -172,6 +184,8 @@ private fun DetailsContent(
     val rootMode = if (LocalInspectionMode.current) true else remember { isRootMode() }
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
+
+    SystemBarAppearance(isDark = isDark)
 
     // Scoped theming: only this screen wears the theme; navigating away
     // simply recomposes the rest of the app untouched.
@@ -273,6 +287,10 @@ private fun DetailsContent(
                                     },
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 13.sp
+                                )
+                                ModeSupportBadge(
+                                    support = modeSupport,
+                                    modifier = Modifier.padding(top = 8.dp)
                                 )
                             }
 
@@ -401,6 +419,72 @@ private fun LargeSwatch(palette: List<List<Int>>) {
     }
 }
 
+@Composable
+private fun SystemBarAppearance(isDark: Boolean) {
+    val view = LocalView.current
+    if (view.isInEditMode) return
+
+    DisposableEffect(view, isDark) {
+        val window = view.context.findActivity()?.window ?: return@DisposableEffect onDispose {}
+        val controller = WindowCompat.getInsetsController(window, view)
+        val lightStatusBars = controller.isAppearanceLightStatusBars
+        val lightNavigationBars = controller.isAppearanceLightNavigationBars
+        controller.isAppearanceLightStatusBars = !isDark
+        controller.isAppearanceLightNavigationBars = !isDark
+        onDispose {
+            controller.isAppearanceLightStatusBars = lightStatusBars
+            controller.isAppearanceLightNavigationBars = lightNavigationBars
+        }
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+@Composable
+private fun ModeSupportBadge(
+    support: ThemeModeSupport,
+    modifier: Modifier = Modifier
+) {
+    val icon = support.icon ?: return
+    val label = support.labelRes ?: return
+    val warning = support == ThemeModeSupport.LOW_CONTRAST
+
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = if (warning) {
+            MaterialTheme.colorScheme.errorContainer
+        } else {
+            MaterialTheme.colorScheme.secondaryContainer
+        },
+        contentColor = if (warning) {
+            MaterialTheme.colorScheme.onErrorContainer
+        } else {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        },
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Icon(
+                painter = rememberVectorPainter(icon),
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
+            )
+            Text(
+                text = stringResource(label),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun StatChip(
@@ -436,6 +520,17 @@ private fun StatChip(
             shapes = ButtonDefaults.shapes()
         ) {
             content()
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ModeSupportBadgePreview() {
+    ColorBlendrTheme {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            ModeSupportBadge(support = ThemeModeSupport.DARK_ONLY)
+            ModeSupportBadge(support = ThemeModeSupport.LOW_CONTRAST)
         }
     }
 }

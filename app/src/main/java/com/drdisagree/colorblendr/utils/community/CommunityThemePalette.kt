@@ -1,15 +1,34 @@
 package com.drdisagree.colorblendr.utils.community
 
 import android.util.LruCache
+import androidx.core.graphics.ColorUtils
+import com.drdisagree.colorblendr.data.enums.ThemeModeSupport
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.theme.ThemeEngine
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeSource
 import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
+import com.drdisagree.colorblendr.theme.token.Token
 
 object CommunityThemePalette {
 
+    private const val MIN_TEXT_CONTRAST = 1.5
+    private const val MIN_ACCENT_CONTRAST = 1.15
+
+    private val READABILITY_PAIRS = listOf(
+        Triple(Token.ON_SURFACE, Token.SURFACE, MIN_TEXT_CONTRAST),
+        Triple(Token.ON_SURFACE_VARIANT, Token.SURFACE, MIN_TEXT_CONTRAST),
+        Triple(Token.ON_SURFACE, Token.SURFACE_CONTAINER, MIN_TEXT_CONTRAST),
+        Triple(Token.ON_SURFACE_VARIANT, Token.SURFACE_CONTAINER, MIN_TEXT_CONTRAST),
+        Triple(Token.ON_SURFACE, Token.SURFACE_CONTAINER_HIGH, MIN_TEXT_CONTRAST),
+        Triple(Token.ON_PRIMARY, Token.PRIMARY, MIN_ACCENT_CONTRAST),
+        Triple(Token.ON_PRIMARY_CONTAINER, Token.PRIMARY_CONTAINER, MIN_ACCENT_CONTRAST),
+        Triple(Token.ON_SECONDARY_CONTAINER, Token.SECONDARY_CONTAINER, MIN_ACCENT_CONTRAST),
+        Triple(Token.PRIMARY, Token.SURFACE, MIN_ACCENT_CONTRAST)
+    )
+
     private val cache = LruCache<String, ResolvedScheme>(256)
+    private val modeSupportCache = LruCache<String, ThemeModeSupport>(256)
 
     fun derive(theme: CommunityTheme, isDark: Boolean): List<List<Int>> = scheme(theme, isDark).shades
 
@@ -27,6 +46,35 @@ object CommunityThemePalette {
                 cache.put(key, scheme)
             }
     }
+
+    fun modeSupport(theme: CommunityTheme): ThemeModeSupport {
+        val key = key(theme)
+        modeSupportCache.get(key)?.let { return it }
+        val lightReadable = isReadable(scheme(theme, isDark = false))
+        val darkReadable = isReadable(scheme(theme, isDark = true))
+        return when {
+            lightReadable && darkReadable -> ThemeModeSupport.BOTH
+            darkReadable -> ThemeModeSupport.DARK_ONLY
+            lightReadable -> ThemeModeSupport.LIGHT_ONLY
+            else -> ThemeModeSupport.LOW_CONTRAST
+        }.also { modeSupportCache.put(key, it) }
+    }
+
+    fun displayDark(theme: CommunityTheme, isDark: Boolean): Boolean = when (modeSupport(theme)) {
+        ThemeModeSupport.DARK_ONLY -> true
+        ThemeModeSupport.LIGHT_ONLY -> false
+        else -> isDark
+    }
+
+    private fun isReadable(scheme: ResolvedScheme): Boolean =
+        READABILITY_PAIRS.all { (foreground, background, minContrast) ->
+            runCatching {
+                ColorUtils.calculateContrast(
+                    ColorUtils.setAlphaComponent(scheme[foreground], 255),
+                    ColorUtils.setAlphaComponent(scheme[background], 255)
+                ) >= minContrast
+            }.getOrDefault(true)
+        }
 
     fun usesLegacyTokens(theme: CommunityTheme): Boolean =
         theme.schemaVersion == CommunityThemeCodec.SCHEMA_VERSION &&

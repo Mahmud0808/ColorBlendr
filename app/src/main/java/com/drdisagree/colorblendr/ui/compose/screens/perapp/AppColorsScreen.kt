@@ -15,6 +15,9 @@ import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +52,7 @@ import com.drdisagree.colorblendr.theme.model.ThemeSource
 import com.drdisagree.colorblendr.theme.override.ColorOverride
 import com.drdisagree.colorblendr.theme.override.ResourceOverrides
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideRow
 import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideSheet
@@ -60,12 +65,15 @@ import com.drdisagree.colorblendr.ui.compose.components.ThemeModeToggle
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.AppColorsViewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.flow.collectLatest
 
 private const val FILTER_ALL = 0
 private const val FILTER_EDITED = 1
@@ -95,10 +103,23 @@ fun AppColorsScreen(packageName: String) {
     val overrides by viewModel.overrides.collectAsStateWithLifecycle()
     val label by viewModel.label.collectAsStateWithLifecycle()
     val appName = label ?: packageName
+    val currentAppName by rememberUpdatedState(appName)
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel) {
         viewModel.messages.collect { message ->
-            Toast.makeText(context, context.getString(message, appName), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(message, currentAppName), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.applied.collectLatest {
+            val result = snackbarHostState.showSnackbarReplacing(
+                message = context.getString(R.string.app_restart_hint, currentAppName),
+                actionLabel = context.getString(R.string.app_restart),
+                duration = SnackbarDuration.Long
+            )
+            if (result == SnackbarResult.ActionPerformed) viewModel.restartApp()
         }
     }
 
@@ -108,6 +129,7 @@ fun AppColorsScreen(packageName: String) {
         themed = if (themingEnabled) themed else AppThemedColors(),
         theme = theme,
         overrides = overrides,
+        snackbarHostState = snackbarHostState,
         onOverride = viewModel::setOverride,
         onClear = viewModel::clearOverrides
     )
@@ -121,6 +143,7 @@ private fun AppColorsContent(
     themed: AppThemedColors,
     theme: ResolvedTheme?,
     overrides: ResourceOverrides,
+    snackbarHostState: SnackbarHostState,
     onOverride: (isDark: Boolean, name: String, override: ColorOverride?) -> Unit,
     onClear: (isDark: Boolean) -> Unit
 ) {
@@ -324,6 +347,13 @@ private fun AppColorsContent(
                         .align(Alignment.TopCenter)
                         .contentWidthLimit()
                 )
+
+                AppSnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = navBottomInset())
+                )
             }
         }
     }
@@ -351,6 +381,7 @@ private fun AppColorsContentPreview() {
             overrides = ResourceOverrides(
                 light = mapOf("accent_color" to ColorOverride.Shade(PaletteRole.PRIMARY, 8))
             ),
+            snackbarHostState = remember { SnackbarHostState() },
             onOverride = { _, _, _ -> },
             onClear = {}
         )

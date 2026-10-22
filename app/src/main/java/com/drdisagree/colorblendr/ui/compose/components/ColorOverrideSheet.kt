@@ -2,10 +2,13 @@ package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.annotation.ColorInt
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,6 +46,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,6 +57,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -159,7 +164,8 @@ private fun ColorOverrideContent(
         OverridePreviewTile(
             title = title,
             subtitle = subtitle,
-            previewColor = color
+            previewColor = color,
+            originalColor = baseColor.takeIf { override != null }
         )
 
         Row(
@@ -270,7 +276,8 @@ private fun ColorOverrideContent(
 private fun OverridePreviewTile(
     title: String,
     subtitle: String,
-    @ColorInt previewColor: Int?
+    @ColorInt previewColor: Int?,
+    @ColorInt originalColor: Int?
 ) {
     val color = previewColor ?: AndroidColor.TRANSPARENT
     val background by animateColorAsState(
@@ -280,28 +287,76 @@ private fun OverridePreviewTile(
     )
     val content = Color(calculateTextColor(ColorUtils.compositeColors(color, GRID_AVERAGE)))
     val shape = RoundedCornerShape(24.dp)
+    val lastOriginal = remember { mutableStateOf(originalColor) }
+    if (originalColor != null && lastOriginal.value != originalColor) lastOriginal.value = originalColor
 
-    Column(
-        verticalArrangement = Arrangement.Center,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = SHEET_PADDING)
             .height(96.dp)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
             .clip(shape)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .transparencyGrid(color)
+                .background(background)
+                .padding(horizontal = 20.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = content,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = content.copy(alpha = 0.8f)
+            )
+        }
+
+        AnimatedVisibility(
+            visible = originalColor != null,
+            enter = expandHorizontally(MaterialTheme.motionScheme.defaultSpatialSpec()) +
+                    fadeIn(MaterialTheme.motionScheme.defaultEffectsSpec()),
+            exit = shrinkHorizontally(MaterialTheme.motionScheme.defaultSpatialSpec()) +
+                    fadeOut(MaterialTheme.motionScheme.defaultEffectsSpec())
+        ) {
+            OriginalSwatch(color = lastOriginal.value ?: AndroidColor.TRANSPARENT)
+        }
+    }
+}
+
+@Composable
+private fun OriginalSwatch(@ColorInt color: Int) {
+    val content = Color(calculateTextColor(ColorUtils.compositeColors(color, GRID_AVERAGE)))
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .width(88.dp)
+            .fillMaxHeight()
             .transparencyGrid(color)
-            .background(background)
-            .padding(horizontal = 20.dp)
+            .background(Color(color))
+            .padding(horizontal = 8.dp)
     ) {
         Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
+            text = stringResource(R.string.color_original),
+            style = MaterialTheme.typography.labelMedium,
             color = content
         )
         Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodySmall,
-            color = content.copy(alpha = 0.8f)
+            text = intToArgbHexColor(color),
+            style = MaterialTheme.typography.labelSmall,
+            color = content.copy(alpha = 0.8f),
+            maxLines = 1
         )
     }
 }
