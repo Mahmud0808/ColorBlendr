@@ -54,10 +54,10 @@ import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorTable
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -224,7 +224,7 @@ fun ColorPaletteScreen(
                         .fillMaxSize()
                         .contentWidthLimit(max = 760.dp)
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(top = 12.dp)
                 ) {
                     // Swipe to dismiss; state intentionally not persisted,

@@ -15,7 +15,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -77,12 +76,12 @@ import com.drdisagree.colorblendr.data.models.AppInfoModel
 import com.drdisagree.colorblendr.ui.compose.components.AnimatedCheckIcon
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -276,10 +275,7 @@ fun PerAppThemeScreen() {
                 Box(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
                         state = listState,
-                        contentPadding = PaddingValues(
-                            top = 72.dp,
-                            bottom = LocalPreviewBottomInset.current
-                        ),
+                        contentPadding = previewContentPadding(top = 72.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .contentWidthLimit()

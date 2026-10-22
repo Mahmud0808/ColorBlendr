@@ -81,13 +81,13 @@ import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -332,7 +332,7 @@ fun SettingsScreen(
                         .fillMaxSize()
                         .contentWidthLimit()
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(top = 16.dp)
                 ) {
                     SwitchItem(

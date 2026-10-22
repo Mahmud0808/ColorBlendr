@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -392,18 +393,19 @@ fun HomeScreen(
                         )
                 ) {
                     // Reserve room above preview FABs: 56dp FAB + 12dp margin + gap.
-                    val previewBottomInset by animateDpAsState(
+                    val previewBottomInset = animateDpAsState(
                         targetValue = if (hasPreview && !isApplying) 80.dp else 0.dp,
                         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
                         label = "previewBottomInset"
                     )
 
                     val navBottomInset = navBottomInset()
-
-                    CompositionLocalProvider(
+                    val bottomInset: () -> Dp = remember(previewBottomInset, navBottomInset) {
                         // Spatial spring can overshoot below zero; padding forbids it.
-                        LocalPreviewBottomInset provides previewBottomInset.coerceAtLeast(0.dp) + navBottomInset
-                    ) {
+                        { previewBottomInset.value.coerceAtLeast(0.dp) + navBottomInset }
+                    }
+
+                    CompositionLocalProvider(LocalPreviewBottomInset provides bottomInset) {
                         NavHost(
                             navController = nestedNavController,
                             startDestination = Routes.COLORS,

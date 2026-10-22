@@ -3,7 +3,6 @@ package com.drdisagree.colorblendr.ui.compose.screens.community
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,11 +62,11 @@ import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCard
 import com.drdisagree.colorblendr.ui.compose.components.CommunityThemeCardSkeleton
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.TurnstileChallenge
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.components.rememberSkeletonPulse
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -254,11 +253,11 @@ private fun CommunityScreenContent(
                         columns = GridCells.Adaptive(CARD_MIN_WIDTH_DP.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
-                        contentPadding = PaddingValues(
+                        contentPadding = previewContentPadding(
                             start = 16.dp,
                             end = 16.dp,
                             top = 72.dp,
-                            bottom = 16.dp + LocalPreviewBottomInset.current
+                            bottom = 16.dp
                         ),
                         modifier = Modifier
                             .fillMaxSize()
@@ -301,11 +300,11 @@ private fun SkeletonGrid(hazeState: HazeState) {
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         userScrollEnabled = false,
-        contentPadding = PaddingValues(
+        contentPadding = previewContentPadding(
             start = 16.dp,
             end = 16.dp,
             top = 84.dp,
-            bottom = 16.dp + LocalPreviewBottomInset.current
+            bottom = 16.dp
         ),
         modifier = Modifier
             .fillMaxSize()

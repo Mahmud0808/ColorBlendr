@@ -9,7 +9,6 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -63,13 +62,13 @@ import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.OutlinedTextFieldDialog
 import com.drdisagree.colorblendr.ui.compose.components.SnackbarVisibility
 import com.drdisagree.colorblendr.ui.compose.components.StylePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.WavySectionDivider
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
@@ -223,10 +222,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                 LazyColumn(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(
-                        top = 12.dp,
-                        bottom = 12.dp + LocalPreviewBottomInset.current
-                    ),
+                    contentPadding = previewContentPadding(top = 12.dp, bottom = 12.dp),
                     modifier = Modifier
                         .fillMaxSize()
                         .contentWidthLimit()

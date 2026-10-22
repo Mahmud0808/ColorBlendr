@@ -44,10 +44,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.PositionedCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +93,7 @@ fun PrivacyPolicyScreen() {
                         .fillMaxSize()
                         .contentWidthLimit()
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(top = 8.dp)
                 ) {
                     document?.let { doc ->

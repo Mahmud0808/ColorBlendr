@@ -66,10 +66,10 @@ import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.previewCommunityTheme
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
@@ -250,7 +250,7 @@ private fun DetailsContent(
                         .fillMaxSize()
                         .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(horizontal = 16.dp)
                 ) {
                     val info: @Composable () -> Unit = {

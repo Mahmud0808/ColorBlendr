@@ -52,9 +52,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -120,7 +120,7 @@ fun ThemeScreen() {
                     .fillMaxSize()
                     .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
                     .verticalScroll(scrollState)
-                    .padding(bottom = LocalPreviewBottomInset.current)
+                    .padding(previewContentPadding())
                     .padding(top = 12.dp)
             ) {
                 val rampCard: @Composable () -> Unit = {

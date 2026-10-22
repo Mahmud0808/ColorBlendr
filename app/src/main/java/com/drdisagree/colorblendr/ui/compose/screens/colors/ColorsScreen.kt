@@ -76,8 +76,8 @@ import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPalettePreviewCard
 import com.drdisagree.colorblendr.ui.compose.components.CommunityShowcase
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
@@ -206,7 +206,7 @@ fun ColorsScreen(
                         .fillMaxSize()
                         .contentWidthLimit()
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(top = 12.dp)
                 ) {
                     Surface(
