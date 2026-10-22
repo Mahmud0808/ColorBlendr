@@ -36,6 +36,7 @@ import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.TOKEN_OVERRIDES
+import com.drdisagree.colorblendr.data.common.Constant.APP_COLOR_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
@@ -56,7 +57,8 @@ import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.data.repository.CommunityThemeRepository
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.theme.model.PaletteRole
-import com.drdisagree.colorblendr.theme.override.TokenOverrideCodec
+import com.drdisagree.colorblendr.theme.override.ColorOverrideCodec
+import com.drdisagree.colorblendr.theme.override.ResourceOverrides
 import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.google.gson.reflect.TypeToken
 
@@ -351,14 +353,33 @@ object Utilities {
     }
 
     fun getTokenOverrides(): TokenOverrides {
-        return TokenOverrideCodec.decode(getString(TOKEN_OVERRIDES))
+        return ColorOverrideCodec.decodeTokens(getString(TOKEN_OVERRIDES))
+    }
+
+    fun getAppColorOverrides(): Map<String, ResourceOverrides> {
+        return ColorOverrideCodec.decodeApps(getString(APP_COLOR_OVERRIDES))
+    }
+
+    fun getAppColorOverrides(packageName: String): ResourceOverrides {
+        return getAppColorOverrides()[packageName] ?: ResourceOverrides()
+    }
+
+    fun setAppColorOverrides(packageName: String, overrides: ResourceOverrides) {
+        val all = getAppColorOverrides().toMutableMap().apply {
+            if (overrides.isEmpty) remove(packageName) else put(packageName, overrides)
+        }
+        if (all.isEmpty()) {
+            clearPref(APP_COLOR_OVERRIDES)
+        } else {
+            putString(APP_COLOR_OVERRIDES, ColorOverrideCodec.encodeApps(all))
+        }
     }
 
     fun setTokenOverrides(overrides: TokenOverrides) {
         if (overrides.isEmpty) {
             clearPref(TOKEN_OVERRIDES)
         } else {
-            putString(TOKEN_OVERRIDES, TokenOverrideCodec.encode(overrides))
+            putString(TOKEN_OVERRIDES, ColorOverrideCodec.encodeTokens(overrides))
         }
     }
 

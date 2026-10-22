@@ -21,6 +21,22 @@
     <!-- Color palette -->
     <string name="color_palette_root_warn">Tap a shade to customize it, long press to reset.</string>
     <string name="color_palette_rootless_warn">Tap a shade to copy its hex code.</string>
+    <string name="app_colors_edit">Edit colors</string>
+    <string name="app_colors_edited">Custom colors</string>
+    <string name="app_colors_unavailable">No themeable colors</string>
+    <string name="color_unknown">Unknown</string>
+    <string name="app_colors_hint">Editing a color turns on per-app theming for this app. Light and dark are saved separately.</string>
+    <string name="app_colors_filter_title">Show colors</string>
+    <string name="app_colors_filter_all">All colors</string>
+    <string name="app_colors_filter_themed">Themed by ColorBlendr</string>
+    <string name="app_colors_filter_own">App colors only</string>
+    <string name="app_colors_preset">Preset</string>
+    <string name="app_colors_themed">Themed</string>
+    <string name="app_colors_reset_title">Reset colors?</string>
+    <string name="app_colors_reset_message">Every edited color in %1$s mode returns to the app\'s own color.</string>
+    <string name="app_colors_empty">No colors found</string>
+    <string name="app_colors_empty_desc">This app has no color resources that can be read.</string>
+    <string name="app_colors_apply_failed">Couldn\'t apply colors to %1$s</string>
     <string name="color_tokens_title">Color tokens</string>
     <string name="color_tokens_summary">Fine-tune individual surfaces, text and accents</string>
     <string name="color_tokens_filter_title">Show tokens</string>

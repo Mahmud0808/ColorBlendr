@@ -10,7 +10,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setTokenOverrides
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.theme.ThemePrefs
-import com.drdisagree.colorblendr.theme.override.TokenOverride
+import com.drdisagree.colorblendr.theme.override.ColorOverride
 import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.theme.token.Token
@@ -40,7 +40,7 @@ class ColorTokensViewModel : ViewModel() {
         }
     }
 
-    fun setOverride(isDark: Boolean, token: Token, override: TokenOverride?) {
+    fun setOverride(isDark: Boolean, token: Token, override: ColorOverride?) {
         update(_overrides.value.with(isDark, token, override))
     }
 

@@ -1,38 +1,23 @@
 package com.drdisagree.colorblendr.ui.compose.screens.palette
 
-import androidx.annotation.ColorInt
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Undo
-import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,7 +28,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -51,26 +35,26 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.theme.ThemeEngine
-import com.drdisagree.colorblendr.theme.model.ShadeScale
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeSource
-import com.drdisagree.colorblendr.theme.override.TokenOverride
+import com.drdisagree.colorblendr.theme.override.ColorOverride
 import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenCategory
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
+import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideRow
+import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideSheet
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
-import com.drdisagree.colorblendr.ui.compose.components.PositionedCard
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
+import com.drdisagree.colorblendr.ui.compose.components.ThemeModeToggle
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
@@ -78,7 +62,6 @@ import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.ColorTokensViewModel
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 
@@ -106,7 +89,7 @@ fun ColorTokensScreen(
 private fun ColorTokensContent(
     theme: ResolvedTheme?,
     overrides: TokenOverrides,
-    onOverride: (isDark: Boolean, token: Token, override: TokenOverride?) -> Unit,
+    onOverride: (isDark: Boolean, token: Token, override: ColorOverride?) -> Unit,
     onClear: (isDark: Boolean) -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
@@ -178,9 +161,11 @@ private fun ColorTokensContent(
 
     val editing = editingToken?.let { name -> Token.entries.firstOrNull { it.name == name } }
     if (editing != null && scheme != null) {
-        TokenEditorSheet(
-            token = editing,
+        ColorOverrideSheet(
+            title = editing.displayName,
             scheme = scheme,
+            baseColor = scheme.base(editing),
+            origin = scheme.originShade(editing),
             override = modeOverrides[editing],
             onOverride = { onOverride(isDark, editing, it) },
             onDismiss = { editingToken = null }
@@ -219,7 +204,7 @@ private fun ColorTokensContent(
                         .hazeSource(hazeState)
                 ) {
                     item(key = "mode") {
-                        ModeToggle(
+                        ThemeModeToggle(
                             isDark = isDark,
                             onChange = { dark ->
                                 haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
@@ -234,8 +219,8 @@ private fun ColorTokensContent(
                                 SectionHeader(text = stringResource(category.labelRes))
                             }
                             itemsIndexed(tokens, key = { _, token -> token.name }) { index, token ->
-                                TokenRow(
-                                    token = token,
+                                ColorOverrideRow(
+                                    title = token.displayName,
                                     color = scheme[token],
                                     override = modeOverrides[token],
                                     position = when {
@@ -280,41 +265,6 @@ private fun ColorTokensContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun ModeToggle(
-    isDark: Boolean,
-    onChange: (Boolean) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        listOf(false, true).forEach { dark ->
-            ToggleButton(
-                checked = isDark == dark,
-                onCheckedChange = { if (isDark != dark) onChange(dark) },
-                modifier = Modifier.widthIn(min = 120.dp)
-            ) {
-                Icon(
-                    painter = rememberVectorPainter(
-                        if (dark) Icons.Rounded.DarkMode else Icons.Rounded.LightMode
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(
-                        if (dark) R.string.color_tokens_mode_dark else R.string.color_tokens_mode_light
-                    ),
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-        }
-    }
-}
-
 @Composable
 private fun SectionHeader(text: String) {
     Text(
@@ -329,75 +279,6 @@ private fun SectionHeader(text: String) {
     )
 }
 
-@Composable
-private fun TokenRow(
-    token: Token,
-    @ColorInt color: Int,
-    override: TokenOverride?,
-    position: WidgetPosition,
-    onClick: () -> Unit,
-    onReset: () -> Unit
-) {
-    val hex = intToHexColor(color)
-    val subtitle = when (override) {
-        is TokenOverride.Shade -> stringResource(
-            R.string.color_tokens_from_shade,
-            hex,
-            stringResource(override.role.labelRes),
-            ShadeScale.shades[override.index]
-        )
-
-        is TokenOverride.Custom -> "$hex · ${stringResource(R.string.color_tokens_source_custom)}"
-        null -> hex
-    }
-
-    PositionedCard(position = position, onClick = onClick) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
-                    .padding(1.dp)
-                    .background(Color(color), CircleShape)
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(
-                    text = token.displayName,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (override != null) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
-            }
-            if (override != null) {
-                IconButton(onClick = onReset) {
-                    Icon(
-                        painter = rememberVectorPainter(Icons.AutoMirrored.Rounded.Undo),
-                        contentDescription = stringResource(R.string.reset),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
-    }
-}
-
 @AdaptivePreviews
 @Composable
 private fun ColorTokensContentPreview() {
@@ -409,7 +290,7 @@ private fun ColorTokensContentPreview() {
         ColorTokensContent(
             theme = theme,
             overrides = TokenOverrides(
-                light = mapOf(Token.SURFACE to TokenOverride.Custom(0xFFFAF7F2.toInt()))
+                light = mapOf(Token.SURFACE to ColorOverride.Custom(0xFFFAF7F2.toInt()))
             ),
             onOverride = { _, _, _ -> },
             onClear = {}

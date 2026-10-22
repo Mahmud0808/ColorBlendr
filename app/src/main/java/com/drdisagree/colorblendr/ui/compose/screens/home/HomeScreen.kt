@@ -93,6 +93,7 @@ import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityThemeDetailsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorPaletteScreen
 import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorTokensScreen
+import com.drdisagree.colorblendr.ui.compose.screens.perapp.AppColorsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.perapp.PerAppThemeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.privacypolicy.PrivacyPolicyScreen
 import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsAdvancedScreen
@@ -482,7 +483,20 @@ fun HomeScreen(
                                 )
                             }
                             screen(Routes.COLOR_TOKENS) { ColorTokensScreen() }
-                            screen(Routes.PER_APP_THEME) { PerAppThemeScreen() }
+                            screen(Routes.PER_APP_THEME) {
+                                PerAppThemeScreen(
+                                    onEditColors = { packageName ->
+                                        nestedNavController.navigateSingleTop(
+                                            "${Routes.APP_COLORS_BASE}/$packageName"
+                                        )
+                                    }
+                                )
+                            }
+                            screen(Routes.APP_COLORS) { entry ->
+                                entry.arguments?.getString("packageName")?.let { packageName ->
+                                    AppColorsScreen(packageName = packageName)
+                                }
+                            }
                             screen(Routes.SETTINGS_ADVANCED) {
                                 SettingsAdvancedScreen(
                                     onNavigateToPerAppTheme = {

@@ -11,6 +11,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +34,7 @@ import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -45,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -58,10 +63,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
+import com.drdisagree.colorblendr.data.common.Utilities.getAppColorOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.getAppListFilteringMethod
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
@@ -71,8 +77,10 @@ import com.drdisagree.colorblendr.data.common.Utilities.setShowPerAppThemeWarnin
 import com.drdisagree.colorblendr.data.common.Utilities.showPerAppThemeWarning
 import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.data.domain.AppScope
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.models.AppInfoModel
+import com.drdisagree.colorblendr.theme.overlay.writer.PerPackageColorWriter
 import com.drdisagree.colorblendr.ui.compose.components.AnimatedCheckIcon
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
@@ -86,6 +94,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
+import com.drdisagree.colorblendr.utils.app.AppColorResources
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.manager.OverlayManager
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
@@ -101,7 +110,9 @@ import kotlinx.coroutines.withContext
 import com.google.android.material.R as MaterialR
 
 @Composable
-fun PerAppThemeScreen() {
+fun PerAppThemeScreen(
+    onEditColors: (String) -> Unit = {}
+) {
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -125,6 +136,8 @@ fun PerAppThemeScreen() {
     val pendingToggles = remember { HashMap<String, Int>() }
     val touchedSinceLoad = remember { HashSet<String>() }
     val iconCache = remember { LruCache<String, ImageBitmap>(128) }
+    val rootMode = remember { isRootMode() }
+    val editedApps = remember(reloadTrigger) { getAppColorOverrides().keys }
 
     LaunchedEffect(filterMethod, reloadTrigger) {
         isLoading = true
@@ -285,6 +298,15 @@ fun PerAppThemeScreen() {
                             filteredList,
                             key = { _, app -> app.packageName }
                         ) { index, app ->
+                            val editable by produceState<Boolean?>(null, app.packageName, rootMode) {
+                                if (rootMode) {
+                                    value = withContext(Dispatchers.IO) {
+                                        AppColorResources.hasColors(app.packageName)
+                                    }
+                                }
+                            }
+                            val themeable = editable != false ||
+                                    PerPackageColorWriter.handles(app.packageName)
                             AppListItem(
                                 app = app,
                                 iconCache = iconCache,
@@ -295,7 +317,14 @@ fun PerAppThemeScreen() {
                                     index == filteredList.lastIndex -> WidgetPosition.Bottom
                                     else -> WidgetPosition.Middle
                                 },
-                                onClick = { toggleApp(app) }
+                                onClick = { toggleApp(app) },
+                                edited = app.packageName in editedApps,
+                                themeable = themeable,
+                                onEditColors = if (editable == true) {
+                                    { onEditColors(app.packageName) }
+                                } else {
+                                    null
+                                }
                             )
                         }
                     }
@@ -338,8 +367,12 @@ private fun AppListItem(
     iconCache: LruCache<String, ImageBitmap>,
     selected: Boolean,
     position: WidgetPosition,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    edited: Boolean = false,
+    themeable: Boolean = true,
+    onEditColors: (() -> Unit)? = null
 ) {
+    val toggleEnabled = themeable || selected
     val contentColor = if (selected) {
         MaterialTheme.colorScheme.onPrimaryContainer
     } else {
@@ -382,8 +415,6 @@ private fun AppListItem(
         } else {
             MaterialTheme.colorScheme.surfaceContainer
         },
-        onClick = onClick,
-        interactionSource = interactionSource,
         modifier = Modifier
             .fillMaxWidth()
             .graphicsLayer {
@@ -406,52 +437,95 @@ private fun AppListItem(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 6.dp, end = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            val iconModifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-                .size(48.dp)
-            appIcon.let { icon ->
-                if (icon != null) {
-                    Image(
-                        bitmap = icon,
-                        contentDescription = null,
-                        modifier = iconModifier
-                    )
-                } else {
-                    Box(modifier = iconModifier)
-                }
-            }
-            Column(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(16.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = LocalIndication.current,
+                        enabled = onEditColors != null || toggleEnabled,
+                        onClick = onEditColors ?: onClick
+                    )
+                    .padding(start = 6.dp)
+                    .alpha(if (themeable) 1f else DISABLED_ALPHA)
             ) {
-                Text(
-                    text = app.appName,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = contentColor
-                )
-                Text(
-                    text = app.packageName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = contentColor.copy(alpha = 0.8f),
-                    modifier = Modifier.padding(top = 2.dp)
+                val iconModifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+                    .size(48.dp)
+                appIcon.let { icon ->
+                    if (icon != null) {
+                        Image(
+                            bitmap = icon,
+                            contentDescription = null,
+                            modifier = iconModifier
+                        )
+                    } else {
+                        Box(modifier = iconModifier)
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = app.appName,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = contentColor
+                    )
+                    Text(
+                        text = app.packageName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = contentColor.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                    if (!themeable) {
+                        Text(
+                            text = stringResource(R.string.app_colors_unavailable),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = contentColor,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    } else if (edited) {
+                        Text(
+                            text = stringResource(R.string.app_colors_edited),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (selected) contentColor else MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+            }
+            if (onEditColors != null) {
+                VerticalDivider(
+                    color = contentColor.copy(alpha = 0.2f),
+                    modifier = Modifier.height(36.dp)
                 )
             }
-            AnimatedCheckIcon(
-                selected = selected,
-                tint = if (selected) {
-                    themeAttrColor(MaterialR.attr.colorPrimaryVariant)
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .clickable(enabled = toggleEnabled, onClick = onClick)
+                    .padding(horizontal = 20.dp, vertical = 24.dp)
+                    .alpha(if (toggleEnabled) 1f else DISABLED_ALPHA)
+            ) {
+                AnimatedCheckIcon(
+                    selected = selected,
+                    tint = if (selected) {
+                        themeAttrColor(MaterialR.attr.colorPrimaryVariant)
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            }
         }
     }
 }
+
+private const val DISABLED_ALPHA = 0.5f
 
 private fun filterList(appList: List<AppInfoModel>, query: String): List<AppInfoModel> {
     if (query.trim().isEmpty()) return appList

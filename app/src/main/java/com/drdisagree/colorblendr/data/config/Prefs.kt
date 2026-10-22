@@ -33,7 +33,8 @@ object Prefs {
         Constant.PER_APP_DEFAULTS_SEEDED,
         Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
         Constant.SHOW_PALETTE_ROOT_HINT,
-        Constant.SHOW_PALETTE_ROOTLESS_HINT
+        Constant.SHOW_PALETTE_ROOTLESS_HINT,
+        Constant.APP_COLOR_OVERRIDES
     )
 
     // Staging layer: while active, writes are kept in memory only (still

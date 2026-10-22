@@ -22,6 +22,10 @@ object ColorUtil {
         return String.format("#%06X", (0xFFFFFF and colorInt))
     }
 
+    fun intToArgbHexColor(colorInt: Int): String {
+        return if (Color.alpha(colorInt) == 0xFF) intToHexColor(colorInt) else String.format("#%08X", colorInt)
+    }
+
     fun intToHexColorNoHash(colorInt: Int): String {
         return String.format("%06X", (0xFFFFFF and colorInt))
     }

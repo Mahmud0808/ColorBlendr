@@ -5,6 +5,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_S
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
 import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
+import com.drdisagree.colorblendr.theme.overlay.writer.AppColorOverrideWriter
 import com.drdisagree.colorblendr.theme.overlay.writer.EosColorWriter
 import com.drdisagree.colorblendr.theme.overlay.writer.FrameworkExtrasWriter
 import com.drdisagree.colorblendr.theme.overlay.writer.MaterialTokenWriter
@@ -32,7 +33,12 @@ object ThemeOverlays {
 
     private val SYSTEM_UI_WRITERS = MATERIAL_WRITERS + listOf(TintlessTextWriter, SystemUiExtrasWriter)
 
-    private val PER_APP_WRITERS = MATERIAL_WRITERS + listOf(PerPackageColorWriter, TintlessTextWriter)
+    private val PER_APP_THEME_WRITERS =
+        MATERIAL_WRITERS + listOf(PerPackageColorWriter, TintlessTextWriter)
+
+    private val PER_APP_WRITERS = PER_APP_THEME_WRITERS + AppColorOverrideWriter
+
+    private val PRESET_WRITERS = listOf(PerPackageColorWriter)
 
     fun framework(theme: ResolvedTheme, isDarkMode: Boolean): FabricatedOverlayResource =
         overlay(FABRICATED_OVERLAY_NAME_SYSTEM, FRAMEWORK_PACKAGE, theme, isDarkMode, FRAMEWORK_WRITERS)
@@ -50,10 +56,25 @@ object ThemeOverlays {
             PER_APP_WRITERS
         )
 
+    fun presetColors(packageName: String, theme: ResolvedTheme, isDarkMode: Boolean): Map<String, Int> =
+        collect(packageName, theme, isDarkMode, PRESET_WRITERS)
+
+    fun themedColors(packageName: String, theme: ResolvedTheme, isDarkMode: Boolean): Map<String, Int> =
+        collect(packageName, theme, isDarkMode, PER_APP_THEME_WRITERS)
+
     fun frameworkColors(theme: ResolvedTheme, isDarkMode: Boolean): Map<String, Int> =
         HashMap<String, Int>().also { colors ->
             write(theme, OverlayTarget(FRAMEWORK_PACKAGE, isDarkMode), ColorSink.collecting(colors), FRAMEWORK_WRITERS)
         }
+
+    private fun collect(
+        packageName: String,
+        theme: ResolvedTheme,
+        isDarkMode: Boolean,
+        writers: List<ThemeColorWriter>
+    ): Map<String, Int> = HashMap<String, Int>().also { colors ->
+        write(theme, OverlayTarget(packageName, isDarkMode), ColorSink.collecting(colors), writers)
+    }
 
     private fun overlay(
         overlayName: String,

@@ -1,4 +1,4 @@
-package com.drdisagree.colorblendr.ui.compose.screens.palette
+package com.drdisagree.colorblendr.ui.compose.components
 
 import androidx.annotation.ColorInt
 import androidx.compose.animation.AnimatedContent
@@ -56,6 +56,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.theme.ThemeEngine
@@ -63,24 +64,27 @@ import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ShadeScale
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeSource
-import com.drdisagree.colorblendr.theme.override.TokenOverride
+import com.drdisagree.colorblendr.theme.override.ColorOverride
 import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
-import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.horizontalFadingEdges
+import com.drdisagree.colorblendr.ui.compose.utils.labelRes
+import com.drdisagree.colorblendr.ui.compose.utils.transparencyGrid
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
+import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToArgbHexColor
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
-import kotlin.math.abs
+import android.graphics.Color as AndroidColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TokenEditorSheet(
-    token: Token,
+fun ColorOverrideSheet(
+    title: String,
     scheme: ResolvedScheme,
-    override: TokenOverride?,
-    onOverride: (TokenOverride?) -> Unit,
+    @ColorInt baseColor: Int?,
+    origin: ColorOverride.Shade?,
+    override: ColorOverride?,
+    onOverride: (ColorOverride?) -> Unit,
     onDismiss: () -> Unit
 ) {
     ModalBottomSheet(
@@ -88,9 +92,11 @@ fun TokenEditorSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        TokenEditorContent(
-            token = token,
+        ColorOverrideContent(
+            title = title,
             scheme = scheme,
+            baseColor = baseColor,
+            origin = origin,
             override = override,
             onOverride = onOverride,
             onDismiss = onDismiss
@@ -100,46 +106,45 @@ fun TokenEditorSheet(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun TokenEditorContent(
-    token: Token,
+private fun ColorOverrideContent(
+    title: String,
     scheme: ResolvedScheme,
-    override: TokenOverride?,
-    onOverride: (TokenOverride?) -> Unit,
+    @ColorInt baseColor: Int?,
+    origin: ColorOverride.Shade?,
+    override: ColorOverride?,
+    onOverride: (ColorOverride?) -> Unit,
     onDismiss: () -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
-    val origin = scheme.origin(token)
-    var customMode by rememberSaveable(token) { mutableStateOf(override is TokenOverride.Custom) }
-    var role by rememberSaveable(token) {
-        mutableStateOf((override as? TokenOverride.Shade)?.role ?: origin?.role ?: PaletteRole.NEUTRAL)
+    var customMode by rememberSaveable(title) { mutableStateOf(override is ColorOverride.Custom) }
+    var role by rememberSaveable(title) {
+        mutableStateOf((override as? ColorOverride.Shade)?.role ?: origin?.role ?: PaletteRole.NEUTRAL)
     }
     var showPicker by rememberSaveable { mutableStateOf(false) }
 
-    @ColorInt val color = when (override) {
-        is TokenOverride.Shade -> scheme[override.role, override.index]
-        is TokenOverride.Custom -> override.color
-        null -> scheme[token]
-    }
+    val baseAlpha = baseColor?.let(AndroidColor::alpha) ?: OPAQUE_ALPHA
+    val translucent = baseAlpha < OPAQUE_ALPHA
+    @ColorInt val color = override?.let(scheme::colorOf) ?: baseColor
     val subtitle = when (override) {
-        is TokenOverride.Shade -> stringResource(
+        is ColorOverride.Shade -> stringResource(
             R.string.color_tokens_from_shade,
-            intToHexColor(color),
+            color?.let(::intToArgbHexColor) ?: stringResource(R.string.color_unknown),
             stringResource(override.role.labelRes),
             ShadeScale.shades[override.index]
         )
 
-        else -> intToHexColor(color)
+        else -> color?.let(::intToArgbHexColor) ?: stringResource(R.string.color_unknown)
     }
 
     if (showPicker) {
         ColorPickerDialog(
-            initialColor = color,
+            initialColor = color ?: AndroidColor.GRAY,
             onDismissRequest = { showPicker = false },
             onColorPicked = { picked ->
                 showPicker = false
-                onOverride(TokenOverride.Custom(picked or OPAQUE))
+                onOverride(ColorOverride.Custom(if (translucent) picked else picked or OPAQUE))
             },
-            alphaEnabled = false,
+            alphaEnabled = translucent,
             pickers = listOf(
                 ColorPickerType.WHEEL,
                 ColorPickerType.RGB,
@@ -151,10 +156,10 @@ private fun TokenEditorContent(
     }
 
     Column(modifier = Modifier.padding(bottom = 24.dp)) {
-        TokenPreviewTile(
-            title = token.displayName,
+        OverridePreviewTile(
+            title = title,
             subtitle = subtitle,
-            color = color
+            previewColor = color
         )
 
         Row(
@@ -224,13 +229,13 @@ private fun TokenEditorContent(
                     )
                     ShadeStrip(
                         shades = ShadeScale.indices.map { scheme[role, it] },
-                        selectedIndex = (override as? TokenOverride.Shade)
+                        selectedIndex = (override as? ColorOverride.Shade)
                             ?.takeIf { it.role == role }
                             ?.index,
-                        originIndex = origin?.takeIf { it.role == role }?.let { nearestShade(it.tone) },
+                        originIndex = origin?.takeIf { it.role == role }?.index,
                         onSelect = { index ->
                             haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onOverride(TokenOverride.Shade(role, index))
+                            onOverride(ColorOverride.Shade(role, index, baseAlpha.takeIf { translucent }))
                         },
                         modifier = Modifier.padding(start = SHEET_PADDING, end = SHEET_PADDING, top = 16.dp)
                     )
@@ -262,17 +267,18 @@ private fun TokenEditorContent(
 }
 
 @Composable
-private fun TokenPreviewTile(
+private fun OverridePreviewTile(
     title: String,
     subtitle: String,
-    @ColorInt color: Int
+    @ColorInt previewColor: Int?
 ) {
+    val color = previewColor ?: AndroidColor.TRANSPARENT
     val background by animateColorAsState(
         targetValue = Color(color),
         animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
         label = "tokenPreview"
     )
-    val content = Color(calculateTextColor(color))
+    val content = Color(calculateTextColor(ColorUtils.compositeColors(color, GRID_AVERAGE)))
     val shape = RoundedCornerShape(24.dp)
 
     Column(
@@ -283,6 +289,7 @@ private fun TokenPreviewTile(
             .height(96.dp)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
             .clip(shape)
+            .transparencyGrid(color)
             .background(background)
             .padding(horizontal = 20.dp)
     ) {
@@ -386,26 +393,29 @@ private fun ShadeStrip(
     }
 }
 
-private fun nearestShade(tone: Double): Int =
-    ShadeScale.indices.minBy { abs(ShadeScale.tones[it] - tone) }
-
 private const val OPAQUE = 0xFF000000.toInt()
+
+private const val OPAQUE_ALPHA = 0xFF
+
+private const val GRID_AVERAGE = 0xFFE6E6E6.toInt()
 
 private val SHEET_PADDING = 24.dp
 
 @Preview
 @Composable
-private fun TokenEditorContentPreview() {
+private fun ColorOverrideContentPreview() {
     val scheme = ThemeEngine.scheme(
         source = ThemeSource(style = MONET.TONAL_SPOT, seedColor = 0xFF4285F4.toInt()),
         adjustments = ThemeAdjustments(),
         isDark = false
     )
     ColorBlendrTheme {
-        TokenEditorContent(
-            token = Token.PRIMARY_CONTAINER,
+        ColorOverrideContent(
+            title = "Primary container",
             scheme = scheme,
-            override = TokenOverride.Shade(PaletteRole.PRIMARY, 3),
+            baseColor = scheme[PaletteRole.PRIMARY, 3],
+            origin = ColorOverride.Shade(PaletteRole.PRIMARY, 3),
+            override = ColorOverride.Shade(PaletteRole.PRIMARY, 4),
             onOverride = {},
             onDismiss = {}
         )

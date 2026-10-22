@@ -44,6 +44,24 @@ object PerPackageColorWriter : ThemeColorWriter {
         "surface_container_highest"
     )
 
+    private val PRESET_PACKAGES = setOf(
+        GOOGLE_FEEDS,
+        GOOGLE_NEWS,
+        PLAY_GAMES,
+        SETTINGS,
+        SETTINGS_LINEAGEOS,
+        LINEAGE_PARTS,
+        DOLBY_ATMOS,
+        SETTINGS_SEARCH,
+        SETTINGS_SEARCH_AOSP,
+        PIXEL_LAUNCHER,
+        THEME_PICKER,
+        THEME_PICKER_GOOGLE
+    )
+
+    fun handles(packageName: String): Boolean =
+        packageName.startsWith(SYSTEMUI_CLOCKS) || packageName in PRESET_PACKAGES
+
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
         val scheme = theme.scheme(target.isDarkMode)
         val pitchBlack = theme.adjustments.pitchBlack

@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.ui.compose.screens.palette
 
 import androidx.annotation.StringRes
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenCategory
 
@@ -21,15 +20,4 @@ val TokenCategory.labelRes: Int
         TokenCategory.FRAMEWORK -> R.string.color_tokens_category_framework
         TokenCategory.SYSTEM_UI -> R.string.color_tokens_category_system_ui
         TokenCategory.KEY_COLOR -> R.string.color_tokens_category_key_color
-    }
-
-@get:StringRes
-val PaletteRole.labelRes: Int
-    get() = when (this) {
-        PaletteRole.PRIMARY -> R.string.primary
-        PaletteRole.SECONDARY -> R.string.secondary
-        PaletteRole.TERTIARY -> R.string.tertiary
-        PaletteRole.NEUTRAL -> R.string.palette_neutral
-        PaletteRole.NEUTRAL_VARIANT -> R.string.palette_neutral_variant
-        PaletteRole.ERROR -> R.string.palette_error
     }
