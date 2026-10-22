@@ -127,9 +127,15 @@ fun SettingsScreen(
         SHIZUKU_THEMING_ENABLED,
         WIRELESS_ADB_THEMING_ENABLED
     ) {
-        (isThemingEnabled() && isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM))
-                || isShizukuThemingEnabled()
-                || isWirelessAdbThemingEnabled()
+        isThemingEnabled() || isShizukuThemingEnabled() || isWirelessAdbThemingEnabled()
+    }
+    LaunchedEffect(Unit) {
+        if (isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) {
+            val overlayEnabled = withContext(Dispatchers.IO) {
+                isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
+            }
+            if (!overlayEnabled) masterChecked = false
+        }
     }
     var accurateShades by rememberPrefState(MONET_ACCURATE_SHADES) { accurateShadesEnabled() }
     var pitchBlack by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
