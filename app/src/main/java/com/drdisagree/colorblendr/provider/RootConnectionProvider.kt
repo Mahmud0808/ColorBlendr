@@ -27,10 +27,7 @@ class RootConnectionProvider private constructor(private val context: Context) :
     private var onFailure: (() -> Unit)? = null
 
     private fun bindServiceConnection() {
-        if (isServiceConnected) {
-            mServiceConnectionTimer.countDown()
-            return
-        }
+        if (isServiceConnected) return
 
         CoroutineScope(Dispatchers.Main).launch {
             RootService.bind(
@@ -53,6 +50,7 @@ class RootConnectionProvider private constructor(private val context: Context) :
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
+        mServiceConnectionTimer = CountDownLatch(1)
         serviceProvider = null
         isServiceConnected = false
         Log.w(TAG, "Service disconnected")
@@ -62,8 +60,10 @@ class RootConnectionProvider private constructor(private val context: Context) :
     private suspend fun connectService(): Boolean {
         return withContext(Dispatchers.IO) {
             try {
+                if (isServiceConnected) return@withContext true
+                val latch = mServiceConnectionTimer
                 bindServiceConnection()
-                mServiceConnectionTimer.await(10, TimeUnit.SECONDS)
+                latch.await(10, TimeUnit.SECONDS) && isServiceConnected
             } catch (e: Exception) {
                 Log.e(TAG, "Error starting service connection", e)
                 false
@@ -101,9 +101,14 @@ class RootConnectionProvider private constructor(private val context: Context) :
 
     companion object {
         private val TAG: String = RootConnectionProvider::class.java.simpleName
+        @Volatile
         private var serviceProvider: IRootConnection? = null
+
+        @Volatile
         private var isServiceConnected = false
-        private val mServiceConnectionTimer = CountDownLatch(1)
+
+        @Volatile
+        private var mServiceConnectionTimer = CountDownLatch(1)
 
         fun builder(context: Context): Builder {
             return Builder(context)
