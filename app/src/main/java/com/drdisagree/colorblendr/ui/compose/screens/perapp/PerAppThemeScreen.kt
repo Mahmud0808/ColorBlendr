@@ -556,7 +556,7 @@ private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
     val applications = packageManager.getInstalledApplications(0)
 
     val filtered = applications.filter { appInfo ->
-        when (appType) {
+        appInfo.packageName != appContext.packageName && when (appType) {
             AppType.LAUNCHABLE ->
                 packageManager.getLaunchIntentForPackage(appInfo.packageName) != null
 

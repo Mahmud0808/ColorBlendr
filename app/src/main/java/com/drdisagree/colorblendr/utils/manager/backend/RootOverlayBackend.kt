@@ -3,6 +3,7 @@ package com.drdisagree.colorblendr.utils.manager.backend
 import android.os.RemoteException
 import android.util.Log
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.BLISS_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
@@ -40,7 +41,8 @@ object RootOverlayBackend : OverlayBackend {
         val overlayNames = selectedApps().map(::perAppOverlayName) + listOf(
             FABRICATED_OVERLAY_NAME_SYSTEM,
             FABRICATED_OVERLAY_NAME_SYSTEMUI,
-            perAppOverlayName(BLISS_LAUNCHER)
+            perAppOverlayName(BLISS_LAUNCHER),
+            perAppOverlayName(appContext.packageName)
         )
         return overlayNames.map(::unregister).all { it }
     }
@@ -66,7 +68,9 @@ object RootOverlayBackend : OverlayBackend {
         command(false, overlay.overlayName) { it.registerFabricatedOverlay(overlay) }
 
     private fun selectedApps(): List<String> =
-        getSelectedFabricatedApps().filterValues { it == java.lang.Boolean.TRUE }.keys.toList()
+        getSelectedFabricatedApps()
+            .filter { (packageName, selected) -> selected && packageName != appContext.packageName }
+            .keys.toList()
 
     private fun perAppOverlayName(packageName: String) =
         String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
