@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.drdisagree.colorblendr.R
@@ -309,6 +310,7 @@ class MainActivity : AppCompatActivity() {
 
         val workRequest = OneTimeWorkRequest
             .Builder(AdbPairingNotificationWorker::class.java)
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .setInputData(
                 Data.Builder()
                     .putString("message", if (isSearching) "searching" else null)
