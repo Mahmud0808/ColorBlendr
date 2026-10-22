@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.service
 
+import android.app.ForegroundServiceStartNotAllowedException
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -23,7 +24,11 @@ class ServiceLauncher {
 
         if (AutoStartService.isServiceNotRunning) {
             Log.d(TAG, "launchService: Service is starting...")
-            context.startForegroundService(serviceIntent)
+            try {
+                context.startForegroundService(serviceIntent)
+            } catch (e: ForegroundServiceStartNotAllowedException) {
+                Log.w(TAG, "launchService: not allowed to start from background", e)
+            }
         }
     }
 
