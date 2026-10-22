@@ -21,6 +21,7 @@ import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.cam.Cam
 import com.drdisagree.colorblendr.utils.cam.CamUtils
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.generateColorPalette
+import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.generatePrimaryTones
 import com.google.android.material.color.DynamicColors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
@@ -88,20 +89,12 @@ object ColorUtil {
 
         // Set custom secondary accent color
         if (secondaryColorEnabled()) {
-            palette[1] = generateColorPalette(
-                style,
-                getSecondaryColorValue(),
-                isDark
-            )[0]
+            palette[1] = generatePrimaryTones(style, getSecondaryColorValue(), isDark)
         }
 
         // Set custom tertiary accent color
         if (tertiaryColorEnabled()) {
-            palette[2] = generateColorPalette(
-                style,
-                getTertiaryColorValue(),
-                isDark
-            )[0]
+            palette[2] = generatePrimaryTones(style, getTertiaryColorValue(), isDark)
         }
 
         // Modify colors

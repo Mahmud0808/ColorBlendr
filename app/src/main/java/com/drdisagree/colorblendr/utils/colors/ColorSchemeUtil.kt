@@ -35,22 +35,7 @@ object ColorSchemeUtil {
         colorSpecVersion: Int = Utilities.getColorSpecVersion()
     ): ArrayList<ArrayList<Int>> {
         val palette = ArrayList<ArrayList<Int>>()
-        val specVersion: ColorSpec.SpecVersion = when (colorSpecVersion) {
-            0 -> ColorSpec.SpecVersion.SPEC_2021
-            1 -> ColorSpec.SpecVersion.SPEC_2025
-            2 -> ColorSpec.SpecVersion.SPEC_2026
-            else -> ColorSpec.SpecVersion.SPEC_2021
-        }
-        val platform: DynamicScheme.Platform = DynamicScheme.DEFAULT_PLATFORM
-
-        val dynamicScheme = getDynamicScheme(
-            style,
-            color,
-            isDark,
-            contrast,
-            specVersion,
-            platform
-        )
+        val dynamicScheme = buildDynamicScheme(style, color, isDark, contrast, colorSpecVersion)
 
         val tonalPalettes = arrayOf(
             dynamicScheme.primaryPalette,
@@ -66,6 +51,40 @@ object ColorSchemeUtil {
         }
 
         return palette
+    }
+
+    fun generatePrimaryTones(
+        style: MONET,
+        @ColorInt color: Int,
+        isDark: Boolean = SystemUtil.isDarkMode,
+        contrast: Int = 0,
+        colorSpecVersion: Int = Utilities.getColorSpecVersion()
+    ): ArrayList<Int> = createToneList(
+        buildDynamicScheme(style, color, isDark, contrast, colorSpecVersion).primaryPalette
+    )
+
+    private fun buildDynamicScheme(
+        style: MONET,
+        @ColorInt color: Int,
+        isDark: Boolean,
+        contrast: Int,
+        colorSpecVersion: Int
+    ): DynamicScheme {
+        val specVersion: ColorSpec.SpecVersion = when (colorSpecVersion) {
+            0 -> ColorSpec.SpecVersion.SPEC_2021
+            1 -> ColorSpec.SpecVersion.SPEC_2025
+            2 -> ColorSpec.SpecVersion.SPEC_2026
+            else -> ColorSpec.SpecVersion.SPEC_2021
+        }
+
+        return getDynamicScheme(
+            style,
+            color,
+            isDark,
+            contrast,
+            specVersion,
+            DynamicScheme.DEFAULT_PLATFORM
+        )
     }
 
     private fun getDynamicScheme(
