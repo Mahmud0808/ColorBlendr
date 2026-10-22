@@ -56,7 +56,9 @@ class BroadcastListener : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Main).launch {
             when (intent.action) {
                 Intent.ACTION_BOOT_COMPLETED,
-                Intent.ACTION_LOCKED_BOOT_COMPLETED -> {
+                Intent.ACTION_LOCKED_BOOT_COMPLETED,
+                Intent.ACTION_MY_PACKAGE_REPLACED,
+                "android.intent.action.QUICKBOOT_POWERON" -> {
                     handleBootCompleted(context)
                 }
 
@@ -103,7 +105,6 @@ class BroadcastListener : BroadcastReceiver() {
                     handlePackageRemoved(context, intent)
                 }
 
-                Intent.ACTION_MY_PACKAGE_REPLACED,
                 Intent.ACTION_PACKAGE_REPLACED -> {
                     handlePackageReplaced(context, intent)
                 }
