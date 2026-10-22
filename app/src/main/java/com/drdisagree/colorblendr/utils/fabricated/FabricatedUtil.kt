@@ -19,7 +19,9 @@ import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.perAppDefaultsSeeded
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setPerAppDefaultsSeeded
 import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.utils.app.SystemUtil.isAppInstalled
@@ -540,7 +542,9 @@ object FabricatedUtil {
         //        selectedApps.put(BuildConfig.APPLICATION_ID, true)
 
         // Themed by default for android 15+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
+            !perAppDefaultsSeeded()
+        ) {
             listOf(
                 SETTINGS,
                 SETTINGS_LINEAGEOS,
@@ -556,6 +560,7 @@ object FabricatedUtil {
                     selectedApps[packageName] = true
                 }
             }
+            setPerAppDefaultsSeeded(true)
         }
 
         setSelectedFabricatedApps(selectedApps)

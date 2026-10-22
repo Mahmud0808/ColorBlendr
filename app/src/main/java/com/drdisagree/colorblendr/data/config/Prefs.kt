@@ -29,7 +29,8 @@ object Prefs {
         Constant.WALLPAPER_COLOR_LIST,
         Constant.MONET_LAST_UPDATED,
         Constant.COMMUNITY_LAST_FETCH,
-        Constant.COMMUNITY_VOTED_IDS
+        Constant.COMMUNITY_VOTED_IDS,
+        Constant.PER_APP_DEFAULTS_SEEDED
     )
 
     // Staging layer: while active, writes are kept in memory only (still

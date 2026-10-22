@@ -24,6 +24,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.PER_APP_DEFAULTS_SEEDED
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
@@ -71,6 +72,14 @@ object Utilities {
 
     fun setThemingEnabled(enabled: Boolean) {
         putBoolean(THEMING_ENABLED, enabled)
+    }
+
+    fun perAppDefaultsSeeded(): Boolean {
+        return getBoolean(PER_APP_DEFAULTS_SEEDED, false)
+    }
+
+    fun setPerAppDefaultsSeeded(seeded: Boolean) {
+        putBoolean(PER_APP_DEFAULTS_SEEDED, seeded)
     }
 
     fun isShizukuThemingEnabled(defaultValue: Boolean = true): Boolean {
