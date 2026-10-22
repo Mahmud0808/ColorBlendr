@@ -120,30 +120,29 @@ fun PerAppThemeScreen() {
     var reloadTrigger by remember { mutableIntStateOf(0) }
     val selections = remember { mutableStateMapOf<String, Boolean>() }
     val selectedApps = remember { HashMap<String, Boolean>() }
+    val toggleGenerations = remember { HashMap<String, Int>() }
 
     LaunchedEffect(filterMethod, reloadTrigger) {
         isLoading = true
-        withContext(Dispatchers.IO) {
+        val apps = withContext(Dispatchers.IO) {
             updateFabricatedAppList(appContext)
-            val apps = getAllInstalledApps(AppType.entries[filterMethod])
-
-            if (isThemingEnabled(false)
-                || isShizukuThemingEnabled(false)
-                || isWirelessAdbThemingEnabled(false)
-            ) {
-                apps.asSequence()
-                    .filter { it.isSelected }
-                    .forEach { selectedApps[it.packageName] = true }
-                setSelectedFabricatedApps(selectedApps)
-            }
-
-            withContext(Dispatchers.Main) {
-                selections.clear()
-                apps.forEach { selections[it.packageName] = it.isSelected }
-                appList = apps
-                isLoading = false
-            }
+            getAllInstalledApps(AppType.entries[filterMethod])
         }
+
+        if (isThemingEnabled(false)
+            || isShizukuThemingEnabled(false)
+            || isWirelessAdbThemingEnabled(false)
+        ) {
+            apps.asSequence()
+                .filter { it.isSelected }
+                .forEach { selectedApps[it.packageName] = true }
+            setSelectedFabricatedApps(selectedApps)
+        }
+
+        selections.clear()
+        apps.forEach { selections[it.packageName] = it.isSelected }
+        appList = apps
+        isLoading = false
     }
 
     LaunchedEffect(Unit) {
@@ -193,6 +192,9 @@ fun PerAppThemeScreen() {
         selectedApps[app.packageName] = !isSelected
         setSelectedFabricatedApps(selectedApps)
 
+        val generation = (toggleGenerations[app.packageName] ?: 0) + 1
+        toggleGenerations[app.packageName] = generation
+
         AppScope.launch(Dispatchers.IO) {
             if (isSelected) {
                 unregisterFabricatedOverlay(
@@ -200,6 +202,7 @@ fun PerAppThemeScreen() {
                 )
             } else if (!applyFabricatedColorsPerApp(app.packageName)) {
                 withContext(Dispatchers.Main) {
+                    if (toggleGenerations[app.packageName] != generation) return@withContext
                     selections[app.packageName] = false
                     app.isSelected = false
                     selectedApps[app.packageName] = false
