@@ -30,18 +30,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -51,10 +50,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
@@ -334,20 +335,26 @@ private fun EmptyState() {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ShareThemeDialog(onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     var name by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var author by rememberSaveable { mutableStateOf("") }
     var showChallenge by remember { mutableStateOf(false) }
-    var submitting by remember { mutableStateOf(false) }
+    val uploading by CommunityUploader.uploading.collectAsState()
+    var challengeSolved by remember { mutableStateOf(false) }
+    val submitting = uploading || challengeSolved
+    val submissionsAtOpen = rememberSaveable { CommunityUploader.submissions.value }
+    val submissions by CommunityUploader.submissions.collectAsState()
+
+    LaunchedEffect(submissions) {
+        if (submissions > submissionsAtOpen) onDismiss()
+    }
 
     if (showChallenge) {
         TurnstileChallenge(
             onToken = { token ->
                 showChallenge = false
-                submitting = true
-                scope.launch {
+                challengeSolved = true
+                AppScope.launch {
                     val seed = getSeedColorValue(
                         getWallpaperColorList().firstOrNull() ?: AndroidColor.BLUE
                     )
@@ -358,13 +365,12 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                         seedColor = seed
                     )
                     val queued = CommunityUploader.upload(payload, token)
-                    submitting = false
+                    challengeSolved = false
                     AppSnackbar.show(
-                        context.getString(
+                        appContext.getString(
                             if (queued) R.string.theme_submitted else R.string.theme_submit_failed
                         )
                     )
-                    if (queued) onDismiss()
                 }
             },
             onDismiss = { showChallenge = false }
