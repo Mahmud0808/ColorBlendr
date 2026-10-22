@@ -29,12 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.thread
 import kotlin.concurrent.withLock
 
 object WifiAdbShell {
 
     private val TAG = WifiAdbShell::class.java.simpleName
     private val executor: ExecutorService = Executors.newFixedThreadPool(3)
+    private val execExecutor: ExecutorService = Executors.newCachedThreadPool()
     private val connectLock = ReentrantLock()
     private var adbShellStream: AdbStream? = null
     private val commandOutput = MutableLiveData<CharSequence?>()
@@ -48,6 +50,16 @@ object WifiAdbShell {
         } catch (e: Exception) {
             Log.e(TAG, "isMyDeviceConnected: ", e)
             false
+        }
+    }
+
+    private fun dropConnection() {
+        thread(name = "WifiAdbDrop") {
+            try {
+                AdbConnectionManager.getInstance(appContext).disconnect()
+            } catch (th: Throwable) {
+                Log.e(TAG, "dropConnection: ", th)
+            }
         }
     }
 
@@ -293,7 +305,7 @@ object WifiAdbShell {
         }
 
         val streamRef = AtomicReference<AdbStream?>(null)
-        val future = executor.submit<AdbCommandResult> {
+        val future = execExecutor.submit<AdbCommandResult> {
             try {
                 val manager = AdbConnectionManager.getInstance(appContext)
                 val destination = "shell:{ $command; } 2>&1; echo \"$EXIT_MARKER$?\""
@@ -331,6 +343,7 @@ object WifiAdbShell {
                 val markerIndex = output.lastIndexOf(EXIT_MARKER)
                 if (markerIndex == -1) {
                     // Stream ended without marker: connection dropped.
+                    dropConnection()
                     AdbCommandResult(success = false, output = output.trim())
                 } else {
                     val code = output.substring(markerIndex + EXIT_MARKER.length)
@@ -358,6 +371,7 @@ object WifiAdbShell {
                 streamRef.get()?.close()
             } catch (_: Exception) {
             }
+            dropConnection()
             AdbCommandResult(success = false, output = "Command timed out")
         } catch (e: Exception) {
             Log.e(TAG, "exec: $command", e)
