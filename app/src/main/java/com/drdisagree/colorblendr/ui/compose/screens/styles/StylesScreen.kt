@@ -77,7 +77,10 @@ import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.app.BackupRestore
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.getStyleNameForRootless
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import android.R as AndroidR
 
 @Composable
@@ -99,6 +102,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
     var selectedStyle by rememberPrefState(MONET_STYLE) { getCurrentMonetStyle() }
     var selectedCustomStyle by rememberPrefState(CUSTOM_MONET_STYLE) { getCurrentCustomStyle() }
     var dialogState by remember { mutableStateOf<StyleDialogState?>(null) }
+    var styleSelectJob by remember { mutableStateOf<Job?>(null) }
 
     LaunchedEffect(styleList) {
         if (styleList.isNotEmpty() &&
@@ -170,10 +174,11 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                         },
                         onSelect = {
                             haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            styleSelectJob?.cancel()
                             if (style.customStyle == null) {
                                 selectedStyle = style.monetStyle
                                 selectedCustomStyle = null
-                                scope.launch {
+                                styleSelectJob = scope.launch {
                                     PreviewController.beginPreview()
                                     setCurrentMonetStyle(style.monetStyle)
                                     resetCustomStyle()
@@ -182,9 +187,12 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                                 }
                             } else {
                                 selectedCustomStyle = style.customStyle.styleId
-                                scope.launch {
+                                styleSelectJob = scope.launch {
+                                    val prefs = withContext(Dispatchers.Default) {
+                                        style.customStyle.prefsGson.toPrefs()
+                                    }
                                     PreviewController.beginPreview()
-                                    BackupRestore.restorePrefsMap(style.customStyle.prefsGson.toPrefs(), forStyle = true)
+                                    BackupRestore.restorePrefsMap(prefs, forStyle = true)
                                     setCurrentCustomStyle(style.customStyle.styleId)
                                     clearOriginalStyleName()
                                     applyColorScheme()
@@ -332,8 +340,11 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                         selectedCustomStyle -> PreviewController.applyChanges()
 
                         Prefs.getCommittedString(CUSTOM_MONET_STYLE) -> {
+                            val prefs = withContext(Dispatchers.Default) {
+                                updated.prefsGson.toPrefs()
+                            }
                             PreviewController.reapply {
-                                BackupRestore.restorePrefsMap(updated.prefsGson.toPrefs(), forStyle = true)
+                                BackupRestore.restorePrefsMap(prefs, forStyle = true)
                                 setCurrentCustomStyle(styleId)
                                 clearOriginalStyleName()
                             }
