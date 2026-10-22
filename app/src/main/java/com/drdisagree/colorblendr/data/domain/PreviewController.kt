@@ -67,6 +67,18 @@ object PreviewController {
     @Volatile
     private var refreshOthersPending = false
 
+    private val sessionLock = Any()
+
+    @Volatile
+    private var previewSession = 0
+
+    private fun endPreviewSession() {
+        synchronized(sessionLock) {
+            previewSession++
+            _previewColors.value = null
+        }
+    }
+
     @Volatile
     private var systemUpdatePending = false
 
@@ -93,10 +105,15 @@ object PreviewController {
                 // applied or discarded) must not resurrect the preview.
                 if (!Prefs.isStagingActive) return@collect
 
+                val session = previewSession
                 val refreshOthers = refreshOthersPending
                 refreshOthersPending = false
                 try {
-                    _previewColors.value = buildPreviewColors()
+                    val colors = buildPreviewColors()
+                    synchronized(sessionLock) {
+                        if (session != previewSession || !Prefs.isStagingActive) return@collect
+                        _previewColors.value = colors
+                    }
                     if (refreshOthers) {
                         // Palette/style pages regenerate from the staged prefs.
                         RefreshCoordinator.triggerRefresh()
@@ -139,7 +156,7 @@ object PreviewController {
             } catch (e: Exception) {
                 Log.e(TAG, "Error applying preview colors", e)
             } finally {
-                _previewColors.value = null
+                endPreviewSession()
                 _isApplying.value = false
             }
         }
@@ -176,7 +193,7 @@ object PreviewController {
     fun abandonPreview(applyPending: Boolean = true) {
         CommunityThemeApplier.pendingCreationId = null
         Prefs.discardStaged()
-        _previewColors.value = null
+        endPreviewSession()
         RefreshCoordinator.triggerRefresh()
 
         if (applyPending && takeSystemUpdatePending()) {
