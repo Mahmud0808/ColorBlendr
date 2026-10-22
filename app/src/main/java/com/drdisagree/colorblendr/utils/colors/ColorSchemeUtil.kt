@@ -214,6 +214,9 @@ object ColorSchemeUtil {
             R.string.monet_fruitsalad.getOriginalString(),
             context.getString(R.string.monet_fruitsalad) -> MONET.FRUIT_SALAD
 
+            R.string.monet_cmf.getOriginalString(),
+            context.getString(R.string.monet_cmf) -> MONET.CMF
+
             else -> MONET.TONAL_SPOT
         }
     }
