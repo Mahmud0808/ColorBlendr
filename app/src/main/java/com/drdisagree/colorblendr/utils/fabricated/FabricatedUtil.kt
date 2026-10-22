@@ -11,6 +11,7 @@ import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH
 import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
+import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.perAppDefaultsSeeded
@@ -20,6 +21,14 @@ import com.drdisagree.colorblendr.utils.app.SystemUtil.isAppInstalled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager
 
 object FabricatedUtil {
+
+    private val SETTINGS_PACKAGES = listOf(SETTINGS, SETTINGS_LINEAGEOS, LINEAGE_PARTS)
+
+    fun selectSettingsForPerAppTheme() {
+        val selectedApps = getSelectedFabricatedApps()
+        SETTINGS_PACKAGES.filter(::isAppInstalled).forEach { selectedApps[it] = true }
+        setSelectedFabricatedApps(selectedApps)
+    }
 
     fun updateFabricatedAppList(context: Context) {
         if (!isRootMode() || !isThemingEnabled()) return

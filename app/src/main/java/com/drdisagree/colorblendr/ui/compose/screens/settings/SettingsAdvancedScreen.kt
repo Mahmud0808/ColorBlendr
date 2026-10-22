@@ -92,14 +92,15 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.selectSettingsForPerAppTheme
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
-import kotlin.time.Duration.Companion.milliseconds
 
 private const val TARGET_SECONDARY = "secondary"
 private const val TASKER_GUIDE_URL =
@@ -411,6 +412,7 @@ fun SettingsAdvancedScreen(
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setForcePitchBlackSettingsEnabled(isChecked)
+                            if (isChecked) selectSettingsForPerAppTheme()
                             updateColors()
                         }
                     )

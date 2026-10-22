@@ -29,12 +29,20 @@ import com.drdisagree.colorblendr.theme.overlay.OverlayTarget
 import com.drdisagree.colorblendr.theme.overlay.ThemeColorWriter
 import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
+import com.drdisagree.colorblendr.theme.token.Token
 import kotlin.math.roundToInt
 
 object PerPackageColorWriter : ThemeColorWriter {
 
     private const val TRANSLUCENT_ICON_ALPHA = 80
     private const val TRANSLUCENT_DRAWER_ALPHA = 95
+
+    private val SETTINGS_CONTAINER_ALIASES = listOf(
+        "materialColorSurfaceContainer",
+        "sc_materialColorSurfaceContainer",
+        "m3_sys_color_dynamic_dark_surface_container",
+        "sud_system_surface_container_dark"
+    )
 
     private val SETTINGS_SEARCH_DARK_SURFACES = listOf(
         "surface_container_lowest",
@@ -81,7 +89,7 @@ object PerPackageColorWriter : ThemeColorWriter {
                 SETTINGS_LINEAGEOS,
                 LINEAGE_PARTS,
                 DOLBY_ATMOS -> if (pitchBlack && isDark && isVanillaIceCreamOrLater()) {
-                    sink.settingsColors(scheme)
+                    sink.settingsColors(scheme, theme.adjustments.pitchBlackContainers)
                 }
 
                 SETTINGS_SEARCH,
@@ -145,8 +153,7 @@ object PerPackageColorWriter : ThemeColorWriter {
         color("replay__pal_games_dark_300", scheme.tone(PRIMARY, 5), ifExists = false)
     }
 
-    private fun ColorSink.settingsColors(scheme: ResolvedScheme) {
-        val neutral = scheme[NEUTRAL]
+    private fun ColorSink.settingsColors(scheme: ResolvedScheme, blackContainers: Boolean) {
         listOf(
             "settingslib_materialColorSurface",
             "settingslib_materialColorSurfaceVariant",
@@ -157,9 +164,12 @@ object PerPackageColorWriter : ThemeColorWriter {
             "config_tab_color"
         ).forEach { color(it, Color.BLACK, ifExists = false) }
 
-        color("settingslib_materialColorSurfaceBright", neutral.colorAt(11.6), ifExists = false)
-        color("settingslib_materialColorSurfaceContainerHigh", neutral.colorAt(20.0), ifExists = false)
-        color("settingslib_materialColorSurfaceContainerHighest", neutral.colorAt(20.6), ifExists = false)
+        val containerHigh = scheme[Token.SURFACE_CONTAINER_HIGH]
+        color("settingslib_materialColorSurfaceBright", containerHigh, ifExists = false)
+        color("settingslib_materialColorSurfaceContainerHigh", containerHigh, ifExists = false)
+        color("settingslib_materialColorSurfaceContainerHighest", scheme[Token.SURFACE_CONTAINER_HIGHEST], ifExists = false)
+
+        if (blackContainers) SETTINGS_CONTAINER_ALIASES.forEach { color(it, Color.BLACK) }
     }
 
     private fun ColorSink.settingsSearchColors(scheme: ResolvedScheme, isDark: Boolean) {

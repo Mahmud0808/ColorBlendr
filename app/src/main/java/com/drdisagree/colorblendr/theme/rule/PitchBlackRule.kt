@@ -6,10 +6,7 @@ import com.drdisagree.colorblendr.theme.model.ShadeScale
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenResolution
 
-class PitchBlackRule(
-    private val surfaceTone: Double,
-    private val blackContainers: Boolean
-) : ThemeRule {
+class PitchBlackRule(private val surfaceTone: Double) : ThemeRule {
 
     override fun token(
         token: Token,
@@ -19,8 +16,7 @@ class PitchBlackRule(
         if (!isDark || resolution.role?.isNeutral != true || token !in SURFACE_TOKENS) {
             return resolution
         }
-        val tone = if (blackContainers && token == Token.SURFACE_CONTAINER) 0.0 else darken(resolution.tone)
-        return resolution.copy(tone = tone)
+        return resolution.copy(tone = darken(resolution.tone))
     }
 
     override fun shade(role: PaletteRole, index: Int, color: Int, isDark: Boolean): Int =
