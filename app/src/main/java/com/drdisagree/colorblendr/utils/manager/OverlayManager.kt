@@ -28,6 +28,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
@@ -342,6 +343,8 @@ object OverlayManager {
         paletteDark: ArrayList<ArrayList<Int>>? = null,
         paletteLight: ArrayList<ArrayList<Int>>? = null
     ): Boolean {
+        if (!isThemingEnabled() || PreviewController.isPreviewActive) return true
+
         ResourceUtil.clearLookupCache()
         return registerFabricatedOverlay(
             getFabricatedColorsPerApp(packageName, paletteLight, paletteDark)

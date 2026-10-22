@@ -138,6 +138,12 @@ fun SettingsAdvancedScreen(
         }
     }
 
+    fun blockedByPreview(): Boolean {
+        if (!PreviewController.isPreviewActive) return false
+        Toast.makeText(context, R.string.preview_pending_apply_first, Toast.LENGTH_SHORT).show()
+        return true
+    }
+
     fun applyColorsNow() {
         AppScope.launch {
             updateColorAppliedTimestamp()
@@ -285,6 +291,7 @@ fun SettingsAdvancedScreen(
                     checked = screenOffUpdate,
                     position = WidgetPosition.Middle,
                     onCheckedChange = { isChecked ->
+                        if (blockedByPreview()) return@SwitchItem
                         screenOffUpdate = isChecked
                         setScreenOffColorUpdateEnabled(isChecked)
                         if (!isChecked) {
@@ -301,6 +308,7 @@ fun SettingsAdvancedScreen(
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
                     position = WidgetPosition.Middle,
                     onCheckedChange = { isChecked ->
+                        if (blockedByPreview()) return@SwitchItem
                         modeSpecificThemes = isChecked
                         resetCustomStyleIfNotNull()
                         setModeSpecificThemesEnabled(isChecked)
@@ -356,6 +364,7 @@ fun SettingsAdvancedScreen(
                     },
                     position = WidgetPosition.Top,
                     onCheckedChange = { isChecked ->
+                        if (blockedByPreview()) return@SwitchItem
                         darkerIcons = isChecked
                         if (isChecked) {
                             savePixelLauncherInPerAppTheme()
@@ -377,6 +386,7 @@ fun SettingsAdvancedScreen(
                     },
                     position = WidgetPosition.Bottom,
                     onCheckedChange = { isChecked ->
+                        if (blockedByPreview()) return@SwitchItem
                         semiTransparentIcons = isChecked
                         if (isChecked) {
                             savePixelLauncherInPerAppTheme()

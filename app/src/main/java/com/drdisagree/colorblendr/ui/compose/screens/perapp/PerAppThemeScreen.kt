@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
 import com.drdisagree.colorblendr.data.common.Utilities.getAppListFilteringMethod
@@ -177,6 +178,11 @@ fun PerAppThemeScreen() {
     }
 
     fun toggleApp(app: AppInfoModel) {
+        if (PreviewController.isPreviewActive) {
+            Toast.makeText(appContext, R.string.preview_pending_apply_first, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val isSelected = selections[app.packageName] == true
         haptics.performHapticFeedback(
             if (!isSelected) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
