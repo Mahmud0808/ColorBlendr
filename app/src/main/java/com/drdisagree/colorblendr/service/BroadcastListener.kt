@@ -164,6 +164,8 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     private suspend fun handlePackageRemoved(context: Context, intent: Intent) {
+        if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return
+
         intent.data?.schemeSpecificPart?.let { packageName ->
             val selectedApps: HashMap<String, Boolean> = getSelectedFabricatedApps()
 
