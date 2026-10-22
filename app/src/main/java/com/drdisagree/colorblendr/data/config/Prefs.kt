@@ -21,10 +21,9 @@ object Prefs {
         }
     }
 
-    private val editor by lazy { prefs.edit() }
+    fun newEditor(): SharedPreferences.Editor = prefs.edit()
 
-    val preferenceEditor: SharedPreferences.Editor
-        get() = editor
+    private val stagingLock = Any()
 
     // Staging layer: while active, writes are kept in memory only (still
     // visible to every getter and change listener) until they are either
@@ -50,33 +49,43 @@ object Prefs {
         get() = stagingActive
 
     fun beginStaging() {
-        stagingActive = true
+        synchronized(stagingLock) {
+            if (stagingActive) return
+            staged.clear()
+            stagedClearAll = false
+            stagingActive = true
+        }
     }
 
     fun commitStaged() {
-        if (!stagingActive) return
+        synchronized(stagingLock) {
+            if (!stagingActive) return
 
-        if (stagedClearAll) editor.clear()
-        staged.forEach { (key, value) ->
-            if (value === REMOVED) {
-                editor.remove(key)
-            } else {
-                putIntoEditor(key, value)
+            val editor = prefs.edit()
+            if (stagedClearAll) editor.clear()
+            staged.forEach { (key, value) ->
+                if (value === REMOVED) {
+                    editor.remove(key)
+                } else {
+                    editor.putValue(key, value)
+                }
             }
-        }
-        editor.commit()
+            editor.commit()
 
-        stagingActive = false
-        stagedClearAll = false
-        staged.clear()
+            stagingActive = false
+            stagedClearAll = false
+            staged.clear()
+        }
     }
 
     fun discardStaged() {
-        if (!stagingActive) return
+        synchronized(stagingLock) {
+            if (!stagingActive) return
 
-        stagingActive = false
-        stagedClearAll = false
-        staged.clear()
+            stagingActive = false
+            stagedClearAll = false
+            staged.clear()
+        }
 
         // Null key: observers re-read everything from storage.
         dispatchChange(null)
@@ -88,37 +97,40 @@ object Prefs {
         return if (stagedClearAll) REMOVED else null
     }
 
-    private fun stage(key: String, value: Any) {
-        staged[key] = value
-        dispatchChange(key)
-    }
-
     private fun dispatchChange(key: String?) {
         changeListeners.forEach { it.onSharedPreferenceChanged(prefs, key) }
     }
 
-    private fun putIntoEditor(key: String, value: Any) {
+    private fun SharedPreferences.Editor.putValue(key: String, value: Any) {
         when (value) {
-            is Boolean -> editor.putBoolean(key, value)
-            is Int -> editor.putInt(key, value)
-            is Long -> editor.putLong(key, value)
-            is Float -> editor.putFloat(key, value)
-            is String -> editor.putString(key, value)
-            is Double -> editor.putInt(key, value.toInt())
+            is Boolean -> putBoolean(key, value)
+            is Int -> putInt(key, value)
+            is Long -> putLong(key, value)
+            is Float -> putFloat(key, value)
+            is String -> putString(key, value)
+            is Double -> putInt(key, value.toInt())
             else -> throw IllegalArgumentException(
                 "Type ${value.javaClass.simpleName} is unknown"
             )
         }
     }
 
-    fun putAny(key: String, value: Any) {
-        if (stagingActive) {
-            stage(key, value)
-        } else {
-            putIntoEditor(key, value)
-            editor.apply()
+    private fun stageOrWrite(key: String, value: Any) {
+        val stagedNow = synchronized(stagingLock) {
+            if (stagingActive) {
+                staged[key] = value
+                true
+            } else {
+                prefs.edit().apply {
+                    if (value === REMOVED) remove(key) else putValue(key, value)
+                }.apply()
+                false
+            }
         }
+        if (stagedNow) dispatchChange(key)
     }
+
+    fun putAny(key: String, value: Any) = stageOrWrite(key, value)
 
     fun putBoolean(key: String, `val`: Boolean) = putAny(key, `val`)
 
@@ -166,7 +178,7 @@ object Prefs {
         return if (staged === REMOVED) defValue else staged as String
     }
 
-    fun getAllPrefs(): MutableMap<String, *> {
+    fun getAllPrefs(): MutableMap<String, *> = synchronized(stagingLock) {
         val all: MutableMap<String, Any?> = if (stagingActive && stagedClearAll) {
             HashMap()
         } else {
@@ -177,7 +189,7 @@ object Prefs {
                 if (value === REMOVED) all.remove(key) else all[key] = value
             }
         }
-        return all
+        all
     }
 
     fun getAllPrefsAsGson(): String = Constant.GSON.toJson(getAllPrefs() as Map<String, *>)
@@ -195,23 +207,21 @@ object Prefs {
         changeListeners.remove(listener)
     }
 
-    fun clearPref(key: String) {
-        if (stagingActive) {
-            stage(key, REMOVED)
-        } else {
-            editor.remove(key).apply()
-        }
-    }
+    fun clearPref(key: String) = stageOrWrite(key, REMOVED)
 
     fun clearPrefs(vararg keys: String) = keys.forEach { key -> clearPref(key) }
 
     fun clearAllPrefs() {
-        if (stagingActive) {
-            stagedClearAll = true
-            staged.clear()
-            dispatchChange(null)
-        } else {
-            editor.clear().apply()
+        val stagedNow = synchronized(stagingLock) {
+            if (stagingActive) {
+                stagedClearAll = true
+                staged.clear()
+                true
+            } else {
+                prefs.edit().clear().apply()
+                false
+            }
         }
+        if (stagedNow) dispatchChange(null)
     }
 }

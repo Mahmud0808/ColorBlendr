@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.app
 
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
@@ -15,7 +16,6 @@ import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.config.Prefs.getAllPrefs
-import com.drdisagree.colorblendr.data.config.Prefs.preferenceEditor
 import com.drdisagree.colorblendr.data.database.AppDatabase
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.google.gson.reflect.TypeToken
@@ -232,8 +232,9 @@ object BackupRestore {
             } else false
 
             val staging = Prefs.isStagingActive
+            val editor = Prefs.newEditor()
 
-            if (staging) Prefs.clearAllPrefs() else preferenceEditor.clear()
+            if (staging) Prefs.clearAllPrefs() else editor.clear()
 
             /*
              * Migrate previously saved custom styles from preferences to database
@@ -270,7 +271,7 @@ object BackupRestore {
                         else -> Prefs.putAny(key, value)
                     }
                 } else {
-                    putObject(key, value)
+                    editor.putObject(key, value)
                 }
             }
 
@@ -291,7 +292,7 @@ object BackupRestore {
             // Set basic color if seed color is not listed in wallpaper colors
             put(MONET_SEED_COLOR_ENABLED, !colorAvailable)
 
-            if (!staging) preferenceEditor.commit()
+            if (!staging) editor.commit()
         }
     }
 
@@ -299,17 +300,17 @@ object BackupRestore {
     private fun isRootOnlyPref(key: String): Boolean =
         key in Constant.ROOT_ONLY_PREFS || key.startsWith("system_")
 
-    private fun putObject(key: String, value: Any) {
+    private fun SharedPreferences.Editor.putObject(key: String, value: Any) {
         when (value) {
-            is Boolean -> preferenceEditor.putBoolean(key, value)
-            is String -> preferenceEditor.putString(key, value)
-            is Int -> preferenceEditor.putInt(key, value)
-            is Long -> preferenceEditor.putLong(key, value)
+            is Boolean -> putBoolean(key, value)
+            is String -> putString(key, value)
+            is Int -> putInt(key, value)
+            is Long -> putLong(key, value)
             // Float and Double are unused in this project
             // is Float -> editor.putFloat(key, value)
             // is Double -> editor.putFloat(key, value.toFloat())
-            is Float -> preferenceEditor.putInt(key, value.toInt())
-            is Double -> preferenceEditor.putInt(key, value.toInt())
+            is Float -> putInt(key, value.toInt())
+            is Double -> putInt(key, value.toInt())
             else -> throw IllegalArgumentException("Type ${value.javaClass.simpleName} is unknown")
         }
     }
