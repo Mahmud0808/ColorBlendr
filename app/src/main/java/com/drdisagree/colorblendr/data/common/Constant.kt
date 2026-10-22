@@ -142,6 +142,20 @@ object Constant {
     )
 
 
+    val STYLE_EXCLUDED_PREFS: Set<String> = HashSet(
+        listOf(
+            FABRICATED_OVERLAY_FOR_APPS_STATE,
+            SHOW_PER_APP_THEME_WARN,
+            APP_LIST_FILTER_METHOD,
+            ADB_IP,
+            ADB_PAIRING_PORT,
+            SHIZUKU_THEMING_ENABLED,
+            WIRELESS_ADB_THEMING_ENABLED,
+            TASKER_INTEGRATION,
+            SCREEN_OFF_UPDATE_COLORS
+        )
+    )
+
     val ROOT_ONLY_PREFS: Set<String> = HashSet(
         listOf(
             MONET_ACCURATE_SHADES,

@@ -184,7 +184,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
                                 selectedCustomStyle = style.customStyle.styleId
                                 scope.launch {
                                     PreviewController.beginPreview()
-                                    BackupRestore.restorePrefsMap(style.customStyle.prefsGson.toPrefs())
+                                    BackupRestore.restorePrefsMap(style.customStyle.prefsGson.toPrefs(), forStyle = true)
                                     setCurrentCustomStyle(style.customStyle.styleId)
                                     clearOriginalStyleName()
                                     applyColorScheme()
@@ -333,7 +333,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
 
                         Prefs.getCommittedString(CUSTOM_MONET_STYLE) -> {
                             PreviewController.reapply {
-                                BackupRestore.restorePrefsMap(updated.prefsGson.toPrefs())
+                                BackupRestore.restorePrefsMap(updated.prefsGson.toPrefs(), forStyle = true)
                                 setCurrentCustomStyle(styleId)
                                 clearOriginalStyleName()
                             }

@@ -10,6 +10,7 @@ import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKU
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SAVED_CUSTOM_MONET_STYLES
+import com.drdisagree.colorblendr.data.common.Constant.STYLE_EXCLUDED_PREFS
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Utilities
@@ -204,10 +205,15 @@ object BackupRestore {
     }
 
     @Suppress("deprecation")
-    suspend fun restorePrefsMap(map: Map<String, Any>) {
+    suspend fun restorePrefsMap(map: Map<String, Any>, forStyle: Boolean = false) {
         withContext(Dispatchers.IO) {
             val allPrefs = getAllPrefs()
             val newPrefs = map.toMutableMap()
+            val preservedPrefs = if (forStyle) {
+                EXCLUDED_PREFS_FROM_BACKUP + STYLE_EXCLUDED_PREFS
+            } else {
+                EXCLUDED_PREFS_FROM_BACKUP
+            }
 
             // Retrieve excluded prefs from current prefs
             val excludedPrefs: MutableMap<String, Any> = HashMap()
@@ -215,7 +221,7 @@ object BackupRestore {
             // Restoring config will enable theming service
             excludedPrefs[THEMING_ENABLED] = true
 
-            EXCLUDED_PREFS_FROM_BACKUP.forEach { excludedPref ->
+            preservedPrefs.forEach { excludedPref ->
                 val prefValue = allPrefs[excludedPref]
                 if (prefValue != null) {
                     excludedPrefs[excludedPref] = prefValue
@@ -284,7 +290,7 @@ object BackupRestore {
             // Restore non-excluded prefs
             val rootMode = Utilities.isRootMode()
             for ((key, value) in newPrefs) {
-                if (EXCLUDED_PREFS_FROM_BACKUP.contains(key)) continue
+                if (preservedPrefs.contains(key)) continue
                 if (!rootMode && isRootOnlyPref(key)) continue
 
                 put(key, value)
