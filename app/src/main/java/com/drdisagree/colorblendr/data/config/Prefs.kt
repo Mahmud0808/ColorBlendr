@@ -25,6 +25,13 @@ object Prefs {
 
     private val stagingLock = Any()
 
+    private val unstagedKeys = setOf(
+        Constant.WALLPAPER_COLOR_LIST,
+        Constant.MONET_LAST_UPDATED,
+        Constant.COMMUNITY_LAST_FETCH,
+        Constant.COMMUNITY_VOTED_IDS
+    )
+
     // Staging layer: while active, writes are kept in memory only (still
     // visible to every getter and change listener) until they are either
     // committed to storage or discarded. Used by the color preview mode.
@@ -117,7 +124,7 @@ object Prefs {
 
     private fun stageOrWrite(key: String, value: Any) {
         val stagedNow = synchronized(stagingLock) {
-            if (stagingActive) {
+            if (stagingActive && key !in unstagedKeys) {
                 staged[key] = value
                 true
             } else {

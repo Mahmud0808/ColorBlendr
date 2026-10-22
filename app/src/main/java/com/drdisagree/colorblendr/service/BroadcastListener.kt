@@ -150,6 +150,12 @@ class BroadcastListener : BroadcastReceiver() {
 
             setWallpaperColorJson(currentWallpaperColors)
 
+            if (PreviewController.isPreviewActive) {
+                if (requiresUpdate || force) PreviewController.markSystemUpdatePending()
+                requiresUpdate = false
+                return
+            }
+
             if (!customColorEnabled()) {
                 setSeedColorValue(wallpaperColors[0])
             }
@@ -216,9 +222,12 @@ class BroadcastListener : BroadcastReceiver() {
     private fun updateAllColors(force: Boolean = false) {
         if ((!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled())
             || isWorkMethodUnknown()
-            // Never auto-apply while the user is previewing changes.
-            || PreviewController.isPreviewActive
         ) return
+
+        if (PreviewController.isPreviewActive) {
+            PreviewController.markSystemUpdatePending()
+            return
+        }
 
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()

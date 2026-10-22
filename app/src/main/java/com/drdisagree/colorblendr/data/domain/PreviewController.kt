@@ -4,11 +4,14 @@ import android.util.Log
 import com.drdisagree.colorblendr.utils.community.CommunityVotes
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
@@ -64,6 +67,25 @@ object PreviewController {
     @Volatile
     private var refreshOthersPending = false
 
+    @Volatile
+    private var systemUpdatePending = false
+
+    fun markSystemUpdatePending() {
+        systemUpdatePending = true
+    }
+
+    private fun takeSystemUpdatePending(): Boolean {
+        val pending = systemUpdatePending
+        systemUpdatePending = false
+        return pending
+    }
+
+    private fun syncWallpaperSeed() {
+        if (!customColorEnabled()) {
+            getWallpaperColorList().firstOrNull()?.let { setSeedColorValue(it) }
+        }
+    }
+
     init {
         controllerScope.launch {
             previewRequests.collect {
@@ -104,6 +126,7 @@ object PreviewController {
             _isApplying.value = true
             try {
                 Prefs.commitStaged()
+                if (takeSystemUpdatePending()) syncWallpaperSeed()
                 updateColorAppliedTimestamp()
                 applyFabricatedColors()
 
@@ -135,7 +158,8 @@ object PreviewController {
         controllerScope.launch {
             _isApplying.value = true
             try {
-                abandonPreview()
+                abandonPreview(applyPending = false)
+                if (takeSystemUpdatePending()) syncWallpaperSeed()
                 prepare()
                 updateColorAppliedTimestamp()
                 applyFabricatedColors()
@@ -149,11 +173,19 @@ object PreviewController {
 
     // Synchronous discard for flows that take over from an active preview
     // (master switch, backup restore).
-    fun abandonPreview() {
+    fun abandonPreview(applyPending: Boolean = true) {
         CommunityThemeApplier.pendingCreationId = null
         Prefs.discardStaged()
         _previewColors.value = null
         RefreshCoordinator.triggerRefresh()
+
+        if (applyPending && takeSystemUpdatePending()) {
+            syncWallpaperSeed()
+            controllerScope.launch {
+                updateColorAppliedTimestamp()
+                applyFabricatedColors()
+            }
+        }
     }
 
     fun buildPreviewColors(): PreviewColors {
