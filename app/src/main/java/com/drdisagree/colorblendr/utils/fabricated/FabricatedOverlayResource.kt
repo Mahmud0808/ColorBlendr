@@ -114,11 +114,11 @@ open class FabricatedOverlayResource : Parcelable {
     }
 
     fun getColor(name: String): Int {
-        val formattedName = formatName(name, "color")
-        val entry = entries[formattedName]
-
-        return entry?.resourceValue ?: throw RuntimeException("No entry found for $formattedName")
+        return findColor(name)
+            ?: throw RuntimeException("No entry found for ${formatName(name, "color")}")
     }
+
+    fun findColor(name: String): Int? = entries[formatName(name, "color")]?.resourceValue
 
     fun getEntries(): Map<String, FabricatedOverlayEntry> {
         return entries

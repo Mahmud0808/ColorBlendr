@@ -281,7 +281,7 @@ object OverlayManager {
                         computeFinalColorOverrides(
                             paletteLight = paletteLight,
                             paletteDark = paletteDark,
-                            currentSurfaceContainerDark = getColor("system_surface_container_dark")
+                            currentSurfaceContainerDark = findColor("system_surface_container_dark")
                         ).forEach { (resourceName, colorValue) ->
                             setColor(resourceName, colorValue)
                         }
