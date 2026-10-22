@@ -104,7 +104,7 @@ fun AppNavHost(
     fun checkRootConnection() {
         onboardingAction = OnboardingActionState.Connecting
         RootConnectionProvider
-            .builder(context)
+            .builder()
             .onSuccess { goToHome() }
             .onFailure {
                 onboardingAction = OnboardingActionState.Error(

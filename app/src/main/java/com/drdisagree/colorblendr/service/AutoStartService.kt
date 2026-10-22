@@ -169,7 +169,7 @@ class AutoStartService : Service() {
 
     private fun setupSystemUIRestartListener() {
         if (isRootMode() && RootConnectionProvider.isNotConnected) {
-            RootConnectionProvider.builder(appContext)
+            RootConnectionProvider.builder()
                 .onSuccess { initSystemUIRestartListener() }
                 .run()
         } else if (isShizukuMode() &&

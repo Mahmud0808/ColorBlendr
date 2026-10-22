@@ -207,7 +207,7 @@ class BroadcastListener : BroadcastReceiver() {
     private suspend fun validateRootAndUpdateColors(context: Context, method: suspend () -> Unit) {
         if (isRootMode() && RootConnectionProvider.isNotConnected) {
             RootConnectionProvider
-                .builder(context)
+                .builder()
                 .onSuccess {
                     CoroutineScope(Dispatchers.Main).launch {
                         method()

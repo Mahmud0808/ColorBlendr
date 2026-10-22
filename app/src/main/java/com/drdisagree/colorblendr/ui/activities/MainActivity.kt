@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         if (!isFirstRun() && !isWorkMethodUnknown()) {
             when {
                 isRootMode() -> {
-                    RootConnectionProvider.builder(appContext)
+                    RootConnectionProvider.builder()
                         .onSuccess {
                             AppScope.launch(Dispatchers.IO) {
                                 updateWallpaperColorList(appContext)

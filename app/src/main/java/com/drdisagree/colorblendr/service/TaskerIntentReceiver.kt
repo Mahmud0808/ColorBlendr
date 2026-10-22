@@ -141,7 +141,7 @@ class TaskerIntentReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Main).launch {
             if (rootMode && RootConnectionProvider.isNotConnected) {
                 RootConnectionProvider
-                    .builder(context)
+                    .builder()
                     .onSuccess {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
