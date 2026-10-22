@@ -44,9 +44,10 @@ object ThemePrefs {
     )
 
     fun adjustments(
-        accentSaturation: Int = getAccentSaturation(),
-        backgroundSaturation: Int = getBackgroundSaturation(),
-        backgroundLightness: Int = getBackgroundLightness(),
+        isDark: Boolean = SystemUtil.isDarkMode,
+        accentSaturation: Int = getAccentSaturation(isDark),
+        backgroundSaturation: Int = getBackgroundSaturation(isDark),
+        backgroundLightness: Int = getBackgroundLightness(isDark),
         includeOverrides: Boolean = true
     ): ThemeAdjustments = ThemeAdjustments(
         accentSaturation = accentSaturation,
@@ -62,12 +63,16 @@ object ThemePrefs {
         legacyTokens = includeOverrides && legacyTokensEnabled()
     )
 
-    fun resolve(): ResolvedTheme = ThemeEngine.resolve(source(), adjustments())
+    fun resolve(): ResolvedTheme = ThemeEngine.resolve(
+        source = source(),
+        adjustments = adjustments(isDark = true),
+        lightAdjustments = adjustments(isDark = false)
+    )
 
     fun scheme(
         isDark: Boolean = SystemUtil.isDarkMode,
         source: ThemeSource = source(),
-        adjustments: ThemeAdjustments = adjustments()
+        adjustments: ThemeAdjustments = adjustments(isDark)
     ): ResolvedScheme = ThemeEngine.scheme(source, adjustments, isDark)
 
     @ColorInt

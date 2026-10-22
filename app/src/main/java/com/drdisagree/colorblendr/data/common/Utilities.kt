@@ -13,10 +13,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTING
 import com.drdisagree.colorblendr.data.common.Constant.GSON
 import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
-import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SECONDARY_COLOR
@@ -41,6 +38,9 @@ import com.drdisagree.colorblendr.data.common.Constant.TOKEN_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
+import com.drdisagree.colorblendr.data.common.Constant.accentSaturationKey
+import com.drdisagree.colorblendr.data.common.Constant.backgroundLightnessKey
+import com.drdisagree.colorblendr.data.common.Constant.backgroundSaturationKey
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
@@ -61,6 +61,7 @@ import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.override.ColorOverrideCodec
 import com.drdisagree.colorblendr.theme.override.ResourceOverrides
 import com.drdisagree.colorblendr.theme.override.TokenOverrides
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.google.gson.reflect.TypeToken
 
 @Suppress("unused")
@@ -232,40 +233,40 @@ object Utilities {
         putBoolean(FORCE_PITCH_BLACK_SETTINGS, enabled)
     }
 
-    fun getAccentSaturation(): Int {
-        return getInt(MONET_ACCENT_SATURATION, 100)
+    fun getAccentSaturation(isDark: Boolean = SystemUtil.isDarkMode): Int {
+        return getInt(accentSaturationKey(isDark), 100)
     }
 
-    fun setAccentSaturation(value: Int) {
-        putInt(MONET_ACCENT_SATURATION, value)
+    fun setAccentSaturation(value: Int, isDark: Boolean = SystemUtil.isDarkMode) {
+        putInt(accentSaturationKey(isDark), value)
     }
 
-    fun resetAccentSaturation() {
-        clearPref(MONET_ACCENT_SATURATION)
+    fun resetAccentSaturation(isDark: Boolean = SystemUtil.isDarkMode) {
+        clearPref(accentSaturationKey(isDark))
     }
 
-    fun getBackgroundSaturation(): Int {
-        return getInt(MONET_BACKGROUND_SATURATION, 100)
+    fun getBackgroundSaturation(isDark: Boolean = SystemUtil.isDarkMode): Int {
+        return getInt(backgroundSaturationKey(isDark), 100)
     }
 
-    fun setBackgroundSaturation(value: Int) {
-        putInt(MONET_BACKGROUND_SATURATION, value)
+    fun setBackgroundSaturation(value: Int, isDark: Boolean = SystemUtil.isDarkMode) {
+        putInt(backgroundSaturationKey(isDark), value)
     }
 
-    fun resetBackgroundSaturation() {
-        clearPref(MONET_BACKGROUND_SATURATION)
+    fun resetBackgroundSaturation(isDark: Boolean = SystemUtil.isDarkMode) {
+        clearPref(backgroundSaturationKey(isDark))
     }
 
-    fun getBackgroundLightness(): Int {
-        return getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+    fun getBackgroundLightness(isDark: Boolean = SystemUtil.isDarkMode): Int {
+        return getInt(backgroundLightnessKey(isDark), 100)
     }
 
-    fun setBackgroundLightness(value: Int) {
-        putInt(MONET_BACKGROUND_LIGHTNESS, value)
+    fun setBackgroundLightness(value: Int, isDark: Boolean = SystemUtil.isDarkMode) {
+        putInt(backgroundLightnessKey(isDark), value)
     }
 
-    fun resetBackgroundLightness() {
-        clearPref(MONET_BACKGROUND_LIGHTNESS)
+    fun resetBackgroundLightness(isDark: Boolean = SystemUtil.isDarkMode) {
+        clearPref(backgroundLightnessKey(isDark))
     }
 
     fun accurateShadesEnabled(): Boolean {

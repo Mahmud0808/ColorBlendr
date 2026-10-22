@@ -93,26 +93,20 @@ object Constant {
     const val MONET_BACKGROUND_LIGHTNESS_LIGHT = "monetBackgroundLightnessValueLight"
 
     val MONET_ACCENT_SATURATION: String
-        get() = if (!modeSpecificThemesEnabled()) {
-            MONET_ACCENT_SATURATION_DARK
-        } else {
-            if (SystemUtil.isDarkMode) MONET_ACCENT_SATURATION_DARK
-            else MONET_ACCENT_SATURATION_LIGHT
-        }
+        get() = accentSaturationKey(SystemUtil.isDarkMode)
     val MONET_BACKGROUND_SATURATION: String
-        get() = if (!modeSpecificThemesEnabled()) {
-            MONET_BACKGROUND_SATURATION_DARK
-        } else {
-            if (SystemUtil.isDarkMode) MONET_BACKGROUND_SATURATION_DARK
-            else MONET_BACKGROUND_SATURATION_LIGHT
-        }
+        get() = backgroundSaturationKey(SystemUtil.isDarkMode)
     val MONET_BACKGROUND_LIGHTNESS: String
-        get() = if (!modeSpecificThemesEnabled()) {
-            MONET_BACKGROUND_LIGHTNESS_DARK
-        } else {
-            if (SystemUtil.isDarkMode) MONET_BACKGROUND_LIGHTNESS_DARK
-            else MONET_BACKGROUND_LIGHTNESS_LIGHT
-        }
+        get() = backgroundLightnessKey(SystemUtil.isDarkMode)
+
+    fun accentSaturationKey(isDark: Boolean): String =
+        if (isDark || !modeSpecificThemesEnabled()) MONET_ACCENT_SATURATION_DARK else MONET_ACCENT_SATURATION_LIGHT
+
+    fun backgroundSaturationKey(isDark: Boolean): String =
+        if (isDark || !modeSpecificThemesEnabled()) MONET_BACKGROUND_SATURATION_DARK else MONET_BACKGROUND_SATURATION_LIGHT
+
+    fun backgroundLightnessKey(isDark: Boolean): String =
+        if (isDark || !modeSpecificThemesEnabled()) MONET_BACKGROUND_LIGHTNESS_DARK else MONET_BACKGROUND_LIGHTNESS_LIGHT
 
     @Deprecated("Use of shared preferences for saving custom styles is deprecated, use room database instead")
     const val SAVED_CUSTOM_MONET_STYLES = "savedCustomMonetStyles"
