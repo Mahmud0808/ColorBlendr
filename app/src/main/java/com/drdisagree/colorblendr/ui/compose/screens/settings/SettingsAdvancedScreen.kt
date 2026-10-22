@@ -79,7 +79,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.taskerIntegrationEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
-import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
@@ -216,7 +215,6 @@ fun SettingsAdvancedScreen(
                         setCurrentMonetStyle(MONET.TONAL_SPOT)
                     }
 
-                    RefreshCoordinator.triggerRefresh()
                     updateColors()
                 }
             },

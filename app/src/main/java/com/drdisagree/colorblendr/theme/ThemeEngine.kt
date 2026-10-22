@@ -12,6 +12,7 @@ import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.theme.scheme.SchemeFactory
 import com.drdisagree.colorblendr.theme.scheme.SchemeFactory.palette
+import com.drdisagree.colorblendr.theme.token.TokenTones
 import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
 import com.drdisagree.materialcolorutilities.dynamiccolor.MaterialDynamicColors
 
@@ -37,7 +38,12 @@ object ThemeEngine {
                 shadeOverrides = adjustments.shadeOverridesFor(role)
             )
         }
-        return ResolvedScheme(isDark, dynamicScheme, palettes, rules(adjustments, dynamicScheme))
+        return ResolvedScheme(
+            isDark = isDark,
+            palettes = palettes,
+            rules = rules(adjustments, dynamicScheme),
+            tones = { TokenTones.of(source, dynamicScheme) }
+        )
     }
 
     private fun rules(adjustments: ThemeAdjustments, scheme: DynamicScheme): List<ThemeRule> = buildList {

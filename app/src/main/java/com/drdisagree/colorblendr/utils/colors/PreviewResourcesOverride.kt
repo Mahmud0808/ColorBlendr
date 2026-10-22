@@ -8,9 +8,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
-import com.drdisagree.colorblendr.theme.overlay.ThemeOverlays
-import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
-import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.google.android.material.color.PreviewColorResourcesLoader
 import java.lang.ref.WeakReference
 
@@ -31,11 +28,11 @@ object PreviewResourcesOverride {
     var revision by mutableIntStateOf(0)
         private set
 
-    fun apply(activity: Activity, previewTheme: ResolvedTheme?) {
+    fun apply(activity: Activity, frameworkColors: Map<String, Int>?) {
         val resources = activity.resources
         val loader = loaderFor(resources)
 
-        val colorValues = previewTheme?.let { buildColorValues(resources, it) }.orEmpty()
+        val colorValues = frameworkColors?.let { buildColorValues(resources, it) }.orEmpty()
         val built = if (colorValues.isEmpty()) {
             null
         } else {
@@ -71,10 +68,10 @@ object PreviewResourcesOverride {
     }
 
     @SuppressLint("DiscouragedApi")
-    private fun buildColorValues(resources: Resources, previewTheme: ResolvedTheme): Map<Int, Int> {
+    private fun buildColorValues(resources: Resources, frameworkColors: Map<String, Int>): Map<Int, Int> {
         val colorValues = HashMap<Int, Int>()
 
-        ThemeOverlays.frameworkColors(previewTheme, SystemUtil.isDarkMode).forEach { (name, color) ->
+        frameworkColors.forEach { (name, color) ->
             val id = resourceIdCache.getOrPut(name) {
                 resources.getIdentifier(name, "color", "android")
             }

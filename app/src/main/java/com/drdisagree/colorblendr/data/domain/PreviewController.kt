@@ -99,7 +99,7 @@ object PreviewController {
                 val refreshOthers = refreshOthersPending
                 refreshOthersPending = false
                 try {
-                    val theme = ThemePrefs.resolve()
+                    val theme = ThemePrefs.resolve().precompute()
                     synchronized(sessionLock) {
                         if (session != previewSession || !Prefs.isStagingActive) return@collect
                         _previewTheme.value = theme

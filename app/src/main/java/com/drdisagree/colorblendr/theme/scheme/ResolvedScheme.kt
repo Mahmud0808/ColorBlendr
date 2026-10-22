@@ -6,28 +6,19 @@ import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ShadeScale
 import com.drdisagree.colorblendr.theme.palette.AdjustedPalette
 import com.drdisagree.colorblendr.theme.rule.ThemeRule
-import com.drdisagree.colorblendr.theme.scheme.SchemeFactory.roleOf
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenGroup
 import com.drdisagree.colorblendr.theme.token.TokenResolution
-import com.drdisagree.colorblendr.theme.token.TokenSource
-import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicColor
-import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
 import kotlin.math.roundToInt
 
 class ResolvedScheme(
     val isDark: Boolean,
-    private val dynamicScheme: DynamicScheme,
     private val palettes: Map<PaletteRole, AdjustedPalette>,
-    private val rules: List<ThemeRule>
+    private val rules: List<ThemeRule>,
+    private val tones: () -> Map<Token, TokenResolution>
 ) {
     val colors: Map<Token, Int> by lazy {
-        val source = TokenSource()
-        buildMap {
-            Token.entries.forEach { token ->
-                token.color(source)?.let { put(token, resolve(token, it)) }
-            }
-        }
+        tones().mapValues { (token, resolution) -> resolve(token, resolution) }
     }
 
     val shades: List<List<Int>> by lazy {
@@ -58,20 +49,7 @@ class ResolvedScheme(
         return get(role).colorAt(ruledTone)
     }
 
-    private fun resolve(token: Token, color: DynamicColor): Int {
-        val role = dynamicScheme.roleOf(color.palette(dynamicScheme))
-
-        val initial = if (role == null) {
-            TokenResolution(role = null, tone = color.getTone(dynamicScheme), color = color.getArgb(dynamicScheme))
-        } else {
-            TokenResolution(
-                role = role,
-                tone = color.getTone(dynamicScheme),
-                chromaMultiplier = color.chromaMultiplier?.invoke(dynamicScheme) ?: 1.0,
-                opacity = color.opacity?.invoke(dynamicScheme)
-            )
-        }
-
+    private fun resolve(token: Token, initial: TokenResolution): Int {
         val resolution = rules.fold(initial) { current, rule -> rule.token(token, current, isDark) }
         val argb = resolution.color
             ?: get(resolution.role!!).colorAt(resolution.tone, resolution.chromaMultiplier)

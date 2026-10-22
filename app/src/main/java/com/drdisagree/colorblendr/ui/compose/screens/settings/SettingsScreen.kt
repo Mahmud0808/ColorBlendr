@@ -75,7 +75,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
-import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
@@ -396,7 +395,6 @@ fun SettingsScreen(
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setAccurateShadesEnabled(isChecked)
-                            RefreshCoordinator.triggerRefresh()
                             updateColors()
                         }
                     )

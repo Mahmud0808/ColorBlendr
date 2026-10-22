@@ -48,11 +48,14 @@ import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
+import com.drdisagree.colorblendr.theme.ThemePrefs
+import com.drdisagree.colorblendr.theme.overlay.ThemeOverlays
 import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
@@ -74,6 +77,7 @@ import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : AppCompatActivity() {
 
@@ -122,8 +126,21 @@ class MainActivity : AppCompatActivity() {
             PreviewController.previewTheme.collectLatest { preview ->
                 // Debounced: rebuilding the resources table on every slider
                 // tick is expensive and dialogs only need the settled value.
-                if (preview != null) delay(150.milliseconds)
-                PreviewResourcesOverride.apply(this@MainActivity, preview)
+                if (preview != null) delay(PREVIEW_RESOURCES_DELAY)
+                val colors = preview?.let {
+                    withContext(Dispatchers.Default) {
+                        ThemeOverlays.frameworkColors(it, SystemUtil.isDarkMode)
+                    }
+                }
+                PreviewResourcesOverride.apply(this@MainActivity, colors)
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.Default) {
+            delay(WARM_UP_DELAY)
+            if (isFirstRun() || isWorkMethodUnknown()) return@launch
+            runCatching {
+                ThemeOverlays.frameworkColors(ThemePrefs.resolve().precompute(), SystemUtil.isDarkMode)
             }
         }
 
@@ -345,6 +362,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_INIT_SUCCESS = "initSuccess"
+        private val PREVIEW_RESOURCES_DELAY = 400.milliseconds
+        private val WARM_UP_DELAY = 1.seconds
         private const val SHIZUKU_BINDER_TIMEOUT_MS = 2000L
         private const val SHIZUKU_BINDER_POLL_MS = 100L
 

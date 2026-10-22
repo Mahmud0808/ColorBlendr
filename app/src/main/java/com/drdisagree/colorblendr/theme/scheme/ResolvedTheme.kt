@@ -8,4 +8,11 @@ class ResolvedTheme(
     val adjustments: ThemeAdjustments
 ) {
     fun scheme(isDark: Boolean): ResolvedScheme = if (isDark) dark else light
+
+    fun precompute(): ResolvedTheme = apply {
+        listOf(light, dark).forEach { scheme ->
+            scheme.colors
+            scheme.shades
+        }
+    }
 }
