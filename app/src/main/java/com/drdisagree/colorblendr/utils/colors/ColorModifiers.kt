@@ -102,17 +102,19 @@ object ColorModifiers {
             }
         }
 
-        if (overrideColors) {
-            for (j in 0 until palette.size - 1) {
-                val i = count - 1
+        for (j in 0 until palette.size - 1) {
+            val i = count - 1
 
-                val overriddenColor = Prefs.getInt(systemPaletteNames[i][j + 1], Int.MIN_VALUE)
+            val overriddenColor = if (overrideColors) {
+                Prefs.getInt(systemPaletteNames[i][j + 1], Int.MIN_VALUE)
+            } else {
+                Int.MIN_VALUE
+            }
 
-                if (overriddenColor != Int.MIN_VALUE) {
-                    palette[j] = overriddenColor
-                } else if (!accurateShades && (i in 0..2) && j == 2) {
-                    palette[j] = palette[j + 2]
-                }
+            if (overriddenColor != Int.MIN_VALUE) {
+                palette[j] = overriddenColor
+            } else if (!accurateShades && (i in 0..2) && j == 2) {
+                palette[j] = palette[j + 2]
             }
         }
 
