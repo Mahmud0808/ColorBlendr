@@ -383,35 +383,15 @@ class RootConnection : RootService() {
 
         @Suppress("DEPRECATION")
         private fun registerAndEnableInOneTransaction(overlay: FabricatedOverlayResource) {
-            val fobInstance = fobClass.getConstructor(
-                String::class.java,
-                String::class.java,
-                String::class.java
-            ).newInstance(
+            val fobInstance = fobConstructor.newInstance(
                 overlay.sourcePackage,
                 overlay.overlayName,
                 overlay.targetPackage
             )
 
-            val setResourceValueMethod = fobClass.getMethod(
-                "setResourceValue",
-                String::class.java,
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType
-            )
-
+            val setResourceValueMethod = fobSetResourceValueMethod
             val isA14orHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-            var setResourceValueMethodWithConfig: Method? = null
-
-            if (isA14orHigher) {
-                setResourceValueMethodWithConfig = fobClass.getMethod(
-                    "setResourceValue",
-                    String::class.java,
-                    Int::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType,
-                    String::class.java
-                )
-            }
+            val setResourceValueMethodWithConfig = fobSetResourceValueWithConfigMethod
 
             for ((_, overlayEntry) in overlay.getEntries()) {
                 if (isA14orHigher &&
@@ -435,25 +415,14 @@ class RootConnection : RootService() {
                 }
             }
 
-            val foInstance = fobClass.getMethod("build").invoke(fobInstance)
+            val foInstance = fobBuildMethod.invoke(fobInstance)
 
             val omtbInstance = omtbClass.newInstance()
 
-            omtbClass.getMethod(
-                "registerFabricatedOverlay",
-                foClass
-            ).invoke(
-                omtbInstance,
-                foInstance
-            )
+            omtbRegisterFabricatedMethod.invoke(omtbInstance, foInstance)
 
             val identifier = generateOverlayIdentifier(overlay.overlayName)
-            val setEnabledMethod = omtbClass.getMethod(
-                "setEnabled",
-                oiClass,
-                Boolean::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType
-            )
+            val setEnabledMethod = omtbSetEnabledMethod
 
             val thisUserId = currentUserId
             var currentUserListed = false
@@ -478,7 +447,7 @@ class RootConnection : RootService() {
                 setEnabledMethod.invoke(omtbInstance, identifier, true, thisUserId)
             }
 
-            val omtInstance = omtbClass.getMethod("build").invoke(omtbInstance)
+            val omtInstance = omtbBuildMethod.invoke(omtbInstance)
 
             commit(omtInstance)
         }
@@ -506,17 +475,9 @@ class RootConnection : RootService() {
 
                 val omtbInstance = omtbClass.newInstance()
 
-                omtbClass.getMethod(
-                    "unregisterFabricatedOverlay",
-                    oiClass
-                ).invoke(
-                    omtbInstance,
-                    overlay
-                )
+                omtbUnregisterFabricatedMethod.invoke(omtbInstance, overlay)
 
-                val omtInstance = omtbClass.getMethod(
-                    "build"
-                ).invoke(omtbInstance)
+                val omtInstance = omtbBuildMethod.invoke(omtbInstance)
 
                 commit(omtInstance)
             } catch (e: Exception) {
@@ -744,12 +705,7 @@ class RootConnection : RootService() {
             try {
                 val omtbInstance = omtbClass.newInstance()
 
-                val setEnabledMethod = omtbClass.getMethod(
-                    "setEnabled",
-                    oiClass,
-                    Boolean::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType
-                )
+                val setEnabledMethod = omtbSetEnabledMethod
 
                 val thisUserId = currentUserId
                 var currentUserListed = false
@@ -790,9 +746,7 @@ class RootConnection : RootService() {
                     )
                 }
 
-                val omtInstance = omtbClass.getMethod(
-                    "build"
-                ).invoke(omtbInstance)
+                val omtInstance = omtbBuildMethod.invoke(omtbInstance)
 
                 commit(omtInstance)
             } catch (e: Exception) {
@@ -910,6 +864,66 @@ class RootConnection : RootService() {
                 }
             }
 
+            private val fobConstructor by lazy {
+                fobClass.getConstructor(String::class.java, String::class.java, String::class.java)
+            }
+
+            private val fobSetResourceValueMethod: Method by lazy {
+                fobClass.getMethod(
+                    "setResourceValue",
+                    String::class.java,
+                    Int::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType
+                )
+            }
+
+            private val fobSetResourceValueWithConfigMethod: Method? by lazy {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    fobClass.getMethod(
+                        "setResourceValue",
+                        String::class.java,
+                        Int::class.javaPrimitiveType,
+                        Int::class.javaPrimitiveType,
+                        String::class.java
+                    )
+                } else {
+                    null
+                }
+            }
+
+            private val fobBuildMethod: Method by lazy { fobClass.getMethod("build") }
+
+            private val omtbRegisterFabricatedMethod: Method by lazy {
+                omtbClass.getMethod("registerFabricatedOverlay", foClass)
+            }
+
+            private val omtbUnregisterFabricatedMethod: Method by lazy {
+                omtbClass.getMethod("unregisterFabricatedOverlay", oiClass)
+            }
+
+            private val omtbSetEnabledMethod: Method by lazy {
+                omtbClass.getMethod(
+                    "setEnabled",
+                    oiClass,
+                    Boolean::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType
+                )
+            }
+
+            private val omtbBuildMethod: Method by lazy { omtbClass.getMethod("build") }
+
+            private val oiConstructor by lazy {
+                oiClass.getConstructor(String::class.java, String::class.java)
+            }
+
+            private val getCurrentUserMethod: Method by lazy {
+                mActivityManager.javaClass.getMethod("getCurrentUser").apply { isAccessible = true }
+            }
+
+            private val userIdentifierMethod: Method by lazy {
+                UserHandle::class.java.getDeclaredMethod("getIdentifier").apply { isAccessible = true }
+            }
+
             private val omtbClass: Class<*> by lazy {
                 try {
                     Class.forName($$"android.content.om.OverlayManagerTransaction$Builder")
@@ -925,10 +939,7 @@ class RootConnection : RootService() {
                 sourcePackage: String
             ): OverlayIdentifier? {
                 try {
-                    return oiClass.getConstructor(
-                        String::class.java,
-                        String::class.java
-                    ).newInstance(
+                    return oiConstructor.newInstance(
                         sourcePackage,
                         packageName
                     ) as OverlayIdentifier
@@ -963,10 +974,7 @@ class RootConnection : RootService() {
             @SuppressLint("DiscouragedPrivateApi")
             private fun getForegroundUserId(): Int {
                 return try {
-                    val method = mActivityManager.javaClass.getMethod("getCurrentUser")
-                    method.isAccessible = true
-
-                    when (val result = method.invoke(mActivityManager)) {
+                    when (val result = getCurrentUserMethod.invoke(mActivityManager)) {
                         is Int -> result
                         is UserInfo -> result.userHandle.getUserIdentifier()
                         null -> throw IllegalStateException("ActivityManager.getCurrentUser() returned null")
@@ -979,9 +987,7 @@ class RootConnection : RootService() {
             }
 
             private fun UserHandle.getUserIdentifier(): Int {
-                val method = UserHandle::class.java.getDeclaredMethod("getIdentifier")
-                method.isAccessible = true
-                return method.invoke(this) as Int
+                return userIdentifierMethod.invoke(this) as Int
             }
         }
     }
