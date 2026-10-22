@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">কাস্টম রঙ থেকে প্যালেট তৈরি করুন</string>
     <string name="tint_text_title">রঙিন লেখার রঙ</string>
     <string name="tint_text_desc">লেখার জন্য একটি সূক্ষ্ম রঙ বজায় রাখুন</string>
-    <string name="override_colors_manually_title">রঙগুলি ম্যানুয়ালি ওভাররাইড করুন</string>
-    <string name="override_colors_manually_desc">পৃথক রঙ ওভাররাইড করতে রঙ প্যালেট প্রিভিউতে ট্যাপ করুন; রিসেট করতে দীর্ঘক্ষণ টিপুন</string>
     <string name="this_cannot_be_undone">অনুগ্রহ করে মনে রাখবেন যে এই পদক্ষেপের ফলাফল চূড়ান্ত এবং এটিকে ফিরিয়ে আনা যাবে না।</string>
     <string name="backup_restore_title">কনফিগারেশন ব্যাকআপ এবং পুনরুদ্ধার</string>
     <string name="backup_restore_desc">আপনার কনফিগারেশন সংরক্ষণ এবং শেয়ার করে আপনার থিমের অনন্য চেহারা এবং অনুভূতির আনন্দ ভাগ করুন</string>

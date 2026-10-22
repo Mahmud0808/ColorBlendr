@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Generate palette from custom color</string>
     <string name="tint_text_title">Tint text color</string>
     <string name="tint_text_desc">Maintain a subtle tint for text</string>
-    <string name="override_colors_manually_title">Override colors manually</string>
-    <string name="override_colors_manually_desc">Tap on the color palette preview to override individual colors; long press to reset</string>
     <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
     <string name="backup_restore_title">Backup &amp; restore configs</string>
     <string name="backup_restore_desc">Share the delight of your theme\'s unique look and feel by saving and sharing your configuration</string>

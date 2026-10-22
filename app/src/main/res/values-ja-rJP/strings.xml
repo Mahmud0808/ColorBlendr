@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">カスタムカラーからパレットを生成します</string>
     <string name="tint_text_title">テキストの色を着色する</string>
     <string name="tint_text_desc">テキストの微妙な色合いを保持します</string>
-    <string name="override_colors_manually_title">色の編集</string>
-    <string name="override_colors_manually_desc">カラーパレットのプレビューをタップすると、個々の色を上書きできます。長押しするとリセットされます。</string>
     <string name="this_cannot_be_undone">このアクションは、最終的に元に戻すことができなくなることにご注文ください。</string>
     <string name="backup_restore_title">設定のバックアップ &amp; 復元</string>
     <string name="backup_restore_desc">設定を保存して共有することで、テーマのユニークなルック &amp; フィールの魅力を分かち合いましょう。</string>

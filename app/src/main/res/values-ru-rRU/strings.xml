@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Создать палитру из пользовательского цвета</string>
     <string name="tint_text_title">Оттенок цвета текста</string>
     <string name="tint_text_desc">Сохраняйте тонкий оттенок текста</string>
-    <string name="override_colors_manually_title">Переопределять цвета вручную</string>
-    <string name="override_colors_manually_desc">Нажмите на предпросмотр цветовой палитры, чтобы переопределить отдельные цвета; долгое нажатие для сброса</string>
     <string name="this_cannot_be_undone">Пожалуйста, имейте в виду, что результат этого действия не может быть отменен.</string>
     <string name="backup_restore_title">Резервное копирование и восстановление конфигураций</string>
     <string name="backup_restore_desc">Разделите удовольствие от уникального внешнего вида вашей темы, сохранив свою конфигурацию и поделившись ею</string>

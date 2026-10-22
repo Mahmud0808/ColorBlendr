@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Tạo bảng màu từ màu tùy chỉnh</string>
     <string name="tint_text_title">Đổi màu chữ</string>
     <string name="tint_text_desc">Ám nhẹ màu chữ</string>
-    <string name="override_colors_manually_title">Ghi đè màu thủ công</string>
-    <string name="override_colors_manually_desc">Chạm bảng màu xem trước để ghi đè từng màu một; nhấn giữ để đặt lại</string>
     <string name="this_cannot_be_undone">Please be aware that the outcome of this action is definitive and cannot be reverted.</string>
     <string name="backup_restore_title">Sao lưu &amp; khôi phục cấu hình</string>
     <string name="backup_restore_desc">Share the delight of your theme\'s unique look and feel by saving and sharing your configuration</string>

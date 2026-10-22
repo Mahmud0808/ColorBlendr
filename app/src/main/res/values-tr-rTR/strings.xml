@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Renk paletini kendi seçtiğin renkten türet</string>
     <string name="tint_text_title">Renkli metin tonu</string>
     <string name="tint_text_desc">Yazılarda temaya uygun hafif bir renk esintisi bırak</string>
-    <string name="override_colors_manually_title">Renkleri elle özelleştir</string>
-    <string name="override_colors_manually_desc">Rengi değiştirmek için önizlemedeki palete dokun, sıfırlamak için basılı tut</string>
     <string name="this_cannot_be_undone">Lütfen unutma: Bu işlemin geri dönüşü yoktur ve ayarlar kalıcı olarak uygulanır.</string>
     <string name="backup_restore_title">Yedekle ve geri yükle</string>
     <string name="backup_restore_desc">Hazırladığın temanın keyfini başkalarıyla paylaş veya ayarlarını güvene al</string>

@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Erstelle eine Farbpalette aus benutzerdefinierten Farben</string>
     <string name="tint_text_title">Text färben</string>
     <string name="tint_text_desc">Dezente Farbtöne für Texte benutzen</string>
-    <string name="override_colors_manually_title">Farben manuell überschreiben</string>
-    <string name="override_colors_manually_desc">Tippe auf die Vorschau der Farbpalette, um einzelne Farben zu überschreiben. Zum Zurücksetzen lange drücken</string>
     <string name="this_cannot_be_undone">Bitte beachten Sie, dass das Ergebnis dieser Aktion nicht rückgängig gemacht werden kann.</string>
     <string name="backup_restore_title">Backup &amp; Konfiguration wiederherstellen</string>
     <string name="backup_restore_desc">Teilen das einzigartige Erscheinungsbild deines Designs mit deinen Freunden, indem du deine Konfiguration speicherst und teilst</string>

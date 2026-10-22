@@ -92,6 +92,7 @@ import com.drdisagree.colorblendr.ui.compose.screens.colors.ColorsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityScreen
 import com.drdisagree.colorblendr.ui.compose.screens.community.CommunityThemeDetailsScreen
 import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorPaletteScreen
+import com.drdisagree.colorblendr.ui.compose.screens.palette.ColorTokensScreen
 import com.drdisagree.colorblendr.ui.compose.screens.perapp.PerAppThemeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.privacypolicy.PrivacyPolicyScreen
 import com.drdisagree.colorblendr.ui.compose.screens.settings.SettingsAdvancedScreen
@@ -474,9 +475,13 @@ fun HomeScreen(
                             }
                             screen(Routes.COLOR_PALETTE) {
                                 ColorPaletteScreen(
-                                    colorPaletteViewModel = colorPaletteViewModel
+                                    colorPaletteViewModel = colorPaletteViewModel,
+                                    onNavigateToTokens = {
+                                        nestedNavController.navigateSingleTop(Routes.COLOR_TOKENS)
+                                    }
                                 )
                             }
+                            screen(Routes.COLOR_TOKENS) { ColorTokensScreen() }
                             screen(Routes.PER_APP_THEME) { PerAppThemeScreen() }
                             screen(Routes.SETTINGS_ADVANCED) {
                                 SettingsAdvancedScreen(

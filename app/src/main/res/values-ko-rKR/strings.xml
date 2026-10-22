@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">사용자 지정 색상에서 팔레트 생성합니다</string>
     <string name="tint_text_title">텍스트 색상 틴트</string>
     <string name="tint_text_desc">텍스트에 은은한 색조로 유지합니다</string>
-    <string name="override_colors_manually_title">색상을 수동으로 재정의</string>
-    <string name="override_colors_manually_desc">색상 팔레트 미리보기를 탭하여 개별 색상을 재정의하고 길게 누르면 초기화됩니다</string>
     <string name="this_cannot_be_undone">이 조치의 결과는 확정적이며 되돌릴 수 없음을 유의하시기 바랍니다.</string>
     <string name="backup_restore_title">백업 &amp; 복원 설정</string>
     <string name="backup_restore_desc">테마의 독특한 모습과 느낌을 저장하고 공유하여 구성을 공유하세요</string>

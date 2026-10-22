@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Wygeneruj paletę z niestandardowego koloru</string>
     <string name="tint_text_title">Kolor tekstu</string>
     <string name="tint_text_desc">Zachowaj subtelny kolor dla tekstu</string>
-    <string name="override_colors_manually_title">Zastąp kolory ręcznie</string>
-    <string name="override_colors_manually_desc">Dotknij podglądu palety kolorów, aby nadpisać poszczególne kolory; długie naciśnięcie, aby zresetować</string>
     <string name="this_cannot_be_undone">Proszę pamiętać, że wynik tej akcji jest ostateczny i nie można go cofnąć.</string>
     <string name="backup_restore_title">Kopia zapasowa &amp; przywracanie konfiguracji</string>
     <string name="backup_restore_desc">Podziel się wyglądem twojego motywu poprzez zapisywanie i udostępnianie konfiguracji</string>

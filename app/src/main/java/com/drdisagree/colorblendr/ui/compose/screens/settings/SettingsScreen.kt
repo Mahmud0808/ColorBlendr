@@ -18,7 +18,6 @@ import androidx.compose.material.icons.rounded.Brush
 import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.InvertColors
-import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.data.common.Constant.MANUAL_OVERRIDE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
@@ -55,17 +53,13 @@ import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
-import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.setAccurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.setManualColorOverrideEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setPitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setThemingEnabled
@@ -76,7 +70,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimest
 import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
-import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
@@ -139,7 +132,6 @@ fun SettingsScreen(
     var accurateShades by rememberPrefState(MONET_ACCURATE_SHADES) { accurateShadesEnabled() }
     var pitchBlack by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
     var tintTextColor by rememberPrefState(TINT_TEXT_COLOR) { tintedTextEnabled() }
-    var overrideManually by rememberPrefState(MANUAL_OVERRIDE_COLORS) { manualColorOverrideEnabled() }
     var overflowExpanded by remember { mutableStateOf(false) }
 
     val backupSuccessText = stringResource(R.string.backup_success)
@@ -163,17 +155,6 @@ fun SettingsScreen(
                 applyFabricatedColors()
             }
         }
-    }
-
-    fun numColorsOverridden(): Int {
-        var colorOverridden = 0
-        PaletteRole.shadeNames.forEach { palettes ->
-            palettes
-                .asSequence()
-                .filter { isColorOverriddenFor(it) }
-                .forEach { _ -> colorOverridden++ }
-        }
-        return colorOverridden
     }
 
     var pendingBackup by remember { mutableStateOf(false) }
@@ -421,38 +402,13 @@ fun SettingsScreen(
                         checked = tintTextColor,
                         enabled = rootMode,
                         disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
-                        position = WidgetPosition.Middle,
+                        position = WidgetPosition.Bottom,
                         onCheckedChange = { isChecked ->
                             tintTextColor = isChecked
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setTintedTextEnabled(isChecked)
                             updateColors()
-                        }
-                    )
-                    SwitchItem(
-                        title = stringResource(R.string.override_colors_manually_title),
-                        summary = stringResource(R.string.override_colors_manually_desc),
-                        icon = rememberVectorPainter(Icons.Rounded.TableChart),
-                        checked = overrideManually,
-                        enabled = rootMode,
-                        disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
-                        position = WidgetPosition.Bottom,
-                        onCheckedChange = { isChecked ->
-                            if (isChecked) {
-                                overrideManually = true
-                                setManualColorOverrideEnabled(true)
-                            } else {
-                                overrideManually = false
-                                if (numColorsOverridden() != 0) {
-                                    PreviewController.beginPreview()
-                                    setManualColorOverrideEnabled(false)
-                                    clearAllOverriddenColors()
-                                    updateColors()
-                                } else {
-                                    setManualColorOverrideEnabled(false)
-                                }
-                            }
                         }
                     )
 

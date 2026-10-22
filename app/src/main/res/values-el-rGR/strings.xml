@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Δημιουργία παλέτας από προσαρμοσμένο χρώμα</string>
     <string name="tint_text_title">Χρωματισμός κειμένου</string>
     <string name="tint_text_desc">Διατήρηση λεπτής απόχρωσης για το κείμενο</string>
-    <string name="override_colors_manually_title">Χειροκίνητη παράκαμψη χρωμάτων</string>
-    <string name="override_colors_manually_desc">Πατήστε στην προεπισκόπηση παλέτας χρωμάτων για παράκαμψη μεμονωμένων χρωμάτων· παρατεταμένο πάτημα για επαναφορά</string>
     <string name="this_cannot_be_undone">Παρακαλώ σημειώστε ότι το αποτέλεσμα αυτής της ενέργειας είναι οριστικό και δεν μπορεί να αναιρεθεί.</string>
     <string name="backup_restore_title">Δημιουργία αντιγράφου ασφαλείας &amp; επαναφορά ρυθμίσεων</string>
     <string name="backup_restore_desc">Μοιραστείτε την απόλαυση της μοναδικής εμφάνισης και αίσθησης του θέματός σας αποθηκεύοντας και μοιραζόμενοι τις ρυθμίσεις σας</string>

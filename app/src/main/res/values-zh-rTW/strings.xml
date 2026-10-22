@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">從自訂顏色生成調色板</string>
     <string name="tint_text_title">文字顏色微調</string>
     <string name="tint_text_desc">保持文字顏色的微妙色調</string>
-    <string name="override_colors_manually_title">手動覆蓋顏色</string>
-    <string name="override_colors_manually_desc">點選調色板預覽以覆蓋個別顏色；長按以重設</string>
     <string name="this_cannot_be_undone">請注意，此操作的結果是確定的且無法還原。</string>
     <string name="backup_restore_title">備份與還原設定</string>
     <string name="backup_restore_desc">透過儲存和分享您的配置來分享您主題的獨特外觀和感受</string>

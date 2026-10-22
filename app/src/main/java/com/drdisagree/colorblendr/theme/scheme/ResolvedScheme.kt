@@ -4,6 +4,7 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ShadeScale
+import com.drdisagree.colorblendr.theme.override.TokenOverride
 import com.drdisagree.colorblendr.theme.palette.AdjustedPalette
 import com.drdisagree.colorblendr.theme.rule.ThemeRule
 import com.drdisagree.colorblendr.theme.token.Token
@@ -15,6 +16,7 @@ class ResolvedScheme(
     val isDark: Boolean,
     private val palettes: Map<PaletteRole, AdjustedPalette>,
     private val rules: List<ThemeRule>,
+    private val overrides: Map<Token, TokenOverride> = emptyMap(),
     private val tones: () -> Map<Token, TokenResolution>
 ) {
     val colors: Map<Token, Int> by lazy {
@@ -41,6 +43,10 @@ class ResolvedScheme(
 
     fun tokens(group: TokenGroup): List<Token> = colors.keys.filter { it.group == group }
 
+    fun origin(token: Token): TokenResolution? = tones()[token]
+
+    fun override(token: Token): TokenOverride? = overrides[token]
+
     @ColorInt
     fun reference(role: PaletteRole, tone: Double): Int {
         val index = ShadeScale.indexOfTone(tone)
@@ -51,8 +57,12 @@ class ResolvedScheme(
 
     private fun resolve(token: Token, initial: TokenResolution): Int {
         val resolution = rules.fold(initial) { current, rule -> rule.token(token, current, isDark) }
-        val argb = resolution.color
-            ?: get(resolution.role!!).colorAt(resolution.tone, resolution.chromaMultiplier)
+        val argb = when (val override = overrides[token]) {
+            is TokenOverride.Custom -> return override.color
+            is TokenOverride.Shade -> get(override.role, override.index)
+            null -> resolution.color
+                ?: get(resolution.role!!).colorAt(resolution.tone, resolution.chromaMultiplier)
+        }
 
         return resolution.opacity?.let { opacity ->
             ColorUtils.setAlphaComponent(argb, (opacity * 255).roundToInt().coerceIn(0, 255))

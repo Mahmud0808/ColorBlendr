@@ -65,12 +65,14 @@ object Constant {
     const val MONET_SEED_COLOR = "monetSeedColor"
     const val MONET_SECONDARY_COLOR = "monetSecondaryColor"
     const val MONET_TERTIARY_COLOR = "monetTertiaryColor"
-    const val MANUAL_OVERRIDE_COLORS = "manualOverrideColors"
     const val MONET_LAST_UPDATED = "monetLastUpdated"
     const val MONET_STYLE_ORIGINAL_NAME = "monetStyleOriginalName"
     const val WALLPAPER_COLOR_LIST = "wallpaperColorList"
     const val FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState"
     const val SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn"
+    const val SHOW_PALETTE_ROOT_HINT = "showPaletteRootHint"
+    const val SHOW_PALETTE_ROOTLESS_HINT = "showPaletteRootlessHint"
+    const val TOKEN_OVERRIDES = "tokenOverrides"
     const val TINT_TEXT_COLOR = "tintTextColor"
     const val SHIZUKU_THEMING_ENABLED = "shizukuThemingEnabled"
     const val WIRELESS_ADB_THEMING_ENABLED = "wirelessAdbThemingEnabled"
@@ -148,6 +150,8 @@ object Constant {
         listOf(
             FABRICATED_OVERLAY_FOR_APPS_STATE,
             SHOW_PER_APP_THEME_WARN,
+            SHOW_PALETTE_ROOT_HINT,
+            SHOW_PALETTE_ROOTLESS_HINT,
             APP_LIST_FILTER_METHOD,
             ADB_IP,
             ADB_PAIRING_PORT,
@@ -163,7 +167,7 @@ object Constant {
             MONET_ACCURATE_SHADES,
             MONET_PITCH_BLACK_THEME,
             TINT_TEXT_COLOR,
-            MANUAL_OVERRIDE_COLORS,
+            TOKEN_OVERRIDES,
             MONET_SECONDARY_COLOR,
             MONET_TERTIARY_COLOR,
             COLOR_SPEC_VERSION,

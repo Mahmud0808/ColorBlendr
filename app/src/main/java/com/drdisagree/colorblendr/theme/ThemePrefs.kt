@@ -13,6 +13,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getTokenOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
@@ -23,6 +24,7 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeSource
+import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.utils.app.SystemUtil
@@ -44,7 +46,7 @@ object ThemePrefs {
         accentSaturation: Int = getAccentSaturation(),
         backgroundSaturation: Int = getBackgroundSaturation(),
         backgroundLightness: Int = getBackgroundLightness(),
-        includeShadeOverrides: Boolean = true
+        includeOverrides: Boolean = true
     ): ThemeAdjustments = ThemeAdjustments(
         accentSaturation = accentSaturation,
         backgroundSaturation = backgroundSaturation,
@@ -54,7 +56,8 @@ object ThemePrefs {
         pitchBlackContainers = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
                 forcePitchBlackSettingsEnabled(),
         tintedText = tintedTextEnabled(),
-        shadeOverrides = if (includeShadeOverrides) shadeOverrides() else emptyMap()
+        shadeOverrides = if (includeOverrides) shadeOverrides() else emptyMap(),
+        tokenOverrides = if (includeOverrides) getTokenOverrides() else TokenOverrides()
     )
 
     fun resolve(): ResolvedTheme = ThemeEngine.resolve(source(), adjustments())

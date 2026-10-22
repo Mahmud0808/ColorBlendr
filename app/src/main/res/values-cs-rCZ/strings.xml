@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Vygenerovat paletu z vlastní barvy</string>
     <string name="tint_text_title">Odstín barvy textu</string>
     <string name="tint_text_desc">Udržujte jemný motiv pro text</string>
-    <string name="override_colors_manually_title">Přepsat barvy ručně</string>
-    <string name="override_colors_manually_desc">Klepněte na náhled barevné palety pro přepsání jednotlivých barev. Dlouhým stiskem resetujete</string>
     <string name="this_cannot_be_undone">Mějte prosím na paměti, že výsledek této akce je konečný a nelze jej vrátit zpět.</string>
     <string name="backup_restore_title">Zálohovat &amp; obnovit nastavení</string>
     <string name="backup_restore_desc">Sdílejte radost z jedinečného vzhledu šablony a pocitu uložením a sdílením konfigurace</string>

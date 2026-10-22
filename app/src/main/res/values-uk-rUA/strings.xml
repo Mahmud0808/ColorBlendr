@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Створити палітру з особливого кольору</string>
     <string name="tint_text_title">Відтінок кольору тексту</string>
     <string name="tint_text_desc">Зберігайте тонкий відтінок тексту</string>
-    <string name="override_colors_manually_title">Перевизначити кольори вручну</string>
-    <string name="override_colors_manually_desc">Натисніть на попередній перегляд палітри кольорів, щоб замінити окремі кольори; тривале натискання - для скасування</string>
     <string name="this_cannot_be_undone">Зауважте, що результат цієї дії є остаточним і не може бути скасований.</string>
     <string name="backup_restore_title">Резервне копіювання та відновлення конфігурацій</string>
     <string name="backup_restore_desc">Поділіться захопленням від унікального вигляду вашої теми, зберігши та поділившись своєю конфігурацією</string>

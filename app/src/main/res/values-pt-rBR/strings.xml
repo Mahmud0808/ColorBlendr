@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Gerar paleta a partir de cores personalizadas</string>
     <string name="tint_text_title">Tingir cor do texto</string>
     <string name="tint_text_desc">Mantenha uma tonalidade sutil para o texto</string>
-    <string name="override_colors_manually_title">Substituir cores manualmente</string>
-    <string name="override_colors_manually_desc">Toque na visualização da paleta de cores para substituir cores individuais; pressione e segure para redefinir</string>
     <string name="this_cannot_be_undone">Por favor, esteja ciente de que o resultado desta ação é definitivo e não pode ser revertido.</string>
     <string name="backup_restore_title">Backup e restauração</string>
     <string name="backup_restore_desc">Compartilhe a delícia da aparência única do seu tema salvando e compartilhando sua configuração</string>

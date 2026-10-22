@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Genera tavolozza da colore personalizzato</string>
     <string name="tint_text_title">Colore tinta del testo</string>
     <string name="tint_text_desc">Mantenere una sottile tinta per il testo</string>
-    <string name="override_colors_manually_title">Sovrascrivi i colori manualmente</string>
-    <string name="override_colors_manually_desc">Tocca l\'anteprima della tavolozza dei colori per sovrascrivere i singoli colori; premi a lungo per reimpostare</string>
     <string name="this_cannot_be_undone">Sappiate che l\'esito di questa azione è definitivo e non può essere annullato.</string>
     <string name="backup_restore_title">Backup &amp; ripristina le configurazioni</string>
     <string name="backup_restore_desc">Condividi la gioia dell\'aspetto unico del tuo tema salvando e condividendo la tua configurazione</string>

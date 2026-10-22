@@ -31,7 +31,9 @@ object Prefs {
         Constant.COMMUNITY_LAST_FETCH,
         Constant.COMMUNITY_VOTED_IDS,
         Constant.PER_APP_DEFAULTS_SEEDED,
-        Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
+        Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
+        Constant.SHOW_PALETTE_ROOT_HINT,
+        Constant.SHOW_PALETTE_ROOTLESS_HINT
     )
 
     // Staging layer: while active, writes are kept in memory only (still

@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Paletta generálás egyedi színből</string>
     <string name="tint_text_title">Szöveg színárnyalat</string>
     <string name="tint_text_desc">A szöveg finom árnyalatának fenntartása</string>
-    <string name="override_colors_manually_title">A színek manuális felülbírálása</string>
-    <string name="override_colors_manually_desc">Kattints a színpaletta előnézetére az egyes színek felülbírálásához; hosszan nyomd meg a visszaállításhoz</string>
     <string name="this_cannot_be_undone">Figyelem, ez a változtatás végleges és nem állítható vissza.</string>
     <string name="backup_restore_title">Biztonsági mentés &amp; konfigurációk visszaállítása</string>
     <string name="backup_restore_desc">Oszd meg a téma egyedi megjelenésének örömét a konfiguráció mentésével és megosztásával</string>

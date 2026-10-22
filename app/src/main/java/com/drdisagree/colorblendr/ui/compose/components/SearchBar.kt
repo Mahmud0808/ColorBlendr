@@ -58,6 +58,7 @@ fun SearchBar(
 ) {
     val query = state.text
     val overlayColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f)
+    val backdropColor = MaterialTheme.colorScheme.surface
     val secondaryTextColor = themeAttrColor(AndroidR.attr.textColorSecondary)
     val primaryTextColor = themeAttrColor(AndroidR.attr.textColorPrimary)
     val shape = RoundedCornerShape(dimensionResource(R.dimen.container_corner_radius))
@@ -68,7 +69,7 @@ fun SearchBar(
             .hazeBlur(
                 HazeInput.Sources(hazeState),
                 HazeBlurStyle {
-                    backgroundColor(overlayColor)
+                    backgroundColor(backdropColor)
                     colorEffects(listOf(HazeColorEffect.tint(overlayColor)))
                 }
             )

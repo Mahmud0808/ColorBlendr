@@ -87,8 +87,6 @@
     <string name="custom_primary_color_desc">Generar paleta a partir de un color personalizado</string>
     <string name="tint_text_title">Tintar color del texto</string>
     <string name="tint_text_desc">Mantener un tinte sutil para el texto</string>
-    <string name="override_colors_manually_title">Sobreescribir manualmente los colores</string>
-    <string name="override_colors_manually_desc">Presiona en la previsualización de la paleta de colores para sobreescribir colores individuales; haz una pulsación larga para reiniciar</string>
     <string name="this_cannot_be_undone">Por favor ten en cuenta que el resultado de esta acción es definitivo y no puede ser revertido.</string>
     <string name="backup_restore_title">Copia de seguridad &amp; restaurar configuraciones</string>
     <string name="backup_restore_desc">Comparte el deleite del aspecto único y sentir de tu tema al guardar y compartir tu configuración</string>

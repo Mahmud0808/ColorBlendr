@@ -10,7 +10,6 @@ import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_AP
 import com.drdisagree.colorblendr.data.common.Constant.FIRST_RUN
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.GSON
-import com.drdisagree.colorblendr.data.common.Constant.MANUAL_OVERRIDE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
@@ -30,10 +29,13 @@ import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOTLESS_HINT
+import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOT_HINT
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
 import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.TOKEN_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
@@ -54,6 +56,8 @@ import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.data.repository.CommunityThemeRepository
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
 import com.drdisagree.colorblendr.theme.model.PaletteRole
+import com.drdisagree.colorblendr.theme.override.TokenOverrideCodec
+import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.google.gson.reflect.TypeToken
 
 @Suppress("unused")
@@ -317,14 +321,6 @@ object Utilities {
         putInt(MONET_TERTIARY_COLOR, color)
     }
 
-    fun manualColorOverrideEnabled(): Boolean {
-        return getBoolean(MANUAL_OVERRIDE_COLORS, false)
-    }
-
-    fun setManualColorOverrideEnabled(enabled: Boolean) {
-        putBoolean(MANUAL_OVERRIDE_COLORS, enabled)
-    }
-
     fun isColorOverriddenFor(shadeName: String): Boolean {
         return getInt(shadeName, Int.MIN_VALUE) != Int.MIN_VALUE
     }
@@ -337,11 +333,32 @@ object Utilities {
         clearPref(shadeName)
     }
 
-    fun clearAllOverriddenColors() {
+    fun hasOverriddenShades(): Boolean {
+        return PaletteRole.shadeNames.any { palettes -> palettes.any(::isColorOverriddenFor) }
+    }
+
+    fun clearAllOverriddenShades() {
         PaletteRole.shadeNames.forEach { palettes ->
             palettes.forEach { shadeName ->
                 clearPref(shadeName)
             }
+        }
+    }
+
+    fun clearAllOverriddenColors() {
+        clearAllOverriddenShades()
+        clearPref(TOKEN_OVERRIDES)
+    }
+
+    fun getTokenOverrides(): TokenOverrides {
+        return TokenOverrideCodec.decode(getString(TOKEN_OVERRIDES))
+    }
+
+    fun setTokenOverrides(overrides: TokenOverrides) {
+        if (overrides.isEmpty) {
+            clearPref(TOKEN_OVERRIDES)
+        } else {
+            putString(TOKEN_OVERRIDES, TokenOverrideCodec.encode(overrides))
         }
     }
 
@@ -411,6 +428,17 @@ object Utilities {
     fun setShowPerAppThemeWarning(show: Boolean) {
         putBoolean(SHOW_PER_APP_THEME_WARN, show)
     }
+
+    fun showColorPaletteHint(rootMode: Boolean): Boolean {
+        return getBoolean(paletteHintKey(rootMode), true)
+    }
+
+    fun setShowColorPaletteHint(rootMode: Boolean, show: Boolean) {
+        putBoolean(paletteHintKey(rootMode), show)
+    }
+
+    private fun paletteHintKey(rootMode: Boolean): String =
+        if (rootMode) SHOW_PALETTE_ROOT_HINT else SHOW_PALETTE_ROOTLESS_HINT
 
     fun tintedTextEnabled(): Boolean {
         return getBoolean(TINT_TEXT_COLOR, true)

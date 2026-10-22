@@ -102,7 +102,7 @@ class ColorsViewModel : ViewModel() {
 
     private suspend fun loadPreviewColorPalettes(colors: List<Int>): Map<Int, List<List<Int>>> {
         return withContext(Dispatchers.IO) {
-            val adjustments = ThemePrefs.adjustments(includeShadeOverrides = false)
+            val adjustments = ThemePrefs.adjustments(includeOverrides = false)
             val isDarkMode = SystemUtil.isDarkMode
 
             colors.associateWith { color ->

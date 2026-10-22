@@ -42,6 +42,7 @@ object ThemeEngine {
             isDark = isDark,
             palettes = palettes,
             rules = rules(adjustments, dynamicScheme),
+            overrides = adjustments.tokenOverrides.forMode(isDark),
             tones = { TokenTones.of(source, dynamicScheme) }
         )
     }
