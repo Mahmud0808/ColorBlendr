@@ -15,5 +15,9 @@ data class ThemePayload(
     val pitchBlack: Boolean,
     val tintText: Boolean,
     val colorOverrides: Map<String, Int> = emptyMap(),
-    val overrideCount: Int = colorOverrides.size
+    val overrideCount: Int = colorOverrides.size,
+    val schemaVersion: Int = 1,
+    val engineVersion: Int = 1,
+    val pitchBlackContainers: Boolean = false,
+    val tokenOverrides: Map<String, String> = emptyMap()
 )

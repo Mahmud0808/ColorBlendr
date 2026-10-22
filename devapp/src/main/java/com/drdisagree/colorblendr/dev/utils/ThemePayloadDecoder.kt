@@ -50,7 +50,32 @@ object ThemePayloadDecoder {
             pitchBlack = json.optBoolean("pitchBlack", false),
             tintText = json.optBoolean("tintText", true),
             colorOverrides = overridesMap,
-            overrideCount = overridesMap.size
+            overrideCount = overridesMap.size,
+            schemaVersion = json.optInt("schemaVersion", 1),
+            engineVersion = json.optInt("engineVersion", 1),
+            pitchBlackContainers = json.optBoolean("pitchBlackContainers", false),
+            tokenOverrides = tokenOverrides(json.optJSONObject("tokenOverrides"))
         )
     }
+
+    fun tokenOverrides(json: JSONObject?): Map<String, String> {
+        if (json == null) return emptyMap()
+        return buildMap {
+            for (mode in TOKEN_MODES) {
+                val tokens = json.optJSONObject(mode) ?: continue
+                val keys = tokens.keys()
+                while (keys.hasNext()) {
+                    val token = keys.next()
+                    tokens.optString(token).takeIf { it.isNotEmpty() }?.let { put("$mode/$token", it) }
+                }
+            }
+        }
+    }
+
+    fun tokenOverrideCount(overrides: Map<String, String>, mode: String): Int =
+        overrides.keys.count { it.startsWith("$mode/") }
+
+    const val LIGHT = "light"
+    const val DARK = "dark"
+    private val TOKEN_MODES = listOf(LIGHT, DARK)
 }

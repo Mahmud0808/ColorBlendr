@@ -21,6 +21,8 @@ data class ComparableTheme(
     val pitchBlack: Boolean,
     val tintText: Boolean,
     val colorOverrides: Map<String, Int> = emptyMap(),
+    val tokenOverrides: Map<String, String> = emptyMap(),
+    val pitchBlackContainers: Boolean = false,
     val payloadJson: String,
     val isPublished: Boolean
 )

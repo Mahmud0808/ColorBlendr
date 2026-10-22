@@ -65,6 +65,8 @@ object ThemeMatcher {
             pitchBlack = p?.pitchBlack ?: false,
             tintText = p?.tintText ?: true,
             colorOverrides = p?.colorOverrides ?: emptyMap(),
+            tokenOverrides = p?.tokenOverrides ?: emptyMap(),
+            pitchBlackContainers = p?.pitchBlackContainers ?: false,
             payloadJson = item.payloadJson,
             isPublished = false
         )
@@ -186,6 +188,7 @@ object ThemeMatcher {
 
         flag(t1.accurateShades == t2.accurateShades, MINOR_WEIGHT)
         flag(t1.pitchBlack == t2.pitchBlack, PITCH_BLACK_WEIGHT)
+        flag(t1.pitchBlackContainers == t2.pitchBlackContainers, MINOR_WEIGHT)
         flag(t1.tintText == t2.tintText, MINOR_WEIGHT)
 
         val overrideKeys = t1.colorOverrides.keys + t2.colorOverrides.keys
@@ -197,6 +200,12 @@ object ThemeMatcher {
                 overrideScore += if (o1 == null || o2 == null) 0f else colorSimilarity(o1, o2)
             }
             field(overrideScore / overrideKeys.size, OVERRIDE_WEIGHT)
+        }
+
+        val tokenKeys = t1.tokenOverrides.keys + t2.tokenOverrides.keys
+        if (tokenKeys.isNotEmpty()) {
+            val matching = tokenKeys.count { t1.tokenOverrides[it] == t2.tokenOverrides[it] }
+            field(matching.toFloat() / tokenKeys.size, OVERRIDE_WEIGHT)
         }
 
         if (totalWeight == 0f) return 1f
