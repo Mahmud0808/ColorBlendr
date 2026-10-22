@@ -18,7 +18,11 @@ import java.util.concurrent.TimeUnit
 
 // Cache-first store for community themes. Index fetch replaces the Room
 // cache; browse/showcase read only from cache.
-class CommunityThemeRepository(private val dao: CommunityThemeDao) {
+class CommunityThemeRepository(private val daoProvider: () -> CommunityThemeDao) {
+
+    private val dao: CommunityThemeDao
+        get() = daoProvider()
+
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)

@@ -142,6 +142,10 @@ object BackupRestore {
                     "$DATABASE_BACKUP_FILE_NAME-wal" to File("$dbPath-wal")
                 )
 
+                AppDatabase.closeInstance()
+                File("$dbPath-wal").delete()
+                File("$dbPath-shm").delete()
+
                 databaseFiles.forEach { (dbFileName, targetFile) ->
                     try {
                         val extractedFile = File(tempDir, dbFileName)
@@ -150,9 +154,6 @@ object BackupRestore {
                     } catch (_: IOException) {
                     }
                 }
-
-                // Reload database
-                AppDatabase.reloadInstance()
 
                 tempDir.deleteRecursively()
 

@@ -412,7 +412,7 @@ object Utilities {
     }
 
     fun getCustomStyleRepository(): CustomStyleRepository {
-        return CustomStyleRepository(AppDatabase.getInstance().customStyleDao())
+        return CustomStyleRepository { AppDatabase.getInstance().customStyleDao() }
     }
 
     fun developerModeEnabled(): Boolean {
@@ -424,6 +424,6 @@ object Utilities {
     }
 
     fun getCommunityThemeRepository(): CommunityThemeRepository {
-        return CommunityThemeRepository(AppDatabase.getInstance().communityThemeDao())
+        return CommunityThemeRepository { AppDatabase.getInstance().communityThemeDao() }
     }
 }
