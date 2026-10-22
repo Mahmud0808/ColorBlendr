@@ -123,13 +123,22 @@ fun PerAppThemeScreen() {
     val selections = remember { mutableStateMapOf<String, Boolean>() }
     val selectedApps = remember { HashMap<String, Boolean>() }
     val toggleGenerations = remember { HashMap<String, Int>() }
+    val pendingToggles = remember { HashMap<String, Int>() }
+    val touchedSinceLoad = remember { HashSet<String>() }
     val iconCache = remember { LruCache<String, ImageBitmap>(128) }
 
     LaunchedEffect(filterMethod, reloadTrigger) {
         isLoading = true
+        touchedSinceLoad.clear()
         val apps = withContext(Dispatchers.IO) {
             updateFabricatedAppList(appContext)
             getAllInstalledApps(AppType.entries[filterMethod])
+        }
+
+        apps.forEach { app ->
+            if (app.packageName in touchedSinceLoad || pendingToggles.containsKey(app.packageName)) {
+                app.isSelected = selections[app.packageName] == true
+            }
         }
 
         if (isThemingEnabled(false)
@@ -197,15 +206,29 @@ fun PerAppThemeScreen() {
 
         val generation = (toggleGenerations[app.packageName] ?: 0) + 1
         toggleGenerations[app.packageName] = generation
+        pendingToggles[app.packageName] = (pendingToggles[app.packageName] ?: 0) + 1
+        touchedSinceLoad += app.packageName
 
         AppScope.launch(Dispatchers.IO) {
-            if (isSelected) {
+            val rejected = if (isSelected) {
                 unregisterFabricatedOverlay(
                     String.format(FABRICATED_OVERLAY_NAME_APPS, app.packageName)
                 )
-            } else if (!applyFabricatedColorsPerApp(app.packageName)) {
-                withContext(Dispatchers.Main) {
-                    if (toggleGenerations[app.packageName] != generation) return@withContext
+                false
+            } else {
+                !applyFabricatedColorsPerApp(app.packageName)
+            }
+
+            withContext(Dispatchers.Main) {
+                val pending = (pendingToggles[app.packageName] ?: 1) - 1
+                if (pending > 0) {
+                    pendingToggles[app.packageName] = pending
+                } else {
+                    pendingToggles.remove(app.packageName)
+                }
+                touchedSinceLoad += app.packageName
+
+                if (rejected && toggleGenerations[app.packageName] == generation) {
                     selections[app.packageName] = false
                     app.isSelected = false
                     selectedApps[app.packageName] = false
