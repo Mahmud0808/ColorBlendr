@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.Keep
 import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
+import com.drdisagree.colorblendr.extension.ThemeOverlayPackage.shellQuoted
 import com.topjohnwu.superuser.Shell
 import org.json.JSONObject
 import kotlin.system.exitProcess
@@ -58,7 +59,7 @@ class ShizukuConnection : IShizukuConnection.Stub {
      */
     override fun applyFabricatedColors(jsonString: String): String? {
         val result = Shell.cmd(
-            "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
+            "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES ${jsonString.shellQuoted()}"
         ).exec()
 
         return if (result.isSuccess) {

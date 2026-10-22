@@ -96,4 +96,6 @@ object ThemeOverlayPackage {
             JSONObject()
         }
     }
+
+    fun String.shellQuoted(): String = "'" + replace("'", "'\\''") + "'"
 }

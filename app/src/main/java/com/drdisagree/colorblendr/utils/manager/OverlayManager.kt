@@ -32,6 +32,7 @@ import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
+import com.drdisagree.colorblendr.extension.ThemeOverlayPackage.shellQuoted
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
@@ -496,7 +497,7 @@ object OverlayManager {
                     val jsonString =
                         ThemeOverlayPackage.mergeIntoSettings(current.output, themeJson)
                     val put = WifiAdbShell
-                        .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                        .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES ${jsonString.shellQuoted()}")
                     if (!put.success) {
                         Log.e(TAG, "applyFabricatedColorsNonRoot: ${put.output}")
                         reportError(
@@ -581,7 +582,7 @@ object OverlayManager {
 
                 val jsonString = ThemeOverlayPackage.getOriginalSettings(current.output)
                 val put = WifiAdbShell
-                    .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
+                    .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES ${jsonString.shellQuoted()}")
                 if (!put.success) {
                     Log.e(TAG, "removeFabricatedColorsNonRoot: ${put.output}")
                     reportError(
