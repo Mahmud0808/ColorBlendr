@@ -222,7 +222,7 @@ object BackupRestore {
             }
 
             // Check if seed color is available in current wallpaper color list
-            val seedColor = newPrefs[MONET_SEED_COLOR] as? Int
+            val seedColor = (newPrefs[MONET_SEED_COLOR] as? Number)?.toInt()
             val wallpaperColors = allPrefs[WALLPAPER_COLOR_LIST] as? String
             val colorAvailable = if (seedColor != null && wallpaperColors != null) {
                 Constant.GSON.fromJson<ArrayList<Int?>?>(
