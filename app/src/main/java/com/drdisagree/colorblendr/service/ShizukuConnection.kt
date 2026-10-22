@@ -103,9 +103,9 @@ class ShizukuConnection : IShizukuConnection.Stub {
     override fun getCurrentSettings(): String {
         val currentSettings = Shell.cmd(
             "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES"
-        ).exec().out[0]
+        ).exec().out.firstOrNull()?.trim()
 
-        return if (currentSettings == "null") {
+        return if (currentSettings.isNullOrEmpty() || currentSettings == "null") {
             JSONObject().toString()
         } else {
             currentSettings
