@@ -5,15 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
 import com.drdisagree.colorblendr.data.common.Utilities
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
@@ -21,9 +16,9 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.stringToEnumMonetStyle
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,14 +89,7 @@ class StylesViewModel(
             description = description.trim(),
             prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
             monet = currentMonet,
-            palette = generateModifiedColors(
-                currentMonet,
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            ),
+            palette = stylePalette(currentMonet),
             sortOrder = customStyleRepository.getNextSortOrder()
         )
 
@@ -134,14 +122,7 @@ class StylesViewModel(
         val updatedStyle = customStyle.copy(
             prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
             monet = currentMonet,
-            palette = generateModifiedColors(
-                currentMonet,
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            )
+            palette = stylePalette(currentMonet)
         )
 
         customStyleRepository.updateCustomStyle(updatedStyle)
@@ -172,23 +153,19 @@ class StylesViewModel(
         }
     }
 
+    private fun stylePalette(style: MONET): ArrayList<ArrayList<Int>> =
+        ThemePrefs.scheme(source = ThemePrefs.source(style = style)).shades
+            .mapTo(ArrayList()) { ArrayList(it) }
+
     private suspend fun loadPreviewColorPalettes(styleName: List<String>): Map<String, List<List<Int>>> {
         return withContext(Dispatchers.IO) {
-            val accentSaturation = getAccentSaturation()
-            val backgroundSaturation = getBackgroundSaturation()
-            val backgroundLightness = getBackgroundLightness()
-            val pitchBlackThemeEnabled = pitchBlackThemeEnabled()
-            val accurateShadesEnabled = accurateShadesEnabled()
+            val adjustments = ThemePrefs.adjustments()
 
             styleName.associateWith { name ->
-                generateModifiedColors(
-                    stringToEnumMonetStyle(enumString = name),
-                    accentSaturation,
-                    backgroundSaturation,
-                    backgroundLightness,
-                    pitchBlackThemeEnabled,
-                    accurateShadesEnabled
-                )
+                ThemePrefs.scheme(
+                    source = ThemePrefs.source(style = stringToEnumMonetStyle(enumString = name)),
+                    adjustments = adjustments
+                ).shades
             }
         }
     }

@@ -165,7 +165,7 @@ private fun DetailsContent(
     val baseScheme = MaterialTheme.colorScheme
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
     val scopedScheme = remember(theme, isDark, baseScheme) {
-        communityColorScheme(palette, isDark, baseScheme)
+        communityColorScheme(theme, isDark, baseScheme)
     }
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
@@ -370,7 +370,7 @@ private fun DetailsContent(
 
 // All five palette rows as large overlapping shade circles.
 @Composable
-private fun LargeSwatch(palette: ArrayList<ArrayList<Int>>) {
+private fun LargeSwatch(palette: List<List<Int>>) {
     val shadeIndices = listOf(3, 4, 6, 8, 10)
 
     Surface(

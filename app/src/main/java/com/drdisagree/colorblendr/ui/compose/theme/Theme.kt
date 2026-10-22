@@ -23,12 +23,11 @@ fun ColorBlendrTheme(content: @Composable () -> Unit) {
         ColorBlendr.initializeForPreview(LocalContext.current)
     }
 
-    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val previewTheme by PreviewController.previewTheme.collectAsStateWithLifecycle()
     val viewScheme = viewThemeColorScheme()
-    val colorScheme = previewColors?.let { previewColorScheme(it, isSystemInDarkTheme()) }
-        ?: viewScheme
+    val colorScheme = previewTheme?.scheme(isSystemInDarkTheme())?.toColorScheme() ?: viewScheme
 
-    if (BuildConfig.DEBUG && !LocalInspectionMode.current && previewColors == null) {
+    if (BuildConfig.DEBUG && !LocalInspectionMode.current && previewTheme == null) {
         PreviewSchemeParityCheck(viewScheme)
     }
 

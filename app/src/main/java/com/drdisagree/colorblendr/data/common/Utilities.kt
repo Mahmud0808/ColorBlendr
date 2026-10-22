@@ -3,9 +3,9 @@ package com.drdisagree.colorblendr.data.common
 import android.graphics.Color
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
-import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_APPS_STATE
 import com.drdisagree.colorblendr.data.common.Constant.FIRST_RUN
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
@@ -28,10 +28,10 @@ import com.drdisagree.colorblendr.data.common.Constant.PER_APP_DEFAULTS_SEEDED
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
+import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
@@ -53,7 +53,7 @@ import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.data.repository.CommunityThemeRepository
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.google.gson.reflect.TypeToken
 
 @Suppress("unused")
@@ -338,7 +338,7 @@ object Utilities {
     }
 
     fun clearAllOverriddenColors() {
-        systemPaletteNames.forEach { palettes ->
+        PaletteRole.shadeNames.forEach { palettes ->
             palettes.forEach { shadeName ->
                 clearPref(shadeName)
             }

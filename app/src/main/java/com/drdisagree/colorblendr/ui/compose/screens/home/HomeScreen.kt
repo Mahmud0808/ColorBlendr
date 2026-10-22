@@ -112,12 +112,12 @@ import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
 import com.drdisagree.colorblendr.utils.app.AppUtil.requestStoragePermission
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun HomeScreen(
@@ -139,8 +139,8 @@ fun HomeScreen(
     val backStackEntry by nestedNavController.currentBackStackEntryAsState()
 
     val hasPreview by remember {
-        PreviewController.previewColors.map { it != null }.distinctUntilChanged()
-    }.collectAsStateWithLifecycle(PreviewController.previewColors.value != null)
+        PreviewController.previewTheme.map { it != null }.distinctUntilChanged()
+    }.collectAsStateWithLifecycle(PreviewController.previewTheme.value != null)
     val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     var lastGroup by rememberSaveable { mutableIntStateOf(1) }
     val routeGroup = tabGroup(backStackEntry?.destination?.route)

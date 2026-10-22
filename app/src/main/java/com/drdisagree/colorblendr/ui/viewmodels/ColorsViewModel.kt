@@ -6,18 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,27 +102,15 @@ class ColorsViewModel : ViewModel() {
 
     private suspend fun loadPreviewColorPalettes(colors: List<Int>): Map<Int, List<List<Int>>> {
         return withContext(Dispatchers.IO) {
-            val currentMonetStyle = getCurrentMonetStyle()
-            val accentSaturation = getAccentSaturation()
-            val backgroundSaturation = getBackgroundSaturation()
-            val backgroundLightness = getBackgroundLightness()
-            val pitchBlackThemeEnabled = pitchBlackThemeEnabled()
-            val accurateShadesEnabled = accurateShadesEnabled()
+            val adjustments = ThemePrefs.adjustments(includeShadeOverrides = false)
             val isDarkMode = SystemUtil.isDarkMode
 
             colors.associateWith { color ->
-                generateModifiedColors(
-                    currentMonetStyle,
-                    color,
-                    accentSaturation,
-                    backgroundSaturation,
-                    backgroundLightness,
-                    pitchBlackThemeEnabled,
-                    accurateShadesEnabled,
-                    false,
-                    isDarkMode,
-                    false
-                )
+                ThemePrefs.scheme(
+                    isDark = isDarkMode,
+                    source = ThemePrefs.source(seedColor = color),
+                    adjustments = adjustments
+                ).shades
             }
         }
     }

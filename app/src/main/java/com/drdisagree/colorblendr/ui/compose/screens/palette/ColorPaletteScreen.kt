@@ -51,6 +51,7 @@ import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorTable
@@ -64,7 +65,6 @@ import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import kotlinx.coroutines.launch
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
@@ -96,7 +96,7 @@ fun ColorPaletteScreen(
     val cellColors = remember(colorPalette, overrideRevision) {
         colorPalette.mapIndexed { column, colors ->
             colors.mapIndexed { row, color ->
-                val overridden = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
+                val overridden = getInt(PaletteRole.shadeNames[column][row], Int.MIN_VALUE)
                 if (overridden != Int.MIN_VALUE) overridden else color
             }
         }
@@ -128,7 +128,7 @@ fun ColorPaletteScreen(
     fun showOverridePicker(column: Int, row: Int, currentColor: Int) {
         // Resolve (possibly staged) override at open time so picker seeds
         // color currently shown in table.
-        val initialColor = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
+        val initialColor = getInt(PaletteRole.shadeNames[column][row], Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE } ?: currentColor
         overridePickerRequest = Triple(column, row, initialColor)
     }
@@ -142,7 +142,7 @@ fun ColorPaletteScreen(
                 if (initialColor != color) {
                     PreviewController.beginPreview()
                     resetCustomStyleIfNotNull()
-                    putInt(systemPaletteNames[column][row], color)
+                    putInt(PaletteRole.shadeNames[column][row], color)
                     updateColors()
                 }
             },
@@ -174,7 +174,7 @@ fun ColorPaletteScreen(
                     context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(
                     ClipData.newPlainText(
-                        systemPaletteNames[column][row],
+                        PaletteRole.shadeNames[column][row],
                         intToHexColor(cellColor)
                     )
                 )
@@ -196,7 +196,7 @@ fun ColorPaletteScreen(
 
     fun onCellLongClick(column: Int, row: Int) {
         if (row == 0 || row == 12 ||
-            getInt(systemPaletteNames[column][row], Int.MIN_VALUE) == Int.MIN_VALUE
+            getInt(PaletteRole.shadeNames[column][row], Int.MIN_VALUE) == Int.MIN_VALUE
         ) {
             return
         }
@@ -204,7 +204,7 @@ fun ColorPaletteScreen(
         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         PreviewController.beginPreview()
         resetCustomStyleIfNotNull()
-        clearPref(systemPaletteNames[column][row])
+        clearPref(PaletteRole.shadeNames[column][row])
         updateColors()
     }
 

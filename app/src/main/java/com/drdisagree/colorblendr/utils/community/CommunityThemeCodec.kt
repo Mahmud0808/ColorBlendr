@@ -21,7 +21,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CommunityTheme
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -46,7 +46,7 @@ object CommunityThemeCodec {
     private val EXCESS_NEWLINES = Regex("\n{3,}")
 
     private val validShadeNames: Set<String> by lazy {
-        systemPaletteNames.flatMap { it.asIterable() }.toSet()
+        PaletteRole.shadeNames.flatten().toSet()
     }
 
     // Index = JSON array of theme objects; invalid entries skipped, duplicate

@@ -8,9 +8,9 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
-import com.drdisagree.colorblendr.data.domain.PreviewController.PreviewColors
+import com.drdisagree.colorblendr.theme.overlay.ThemeOverlays
+import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.google.android.material.color.PreviewColorResourcesLoader
 import java.lang.ref.WeakReference
 
@@ -31,11 +31,11 @@ object PreviewResourcesOverride {
     var revision by mutableIntStateOf(0)
         private set
 
-    fun apply(activity: Activity, previewColors: PreviewColors?) {
+    fun apply(activity: Activity, previewTheme: ResolvedTheme?) {
         val resources = activity.resources
         val loader = loaderFor(resources)
 
-        val colorValues = previewColors?.let { buildColorValues(resources, it) }.orEmpty()
+        val colorValues = previewTheme?.let { buildColorValues(resources, it) }.orEmpty()
         val built = if (colorValues.isEmpty()) {
             null
         } else {
@@ -71,33 +71,15 @@ object PreviewResourcesOverride {
     }
 
     @SuppressLint("DiscouragedApi")
-    private fun buildColorValues(
-        resources: Resources,
-        previewColors: PreviewColors
-    ): Map<Int, Int> {
+    private fun buildColorValues(resources: Resources, previewTheme: ResolvedTheme): Map<Int, Int> {
         val colorValues = HashMap<Int, Int>()
-        val palette = if (SystemUtil.isDarkMode) {
-            previewColors.paletteDark
-        } else {
-            previewColors.paletteLight
-        }
 
-        fun colorId(name: String): Int = resourceIdCache.getOrPut(name) {
-            resources.getIdentifier(name, "color", "android")
-        }
-
-        systemPaletteNames.forEachIndexed { i, row ->
-            row.forEachIndexed { j, name ->
-                val id = colorId(name)
-                if (id != 0) colorValues[id] = palette[i][j]
+        ThemeOverlays.frameworkColors(previewTheme, SystemUtil.isDarkMode).forEach { (name, color) ->
+            val id = resourceIdCache.getOrPut(name) {
+                resources.getIdentifier(name, "color", "android")
             }
+            if (id != 0) colorValues[id] = color
         }
-
-        (previewColors.lightMap.entries + previewColors.darkMap.entries)
-            .forEach { (name, color) ->
-                val id = colorId(name)
-                if (id != 0) colorValues[id] = color
-            }
 
         return colorValues
     }

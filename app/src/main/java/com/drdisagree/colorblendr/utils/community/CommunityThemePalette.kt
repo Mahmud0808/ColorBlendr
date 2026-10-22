@@ -1,97 +1,55 @@
 package com.drdisagree.colorblendr.utils.community
 
-import android.graphics.Color
 import android.util.LruCache
 import com.drdisagree.colorblendr.data.models.CommunityTheme
-import com.drdisagree.colorblendr.utils.colors.ColorModifiers
-import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.generateColorPalette
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import java.util.concurrent.atomic.AtomicInteger
+import com.drdisagree.colorblendr.theme.ThemeEngine
+import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
+import com.drdisagree.colorblendr.theme.model.ThemeSource
+import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
 
-// Pref-free palette derivation for community themes: same pipeline the
-// overlay uses, but every input comes from the payload so any theme renders
-// identically on any device, including the payload's color spec version.
 object CommunityThemePalette {
 
-    private val cache = LruCache<String, ArrayList<ArrayList<Int>>>(256)
+    private val cache = LruCache<String, ResolvedScheme>(256)
 
-    // neutral1 + neutral2 rows, shade 900
-    private val NEUTRAL_ROWS = 3..4
-    private const val SHADE_900 = 11
+    fun derive(theme: CommunityTheme, isDark: Boolean): List<List<Int>> = scheme(theme, isDark).shades
 
-    fun derive(theme: CommunityTheme, isDark: Boolean): ArrayList<ArrayList<Int>> {
+    fun scheme(theme: CommunityTheme, isDark: Boolean): ResolvedScheme {
         val key = "${theme.id}:${theme.createdAt}:$isDark"
-        cache.get(key)?.let { cached ->
-            return ArrayList(cached.map { ArrayList(it) })
-        }
-        val palette = deriveUncached(theme, isDark)
-        cache.put(key, ArrayList(palette.map { ArrayList(it) }))
-        return palette
+        cache.get(key)?.let { return it }
+        return ThemeEngine.scheme(source(theme), adjustments(theme, isDark), isDark)
+            .also { scheme ->
+                scheme.shades
+                scheme.colors
+                cache.put(key, scheme)
+            }
     }
 
-    private fun deriveUncached(theme: CommunityTheme, isDark: Boolean): ArrayList<ArrayList<Int>> {
-        val palette = generateColorPalette(
-            theme.style,
-            theme.seedColor,
-            isDark,
-            colorSpecVersion = theme.colorSpecVersion
-        )
+    private fun source(theme: CommunityTheme) = ThemeSource(
+        style = theme.style,
+        seedColor = theme.seedColor,
+        secondaryColor = theme.secondaryColor,
+        tertiaryColor = theme.tertiaryColor,
+        specVersion = theme.colorSpecVersion
+    )
 
-        theme.secondaryColor?.let {
-            palette[1] = generateColorPalette(
-                theme.style, it, isDark, colorSpecVersion = theme.colorSpecVersion
-            )[0]
-        }
-        theme.tertiaryColor?.let {
-            palette[2] = generateColorPalette(
-                theme.style, it, isDark, colorSpecVersion = theme.colorSpecVersion
-            )[0]
-        }
-
-        // Light mode may carry its own slider values.
+    private fun adjustments(theme: CommunityTheme, isDark: Boolean): ThemeAdjustments {
         val lightMode = !isDark && theme.modeSpecificThemes
-        val accentSaturation =
-            if (lightMode) theme.accentSaturationLight else theme.accentSaturation
-        val backgroundSaturation =
-            if (lightMode) theme.backgroundSaturationLight else theme.backgroundSaturation
-        val backgroundLightness =
-            if (lightMode) theme.backgroundLightnessLight else theme.backgroundLightness
-
-        for (i in palette.indices) {
-            val modifiedShades = ColorModifiers.modifyColors(
-                ArrayList(palette[i].subList(1, palette[i].size)),
-                AtomicInteger(i),
-                theme.style,
-                accentSaturation,
-                backgroundSaturation,
-                backgroundLightness,
-                theme.pitchBlack,
-                theme.accurateShades,
-                modifyPitchBlack = true,
-                overrideColors = false
-            )
-            for (j in 1 until palette[i].size) {
-                palette[i][j] = modifiedShades[j - 1]
-            }
-        }
-
-        theme.colorOverrides.forEach { (shadeName, color) ->
-            systemPaletteNames.forEachIndexed { i, row ->
-                val j = row.indexOf(shadeName)
-                if (j >= 0 && i < palette.size && j < palette[i].size) {
-                    palette[i][j] = color
-                }
-            }
-        }
-
-        if (theme.pitchBlack) {
-            for (i in NEUTRAL_ROWS) {
-                if (i < palette.size && SHADE_900 < palette[i].size) {
-                    palette[i][SHADE_900] = Color.BLACK
-                }
-            }
-        }
-
-        return palette
+        return ThemeAdjustments(
+            accentSaturation = if (lightMode) theme.accentSaturationLight else theme.accentSaturation,
+            backgroundSaturation = if (lightMode) {
+                theme.backgroundSaturationLight
+            } else {
+                theme.backgroundSaturation
+            },
+            backgroundLightness = if (lightMode) {
+                theme.backgroundLightnessLight
+            } else {
+                theme.backgroundLightness
+            },
+            accurateShades = theme.accurateShades,
+            pitchBlack = theme.pitchBlack,
+            tintedText = theme.tintText,
+            shadeOverrides = theme.colorOverrides
+        )
     }
 }

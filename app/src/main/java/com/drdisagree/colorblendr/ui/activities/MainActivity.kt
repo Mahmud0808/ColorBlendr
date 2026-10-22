@@ -57,8 +57,6 @@ import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.json.JSONObject
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
@@ -70,7 +68,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.milliseconds
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         // View-based UI (MDC dialogs, color picker) follows the preview via
         // runtime resource overrides.
         lifecycleScope.launch {
-            PreviewController.previewColors.collectLatest { preview ->
+            PreviewController.previewTheme.collectLatest { preview ->
                 // Debounced: rebuilding the resources table on every slider
                 // tick is expensive and dialogs only need the settled value.
                 if (preview != null) delay(150.milliseconds)

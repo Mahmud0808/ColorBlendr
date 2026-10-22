@@ -1,9 +1,7 @@
 package com.drdisagree.colorblendr.utils.manager
 
-import android.graphics.Color
 import android.os.RemoteException
 import android.util.Log
-import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
 import com.drdisagree.colorblendr.R
@@ -11,14 +9,7 @@ import com.drdisagree.colorblendr.data.common.Constant.BLISS_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
-import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
-import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSamsungPaletteOriginalState
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
@@ -27,9 +18,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSamsungPaletteOriginalState
-import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
@@ -38,15 +27,11 @@ import com.drdisagree.colorblendr.extension.ThemeOverlayPackage.shellQuoted
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.service.IShizukuConnection
+import com.drdisagree.colorblendr.theme.ThemePrefs
+import com.drdisagree.colorblendr.theme.overlay.ThemeOverlays
 import com.drdisagree.colorblendr.utils.app.ResourceUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.colors.computeFinalColorOverrides
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignFullPaletteToOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import java.util.concurrent.locks.ReentrantLock
@@ -210,136 +195,16 @@ object OverlayManager {
 
         ResourceUtil.clearLookupCache()
 
-        val style = getCurrentMonetStyle()
-        val monetAccentSaturation = getAccentSaturation()
-        val monetBackgroundSaturation = getBackgroundSaturation()
-        val monetBackgroundLightness = getBackgroundLightness()
-        val pitchBlackTheme = pitchBlackThemeEnabled()
-        val accurateShades = accurateShadesEnabled()
+        val theme = ThemePrefs.resolve()
         val isDarkMode = SystemUtil.isDarkMode
 
-        val paletteLight = generateModifiedColors(
-            style = style,
-            accentSaturation = monetAccentSaturation,
-            backgroundSaturation = monetBackgroundSaturation,
-            backgroundLightness = monetBackgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = false
-        )
-
-        val paletteDark = generateModifiedColors(
-            style = style,
-            accentSaturation = monetAccentSaturation,
-            backgroundSaturation = monetBackgroundSaturation,
-            backgroundLightness = monetBackgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = true
-        )
-
-        val success = ArrayList<FabricatedOverlayResource>().apply {
-            add(
-                FabricatedOverlayResource(
-                    FABRICATED_OVERLAY_NAME_SYSTEM,
-                    FRAMEWORK_PACKAGE
-                ).also { frameworkOverlay ->
-                    frameworkOverlay.apply {
-                        for (i in systemPaletteNames.indices) {
-                            for (j in systemPaletteNames[i].indices) {
-                                setColor(
-                                    systemPaletteNames[i][j],
-                                    if (isDarkMode) paletteDark[i][j] else paletteLight[i][j]
-                                )
-                                setColor("${systemPaletteNames[i][j]}_light", paletteLight[i][j], true)
-                                setColor("${systemPaletteNames[i][j]}_dark", paletteDark[i][j], true)
-                            }
-                        }
-
-                        // Mirror the full Material 3 palette
-                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
-                        // SurfaceEffectColors
-                        generateSurfaceEffectColors(isDarkMode, true)
-
-                        if (pitchBlackTheme) {
-                            setColor("background_dark", Color.BLACK)
-                            // QS top part color below A16
-                            setColor("surface_header_dark_sysui", Color.BLACK, true)
-                            if (isDarkMode) {
-                                // QS top part color A16+
-                                setColor(
-                                    "shade_panel_fg_color",
-                                    ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
-                                ) // with blur
-                            }
-                            setColor(systemPaletteNames[3][11], Color.BLACK)
-                            setColor(systemPaletteNames[4][11], Color.BLACK)
-                            setColor("${systemPaletteNames[3][11]}_dark", Color.BLACK, true)
-                            setColor("${systemPaletteNames[4][11]}_dark", Color.BLACK, true)
-                        }
-
-                        if (!tintedTextEnabled()) {
-                            setColor("text_color_primary_device_default_dark", Color.WHITE)
-                            setColor("text_color_secondary_device_default_dark", -0x4c000001)
-                            setColor("text_color_primary_device_default_light", Color.BLACK)
-                            setColor("text_color_secondary_device_default_light", -0x4d000000)
-                        }
-
-                        // Error, pitch black and A15 workaround role overrides,
-                        // shared with the in-app color preview.
-                        computeFinalColorOverrides(
-                            paletteLight = paletteLight,
-                            paletteDark = paletteDark,
-                            currentSurfaceContainerDark = findColor("system_surface_container_dark")
-                        ).forEach { (resourceName, colorValue) ->
-                            setColor(resourceName, colorValue)
-                        }
-                    }
-                }
-            )
-
-            add(
-                FabricatedOverlayResource(
-                    FABRICATED_OVERLAY_NAME_SYSTEMUI,
-                    SYSTEMUI_PACKAGE
-                ).also { systemuiOverlay ->
-                    systemuiOverlay.apply {
-                        setBoolean("flag_monet", false, ifExists = true)
-
-                        // Mirror the full Material 3 palette if resources exist
-                        assignFullPaletteToOverlay(paletteLight, paletteDark, isDarkMode)
-
-                        // Discovered /e/OS specific resources
-                        setColor("shade_scrim_background_dark", Color.BLACK, true)
-                        setColor("notification_ripple_tinted_color", Color.WHITE, true)
-                        setColor("system_bar_background_opaque", Color.BLACK, true)
-
-                        if (isDarkMode && pitchBlackTheme) {
-                            // QS top part color A16+
-                            setColor(
-                                "shade_panel_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt()),
-                                true
-                            ) // with blur
-                            setColor("shade_panel_fallback", Color.BLACK, true) // no blur
-                            // Notification scrim color A16+
-                            setColor(
-                                "notification_scrim_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt()),
-                                true
-                            ) // with blur
-                            setColor("notification_scrim_fallback", Color.BLACK, true) // no blur
-                        }
-                    }
-                }
-            )
-
+        val success = buildList {
+            add(ThemeOverlays.framework(theme, isDarkMode))
+            add(ThemeOverlays.systemUi(theme, isDarkMode))
             getSelectedFabricatedApps().filter { (packageName, isSelected) ->
                 isSelected == java.lang.Boolean.TRUE && SystemUtil.isAppInstalled(packageName)
             }.forEach { (packageName) ->
-                add(getFabricatedColorsPerApp(packageName, paletteLight, paletteDark))
+                add(ThemeOverlays.perApp(packageName, theme, isDarkMode))
             }
         }.map { registerFabricatedOverlay(it) }.all { it }
 
@@ -349,24 +214,16 @@ object OverlayManager {
         return success
     }
 
-    fun applyFabricatedColorsPerApp(
-        packageName: String,
-        paletteDark: ArrayList<ArrayList<Int>>? = null,
-        paletteLight: ArrayList<ArrayList<Int>>? = null
-    ): Boolean = overlayLock.withLock {
-        applyFabricatedColorsPerAppLocked(packageName, paletteDark, paletteLight)
+    fun applyFabricatedColorsPerApp(packageName: String): Boolean = overlayLock.withLock {
+        applyFabricatedColorsPerAppLocked(packageName)
     }
 
-    private fun applyFabricatedColorsPerAppLocked(
-        packageName: String,
-        paletteDark: ArrayList<ArrayList<Int>>?,
-        paletteLight: ArrayList<ArrayList<Int>>?
-    ): Boolean {
+    private fun applyFabricatedColorsPerAppLocked(packageName: String): Boolean {
         if (!isThemingEnabled() || PreviewController.isPreviewActive) return true
 
         ResourceUtil.clearLookupCache()
         return registerFabricatedOverlay(
-            getFabricatedColorsPerApp(packageName, paletteLight, paletteDark)
+            ThemeOverlays.perApp(packageName, ThemePrefs.resolve(), SystemUtil.isDarkMode)
         )
     }
 
@@ -391,40 +248,6 @@ object OverlayManager {
             add(FABRICATED_OVERLAY_NAME_SYSTEMUI)
             add(String.format(FABRICATED_OVERLAY_NAME_APPS, BLISS_LAUNCHER))
         }.map { unregisterFabricatedOverlay(it) }.all { it }
-    }
-
-    private fun getFabricatedColorsPerApp(
-        packageName: String,
-        paletteLight: ArrayList<ArrayList<Int>>?,
-        paletteDark: ArrayList<ArrayList<Int>>?
-    ): FabricatedOverlayResource {
-        val paletteLightTemp = paletteLight ?: generateModifiedColors(
-            getCurrentMonetStyle(),
-            getAccentSaturation(),
-            getBackgroundSaturation(),
-            getBackgroundLightness(),
-            pitchBlackThemeEnabled(),
-            accurateShadesEnabled(),
-            modifyPitchBlack = false,
-            isDark = false
-        )
-        val paletteDarkTemp = paletteDark ?: generateModifiedColors(
-            getCurrentMonetStyle(),
-            getAccentSaturation(),
-            getBackgroundSaturation(),
-            getBackgroundLightness(),
-            pitchBlackThemeEnabled(),
-            accurateShadesEnabled(),
-            modifyPitchBlack = false,
-            isDark = true
-        )
-
-        return FabricatedOverlayResource(
-            String.format(FABRICATED_OVERLAY_NAME_APPS, packageName),
-            packageName
-        ).also { overlay ->
-            overlay.assignPerAppColorsToOverlay(paletteLightTemp, paletteDarkTemp)
-        }
     }
 
     private fun applyFabricatedColorsNonRoot(): Boolean? {

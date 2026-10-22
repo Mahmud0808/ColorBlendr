@@ -20,7 +20,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.models.CommunityTheme
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import android.graphics.Color as AndroidColor
 
 // Maps a community theme onto the staged prefs and starts a live preview —
@@ -73,7 +73,7 @@ object CommunityThemeApplier {
         setPitchBlackThemeEnabled(theme.pitchBlack)
         setTintedTextEnabled(theme.tintText)
 
-        systemPaletteNames.forEach { row ->
+        PaletteRole.shadeNames.forEach { row ->
             row.forEach { shadeName ->
                 val override = theme.colorOverrides[shadeName]
                 if (override != null) {

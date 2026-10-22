@@ -119,7 +119,7 @@ fun StylesScreen(stylesViewModel: StylesViewModel) {
         }
     }
 
-    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val previewColors by PreviewController.previewTheme.collectAsStateWithLifecycle()
     val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     val fabBottomPadding by animateDpAsState(
         targetValue = (if (SnackbarVisibility.visible) 76.dp else 12.dp) +

@@ -1,22 +1,15 @@
 package com.drdisagree.colorblendr.data.domain
 
-import android.graphics.Color
 import android.util.Log
-import com.drdisagree.colorblendr.utils.community.CommunityVotes
-import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.colors.computeSystemColorMap
+import com.drdisagree.colorblendr.theme.ThemePrefs
+import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
+import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
+import com.drdisagree.colorblendr.utils.community.CommunityVotes
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,21 +29,14 @@ object PreviewController {
 
     private val TAG = PreviewController::class.java.simpleName
 
-    data class PreviewColors(
-        val lightMap: Map<String, Int>,
-        val darkMap: Map<String, Int>,
-        val paletteLight: List<List<Int>>,
-        val paletteDark: List<List<Int>>
-    )
-
-    private val _previewColors = MutableStateFlow<PreviewColors?>(null)
-    val previewColors = _previewColors.asStateFlow()
+    private val _previewTheme = MutableStateFlow<ResolvedTheme?>(null)
+    val previewTheme = _previewTheme.asStateFlow()
 
     private val _isApplying = MutableStateFlow(false)
     val isApplying = _isApplying.asStateFlow()
 
     val isPreviewActive: Boolean
-        get() = Prefs.isStagingActive || _previewColors.value != null
+        get() = Prefs.isStagingActive || _previewTheme.value != null
 
     // Own scope: callers' composition scopes get cancelled when applying the
     // overlay recreates the activity, which must not abort these jobs.
@@ -79,7 +65,7 @@ object PreviewController {
     private fun endPreviewSession() {
         synchronized(sessionLock) {
             previewSession++
-            _previewColors.value = null
+            _previewTheme.value = null
         }
     }
 
@@ -113,10 +99,10 @@ object PreviewController {
                 val refreshOthers = refreshOthersPending
                 refreshOthersPending = false
                 try {
-                    val colors = buildPreviewColors()
+                    val theme = ThemePrefs.resolve()
                     synchronized(sessionLock) {
                         if (session != previewSession || !Prefs.isStagingActive) return@collect
-                        _previewColors.value = colors
+                        _previewTheme.value = theme
                     }
                     if (refreshOthers) {
                         // Palette/style pages regenerate from the staged prefs.
@@ -215,52 +201,5 @@ object PreviewController {
                 applyFabricatedColors()
             }
         }
-    }
-
-    fun buildPreviewColors(): PreviewColors {
-        val style = getCurrentMonetStyle()
-        val accentSaturation = getAccentSaturation()
-        val backgroundSaturation = getBackgroundSaturation()
-        val backgroundLightness = getBackgroundLightness()
-        val pitchBlackTheme = pitchBlackThemeEnabled()
-        val accurateShades = accurateShadesEnabled()
-
-        val paletteLight = generateModifiedColors(
-            style = style,
-            accentSaturation = accentSaturation,
-            backgroundSaturation = backgroundSaturation,
-            backgroundLightness = backgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = false
-        )
-        val paletteDark = generateModifiedColors(
-            style = style,
-            accentSaturation = accentSaturation,
-            backgroundSaturation = backgroundSaturation,
-            backgroundLightness = backgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = true
-        )
-
-        val lightMap = computeSystemColorMap(paletteLight, paletteDark, isDark = false)
-        val darkMap = computeSystemColorMap(paletteLight, paletteDark, isDark = true)
-
-        if (pitchBlackTheme) {
-            listOf(paletteLight, paletteDark).forEach { palette ->
-                palette[3][11] = Color.BLACK
-                palette[4][11] = Color.BLACK
-            }
-        }
-
-        return PreviewColors(
-            lightMap = lightMap,
-            darkMap = darkMap,
-            paletteLight = paletteLight,
-            paletteDark = paletteDark
-        )
     }
 }

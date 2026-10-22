@@ -77,6 +77,7 @@ import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
@@ -94,7 +95,6 @@ import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.BackupRestore.backupDatabaseAndPrefs
 import com.drdisagree.colorblendr.utils.app.BackupRestore.restoreDatabaseAndPrefs
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.removeFabricatedColors
@@ -168,7 +168,7 @@ fun SettingsScreen(
 
     fun numColorsOverridden(): Int {
         var colorOverridden = 0
-        systemPaletteNames.forEach { palettes ->
+        PaletteRole.shadeNames.forEach { palettes ->
             palettes
                 .asSequence()
                 .filter { isColorOverriddenFor(it) }

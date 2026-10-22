@@ -36,13 +36,10 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundSaturation
@@ -51,6 +48,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
@@ -61,7 +59,6 @@ import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
-import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -78,26 +75,25 @@ fun ThemeScreen() {
     var backgroundSaturation by rememberPrefState(MONET_BACKGROUND_SATURATION) { getBackgroundSaturation() }
     var backgroundLightness by rememberPrefState(MONET_BACKGROUND_LIGHTNESS) { getBackgroundLightness() }
 
-    val preview by PreviewController.previewColors.collectAsState()
+    val preview by PreviewController.previewTheme.collectAsState()
 
     var committedPalette by remember { mutableStateOf(emptyList<List<Int>>()) }
     LaunchedEffect(preview == null, accentSaturation, backgroundSaturation, backgroundLightness) {
         if (preview != null) return@LaunchedEffect
 
         committedPalette = withContext(Dispatchers.Default) {
-            ColorUtil.generateModifiedColors(
-                getCurrentMonetStyle(),
-                accentSaturation,
-                backgroundSaturation,
-                backgroundLightness,
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            ).map { it.toList() }
+            ThemePrefs.scheme(
+                isDark = isDark,
+                adjustments = ThemePrefs.adjustments(
+                    accentSaturation = accentSaturation,
+                    backgroundSaturation = backgroundSaturation,
+                    backgroundLightness = backgroundLightness
+                )
+            ).shades
         }
     }
 
-    val colorPalette = preview?.let { if (isDark) it.paletteDark else it.paletteLight }
-        ?: committedPalette
+    val colorPalette = preview?.scheme(isDark)?.shades ?: committedPalette
 
     fun updateColors() {
         scope.launch {
