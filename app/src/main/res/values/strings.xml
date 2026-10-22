@@ -271,6 +271,11 @@
         <item>2025</item>
         <item>2026</item>
     </string-array>
+    <string-array name="colorspec_version_descs">
+        <item>Original Material You colors, used by every style</item>
+        <item>Material 3 Expressive colors from Android 16 for Neutral, Tonal Spot, Vibrant and Expressive. Other styles stay on 2021.</item>
+        <item>Same as 2025, and unlocks the CMF style</item>
+    </string-array>
     <string name="darker_launcher_icons_title">Darker launcher icons</string>
     <string name="darker_launcher_icons_desc">Apply a darker background to pixel launcher monochrome icons</string>
     <string name="semitransparent_launcher_title">Semi-transparent launcher</string>

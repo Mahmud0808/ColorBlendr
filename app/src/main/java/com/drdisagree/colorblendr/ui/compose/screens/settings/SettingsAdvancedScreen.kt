@@ -219,7 +219,8 @@ fun SettingsAdvancedScreen(
                     updateColors()
                 }
             },
-            onDismiss = { showColorSpecDialog = false }
+            onDismiss = { showColorSpecDialog = false },
+            descriptions = resources.getStringArray(R.array.colorspec_version_descs).toList()
         )
     }
 

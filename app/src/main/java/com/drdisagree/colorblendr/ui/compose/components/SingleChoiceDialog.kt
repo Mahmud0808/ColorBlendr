@@ -36,7 +36,8 @@ fun SingleChoiceDialog(
     options: List<String>,
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    descriptions: List<String> = emptyList()
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -71,12 +72,20 @@ fun SingleChoiceDialog(
                             selected = index == selectedIndex,
                             onClick = null
                         )
-                        Text(
-                            text = option,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                        Column(modifier = Modifier.padding(start = 16.dp)) {
+                            Text(
+                                text = option,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            descriptions.getOrNull(index)?.let { description ->
+                                Text(
+                                    text = description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -101,7 +110,8 @@ private fun SingleChoiceDialogPreview() {
             options = listOf("Most popular", "Newest first", "Oldest first"),
             selectedIndex = 0,
             onSelect = {},
-            onDismiss = {}
+            onDismiss = {},
+            descriptions = listOf("Most upvoted first")
         )
     }
 }
