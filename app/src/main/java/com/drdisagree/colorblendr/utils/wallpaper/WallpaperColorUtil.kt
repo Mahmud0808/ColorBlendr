@@ -216,7 +216,16 @@ object WallpaperColorUtil {
 
                 // Static wallpaper
                 wallpaperManager.getWallpaperFile(which)?.use { file ->
-                    return createMiniBitmap(BitmapFactory.decodeFileDescriptor(file.fileDescriptor))
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeFileDescriptor(file.fileDescriptor, null, bounds)
+
+                    val smallestSide = min(bounds.outWidth, bounds.outHeight)
+                    var sampleSize = 1
+                    while (smallestSide / (sampleSize * 2) >= SMALL_SIDE) sampleSize *= 2
+
+                    val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+                    BitmapFactory.decodeFileDescriptor(file.fileDescriptor, null, options)
+                        ?.let { return createMiniBitmap(it) }
                 }
 
                 // Built-in wallpaper (fallback)
@@ -228,6 +237,9 @@ object WallpaperColorUtil {
                 null
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting wallpaper bitmap", e)
+                null
+            } catch (e: OutOfMemoryError) {
+                Log.e(TAG, "Out of memory decoding wallpaper bitmap", e)
                 null
             }
         }
