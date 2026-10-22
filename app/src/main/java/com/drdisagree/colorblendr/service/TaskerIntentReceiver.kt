@@ -31,7 +31,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.taskerIntegrationEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
-import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.CoroutineScope
@@ -87,8 +87,8 @@ class TaskerIntentReceiver : BroadcastReceiver() {
         }
 
         config.optString(EXTRA_MONET_STYLE).takeIf { it.isNotBlank() }?.let { style ->
-            val monet = style.toEnumMonet()
-            if (monet.isAvailable(rootMode, getColorSpecVersion())) {
+            val monet = MONET.entries.find { it.name.equals(style, ignoreCase = true) }
+            if (monet != null && monet.isAvailable(rootMode, getColorSpecVersion())) {
                 resetCustomStyleIfNotNull()
                 setCurrentMonetStyle(monet)
                 changed = true
