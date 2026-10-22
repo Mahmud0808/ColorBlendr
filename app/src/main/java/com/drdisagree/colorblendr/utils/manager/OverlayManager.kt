@@ -242,6 +242,8 @@ object OverlayManager {
                                     systemPaletteNames[i][j],
                                     if (isDarkMode) paletteDark[i][j] else paletteLight[i][j]
                                 )
+                                setColor("${systemPaletteNames[i][j]}_light", paletteLight[i][j], true)
+                                setColor("${systemPaletteNames[i][j]}_dark", paletteDark[i][j], true)
                             }
                         }
 
@@ -263,6 +265,8 @@ object OverlayManager {
                             }
                             setColor(systemPaletteNames[3][11], Color.BLACK)
                             setColor(systemPaletteNames[4][11], Color.BLACK)
+                            setColor("${systemPaletteNames[3][11]}_dark", Color.BLACK, true)
+                            setColor("${systemPaletteNames[4][11]}_dark", Color.BLACK, true)
                         }
 
                         if (!tintedTextEnabled()) {

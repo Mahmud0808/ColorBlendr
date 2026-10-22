@@ -343,6 +343,46 @@ object DynamicColors {
                 colorCode = "#FF5540".toColorInt(),
                 lightModeLStarAdjustment = 50.0,
                 darkModeLStarAdjustment = 50.0
+            ),
+            ColorMapping(
+                resourceName = "inverse_surface",
+                tonalPalette = TonalPalette.NEUTRAL,
+                lightModeColorIndex = 11,
+                darkModeColorIndex = 1,
+                lightModeLightnessAdjustment = -25,
+                darkModeLightnessAdjustment = -1
+            ),
+            ColorMapping(
+                resourceName = "inverse_on_surface",
+                tonalPalette = TonalPalette.NEUTRAL,
+                lightModeColorIndex = 2,
+                darkModeColorIndex = 10
+            ),
+            ColorMapping(
+                resourceName = "inverse_primary",
+                tonalPalette = TonalPalette.PRIMARY,
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 8
+            ),
+            ColorMapping(
+                resourceName = "surface_tint",
+                tonalPalette = TonalPalette.PRIMARY,
+                lightModeColorIndex = 8,
+                darkModeColorIndex = 4
+            ),
+            ColorMapping(
+                resourceName = "gen_widget",
+                tonalPalette = TonalPalette.PRIMARY,
+                lightModeColorIndex = 4,
+                darkModeColorIndex = 8
+            ),
+            ColorMapping(
+                resourceName = "scrim",
+                colorCode = "#000000".toColorInt()
+            ),
+            ColorMapping(
+                resourceName = "shadow",
+                colorCode = "#000000".toColorInt()
             )
         )
     }

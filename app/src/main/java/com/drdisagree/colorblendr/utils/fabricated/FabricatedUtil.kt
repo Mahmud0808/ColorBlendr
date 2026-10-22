@@ -717,13 +717,15 @@ object FabricatedUtil {
             "surface_effect_0_color",
             "surface_effect_1_color",
             "surface_effect_2_color",
-            "surface_effect_3_color"
+            "surface_effect_3_color",
+            "surface_effect_4_color"
         )
         val newColorResNames = listOf(
             "system_surface_effect_0_light" to "system_surface_effect_0_dark",
             "system_surface_effect_1_light" to "system_surface_effect_1_dark",
             "system_surface_effect_2_light" to "system_surface_effect_2_dark",
             "system_surface_effect_3_light" to "system_surface_effect_3_dark",
+            "system_surface_effect_4_light" to "system_surface_effect_4_dark",
         )
         // Pair of (light mode, dark mode)
         val sourceColorResNames = listOf(
@@ -731,10 +733,12 @@ object FabricatedUtil {
             "system_neutral1_500" to "system_neutral1_500",
             "system_accent1_0" to "system_accent1_100",
             "system_accent1_600" to "system_accent1_100",
+            "system_accent1_800" to "system_accent2_200",
         )
         val lStarValue = listOf(
             null to null,
             98.toDouble() to 6.toDouble(),
+            null to null,
             null to null,
             null to null
         )
@@ -742,8 +746,12 @@ object FabricatedUtil {
             0.5f to 0.5f,
             0.54f to 0.54f,
             0.32f to 0.15f,
-            0.15f to 0.10f
+            0.15f to 0.10f,
+            0.70f to 0.85f
         )
+
+        setColor("system_surface_effect_0_fallback_light", getColor("system_accent2_200"), useIfExists)
+        setColor("system_surface_effect_0_fallback_dark", getColor("system_accent2_800"), useIfExists)
 
         colorResNames.forEachIndexed { i, colorResName ->
             val lightColorValue = getColor(sourceColorResNames[i].first)
