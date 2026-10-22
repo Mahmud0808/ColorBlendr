@@ -12,6 +12,7 @@ import com.drdisagree.colorblendr.data.domain.PreviewController.PreviewColors
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.google.android.material.color.PreviewColorResourcesLoader
+import java.lang.ref.WeakReference
 
 // Remaps the framework system color resources on the activity while a preview
 // is active, so view-based UI (MDC dialogs, the color picker) follows the
@@ -20,7 +21,8 @@ object PreviewResourcesOverride {
 
     private val TAG = PreviewResourcesOverride::class.java.simpleName
 
-    private var currentLoader: ResourcesLoader? = null
+    private var loader: ResourcesLoader? = null
+    private var loaderResources: WeakReference<Resources>? = null
     private val resourceIdCache = HashMap<String, Int>()
 
     // Bumped after every loader change; composables resolving theme attrs
@@ -31,36 +33,41 @@ object PreviewResourcesOverride {
 
     fun apply(activity: Activity, previewColors: PreviewColors?) {
         val resources = activity.resources
+        val loader = loaderFor(resources)
 
-        currentLoader?.let {
+        val colorValues = previewColors?.let { buildColorValues(resources, it) }.orEmpty()
+        val built = if (colorValues.isEmpty()) {
+            null
+        } else {
             try {
-                resources.removeLoaders(it)
-            } catch (_: Exception) {
+                PreviewColorResourcesLoader.create(activity, colorValues)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error overriding preview resources", e)
+                null
             }
-            currentLoader = null
         }
+        val providers = built?.providers.orEmpty()
 
-        if (previewColors == null) {
-            // Theme objects cache resolved attributes; without a rebase some
-            // of them keep serving the removed preview values.
-            activity.theme.rebase()
-            revision++
-            return
-        }
+        val oldProviders = loader.providers
+        if (providers.isEmpty() && oldProviders.isEmpty()) return
 
-        val colorValues = buildColorValues(resources, previewColors)
-        if (colorValues.isEmpty()) return
+        loader.setProviders(providers)
+        built?.clearProviders()
+        oldProviders.forEach { runCatching { it.close() } }
 
-        try {
-            PreviewColorResourcesLoader.create(activity, colorValues)?.let {
-                resources.addLoaders(it)
-                currentLoader = it
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error overriding preview resources", e)
-        }
+        // Theme objects cache resolved attributes; without a rebase some
+        // of them keep serving the removed preview values.
         activity.theme.rebase()
         revision++
+    }
+
+    private fun loaderFor(resources: Resources): ResourcesLoader {
+        loader?.takeIf { loaderResources?.get() === resources }?.let { return it }
+        return ResourcesLoader().also {
+            resources.addLoaders(it)
+            loader = it
+            loaderResources = WeakReference(resources)
+        }
     }
 
     @SuppressLint("DiscouragedApi")
