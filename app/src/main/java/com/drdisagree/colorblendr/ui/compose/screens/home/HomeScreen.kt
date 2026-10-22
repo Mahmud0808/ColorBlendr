@@ -114,6 +114,8 @@ import com.drdisagree.colorblendr.utils.community.communityColorScheme
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @Composable
@@ -135,7 +137,9 @@ fun HomeScreen(
 
     val backStackEntry by nestedNavController.currentBackStackEntryAsState()
 
-    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val hasPreview by remember {
+        PreviewController.previewColors.map { it != null }.distinctUntilChanged()
+    }.collectAsStateWithLifecycle(PreviewController.previewColors.value != null)
     val isApplying by PreviewController.isApplying.collectAsStateWithLifecycle()
     var lastGroup by rememberSaveable { mutableIntStateOf(1) }
     val routeGroup = tabGroup(backStackEntry?.destination?.route)
@@ -389,7 +393,7 @@ fun HomeScreen(
                 ) {
                     // Reserve room above preview FABs: 56dp FAB + 12dp margin + gap.
                     val previewBottomInset by animateDpAsState(
-                        targetValue = if (previewColors != null && !isApplying) 80.dp else 0.dp,
+                        targetValue = if (hasPreview && !isApplying) 80.dp else 0.dp,
                         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
                         label = "previewBottomInset"
                     )
@@ -509,7 +513,7 @@ fun HomeScreen(
                         label = "previewFabSnackbarPush"
                     )
                     PreviewActionButtons(
-                        visible = previewColors != null && !isApplying,
+                        visible = hasPreview && !isApplying,
                         onApply = { scope.launch { PreviewController.applyChanges() } },
                         onDiscard = { scope.launch { PreviewController.discardChanges() } },
                         modifier = Modifier
