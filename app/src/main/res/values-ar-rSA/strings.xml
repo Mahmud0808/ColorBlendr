@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">متقدم</string>
     <string name="custom_secondary_color_desc">لون ثانوي مخصص</string>
-    <string name="custom_secondary_color_summary">اختر اللون الأبيض النقي لتعطيل</string>
     <string name="custom_tertiary_color_title">لون ثالث مخصص</string>
-    <string name="custom_tertiary_color_desc">حدد اللون الأبيض النقي لتعطيله</string>
     <string name="mode_specific_theme_title">ثيم مخصص حسب الوضع</string>
     <string name="screen_off_update_desc">تحديث الألوان بعد 15 ثانية من إيقاف تشغيل الشاشة؛ مفيد للخلفيات الحية</string>
     <string name="screen_off_update_title">تحديث الألوان على الشاشة المتوقفة</string>

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -107,7 +109,9 @@ fun ColorPickerDialog(
     alphaEnabled: Boolean = true,
     pickers: List<ColorPickerType> = listOf(ColorPickerType.RGB, ColorPickerType.HSV),
     presets: List<Int> = DEFAULT_PRESETS,
-    cornerRadius: Dp = 2.dp
+    cornerRadius: Dp = 2.dp,
+    resetText: String? = null,
+    onReset: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -174,7 +178,9 @@ fun ColorPickerDialog(
                             )
                             DialogButtons(
                                 onCancel = onDismissRequest,
-                                onConfirm = { onColorPicked(color) }
+                                onConfirm = { onColorPicked(color) },
+                                resetText = resetText,
+                                onReset = onReset
                             )
                         }
                     }
@@ -227,7 +233,9 @@ fun ColorPickerDialog(
                     )
                     DialogButtons(
                         onCancel = onDismissRequest,
-                        onConfirm = { onColorPicked(color) }
+                        onConfirm = { onColorPicked(color) },
+                        resetText = resetText,
+                        onReset = onReset
                     )
                 }
             }
@@ -503,7 +511,9 @@ private fun PickerPages(
 @Composable
 private fun DialogButtons(
     onCancel: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    resetText: String? = null,
+    onReset: () -> Unit = {}
 ) {
     Row(
         horizontalArrangement = Arrangement.End,
@@ -513,6 +523,16 @@ private fun DialogButtons(
             .height(64.dp)
             .padding(horizontal = 16.dp)
     ) {
+        if (resetText != null) {
+            FilledTonalButton(
+                onClick = onReset,
+                shapes = ButtonDefaults.shapes(),
+                contentPadding = PaddingValues(horizontal = 12.dp)
+            ) {
+                Text(text = resetText)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+        }
         OutlinedButton(
             onClick = onCancel,
             shapes = ButtonDefaults.shapes(),

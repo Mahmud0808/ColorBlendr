@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">উন্নত</string>
     <string name="custom_secondary_color_desc">কাস্টম সেকেন্ডারি রঙ</string>
-    <string name="custom_secondary_color_summary">নিষ্ক্রিয় করতে বিশুদ্ধ সাদা রঙ নির্বাচন করুন</string>
     <string name="custom_tertiary_color_title">কাস্টম টারশিয়ারি রঙ</string>
-    <string name="custom_tertiary_color_desc">নিষ্ক্রিয় করতে বিশুদ্ধ সাদা রঙ নির্বাচন করুন</string>
     <string name="mode_specific_theme_title">মোড-নির্দিষ্ট থিম</string>
     <string name="screen_off_update_desc">স্ক্রিন বন্ধ থাকার ১৫ সেকেন্ড পরে রঙ আপডেট করে; লাইভ ওয়ালপেপারের জন্য উপযোগী</string>
     <string name="screen_off_update_title">স্ক্রিন বন্ধ থাকা অবস্থায় রঙ আপডেট করুন</string>

@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Zaawansowane</string>
     <string name="custom_secondary_color_desc">Niestandardowy drugi kolor</string>
-    <string name="custom_secondary_color_summary">Wybierz czysty biały kolor, aby wyłączyć</string>
     <string name="custom_tertiary_color_title">Niestandardowy trzeci kolor</string>
-    <string name="custom_tertiary_color_desc">Wybierz czysty biały kolor, aby wyłączyć</string>
     <string name="mode_specific_theme_title">Motyw specyficzny dla trybu</string>
     <string name="screen_off_update_desc">Aktualizuje kolory po 15 sekundach od wyłączenia ekranu; przydatne dla animowanych tapet</string>
     <string name="screen_off_update_title">Aktualizuj kolory przy wyłączonym ekranie</string>

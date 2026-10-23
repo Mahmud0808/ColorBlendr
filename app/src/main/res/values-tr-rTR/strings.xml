@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Gelişmiş</string>
     <string name="custom_secondary_color_desc">Özel ikincil renk</string>
-    <string name="custom_secondary_color_summary">Kapatmak için saf beyaz rengi seç</string>
     <string name="custom_tertiary_color_title">Özel üçüncül renk</string>
-    <string name="custom_tertiary_color_desc">Kapatmak için saf beyaz rengi seç</string>
     <string name="mode_specific_theme_title">Moda özel tema</string>
     <string name="screen_off_update_desc">Ekran kapandıktan 15 saniye sonra renkleri tazeler; canlı duvar kâğıtları için birebirdir</string>
     <string name="screen_off_update_title">Ekran kapanınca renkleri yenile</string>

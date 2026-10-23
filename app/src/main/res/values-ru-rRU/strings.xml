@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Расширенный</string>
     <string name="custom_secondary_color_desc">Пользовательский дополнительный цвет</string>
-    <string name="custom_secondary_color_summary">Выберите чистый белый цвет, чтобы отключить</string>
     <string name="custom_tertiary_color_title">Пользовательский основной цвет</string>
-    <string name="custom_tertiary_color_desc">Выберите чистый белый цвет, чтобы отключить</string>
     <string name="mode_specific_theme_title">Конкретная тема режима</string>
     <string name="screen_off_update_desc">Обновляет цвета после 15-ти секунд отключения экрана; полезно для живых обоев</string>
     <string name="screen_off_update_title">Обновить цвета при выключенном экране</string>

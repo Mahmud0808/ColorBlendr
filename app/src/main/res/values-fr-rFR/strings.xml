@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Paramètres avancés</string>
     <string name="custom_secondary_color_desc">Couleur secondaire personnalisée</string>
-    <string name="custom_secondary_color_summary">Sélectionnez la couleur blanche pure pour désactiver</string>
     <string name="custom_tertiary_color_title">Couleur tertiaire personnalisée</string>
-    <string name="custom_tertiary_color_desc">Sélectionnez la couleur blanche pure pour désactiver</string>
     <string name="mode_specific_theme_title">Thème spécifique au mode</string>
     <string name="screen_off_update_desc">Actualise les couleurs après 15 secondes d\'extinction de l\'écran ; utile pour les fonds d\'écran live</string>
     <string name="screen_off_update_title">Mettre à jour les couleurs à l\'extinction d\'écran</string>

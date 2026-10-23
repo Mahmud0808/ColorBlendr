@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Προχωρημένες</string>
     <string name="custom_secondary_color_desc">Προσαρμοσμένο δευτερεύον χρώμα</string>
-    <string name="custom_secondary_color_summary">Επιλέξτε καθαρό λευκό χρώμα για απενεργοποίηση</string>
     <string name="custom_tertiary_color_title">Προσαρμοσμένο τριτοβάθμιο χρώμα</string>
-    <string name="custom_tertiary_color_desc">Επιλέξτε καθαρό λευκό χρώμα για απενεργοποίηση</string>
     <string name="mode_specific_theme_title">Θέμα ειδικό για λειτουργία</string>
     <string name="screen_off_update_desc">Ενημερώνει τα χρώματα μετά από 15 δευτερόλεπτα με οθόνη σβηστή· χρήσιμο για ζωντανές ταπετσαρίες</string>
     <string name="screen_off_update_title">Ενημέρωση χρωμάτων όταν η οθόνη είναι σβηστή</string>

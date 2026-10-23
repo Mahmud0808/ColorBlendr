@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.ui.compose.screens.settings
 
 import android.content.Intent
+import android.graphics.Color as AndroidColor
 import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -165,26 +167,36 @@ fun SettingsAdvancedScreen(
     // instance state).
     var colorPickerTarget by rememberSaveable { mutableStateOf<String?>(null) }
 
+    val secondarySet = secondaryColor != AndroidColor.WHITE
+    val tertiarySet = tertiaryColor != AndroidColor.WHITE
+    val secondarySwatch = if (secondarySet) Color(secondaryColor) else MaterialTheme.colorScheme.secondary
+    val tertiarySwatch = if (tertiarySet) Color(tertiaryColor) else MaterialTheme.colorScheme.tertiary
+
+    fun setAccentColor(isSecondary: Boolean, color: Int) {
+        PreviewController.beginPreview()
+        resetCustomStyleIfNotNull()
+        if (isSecondary) {
+            secondaryColor = color
+            setSecondaryColorValue(color)
+        } else {
+            tertiaryColor = color
+            setTertiaryColorValue(color)
+        }
+        updateColors()
+    }
+
     colorPickerTarget?.let { target ->
         val isSecondary = target == TARGET_SECONDARY
+        val isCustomSet = if (isSecondary) secondarySet else tertiarySet
 
         ColorPickerDialog(
-            initialColor = if (isSecondary) secondaryColor else tertiaryColor,
+            initialColor = (if (isSecondary) secondarySwatch else tertiarySwatch).toArgb(),
             onDismissRequest = { colorPickerTarget = null },
             onColorPicked = { color ->
                 colorPickerTarget = null
                 val currentColor = if (isSecondary) secondaryColor else tertiaryColor
                 if (currentColor != color) {
-                    PreviewController.beginPreview()
-                    resetCustomStyleIfNotNull()
-                    if (isSecondary) {
-                        secondaryColor = color
-                        setSecondaryColorValue(color)
-                    } else {
-                        tertiaryColor = color
-                        setTertiaryColorValue(color)
-                    }
-                    updateColors()
+                    setAccentColor(isSecondary, color)
                 }
             },
             alphaEnabled = false,
@@ -194,7 +206,16 @@ fun SettingsAdvancedScreen(
                 ColorPickerType.HSV,
                 ColorPickerType.IMAGE
             ),
-            cornerRadius = 24.dp
+            cornerRadius = 24.dp,
+            resetText = if (isCustomSet) {
+                stringResource(R.string.reset)
+            } else {
+                null
+            },
+            onReset = {
+                colorPickerTarget = null
+                setAccentColor(isSecondary, AndroidColor.WHITE)
+            }
         )
     }
 
@@ -244,8 +265,8 @@ fun SettingsAdvancedScreen(
             ) {
                 ColorPickerItem(
                     title = stringResource(R.string.custom_secondary_color_desc),
-                    summary = stringResource(R.string.custom_secondary_color_summary),
-                    previewColor = Color(secondaryColor),
+                    summary = stringResource(R.string.custom_accent_color_summary),
+                    previewColor = secondarySwatch,
                     icon = rememberVectorPainter(Icons.Rounded.FormatPaint),
                     enabled = customColor && rootMode,
                     disabledReason = when {
@@ -260,8 +281,8 @@ fun SettingsAdvancedScreen(
                 )
                 ColorPickerItem(
                     title = stringResource(R.string.custom_tertiary_color_title),
-                    summary = stringResource(R.string.custom_tertiary_color_desc),
-                    previewColor = Color(tertiaryColor),
+                    summary = stringResource(R.string.custom_accent_color_summary),
+                    previewColor = tertiarySwatch,
                     icon = rememberVectorPainter(Icons.Rounded.FormatPaint),
                     enabled = customColor && rootMode,
                     disabledReason = when {

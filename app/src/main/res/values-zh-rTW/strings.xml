@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">進階</string>
     <string name="custom_secondary_color_desc">自訂次要顏色</string>
-    <string name="custom_secondary_color_summary">選擇純白色以停用</string>
     <string name="custom_tertiary_color_title">自訂第三顏色</string>
-    <string name="custom_tertiary_color_desc">選擇純白色以停用</string>
     <string name="mode_specific_theme_title">模式特定主題</string>
     <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
     <string name="screen_off_update_title">Update colors on screen off</string>

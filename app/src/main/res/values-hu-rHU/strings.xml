@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Haladó</string>
     <string name="custom_secondary_color_desc">Egyedi másodlagos szín</string>
-    <string name="custom_secondary_color_summary">Válaszd ki a tiszta fehér színt a letiltáshoz</string>
     <string name="custom_tertiary_color_title">Egyedi harmadlagos szín</string>
-    <string name="custom_tertiary_color_desc">Válaszd ki a tiszta fehér színt a letiltáshoz</string>
     <string name="mode_specific_theme_title">Mód-specifikus téma</string>
     <string name="screen_off_update_desc">Frissíti a színeket a képernyő kikapcsolása után 15 másodperccel; hasznos az élő háttérképekhez</string>
     <string name="screen_off_update_title">Színek frissítése a képernyő kikapcsolt állapotában</string>

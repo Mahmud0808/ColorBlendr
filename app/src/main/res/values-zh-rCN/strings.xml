@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">高级设置</string>
     <string name="custom_secondary_color_desc">自定义次要颜色</string>
-    <string name="custom_secondary_color_summary">选择纯白色以禁用</string>
     <string name="custom_tertiary_color_title">自定义第三级颜色</string>
-    <string name="custom_tertiary_color_desc">选择纯白色以禁用</string>
     <string name="mode_specific_theme_title">特定模式主题</string>
     <string name="screen_off_update_desc">屏幕关闭 15 秒后更新颜色；对于动态壁纸很有用</string>
     <string name="screen_off_update_title">在屏幕关闭时更新颜色</string>

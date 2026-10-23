@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">高度な設定</string>
     <string name="custom_secondary_color_desc">カスタムセカンダリカラー</string>
-    <string name="custom_secondary_color_summary">無効化するにはピュアホワイトを選択します</string>
     <string name="custom_tertiary_color_title">カスタムターシャリカラー</string>
-    <string name="custom_tertiary_color_desc">無効化するにはピュアホワイトを選択します</string>
     <string name="mode_specific_theme_title">モード固有のテーマ</string>
     <string name="screen_off_update_desc">画面がオフになってから 15 秒後に色を更新します、ライブ壁紙の使用時に役立ちます</string>
     <string name="screen_off_update_title">画面オフで色を更新</string>

@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Advanced</string>
     <string name="custom_secondary_color_desc">Custom secondary color</string>
-    <string name="custom_secondary_color_summary">Select pure white color to disable</string>
     <string name="custom_tertiary_color_title">Custom tertiary color</string>
-    <string name="custom_tertiary_color_desc">Select pure white color to disable</string>
     <string name="mode_specific_theme_title">Mode-specific theme</string>
     <string name="screen_off_update_desc">Updates colors after 15 seconds of screen off; useful for live wallpapers</string>
     <string name="screen_off_update_title">Update colors on screen off</string>

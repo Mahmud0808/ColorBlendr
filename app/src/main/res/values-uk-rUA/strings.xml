@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Розширені</string>
     <string name="custom_secondary_color_desc">Власний додатковий колір</string>
-    <string name="custom_secondary_color_summary">Виберіть чисто білий колір, щоби вимкнути</string>
     <string name="custom_tertiary_color_title">Власний третинний колір</string>
-    <string name="custom_tertiary_color_desc">Виберіть чисто білий колір, щоби вимкнути</string>
     <string name="mode_specific_theme_title">Тема для конкретного режиму</string>
     <string name="screen_off_update_desc">Оновлює кольори через 15 секунд після вимкнення екрана; корисно для живих шпалер</string>
     <string name="screen_off_update_title">Оновлення кольорів при вимкненому екрані</string>

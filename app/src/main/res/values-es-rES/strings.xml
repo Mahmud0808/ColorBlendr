@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Avanzado</string>
     <string name="custom_secondary_color_desc">Color secundario personalizado</string>
-    <string name="custom_secondary_color_summary">Selecciona el color blanco puro para desactivar</string>
     <string name="custom_tertiary_color_title">Color terciario personalizado</string>
-    <string name="custom_tertiary_color_desc">Selecciona el color blanco puro para desactivar</string>
     <string name="mode_specific_theme_title">Tema específico del modo</string>
     <string name="screen_off_update_desc">Actualiza los colores después de 15 segundos del apagado de la pantalla; útil para fondos de pantalla animados</string>
     <string name="screen_off_update_title">Actualizar colores al apagar pantalla</string>

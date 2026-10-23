@@ -102,9 +102,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">고급</string>
     <string name="custom_secondary_color_desc">사용자 지정 보조 색상</string>
-    <string name="custom_secondary_color_summary">비활성화할 백색 선택</string>
     <string name="custom_tertiary_color_title">사용자 지정 보조 색상</string>
-    <string name="custom_tertiary_color_desc">비활성화할 백색 선택</string>
     <string name="mode_specific_theme_title">모드별 테마</string>
     <string name="screen_off_update_desc">화면이 꺼진 후 15초 후 색상 업데이트, 라이브 배경화면에 유용합니다</string>
     <string name="screen_off_update_title">화면 꺼짐 시 색상 업데이트</string>
