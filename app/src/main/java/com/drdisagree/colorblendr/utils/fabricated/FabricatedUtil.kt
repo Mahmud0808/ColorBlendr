@@ -38,7 +38,7 @@ object FabricatedUtil {
 
         val enabled = OverlayManager.areOverlaysEnabled(
             applications.map { String.format(FABRICATED_OVERLAY_NAME_APPS, it.packageName) }
-        )
+        ) ?: return
 
         val selectedApps = HashMap<String, Boolean>().apply {
             applications.forEachIndexed { index, appInfo ->

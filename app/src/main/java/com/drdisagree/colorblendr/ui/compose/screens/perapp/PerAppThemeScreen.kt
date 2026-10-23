@@ -70,6 +70,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_A
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
 import com.drdisagree.colorblendr.data.common.Utilities.getAppColorOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.getAppListFilteringMethod
+import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
@@ -620,12 +621,13 @@ private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
     val enabled = OverlayManager.areOverlaysEnabled(
         filtered.map { String.format(FABRICATED_OVERLAY_NAME_APPS, it.packageName) }
     )
+    val savedSelection by lazy { getSelectedFabricatedApps() }
 
     val appList = filtered.mapIndexed { index, appInfo ->
         AppInfoModel(
             appName = appInfo.loadLabel(packageManager).toString(),
             packageName = appInfo.packageName,
-            isSelected = enabled[index]
+            isSelected = enabled?.get(index) ?: (savedSelection[appInfo.packageName] == true)
         )
     }.toMutableList()
 
@@ -644,7 +646,7 @@ private fun getInstalledApp(packageName: String, appType: AppType): AppInfoModel
         packageName = appInfo.packageName,
         isSelected = OverlayManager.areOverlaysEnabled(
             listOf(String.format(FABRICATED_OVERLAY_NAME_APPS, appInfo.packageName))
-        )[0]
+        )?.get(0) ?: (getSelectedFabricatedApps()[appInfo.packageName] == true)
     )
 }
 

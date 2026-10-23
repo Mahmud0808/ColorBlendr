@@ -122,7 +122,7 @@ fun SettingsScreen(
             val overlayEnabled = withContext(Dispatchers.IO) {
                 isOverlayEnabled(FABRICATED_OVERLAY_NAME_SYSTEM)
             }
-            if (!overlayEnabled) masterChecked = false
+            if (overlayEnabled == false) masterChecked = false
         }
     }
     var accurateShades by rememberPrefState(MONET_ACCURATE_SHADES) { accurateShadesEnabled() }

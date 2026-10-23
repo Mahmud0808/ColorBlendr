@@ -43,7 +43,9 @@ import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.requestShizukuPermission
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AppNavHost(
@@ -83,7 +85,7 @@ fun AppNavHost(
         scope.launch {
             try {
                 updateWallpaperColorList(context)
-                updateFabricatedAppList(context)
+                withContext(Dispatchers.IO) { updateFabricatedAppList(context) }
 
                 setFirstRunCompleted()
                 setWorkingMethod(WORKING_METHOD)

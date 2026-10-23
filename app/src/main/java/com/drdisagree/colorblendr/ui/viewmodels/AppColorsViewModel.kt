@@ -63,7 +63,7 @@ class AppColorsViewModel(val packageName: String) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _overrides.value = getAppColorOverrides(packageName)
             _themingEnabled.value = runCatching {
-                OverlayManager.isOverlayEnabled(String.format(FABRICATED_OVERLAY_NAME_APPS, packageName))
+                OverlayManager.isOverlayEnabled(String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)) == true
             }.getOrDefault(false)
             _label.value = AppColorResources.label(packageName)
             val theme = runCatching {

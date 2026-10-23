@@ -50,8 +50,11 @@ object OverlayManager {
         return true
     }
 
-    fun isOverlayEnabled(overlayName: String): Boolean = RootOverlayBackend.isEnabled(overlayName)
+    fun isOverlayEnabled(overlayName: String): Boolean? = lock.withLock {
+        RootOverlayBackend.isEnabled(overlayName)
+    }
 
-    fun areOverlaysEnabled(overlayNames: List<String>): BooleanArray =
+    fun areOverlaysEnabled(overlayNames: List<String>): BooleanArray? = lock.withLock {
         RootOverlayBackend.areEnabled(overlayNames)
+    }
 }

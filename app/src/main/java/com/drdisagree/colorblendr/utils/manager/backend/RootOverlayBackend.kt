@@ -70,11 +70,12 @@ object RootOverlayBackend : OverlayBackend {
         }
     }
 
-    fun isEnabled(overlayName: String): Boolean = query(false) { it.isOverlayEnabled(overlayName) }
+    fun isEnabled(overlayName: String): Boolean? =
+        query<Boolean?>(null) { it.isOverlayEnabled(overlayName) }
 
-    fun areEnabled(overlayNames: List<String>): BooleanArray {
+    fun areEnabled(overlayNames: List<String>): BooleanArray? {
         if (overlayNames.isEmpty()) return BooleanArray(0)
-        return query(BooleanArray(overlayNames.size)) { it.areOverlaysEnabled(overlayNames) }
+        return query<BooleanArray?>(null) { it.areOverlaysEnabled(overlayNames) }
     }
 
     private fun register(overlay: FabricatedOverlayResource): Boolean =
