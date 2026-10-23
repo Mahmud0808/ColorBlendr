@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 // Defers user color/setting selections: changes are staged in memory (never
@@ -100,6 +101,14 @@ object PreviewController {
                 refreshOthersPending = false
                 try {
                     val theme = ThemePrefs.resolve().precompute()
+                    if (refreshOthers && !Prefs.hasStagedChanges()) {
+                        withContext(Dispatchers.Main) {
+                            if (session == previewSession && !Prefs.hasStagedChanges()) {
+                                abandonPreview()
+                            }
+                        }
+                        return@collect
+                    }
                     synchronized(sessionLock) {
                         if (session != previewSession || !Prefs.isStagingActive) return@collect
                         _previewTheme.value = theme

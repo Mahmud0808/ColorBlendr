@@ -48,6 +48,7 @@ object Prefs {
     @Volatile
     private var stagedClearAll = false
     private val staged = ConcurrentHashMap<String, Any>()
+    private val stagedDefaults = ConcurrentHashMap<String, Any>()
 
     private val changeListeners =
         CopyOnWriteArraySet<SharedPreferences.OnSharedPreferenceChangeListener>()
@@ -64,6 +65,7 @@ object Prefs {
         synchronized(stagingLock) {
             if (stagingActive) return
             staged.clear()
+            stagedDefaults.clear()
             stagedClearAll = false
             stagingActive = true
         }
@@ -87,6 +89,7 @@ object Prefs {
             stagingActive = false
             stagedClearAll = false
             staged.clear()
+            stagedDefaults.clear()
         }
     }
 
@@ -97,14 +100,29 @@ object Prefs {
             stagingActive = false
             stagedClearAll = false
             staged.clear()
+            stagedDefaults.clear()
         }
 
         // Null key: observers re-read everything from storage.
         dispatchChange(null)
     }
 
-    private fun stagedValue(key: String): Any? {
+    fun hasStagedChanges(): Boolean = synchronized(stagingLock) {
+        if (!stagingActive) return false
+        if (stagedClearAll) return true
+        val committed = prefs.all
+        staged.any { (key, value) -> !matchesCommitted(key, value, committed[key]) }
+    }
+
+    private fun matchesCommitted(key: String, value: Any, committed: Any?): Boolean {
+        if (value === REMOVED) return committed == null
+        val normalized = if (value is Double) value.toInt() else value
+        return normalized == (committed ?: stagedDefaults[key])
+    }
+
+    private fun stagedValue(key: String, defValue: Any?): Any? {
         if (!stagingActive) return null
+        if (defValue != null) stagedDefaults.putIfAbsent(key, defValue)
         staged[key]?.let { return it }
         return if (stagedClearAll) REMOVED else null
     }
@@ -155,28 +173,28 @@ object Prefs {
     fun putString(key: String, `val`: String) = putAny(key, `val`)
 
     fun getBoolean(key: String, defValue: Boolean): Boolean {
-        val staged = stagedValue(key) ?: return prefs.getBoolean(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getBoolean(key, defValue)
         return if (staged === REMOVED) defValue else staged as Boolean
     }
 
     fun getInt(key: String): Int = getInt(key, 0)
 
     fun getInt(key: String, defValue: Int): Int {
-        val staged = stagedValue(key) ?: return prefs.getInt(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getInt(key, defValue)
         return if (staged === REMOVED) defValue else (staged as Number).toInt()
     }
 
     fun getLong(key: String): Long = getLong(key, 0)
 
     fun getLong(key: String, defValue: Long): Long {
-        val staged = stagedValue(key) ?: return prefs.getLong(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getLong(key, defValue)
         return if (staged === REMOVED) defValue else (staged as Number).toLong()
     }
 
     fun getFloat(key: String): Float = getFloat(key, 0f)
 
     fun getFloat(key: String, defValue: Float): Float {
-        val staged = stagedValue(key) ?: return prefs.getFloat(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getFloat(key, defValue)
         return if (staged === REMOVED) defValue else (staged as Number).toFloat()
     }
 
@@ -186,7 +204,7 @@ object Prefs {
     fun getString(key: String): String? = getString(key, null)
 
     fun getString(key: String, defValue: String?): String? {
-        val staged = stagedValue(key) ?: return prefs.getString(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getString(key, defValue)
         return if (staged === REMOVED) defValue else staged as String
     }
 
