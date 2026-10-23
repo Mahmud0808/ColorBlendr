@@ -11,21 +11,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Brush
 import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.InvertColors
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.rounded.PrivacyTip
+import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -41,7 +39,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.drdisagree.colorblendr.R
@@ -76,7 +73,6 @@ import com.drdisagree.colorblendr.ui.compose.components.BackupRestoreCard
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
 import com.drdisagree.colorblendr.ui.compose.components.MenuItem
 import com.drdisagree.colorblendr.ui.compose.components.SwitchItem
-import com.drdisagree.colorblendr.ui.compose.components.ToolbarOverflowButton
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
@@ -132,7 +128,6 @@ fun SettingsScreen(
     var accurateShades by rememberPrefState(MONET_ACCURATE_SHADES) { accurateShadesEnabled() }
     var pitchBlack by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
     var tintTextColor by rememberPrefState(TINT_TEXT_COLOR) { tintedTextEnabled() }
-    var overflowExpanded by remember { mutableStateOf(false) }
 
     val backupSuccessText = stringResource(R.string.backup_success)
     val backupFailText = stringResource(R.string.backup_fail)
@@ -267,34 +262,7 @@ fun SettingsScreen(
             Column {
                 AppToolbar(
                     title = stringResource(R.string.settings),
-                    lifted = toolbarLifted,
-                    actions = {
-                        Box {
-                            ToolbarOverflowButton(onClick = { overflowExpanded = true })
-                            DropdownMenu(
-                                expanded = overflowExpanded,
-                                onDismissRequest = { overflowExpanded = false },
-                                shape = RoundedCornerShape(16.dp),
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                offset = DpOffset(0.dp, 4.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(R.string.advanced_settings)) },
-                                    onClick = {
-                                        overflowExpanded = false
-                                        onNavigateToAdvanced()
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(R.string.privacy_policy)) },
-                                    onClick = {
-                                        overflowExpanded = false
-                                        onNavigateToPrivacyPolicy()
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    lifted = toolbarLifted
                 )
                 Column(
                     modifier = Modifier
@@ -391,7 +359,7 @@ fun SettingsScreen(
                         checked = tintTextColor,
                         enabled = rootMode,
                         disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
-                        position = WidgetPosition.Bottom,
+                        position = WidgetPosition.Middle,
                         onCheckedChange = { isChecked ->
                             tintTextColor = isChecked
                             PreviewController.beginPreview()
@@ -400,6 +368,14 @@ fun SettingsScreen(
                             updateColors()
                         }
                     )
+                    MenuItem(
+                        title = stringResource(R.string.advanced_settings),
+                        summary = stringResource(R.string.advanced_settings_desc),
+                        icon = rememberVectorPainter(Icons.Rounded.Build),
+                        showEndArrow = true,
+                        position = WidgetPosition.Bottom,
+                        onClick = onNavigateToAdvanced
+                    )
 
                     BackupRestoreCard(
                         onBackup = { backupLauncher.launch(fileIntent(true)) },
@@ -407,10 +383,19 @@ fun SettingsScreen(
                     )
 
                     MenuItem(
+                        title = stringResource(R.string.privacy_policy),
+                        summary = stringResource(R.string.privacy_policy_desc),
+                        icon = rememberVectorPainter(Icons.Rounded.PrivacyTip),
+                        showEndArrow = true,
+                        position = WidgetPosition.Top,
+                        onClick = onNavigateToPrivacyPolicy
+                    )
+                    MenuItem(
                         title = stringResource(R.string.about_this_app_title),
                         summary = stringResource(R.string.about_this_app_desc),
                         icon = rememberVectorPainter(Icons.Rounded.Info),
                         showEndArrow = true,
+                        position = WidgetPosition.Bottom,
                         onClick = onNavigateToAbout
                     )
                 }

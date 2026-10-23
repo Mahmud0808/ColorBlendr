@@ -262,6 +262,7 @@
 
     <!-- Advanced settings -->
     <string name="advanced_settings">Advanced</string>
+    <string name="advanced_settings_desc">Extra color options, integrations and workarounds</string>
     <string name="custom_secondary_color_desc">Custom secondary color</string>
     <string name="custom_secondary_color_summary">Select pure white color to disable</string>
     <string name="custom_tertiary_color_title">Custom tertiary color</string>
@@ -291,6 +292,7 @@
 
     <!-- Privacy policy -->
     <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_desc">What data the app uses and why</string>
 
     <!-- About -->
     <string name="version_codes" translatable="false">%s (#%d)</string>
