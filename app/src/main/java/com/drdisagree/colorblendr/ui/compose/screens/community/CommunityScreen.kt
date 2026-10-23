@@ -444,10 +444,18 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 OutlinedTextField(
                     shape = RoundedCornerShape(16.dp),
                     value = author,
-                    onValueChange = { author = it.take(40) },
+                    onValueChange = { author = it.take(CommunityTextRules.AUTHOR_MAX_LENGTH) },
                     label = { Text(text = stringResource(R.string.author_optional)) },
                     singleLine = true,
                     enabled = !submitting,
+                    supportingText = {
+                        FieldSupportingText(
+                            error = null,
+                            minLength = 0,
+                            length = author.length,
+                            maxLength = CommunityTextRules.AUTHOR_MAX_LENGTH
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)

@@ -35,10 +35,11 @@ fun EditDetailsDialog(
     target: PendingSubmission,
     description: String,
     onDismiss: () -> Unit,
-    onConfirm: (String, String) -> Unit
+    onConfirm: (String, String, String) -> Unit
 ) {
     var name by rememberSaveable(target.id) { mutableStateOf(target.name) }
     var text by rememberSaveable(target.id) { mutableStateOf(description) }
+    var author by rememberSaveable(target.id) { mutableStateOf(target.author) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -74,11 +75,22 @@ fun EditDetailsDialog(
                     maxLines = 6,
                     modifier = Modifier.fillMaxWidth()
                 )
+                OutlinedTextField(
+                    shape = RoundedCornerShape(16.dp),
+                    value = author,
+                    onValueChange = { author = it.take(PendingSubmission.MAX_AUTHOR) },
+                    label = { Text(text = stringResource(R.string.theme_author)) },
+                    supportingText = {
+                        Counter(author.length, PendingSubmission.MAX_AUTHOR)
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(name.trim(), text.trim()) },
+                onClick = { onConfirm(name.trim(), text.trim(), author.trim()) },
                 enabled = name.isNotBlank() && text.isNotBlank(),
                 shapes = ButtonDefaults.shapes()
             ) {
@@ -126,7 +138,7 @@ private fun EditDetailsDialogPreview() {
             ),
             description = "Cool ocean tones",
             onDismiss = {},
-            onConfirm = { _, _ -> }
+            onConfirm = { _, _, _ -> }
         )
     }
 }

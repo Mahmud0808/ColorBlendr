@@ -9,6 +9,7 @@ object CommunityTextRules {
     const val NAME_MAX_LENGTH = 24
     const val DESCRIPTION_MIN_LENGTH = 12
     const val DESCRIPTION_MAX_LENGTH = 300
+    const val AUTHOR_MAX_LENGTH = 24
 
     private const val NAME_MIN_DISTINCT_LETTERS = 3
     private const val DESCRIPTION_MIN_WORDS = 3

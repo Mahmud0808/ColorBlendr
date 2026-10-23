@@ -116,6 +116,7 @@
     <string name="edit_details">Edit details</string>
     <string name="theme_name">Name</string>
     <string name="theme_description">Description</string>
+    <string name="theme_author">Author (empty for anonymous)</string>
     <string name="save">Save</string>
     <string name="edited">Edited</string>
     <string name="action_loading">Processing…</string>

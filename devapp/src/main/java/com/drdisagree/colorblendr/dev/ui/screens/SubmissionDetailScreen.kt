@@ -83,7 +83,7 @@ fun SubmissionDetailScreen(
     onApprove: () -> Unit,
     onReject: () -> Unit,
     onBlock: (String) -> Unit,
-    onEdit: (String, String) -> Unit
+    onEdit: (String, String, String) -> Unit
 ) {
     val payload = remember(item.payloadJson) { ThemePayloadDecoder.decode(item.payloadJson) }
     var confirmApprove by remember { mutableStateOf(false) }
@@ -127,9 +127,9 @@ fun SubmissionDetailScreen(
             target = item,
             description = payload?.description.orEmpty(),
             onDismiss = { showEdit = false },
-            onConfirm = { name, description ->
+            onConfirm = { name, description, author ->
                 showEdit = false
-                onEdit(name, description)
+                onEdit(name, description, author)
             }
         )
     }
@@ -634,7 +634,7 @@ private fun SubmissionDetailScreenPreview() {
             onApprove = {},
             onReject = {},
             onBlock = {},
-            onEdit = { _, _ -> }
+            onEdit = { _, _, _ -> }
         )
     }
 }

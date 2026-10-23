@@ -132,11 +132,13 @@ object AdminApi {
         adminKey: String,
         id: String,
         name: String? = null,
-        description: String? = null
+        description: String? = null,
+        author: String? = null
     ): ApiResult<String> {
         val payload = JSONObject().put("id", id)
         name?.let { payload.put("name", it) }
         description?.let { payload.put("description", it) }
+        author?.let { payload.put("author", it) }
         return execute(post("approve", adminKey, payload)) { body ->
             JSONObject(body).optString("prUrl").takeIf { it.isNotEmpty() }
         }

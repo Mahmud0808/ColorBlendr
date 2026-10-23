@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Share
@@ -51,13 +51,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -281,38 +281,45 @@ private fun DetailsContent(
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(
-                                    text = theme.author.ifEmpty {
-                                        stringResource(R.string.anonymous)
-                                    },
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 13.sp
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = theme.author.ifEmpty {
+                                            stringResource(R.string.anonymous)
+                                        },
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 13.sp,
+                                        maxLines = 1,
+                                        modifier = Modifier
+                                            .weight(1f, fill = false)
+                                            .basicMarquee(iterations = Int.MAX_VALUE)
+                                    )
+                                    Text(
+                                        text = pluralStringResource(
+                                            R.plurals.community_applies,
+                                            theme.downloads,
+                                            CommunityCount.compact(theme.downloads)
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 13.sp,
+                                        maxLines = 1
+                                    )
+                                }
                                 ModeSupportBadge(
                                     support = modeSupport,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                             }
 
-                            StatChip(
-                                icon = if (upvoted) {
-                                    rememberVectorPainter(Icons.Rounded.ThumbUp)
-                                } else {
-                                    rememberVectorPainter(Icons.Outlined.ThumbUp)
-                                },
-                                value = upvotes,
-                                onClick = onUpvoteToggle?.let { toggle ->
+                            VoteButton(
+                                upvoted = upvoted,
+                                upvotes = upvotes,
+                                onToggle = onUpvoteToggle?.let { toggle ->
                                     {
                                         haptics.performHapticFeedback(HapticFeedbackType.Confirm)
                                         toggle()
                                     }
-                                }
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            StatChip(
-                                icon = rememberVectorPainter(Icons.Rounded.Download),
-                                value = theme.downloads,
-                                onClick = null
+                                },
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
 
@@ -487,39 +494,37 @@ private fun ModeSupportBadge(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun StatChip(
-    icon: Painter,
-    value: Int,
-    onClick: (() -> Unit)?
+private fun VoteButton(
+    upvoted: Boolean,
+    upvotes: Int,
+    onToggle: (() -> Unit)?,
+    modifier: Modifier = Modifier
 ) {
-    val content: @Composable () -> Unit = {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp)
-            )
-            Text(text = CommunityCount.compact(value))
-        }
+    OutlinedButton(
+        onClick = { onToggle?.invoke() },
+        enabled = onToggle != null,
+        shapes = ButtonDefaults.shapes(),
+        modifier = modifier
+    ) {
+        Icon(
+            painter = rememberVectorPainter(
+                if (upvoted) Icons.Rounded.ThumbUp else Icons.Outlined.ThumbUp
+            ),
+            contentDescription = stringResource(R.string.upvote),
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text = CommunityCount.compact(upvotes))
     }
+}
 
-    if (onClick != null) {
-        OutlinedButton(
-            onClick = onClick,
-            shapes = ButtonDefaults.shapes()
-        ) {
-            content()
-        }
-    } else {
-        OutlinedButton(
-            onClick = {},
-            enabled = false,
-            shapes = ButtonDefaults.shapes()
-        ) {
-            content()
+@Preview
+@Composable
+private fun VoteButtonPreview() {
+    ColorBlendrTheme {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            VoteButton(upvoted = false, upvotes = 42, onToggle = {})
+            VoteButton(upvoted = true, upvotes = 43, onToggle = {})
         }
     }
 }

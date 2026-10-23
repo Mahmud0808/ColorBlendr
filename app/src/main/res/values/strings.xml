@@ -41,6 +41,7 @@
     <string name="theme_name_invalid_chars">Use letters, numbers and basic punctuation only</string>
     <string name="theme_name_too_few_letters">Use a real name</string>
     <string name="theme_description_too_few_words">Describe the theme in a few words</string>
+    <string name="upvote">Upvote</string>
     <string name="community_dark_only">Dark mode only</string>
     <string name="community_light_only">Light mode only</string>
     <string name="community_low_contrast">Low contrast</string>
@@ -455,4 +456,8 @@
     <string name="preview_applying">Applying colors…</string>
     <string name="preview_discard">Discard changes</string>
 
+    <plurals name="community_applies">
+        <item quantity="one"> · %1$s apply</item>
+        <item quantity="other"> · %1$s applies</item>
+    </plurals>
 </resources>

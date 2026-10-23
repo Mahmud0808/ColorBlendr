@@ -234,8 +234,8 @@ fun DevScreen(openPendingTick: Int = 0) {
                                 navController.popBackStack()
                             })
                         },
-                        onEdit = { name, description ->
-                            devViewModel.editSubmission(item, name, description)
+                        onEdit = { name, description, author ->
+                            devViewModel.editSubmission(item, name, description, author)
                         }
                     )
                 }

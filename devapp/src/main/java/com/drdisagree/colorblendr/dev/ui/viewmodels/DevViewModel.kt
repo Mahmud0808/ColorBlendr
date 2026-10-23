@@ -118,15 +118,17 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
         if (message != null) push(string(message))
     }
 
-    fun editSubmission(item: PendingSubmission, name: String, description: String) {
+    fun editSubmission(item: PendingSubmission, name: String, description: String, author: String) {
         val newName = name.trim().take(PendingSubmission.MAX_NAME)
         val newDescription = description.trim().take(PendingSubmission.MAX_DESCRIPTION)
+        val newAuthor = author.trim().take(PendingSubmission.MAX_AUTHOR)
         if (newName.isEmpty() || newDescription.isEmpty()) return
 
         val payloadJson = runCatching {
             JSONObject(item.payloadJson)
                 .put("name", newName)
                 .put("description", newDescription)
+                .put("author", newAuthor)
                 .toString()
         }.getOrNull() ?: return
 
@@ -135,7 +137,7 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
                 if (it.id != item.id) {
                     it
                 } else {
-                    it.copy(name = newName, payloadJson = payloadJson, edited = true)
+                    it.copy(name = newName, author = newAuthor, payloadJson = payloadJson, edited = true)
                 }
             }
         }
@@ -303,7 +305,8 @@ class DevViewModel(application: Application) : AndroidViewModel(application) {
                 adminKey = savedKey,
                 id = item.id,
                 name = item.name,
-                description = ThemePayloadDecoder.decode(item.payloadJson)?.description
+                description = ThemePayloadDecoder.decode(item.payloadJson)?.description,
+                author = item.author
             )
         }
 
