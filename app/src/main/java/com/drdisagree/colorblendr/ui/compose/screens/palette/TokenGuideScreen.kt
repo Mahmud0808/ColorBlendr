@@ -77,7 +77,7 @@ private fun TokenGuideContent(scheme: ResolvedScheme?) {
             )
             LazyColumn(
                 state = listState,
-                contentPadding = previewContentPadding(top = 12.dp),
+                contentPadding = previewContentPadding(top = 12.dp, bottom = 12.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .contentWidthLimit()
