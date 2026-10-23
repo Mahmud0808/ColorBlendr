@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -27,7 +28,9 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 fun AnimatedCheckIcon(
     selected: Boolean,
     tint: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    outline: Color = Color.Transparent,
+    tickColor: Color = Color.Unspecified
 ) {
     val progress by animateFloatAsState(
         targetValue = if (selected) 1f else 0f,
@@ -53,6 +56,15 @@ fun AnimatedCheckIcon(
             style = Stroke(width = stroke)
         )
 
+        if (clampedProgress > 0f && outline.alpha > 0f) {
+            drawCircle(
+                color = outline.copy(alpha = outline.alpha * clampedProgress),
+                radius = radius + stroke * 0.75f,
+                center = center,
+                style = Stroke(width = stroke / 2f)
+            )
+        }
+
         // Fill sweeping in while selecting.
         if (clampedProgress > 0f) {
             drawCircle(
@@ -76,13 +88,13 @@ fun AnimatedCheckIcon(
 
             drawPath(
                 path = segment,
-                color = Color.Black,
+                color = if (tickColor.isSpecified) tickColor else Color.Black,
                 style = Stroke(
                     width = stroke * 1.2f,
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 ),
-                blendMode = BlendMode.Clear
+                blendMode = if (tickColor.isSpecified) BlendMode.SrcOver else BlendMode.Clear
             )
         }
     }
@@ -94,7 +106,9 @@ private fun AnimatedCheckIconPreview() {
     ColorBlendrTheme {
         AnimatedCheckIcon(
             selected = true,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            outline = MaterialTheme.colorScheme.onPrimary,
+            tickColor = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

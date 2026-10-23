@@ -96,6 +96,7 @@ fun SwitchItem(
             disabledReason = disabledReason,
             iconTint = if (isMasterSwitch) masterContent else themeAttrColor(MaterialR.attr.colorPrimaryVariant),
             textColor = if (isMasterSwitch) masterContent else MaterialTheme.colorScheme.onSurface,
+            checkedBorderColor = if (isMasterSwitch) MaterialTheme.colorScheme.onPrimary else Color.Transparent,
             summaryLinkText = summaryLinkText,
             onSummaryLinkClick = onSummaryLinkClick
         )
@@ -134,6 +135,7 @@ private fun SwitchItemContent(
     disabledReason: String?,
     iconTint: Color,
     textColor: Color,
+    checkedBorderColor: Color = Color.Transparent,
     summaryLinkText: String? = null,
     onSummaryLinkClick: (() -> Unit)? = null
 ) {
@@ -209,7 +211,10 @@ private fun SwitchItemContent(
             checked = checked,
             onCheckedChange = { if (enabled) onCheckedChange(it) },
             enabled = enabled,
-            colors = SwitchDefaults.colors(checkedIconColor = MaterialTheme.colorScheme.primary),
+            colors = SwitchDefaults.colors(
+                checkedIconColor = MaterialTheme.colorScheme.primary,
+                checkedBorderColor = checkedBorderColor
+            ),
             thumbContent = {
                 Icon(
                     painter = if (checked) {

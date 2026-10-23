@@ -579,7 +579,9 @@ private fun AppListItem(
                         themeAttrColor(MaterialR.attr.colorPrimaryVariant)
                     } else {
                         MaterialTheme.colorScheme.onSurface
-                    }
+                    },
+                    outline = MaterialTheme.colorScheme.onPrimary,
+                    tickColor = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
