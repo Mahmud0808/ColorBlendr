@@ -28,14 +28,18 @@ object RootOverlayBackend : OverlayBackend {
         val theme = ThemePrefs.resolve()
         val isDarkMode = SystemUtil.isDarkMode
 
-        val overlays = buildList {
-            add(ThemeOverlays.framework(theme, isDarkMode))
-            add(ThemeOverlays.systemUi(theme, isDarkMode))
-            selectedApps()
-                .filter(SystemUtil::isAppInstalled)
-                .forEach { add(ThemeOverlays.perApp(it, theme, isDarkMode)) }
-        }
-        return overlays.map(::register).all { it }
+        val applied = listOf(
+            ThemeOverlays.framework(theme, isDarkMode),
+            ThemeOverlays.systemUi(theme, isDarkMode)
+        ).map(::register).all { it }
+
+        selectedApps()
+            .filter(SystemUtil::isAppInstalled)
+            .map { ThemeOverlays.perApp(it, theme, isDarkMode) }
+            .filter { it.getEntries().isNotEmpty() }
+            .forEach(::register)
+
+        return applied
     }
 
     override fun remove(): Boolean {
