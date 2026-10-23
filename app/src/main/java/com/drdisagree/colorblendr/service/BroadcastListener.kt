@@ -110,13 +110,17 @@ class BroadcastListener : BroadcastReceiver() {
                 }
             }
 
-            if (intent.action in listOf(
-                    Intent.ACTION_PACKAGE_ADDED,
-                    Intent.ACTION_PACKAGE_REMOVED,
-                    Intent.ACTION_WALLPAPER_CHANGED
-                )
-            ) {
+            if (intent.action == Intent.ACTION_WALLPAPER_CHANGED) {
                 AppEvents.emit(intent.action!!)
+            }
+
+            val packageChanged = when (intent.action) {
+                Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_REPLACED -> true
+                Intent.ACTION_PACKAGE_REMOVED -> !intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+                else -> false
+            }
+            if (packageChanged) {
+                intent.data?.schemeSpecificPart?.let(AppEvents::emitPackageChanged)
             }
         }
     }

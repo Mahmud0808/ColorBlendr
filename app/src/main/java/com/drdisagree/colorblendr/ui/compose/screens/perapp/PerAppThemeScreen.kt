@@ -1,6 +1,5 @@
 package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.util.LruCache
 import android.widget.Toast
@@ -50,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -111,6 +111,7 @@ import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.google.android.material.R as MaterialR
@@ -135,7 +136,6 @@ fun PerAppThemeScreen(
     val searchState = rememberTextFieldState()
     val query = searchState.text.toString()
     var warningVisible by rememberPrefState(SHOW_PER_APP_THEME_WARN) { showPerAppThemeWarning() }
-    var reloadTrigger by remember { mutableIntStateOf(0) }
     val selections = remember { mutableStateMapOf<String, Boolean>() }
     val selectedApps = remember { HashMap<String, Boolean>() }
     val toggleGenerations = remember { HashMap<String, Int>() }
@@ -143,10 +143,10 @@ fun PerAppThemeScreen(
     val touchedSinceLoad = remember { HashSet<String>() }
     val iconCache = remember { LruCache<String, ImageBitmap>(128) }
     val rootMode = remember { isRootMode() }
-    val editedApps = remember(reloadTrigger) { getAppColorOverrides().keys }
+    val editedApps = remember { getAppColorOverrides().keys }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(filterMethod, reloadTrigger) {
+    LaunchedEffect(filterMethod) {
         isLoading = true
         touchedSinceLoad.clear()
         val apps = withContext(Dispatchers.IO) {
@@ -177,11 +177,32 @@ fun PerAppThemeScreen(
     }
 
     LaunchedEffect(Unit) {
-        AppEvents.events.collect { action ->
-            if (action == Intent.ACTION_PACKAGE_ADDED ||
-                action == Intent.ACTION_PACKAGE_REMOVED
-            ) {
-                reloadTrigger++
+        AppEvents.packageChanges.collect { packageName ->
+            snapshotFlow { isLoading }.first { !it }
+            val appType = AppType.entries[filterMethod]
+            val app = withContext(Dispatchers.IO) { getInstalledApp(packageName, appType) }
+            if (isLoading || appType != AppType.entries[filterMethod]) return@collect
+
+            val index = appList.indexOfFirst { it.packageName == packageName }
+            if (app == null) {
+                if (index < 0) return@collect
+                appList = appList.toMutableList().apply { removeAt(index) }
+                selections.remove(packageName)
+                selectedApps.remove(packageName)
+                return@collect
+            }
+
+            if (packageName in touchedSinceLoad || pendingToggles.containsKey(packageName)) {
+                app.isSelected = selections[packageName] == true
+            }
+            selections[packageName] = app.isSelected
+            appList = appList.toMutableList().apply {
+                if (index >= 0) {
+                    set(index, app)
+                } else {
+                    val position = indexOfFirst { APP_ORDER.compare(it, app) > 0 }
+                    add(if (position < 0) size else position, app)
+                }
             }
         }
     }
@@ -594,16 +615,7 @@ private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
 
     val applications = packageManager.getInstalledApplications(0)
 
-    val filtered = applications.filter { appInfo ->
-        appInfo.packageName != appContext.packageName && when (appType) {
-            AppType.LAUNCHABLE ->
-                packageManager.getLaunchIntentForPackage(appInfo.packageName) != null
-
-            AppType.SYSTEM -> (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-            AppType.USER -> (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0
-            AppType.ALL -> true
-        }
-    }
+    val filtered = applications.filter { it.matches(appType) }
 
     val enabled = OverlayManager.areOverlaysEnabled(
         filtered.map { String.format(FABRICATED_OVERLAY_NAME_APPS, it.packageName) }
@@ -617,10 +629,36 @@ private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
         )
     }.toMutableList()
 
-    appList.sortWith(compareBy<AppInfoModel> { !it.isSelected }.thenBy { it.appName.lowercase() })
+    appList.sortWith(APP_ORDER)
 
     return appList
 }
+
+private fun getInstalledApp(packageName: String, appType: AppType): AppInfoModel? {
+    val packageManager = appContext.packageManager
+    val appInfo = runCatching { packageManager.getApplicationInfo(packageName, 0) }.getOrNull()
+    if (appInfo == null || !appInfo.matches(appType)) return null
+
+    return AppInfoModel(
+        appName = appInfo.loadLabel(packageManager).toString(),
+        packageName = appInfo.packageName,
+        isSelected = OverlayManager.areOverlaysEnabled(
+            listOf(String.format(FABRICATED_OVERLAY_NAME_APPS, appInfo.packageName))
+        )[0]
+    )
+}
+
+private fun ApplicationInfo.matches(appType: AppType): Boolean =
+    packageName != appContext.packageName && when (appType) {
+        AppType.LAUNCHABLE ->
+            appContext.packageManager.getLaunchIntentForPackage(packageName) != null
+
+        AppType.SYSTEM -> (flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        AppType.USER -> (flags and ApplicationInfo.FLAG_SYSTEM) == 0
+        AppType.ALL -> true
+    }
+
+private val APP_ORDER = compareBy<AppInfoModel> { !it.isSelected }.thenBy { it.appName.lowercase() }
 
 @AdaptivePreviews
 @Composable
