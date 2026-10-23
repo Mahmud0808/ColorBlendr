@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -72,6 +74,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityColorMatch
+import com.drdisagree.colorblendr.utils.community.CommunityTextRules
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.CommunityTrending
 import com.drdisagree.colorblendr.utils.community.CommunityUploader
@@ -342,6 +345,8 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
     var challengeSolved by remember { mutableStateOf(false) }
     val submitting = uploading || challengeSolved
     val submissionsAtOpen = rememberSaveable { CommunityUploader.submissions.value }
+    val nameError = CommunityTextRules.nameError(name)
+    val descriptionError = CommunityTextRules.descriptionError(description)
     val submissions by CommunityUploader.submissions.collectAsState()
 
     LaunchedEffect(submissions) {
@@ -358,7 +363,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                         getWallpaperColorList().firstOrNull() ?: AndroidColor.BLUE
                     )
                     val payload = CommunityThemeCodec.currentSettingsToUploadJson(
-                        name = name.trim(),
+                        name = CommunityTextRules.normalizeName(name),
                         description = description.trim(),
                         author = author.trim(),
                         seedColor = seed
@@ -398,10 +403,19 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 OutlinedTextField(
                     shape = RoundedCornerShape(16.dp),
                     value = name,
-                    onValueChange = { name = it.take(40) },
+                    onValueChange = { name = it.take(CommunityTextRules.NAME_MAX_LENGTH) },
                     label = { Text(text = stringResource(R.string.theme_name)) },
                     singleLine = true,
                     enabled = !submitting,
+                    isError = name.isNotEmpty() && nameError != null,
+                    supportingText = {
+                        FieldSupportingText(
+                            error = nameError.takeIf { name.isNotEmpty() },
+                            minLength = CommunityTextRules.NAME_MIN_LENGTH,
+                            length = name.length,
+                            maxLength = CommunityTextRules.NAME_MAX_LENGTH
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
@@ -409,11 +423,20 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 OutlinedTextField(
                     shape = RoundedCornerShape(16.dp),
                     value = description,
-                    onValueChange = { description = it.take(500) },
+                    onValueChange = { description = it.take(CommunityTextRules.DESCRIPTION_MAX_LENGTH) },
                     label = { Text(text = stringResource(R.string.theme_description)) },
                     minLines = 2,
                     maxLines = 6,
                     enabled = !submitting,
+                    isError = description.isNotEmpty() && descriptionError != null,
+                    supportingText = {
+                        FieldSupportingText(
+                            error = descriptionError.takeIf { description.isNotEmpty() },
+                            minLength = CommunityTextRules.DESCRIPTION_MIN_LENGTH,
+                            length = description.length,
+                            maxLength = CommunityTextRules.DESCRIPTION_MAX_LENGTH
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
@@ -445,7 +468,7 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                     }
                     Button(
                         onClick = { showChallenge = true },
-                        enabled = !submitting && name.isNotBlank() && description.isNotBlank(),
+                        enabled = !submitting && nameError == null && descriptionError == null,
                         shapes = ButtonDefaults.shapes(),
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
@@ -458,6 +481,38 @@ private fun ShareThemeDialog(onDismiss: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FieldSupportingText(
+    @StringRes error: Int?,
+    minLength: Int,
+    length: Int,
+    maxLength: Int
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = error?.let { stringResource(it, minLength) }.orEmpty(),
+            modifier = Modifier.weight(1f)
+        )
+        Text(text = stringResource(R.string.community_text_counter, length, maxLength))
+    }
+}
+
+@Preview
+@Composable
+private fun FieldSupportingTextPreview() {
+    ColorBlendrTheme {
+        FieldSupportingText(
+            error = R.string.community_text_too_short,
+            minLength = CommunityTextRules.NAME_MIN_LENGTH,
+            length = 2,
+            maxLength = CommunityTextRules.NAME_MAX_LENGTH
+        )
     }
 }
 

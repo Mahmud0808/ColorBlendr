@@ -36,6 +36,11 @@
     <string name="app_colors_reset_message">Every edited color in %1$s mode returns to the app\'s own color.</string>
     <string name="app_colors_empty">No colors found</string>
     <string name="app_colors_empty_desc">This app has no color resources that can be read.</string>
+    <string name="community_text_too_short">Use at least %1$d characters</string>
+    <string name="community_text_counter">%1$d/%2$d</string>
+    <string name="theme_name_invalid_chars">Use letters, numbers and basic punctuation only</string>
+    <string name="theme_name_too_few_letters">Use a real name</string>
+    <string name="theme_description_too_few_words">Describe the theme in a few words</string>
     <string name="community_dark_only">Dark mode only</string>
     <string name="community_light_only">Light mode only</string>
     <string name="community_low_contrast">Low contrast</string>
