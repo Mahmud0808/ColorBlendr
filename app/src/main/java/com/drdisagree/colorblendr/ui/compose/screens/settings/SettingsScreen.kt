@@ -146,17 +146,6 @@ fun SettingsScreen(
         }
     }
 
-    fun applyColorsNow() {
-        // Applying colors can recreate the activity; must outlive the screen.
-        AppScope.launch {
-            updateColorAppliedTimestamp()
-            delay(300.milliseconds)
-            withContext(Dispatchers.IO) {
-                applyFabricatedColors()
-            }
-        }
-    }
-
     var pendingBackup by remember { mutableStateOf(false) }
     var pendingRestore by remember { mutableStateOf(false) }
 
@@ -183,7 +172,7 @@ fun SettingsScreen(
             val success = uri.restoreDatabaseAndPrefs()
             withContext(Dispatchers.Main) {
                 if (success) {
-                    applyColorsNow()
+                    PreviewController.reapply {}
                 } else {
                     scope.launch {
                         val result = snackbarHostState.showSnackbarReplacing(
