@@ -9,6 +9,7 @@ import com.drdisagree.colorblendr.data.common.Constant.DATABASE_NAME
 import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.SAVED_CUSTOM_MONET_STYLES
 import com.drdisagree.colorblendr.data.common.Constant.STYLE_EXCLUDED_PREFS
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
@@ -293,7 +294,7 @@ object BackupRestore {
                 if (preservedPrefs.contains(key)) continue
                 if (!rootMode && isRootOnlyPref(key)) continue
 
-                put(key, value)
+                put(key, if (key == MONET_STYLE) Utilities.canonicalMonetStyle(value as? String) else value)
             }
 
             // Set basic color if seed color is not listed in wallpaper colors

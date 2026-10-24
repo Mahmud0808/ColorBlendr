@@ -152,11 +152,19 @@ object Utilities {
     }
 
     fun getCurrentMonetStyle(): MONET {
-        return getString(MONET_STYLE, null).toEnumMonet()
+        return getString(MONET_STYLE, MONET.TONAL_SPOT.toString()).toEnumMonet()
     }
 
     fun setCurrentMonetStyle(monet: MONET) {
         putString(MONET_STYLE, monet.toString())
+    }
+
+    fun canonicalMonetStyle(raw: String?): String = raw.toEnumMonet().toString()
+
+    fun normalizeMonetStyle() {
+        val stored = getString(MONET_STYLE, null) ?: return
+        val canonical = canonicalMonetStyle(stored)
+        if (stored != canonical) putString(MONET_STYLE, canonical)
     }
 
     fun getCurrentCustomStyle(): String? {

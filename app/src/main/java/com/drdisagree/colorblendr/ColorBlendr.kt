@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr
 
 import android.app.Application
 import android.content.Context
+import com.drdisagree.colorblendr.data.common.Utilities.normalizeMonetStyle
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.service.IRootConnection
@@ -21,6 +22,7 @@ class ColorBlendr : Application() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         PRNGFixes.apply()
         CrashLogger.install(this)
+        normalizeMonetStyle()
         ShizukuConnectionProvider.registerBinderListeners()
     }
 
