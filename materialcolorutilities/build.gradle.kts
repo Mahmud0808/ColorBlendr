@@ -27,12 +27,24 @@ abstract class GenerateMcuSources : DefaultTask() {
         root.walkTopDown().filter { it.isFile && it.extension == "kt" }.forEach { file ->
             val target = out.resolve(prefix.replace('.', '/')).resolve(file.relativeTo(root).path)
             target.parentFile.mkdirs()
+            val source = rewrite.replace(file.readText()) {
+                "${it.groupValues[1]}${it.groupValues[2]}$prefix.${it.groupValues[3]}"
+            }
             target.writeText(
-                rewrite.replace(file.readText()) {
-                    "${it.groupValues[1]}${it.groupValues[2]}$prefix.${it.groupValues[3]}"
-                }
+                PATCHES.fold(source) { text, (from, to) -> text.replace(from, to) }
             )
         }
+    }
+
+    private companion object {
+        // TODO: Remove once upstream ColorSpec2025.getTone stops throwing on FARTHER tone delta
+        //  pairs whose bound crosses 0 or 100 (coerceIn with an empty range, still present at bd811e4).
+        val PATCHES = listOf(
+            "selfTone.coerceIn(referenceTone + relativeDelta, 100.0)" to
+                    "selfTone.coerceIn((referenceTone + relativeDelta).coerceAtMost(100.0), 100.0)",
+            "selfTone.coerceIn(0.0, referenceTone + relativeDelta)" to
+                    "selfTone.coerceIn(0.0, (referenceTone + relativeDelta).coerceAtLeast(0.0))"
+        )
     }
 }
 
