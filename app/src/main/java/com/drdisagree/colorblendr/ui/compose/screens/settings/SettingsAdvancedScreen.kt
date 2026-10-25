@@ -455,12 +455,12 @@ fun SettingsAdvancedScreen(
                             else -> null
                         },
                         onCheckedChange = { isChecked ->
+                            if (blockedByPreview()) return@SwitchItem
                             pitchBlackWorkaround = isChecked
-                            PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             setForcePitchBlackSettingsEnabled(isChecked)
                             if (isChecked) selectSettingsForPerAppTheme()
-                            updateColors()
+                            applyColorsNow()
                         }
                     )
                 }
