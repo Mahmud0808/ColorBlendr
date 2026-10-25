@@ -88,6 +88,13 @@
     <string name="detail_bg_sat_light">Насыщенность фона (светлая)</string>
     <string name="detail_bg_light_light">Яркость фона (светлая)</string>
     <string name="detail_overrides">Подмена цвета</string>
+    <string name="detail_token_overrides">Token overrides</string>
+    <string name="detail_token_overrides_value">%1$d light · %2$d dark</string>
+    <string name="detail_schema">Schema</string>
+    <string name="detail_schema_v2">v2 · token overrides</string>
+    <string name="detail_schema_tokens">v1 · token engine</string>
+    <string name="detail_schema_legacy">v1 · legacy mapping</string>
+    <string name="detail_pitch_black_containers">Pitch black containers</string>
     <string name="detail_pitch_black">Глубокий черный</string>
     <string name="detail_tint_text">Текст с оттенком</string>
     <string name="detail_accurate_shades">Точные оттенки</string>
@@ -116,6 +123,7 @@
     <string name="edit_details">Редактировать сведения</string>
     <string name="theme_name">Имя</string>
     <string name="theme_description">Описание</string>
+    <string name="theme_author">Author (empty for anonymous)</string>
     <string name="save">Сохранить</string>
     <string name="edited">Отредактировано</string>
     <string name="action_loading">Обработка…</string>

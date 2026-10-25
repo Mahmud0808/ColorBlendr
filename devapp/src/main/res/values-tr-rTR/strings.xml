@@ -82,6 +82,13 @@
     <string name="detail_bg_sat_light">Arka plan doygunluğu (açık mod)</string>
     <string name="detail_bg_light_light">Arka plan açıklığı (açık mod)</string>
     <string name="detail_overrides">Renk özelleştirmeleri</string>
+    <string name="detail_token_overrides">Token overrides</string>
+    <string name="detail_token_overrides_value">%1$d light · %2$d dark</string>
+    <string name="detail_schema">Schema</string>
+    <string name="detail_schema_v2">v2 · token overrides</string>
+    <string name="detail_schema_tokens">v1 · token engine</string>
+    <string name="detail_schema_legacy">v1 · legacy mapping</string>
+    <string name="detail_pitch_black_containers">Pitch black containers</string>
     <string name="detail_pitch_black">Zifiri karanlık</string>
     <string name="detail_tint_text">Renkli metin</string>
     <string name="detail_accurate_shades">Birebir tonlar</string>
@@ -110,6 +117,7 @@
     <string name="edit_details">Ayrıntıları düzenle</string>
     <string name="theme_name">Ad</string>
     <string name="theme_description">Açıklama</string>
+    <string name="theme_author">Author (empty for anonymous)</string>
     <string name="save">Kaydet</string>
     <string name="edited">Düzenlendi</string>
     <string name="action_loading">İşleniyor…</string>
