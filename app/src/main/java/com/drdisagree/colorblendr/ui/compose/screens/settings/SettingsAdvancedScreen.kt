@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.AutoMode
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FormatPaint
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Opacity
 import androidx.compose.material.icons.rounded.SettingsSuggest
 import androidx.compose.material.icons.rounded.Update
@@ -43,6 +44,7 @@ import androidx.core.net.toUri
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
+import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SECONDARY_COLOR
@@ -61,6 +63,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.legacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
@@ -70,6 +73,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setLegacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setScreenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSecondaryColorValue
@@ -133,6 +137,9 @@ fun SettingsAdvancedScreen(
     var darkerIcons by rememberPrefState(DARKER_LAUNCHER_ICONS) { darkerLauncherIconsEnabled() }
     var semiTransparentIcons by rememberPrefState(SEMI_TRANSPARENT_LAUNCHER_ICONS) { semiTransparentLauncherIconsEnabled() }
     var pitchBlackWorkaround by rememberPrefState(FORCE_PITCH_BLACK_SETTINGS) { forcePitchBlackSettingsEnabled() }
+    var legacyTokens by rememberPrefState(LEGACY_TOKENS) { legacyTokensEnabled() }
+    var showLegacyTokens by remember { mutableStateOf(legacyTokens) }
+    if (legacyTokens) showLegacyTokens = true
 
     fun updateColors() {
         scope.launch {
@@ -263,6 +270,24 @@ fun SettingsAdvancedScreen(
                     .padding(previewContentPadding())
                     .padding(top = 16.dp)
             ) {
+                if (showLegacyTokens) {
+                    SwitchItem(
+                        title = stringResource(R.string.legacy_tokens_title),
+                        summary = stringResource(R.string.legacy_tokens_desc),
+                        icon = rememberVectorPainter(Icons.Rounded.History),
+                        checked = legacyTokens,
+                        enabled = rootMode,
+                        disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
+                        onCheckedChange = { isChecked ->
+                            legacyTokens = isChecked
+                            PreviewController.beginPreview()
+                            resetCustomStyleIfNotNull()
+                            setLegacyTokensEnabled(isChecked)
+                            updateColors()
+                        }
+                    )
+                }
+
                 ColorPickerItem(
                     title = stringResource(R.string.custom_secondary_color_desc),
                     summary = stringResource(R.string.custom_accent_color_summary),

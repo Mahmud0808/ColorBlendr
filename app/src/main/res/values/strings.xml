@@ -288,6 +288,8 @@
     <string name="semitransparent_launcher_desc">Apply a semi-transparent style to pixel launcher</string>
     <string name="pitch_black_settings_workaround_title">Pitch black settings workaround</string>
     <string name="pitch_black_settings_workaround_desc">Make the Settings app pure black on Android 15 and above</string>
+    <string name="legacy_tokens_title">Legacy color mapping</string>
+    <string name="legacy_tokens_desc">Shows this community theme the way older versions did. Turn off to preview it with the new color engine</string>
 
     <!-- Privacy policy -->
     <string name="privacy_policy">Privacy policy</string>
