@@ -15,7 +15,7 @@ class RestartBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        private val TAG: String = RestartBroadcastReceiver::class.java.simpleName
+        private val TAG: String = "RestartBroadcastReceiver"
         private var jobScheduler: JobScheduler? = null
 
         fun scheduleJob(context: Context) {

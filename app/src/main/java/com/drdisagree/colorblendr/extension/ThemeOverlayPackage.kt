@@ -12,7 +12,7 @@ import org.json.JSONTokener
 
 object ThemeOverlayPackage {
 
-    private val TAG: String = ThemeOverlayPackage::class.java.simpleName
+    private val TAG: String = "ThemeOverlayPackage"
     const val THEME_STYLE: String = "android.theme.customization.theme_style"
     const val COLOR_SOURCE: String = "android.theme.customization.color_source"
     const val SYSTEM_PALETTE: String = "android.theme.customization.system_palette"

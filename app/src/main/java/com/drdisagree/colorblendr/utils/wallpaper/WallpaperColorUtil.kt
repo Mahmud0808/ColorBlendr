@@ -31,7 +31,7 @@ import kotlin.math.sqrt
 
 object WallpaperColorUtil {
 
-    private val TAG: String = WallpaperColorUtil::class.java.simpleName
+    private val TAG: String = "WallpaperColorUtil"
     private const val SMALL_SIDE = 128
     private const val MAX_BITMAP_SIZE = 112
     private const val MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE
@@ -196,7 +196,7 @@ object WallpaperColorUtil {
 
     private object WallpaperLoader {
 
-        private val TAG: String = WallpaperLoader::class.java.simpleName
+        private val TAG: String = "WallpaperLoader"
 
         suspend fun loadWallpaperAsync(
             context: Context,

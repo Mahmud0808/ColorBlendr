@@ -191,7 +191,7 @@ class TaskerIntentReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        private val TAG: String = TaskerIntentReceiver::class.java.simpleName
+        private val TAG: String = "TaskerIntentReceiver"
         const val ACTION_APPLY_CONFIG = "com.drdisagree.colorblendr.action.APPLY_CONFIG"
         private const val EXTRA_CONFIG = "config"
         private const val EXTRA_SEED_COLOR = "seedColor"

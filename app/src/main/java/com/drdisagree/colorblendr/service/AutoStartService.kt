@@ -228,7 +228,7 @@ class AutoStartService : Service() {
     }
 
     companion object {
-        private val TAG: String = AutoStartService::class.java.simpleName
+        private val TAG: String = "AutoStartService"
         private var isRunning = false
         private const val NOTIFICATION_ID = 1
         private const val NOTIFICATION_CHANNEL_ID = "Background Service"
@@ -240,7 +240,7 @@ class AutoStartService : Service() {
          * The following fields and methods are for testing purposes only
          */
         @Test
-        private val TEST_TAG = AutoStartService::class.java.simpleName + "_TEST"
+        private val TEST_TAG = "AutoStartService_TEST"
 
         @Test
         private val packageName: String = appContext.packageName

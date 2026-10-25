@@ -245,7 +245,7 @@ class BroadcastListener : BroadcastReceiver() {
     }
 
     companion object {
-        private val TAG: String = BroadcastListener::class.java.simpleName
+        private val TAG: String = "BroadcastListener"
         var requiresUpdate = false
         private var cooldownTime: Long = 5000
         lateinit var lastConfig: Configuration

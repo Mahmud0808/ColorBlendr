@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 // committing the prefs and pushing the overlay — or discards them.
 object PreviewController {
 
-    private val TAG = PreviewController::class.java.simpleName
+    private val TAG = "PreviewController"
 
     private val _previewTheme = MutableStateFlow<ResolvedTheme?>(null)
     val previewTheme = _previewTheme.asStateFlow()

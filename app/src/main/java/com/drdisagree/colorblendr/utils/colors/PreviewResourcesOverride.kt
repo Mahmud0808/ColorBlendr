@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference
 // previewed colors just like the Compose theme does.
 object PreviewResourcesOverride {
 
-    private val TAG = PreviewResourcesOverride::class.java.simpleName
+    private val TAG = "PreviewResourcesOverride"
 
     private var loader: ResourcesLoader? = null
     private var loaderResources: WeakReference<Resources>? = null

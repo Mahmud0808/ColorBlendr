@@ -802,7 +802,7 @@ class RootConnection : RootService() {
 
         @SuppressLint("PrivateApi", "NewApi", "StaticFieldLeak", "RestrictedApi")
         companion object {
-            private val TAG: String = RootConnectionImpl::class.java.simpleName
+            private val TAG: String = "RootConnectionImpl"
 
             @Volatile
             private var isEnabledMethod: Method? = null

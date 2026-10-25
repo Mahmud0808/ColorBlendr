@@ -73,7 +73,7 @@ class RootConnectionProvider private constructor() {
     }
 
     companion object {
-        private val TAG: String = RootConnectionProvider::class.java.simpleName
+        private val TAG: String = "RootConnectionProvider"
         @Volatile
         private var serviceProvider: IRootConnection? = null
 

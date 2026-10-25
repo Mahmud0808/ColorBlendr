@@ -33,7 +33,7 @@ class ServiceLauncher {
     }
 
     companion object {
-        private val TAG: String = ServiceLauncher::class.java.simpleName
+        private val TAG: String = "ServiceLauncher"
         private var serviceIntent: Intent? = null
     }
 }

@@ -38,7 +38,7 @@ import java.io.OutputStream
 
 object BackupRestore {
 
-    private val TAG = BackupRestore::class.java.simpleName
+    private val TAG = "BackupRestore"
     private const val PREFERENCE_BACKUP_FILE_NAME = "preference_backup"
     private const val DATABASE_BACKUP_FILE_NAME = "database_backup"
 

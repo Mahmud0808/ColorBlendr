@@ -34,7 +34,7 @@ import kotlin.concurrent.withLock
 
 object WifiAdbShell {
 
-    private val TAG = WifiAdbShell::class.java.simpleName
+    private val TAG = "WifiAdbShell"
     private val executor: ExecutorService = Executors.newFixedThreadPool(3)
     private val execExecutor: ExecutorService = Executors.newCachedThreadPool()
     private val connectLock = ReentrantLock()
