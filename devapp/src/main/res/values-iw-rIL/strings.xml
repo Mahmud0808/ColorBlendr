@@ -85,6 +85,13 @@
     <string name="detail_bg_sat_light">Background saturation (light)</string>
     <string name="detail_bg_light_light">Background lightness (light)</string>
     <string name="detail_overrides">Color overrides</string>
+    <string name="detail_token_overrides">Token overrides</string>
+    <string name="detail_token_overrides_value">%1$d light · %2$d dark</string>
+    <string name="detail_schema">Schema</string>
+    <string name="detail_schema_v2">v2 · token overrides</string>
+    <string name="detail_schema_tokens">v1 · token engine</string>
+    <string name="detail_schema_legacy">v1 · legacy mapping</string>
+    <string name="detail_pitch_black_containers">Pitch black containers</string>
     <string name="detail_pitch_black">Pitch black</string>
     <string name="detail_tint_text">Tinted text</string>
     <string name="detail_accurate_shades">Accurate shades</string>
@@ -113,6 +120,7 @@
     <string name="edit_details">Edit details</string>
     <string name="theme_name">Name</string>
     <string name="theme_description">Description</string>
+    <string name="theme_author">Author (empty for anonymous)</string>
     <string name="save">Save</string>
     <string name="edited">Edited</string>
     <string name="action_loading">Processing…</string>
