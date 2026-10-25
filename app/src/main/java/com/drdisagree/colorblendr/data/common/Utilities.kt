@@ -1,6 +1,9 @@
 package com.drdisagree.colorblendr.data.common
 
+import android.app.UiModeManager
 import android.graphics.Color
+import android.os.Build
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant.APP_COLOR_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
@@ -12,6 +15,7 @@ import com.drdisagree.colorblendr.data.common.Constant.FIRST_RUN
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.GSON
 import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
+import com.drdisagree.colorblendr.data.common.Constant.MONET_CONTRAST
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_LAST_UPDATED
@@ -52,6 +56,7 @@ import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.data.config.Prefs.putString
 import com.drdisagree.colorblendr.data.database.AppDatabase
 import com.drdisagree.colorblendr.data.enums.AppType
+import com.drdisagree.colorblendr.data.enums.ContrastLevel
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.data.enums.WorkMethod
@@ -373,6 +378,23 @@ object Utilities {
     fun setLegacyTokensEnabled(enabled: Boolean) {
         if (enabled) putBoolean(LEGACY_TOKENS, true) else clearPref(LEGACY_TOKENS)
     }
+
+    fun getContrastLevel(): ContrastLevel =
+        ContrastLevel.fromString(getString(MONET_CONTRAST, ContrastLevel.STANDARD.name))
+
+    fun setContrastLevel(level: ContrastLevel) {
+        putString(MONET_CONTRAST, level.name)
+    }
+
+    fun contrastValue(): Double =
+        if (isRootMode()) getContrastLevel().value else systemContrast()
+
+    private fun systemContrast(): Double =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            appContext.getSystemService(UiModeManager::class.java)?.contrast?.toDouble() ?: 0.0
+        } else {
+            0.0
+        }
 
     fun getAppColorOverrides(): Map<String, ResourceOverrides> {
         return ColorOverrideCodec.decodeApps(getString(APP_COLOR_OVERRIDES))

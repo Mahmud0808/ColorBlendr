@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.contrastValue
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
@@ -40,7 +41,8 @@ object ThemePrefs {
         seedColor = seedColor,
         secondaryColor = if (secondaryColorEnabled()) getSecondaryColorValue() else null,
         tertiaryColor = if (tertiaryColorEnabled()) getTertiaryColorValue() else null,
-        specVersion = getColorSpecVersion()
+        specVersion = getColorSpecVersion(),
+        contrast = contrastValue()
     )
 
     fun adjustments(

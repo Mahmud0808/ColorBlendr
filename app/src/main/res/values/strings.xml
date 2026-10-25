@@ -262,6 +262,17 @@
 
     <!-- Advanced settings -->
     <string name="advanced_settings">Advanced</string>
+    <string name="contrast_title">Color contrast</string>
+    <string-array name="contrast_levels">
+        <item>Standard</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="contrast_level_descs">
+        <item>Default Material You contrast</item>
+        <item>Stronger separation between colors</item>
+        <item>Maximum separation for easier reading</item>
+    </string-array>
     <string name="advanced_settings_desc">Extra color options, integrations and workarounds</string>
     <string name="custom_secondary_color_desc">Custom secondary color</string>
     <string name="custom_tertiary_color_title">Custom tertiary color</string>

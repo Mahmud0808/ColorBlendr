@@ -67,6 +67,7 @@ object Constant {
     const val MONET_TERTIARY_COLOR = "monetTertiaryColor"
     const val MONET_LAST_UPDATED = "monetLastUpdated"
     const val MONET_STYLE_ORIGINAL_NAME = "monetStyleOriginalName"
+    const val MONET_CONTRAST = "monetContrast"
     const val WALLPAPER_COLOR_LIST = "wallpaperColorList"
     const val FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState"
     const val SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn"
@@ -154,12 +155,14 @@ object Constant {
             SHIZUKU_THEMING_ENABLED,
             WIRELESS_ADB_THEMING_ENABLED,
             TASKER_INTEGRATION,
-            SCREEN_OFF_UPDATE_COLORS
+            SCREEN_OFF_UPDATE_COLORS,
+            MONET_CONTRAST
         )
     )
 
     val ROOT_ONLY_PREFS: Set<String> = HashSet(
         listOf(
+            MONET_CONTRAST,
             MONET_ACCURATE_SHADES,
             MONET_PITCH_BLACK_THEME,
             TINT_TEXT_COLOR,

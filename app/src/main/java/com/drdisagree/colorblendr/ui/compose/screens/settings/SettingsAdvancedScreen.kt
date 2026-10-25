@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.FormatPaint
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Opacity
 import androidx.compose.material.icons.rounded.SettingsSuggest
+import androidx.compose.material.icons.rounded.Tonality
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.Widgets
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -46,6 +48,7 @@ import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
+import com.drdisagree.colorblendr.data.common.Constant.MONET_CONTRAST
 import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
@@ -58,6 +61,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
+import com.drdisagree.colorblendr.data.common.Utilities.getContrastLevel
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
@@ -70,6 +74,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNul
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
+import com.drdisagree.colorblendr.data.common.Utilities.setContrastLevel
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
@@ -85,6 +90,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.taskerIntegrationEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.data.enums.ContrastLevel
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorPickerItem
@@ -226,6 +232,29 @@ fun SettingsAdvancedScreen(
         )
     }
 
+    val contrastLevel by rememberPrefState(MONET_CONTRAST) { getContrastLevel() }
+    val contrastOptions = stringArrayResource(R.array.contrast_levels).toList()
+    var showContrastDialog by rememberSaveable { mutableStateOf(false) }
+    if (showContrastDialog) {
+        SingleChoiceDialog(
+            title = stringResource(R.string.contrast_title),
+            options = contrastOptions,
+            selectedIndex = contrastLevel.ordinal,
+            onSelect = { which ->
+                val level = ContrastLevel.entries[which]
+                if (level != contrastLevel) {
+                    haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                    PreviewController.beginPreview()
+                    resetCustomStyleIfNotNull()
+                    setContrastLevel(level)
+                    updateColors()
+                }
+            },
+            onDismiss = { showContrastDialog = false },
+            descriptions = stringArrayResource(R.array.contrast_level_descs).toList()
+        )
+    }
+
     var showColorSpecDialog by rememberSaveable { mutableStateOf(false) }
     if (showColorSpecDialog) {
         val currentVersion = getColorSpecVersion()
@@ -329,6 +358,15 @@ fun SettingsAdvancedScreen(
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
                     position = WidgetPosition.Top,
                     onClick = { showColorSpecDialog = true }
+                )
+                MenuItem(
+                    title = stringResource(R.string.contrast_title),
+                    summary = contrastOptions[contrastLevel.ordinal],
+                    icon = rememberVectorPainter(Icons.Rounded.Tonality),
+                    enabled = rootMode,
+                    disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
+                    position = WidgetPosition.Middle,
+                    onClick = { showContrastDialog = true }
                 )
                 SwitchItem(
                     title = stringResource(R.string.screen_off_update_title),
