@@ -47,6 +47,7 @@ import com.drdisagree.colorblendr.data.common.Constant.backgroundLightnessKey
 import com.drdisagree.colorblendr.data.common.Constant.backgroundSaturationKey
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.getCommittedBoolean
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.getLong
 import com.drdisagree.colorblendr.data.config.Prefs.getString
@@ -374,6 +375,8 @@ object Utilities {
     fun legacyTokensEnabled(): Boolean {
         return getBoolean(LEGACY_TOKENS, false)
     }
+
+    fun legacyTokensApplied(): Boolean = getCommittedBoolean(LEGACY_TOKENS, false)
 
     fun setLegacyTokensEnabled(enabled: Boolean) {
         if (enabled) putBoolean(LEGACY_TOKENS, true) else clearPref(LEGACY_TOKENS)

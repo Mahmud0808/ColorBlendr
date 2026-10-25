@@ -4,6 +4,11 @@ import android.content.Intent
 import android.graphics.Color as AndroidColor
 import android.os.Build
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -67,6 +72,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.common.Utilities.legacyTokensApplied
 import com.drdisagree.colorblendr.data.common.Utilities.legacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
@@ -144,8 +150,7 @@ fun SettingsAdvancedScreen(
     var semiTransparentIcons by rememberPrefState(SEMI_TRANSPARENT_LAUNCHER_ICONS) { semiTransparentLauncherIconsEnabled() }
     var pitchBlackWorkaround by rememberPrefState(FORCE_PITCH_BLACK_SETTINGS) { forcePitchBlackSettingsEnabled() }
     var legacyTokens by rememberPrefState(LEGACY_TOKENS) { legacyTokensEnabled() }
-    var showLegacyTokens by remember { mutableStateOf(legacyTokens) }
-    if (legacyTokens) showLegacyTokens = true
+    val showLegacyTokens by rememberPrefState(LEGACY_TOKENS) { legacyTokensEnabled() || legacyTokensApplied() }
 
     fun updateColors() {
         scope.launch {
@@ -299,7 +304,13 @@ fun SettingsAdvancedScreen(
                     .padding(previewContentPadding())
                     .padding(top = 16.dp)
             ) {
-                if (showLegacyTokens) {
+                AnimatedVisibility(
+                    visible = showLegacyTokens,
+                    enter = expandVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) +
+                            fadeIn(MaterialTheme.motionScheme.defaultEffectsSpec()),
+                    exit = shrinkVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) +
+                            fadeOut(MaterialTheme.motionScheme.defaultEffectsSpec())
+                ) {
                     SwitchItem(
                         title = stringResource(R.string.legacy_tokens_title),
                         summary = stringResource(R.string.legacy_tokens_desc),
