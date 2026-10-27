@@ -64,7 +64,7 @@ object ThemeOverlays {
 
     fun frameworkColors(theme: ResolvedTheme, isDarkMode: Boolean): Map<String, Int> =
         HashMap<String, Int>().also { colors ->
-            write(theme, OverlayTarget(FRAMEWORK_PACKAGE, isDarkMode), ColorSink.collecting(colors), FRAMEWORK_WRITERS)
+            write(theme, OverlayTarget(FRAMEWORK_PACKAGE, isDarkMode), ColorSink.collecting(colors, isDarkMode), FRAMEWORK_WRITERS)
         }
 
     private fun collect(
@@ -73,7 +73,7 @@ object ThemeOverlays {
         isDarkMode: Boolean,
         writers: List<ThemeColorWriter>
     ): Map<String, Int> = HashMap<String, Int>().also { colors ->
-        write(theme, OverlayTarget(packageName, isDarkMode), ColorSink.collecting(colors), writers)
+        write(theme, OverlayTarget(packageName, isDarkMode), ColorSink.collecting(colors, isDarkMode), writers)
     }
 
     private fun overlay(

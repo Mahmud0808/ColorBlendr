@@ -13,14 +13,12 @@ object EosColorWriter : ThemeColorWriter {
 
     private const val ALPHA_ACCENT = 0x14
 
-    private class LightDark(val light: Int, val dark: Int) {
-        fun current(isDark: Boolean) = if (isDark) dark else light
-    }
+    private class LightDark(val light: Int, val dark: Int)
 
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
         val isDark = target.isDarkMode
         fun ColorSink.qualified(name: String, colors: LightDark) {
-            dayNight(name, colors.current(isDark), colors.dark)
+            dayNight(name, colors.light, colors.dark, isDark)
             color("${name}_dark", colors.dark)
             color("${name}_light", colors.light)
         }
@@ -35,7 +33,7 @@ object EosColorWriter : ThemeColorWriter {
 
         sink.color("accent_device_default_light", accent.light)
         sink.color("accent_device_default_dark", accent.dark)
-        sink.dayNight("accent_device_default", accent.current(isDark), accent.dark)
+        sink.dayNight("accent_device_default", accent.light, accent.dark, isDark)
         sink.qualified("e_qs_tile_inactive", tileInactive)
 
         listOf("e_background", "e_action_bar", "e_drawer_background", "e_qs_background").forEach {
@@ -58,8 +56,8 @@ object EosColorWriter : ThemeColorWriter {
         )
 
         if (target.packageName == SYSTEMUI_PACKAGE) {
-            sink.color("brightness_slider_overlay_color", accent.current(isDark))
-            sink.color("brightness_slider_track", surfaceContainer.current(isDark))
+            sink.dayNight("brightness_slider_overlay_color", accent.light, accent.dark, isDark)
+            sink.dayNight("brightness_slider_track", surfaceContainer.light, surfaceContainer.dark, isDark)
         }
     }
 }

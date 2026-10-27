@@ -30,27 +30,35 @@ object MaterialTokenWriter : ThemeColorWriter {
                 }
             }
 
-            val color = current[token]
-            CURRENT_MODE_PREFIXES.forEach { prefix -> sink.color("$prefix${token.resourceName}", color) }
+            val light = theme.light[token]
+            val dark = theme.dark[token]
+            CURRENT_MODE_PREFIXES.forEach { prefix ->
+                sink.dayNight("$prefix${token.resourceName}", light, dark, target.isDarkMode)
+            }
             PASCAL_PREFIXES.forEach { prefix ->
-                sink.color("$prefix${ResourceNames.pascal(token.resourceName)}", color)
+                sink.dayNight("$prefix${ResourceNames.pascal(token.resourceName)}", light, dark, target.isDarkMode)
             }
         }
 
         current.tokens(TokenGroup.FIXED).forEach { token ->
             SYSTEM_COLOR_PREFIXES.forEach { prefix ->
-                sink.dayNight("$prefix${token.resourceName}", current[token], theme.dark[token])
+                sink.dayNight("$prefix${token.resourceName}", theme.light[token], theme.dark[token], target.isDarkMode)
             }
             PASCAL_PREFIXES.forEach { prefix ->
                 val name = "$prefix${ResourceNames.pascal(token.resourceName)}"
-                sink.dayNight(name, current[token], theme.dark[token])
+                sink.dayNight(name, theme.light[token], theme.dark[token], target.isDarkMode)
                 sink.color("${name}Light", theme.light[token])
                 sink.color("${name}Dark", theme.dark[token])
             }
         }
 
         current.tokens(TokenGroup.CUSTOM).forEach { token ->
-            sink.color("$CUSTOM_PASCAL_PREFIX${ResourceNames.pascal(token.resourceName)}", current[token])
+            sink.dayNight(
+                "$CUSTOM_PASCAL_PREFIX${ResourceNames.pascal(token.resourceName)}",
+                theme.light[token],
+                theme.dark[token],
+                target.isDarkMode
+            )
         }
     }
 }

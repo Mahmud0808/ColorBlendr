@@ -78,8 +78,8 @@ object PerPackageColorWriter : ThemeColorWriter {
         when {
             target.packageName.startsWith(SYSTEMUI_CLOCKS) -> sink.clockColors(scheme)
             else -> when (target.packageName) {
-                GOOGLE_FEEDS -> if (pitchBlack && isDark) {
-                    sink.color("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK, ifExists = false)
+                GOOGLE_FEEDS -> if (pitchBlack) {
+                    sink.night("gm3_ref_palette_dynamic_neutral_variant20", Color.BLACK, ifExists = false)
                 }
 
                 GOOGLE_NEWS -> sink.googleNewsColors(scheme, pitchBlack)
@@ -88,22 +88,22 @@ object PerPackageColorWriter : ThemeColorWriter {
                 SETTINGS,
                 SETTINGS_LINEAGEOS,
                 LINEAGE_PARTS,
-                DOLBY_ATMOS -> if (pitchBlack && isDark && isVanillaIceCreamOrLater()) {
-                    sink.settingsColors(scheme, theme.adjustments.pitchBlackContainers)
+                DOLBY_ATMOS -> if (pitchBlack && isVanillaIceCreamOrLater()) {
+                    sink.settingsColors(theme.dark, theme.adjustments.pitchBlackContainers)
                 }
 
                 SETTINGS_SEARCH,
-                SETTINGS_SEARCH_AOSP -> if (pitchBlack) sink.settingsSearchColors(scheme, isDark)
+                SETTINGS_SEARCH_AOSP -> if (pitchBlack) sink.settingsSearchColors(theme.dark)
 
                 PIXEL_LAUNCHER -> sink.pixelLauncherColors(scheme, pitchBlack, isDark)
 
                 THEME_PICKER,
-                THEME_PICKER_GOOGLE -> if (pitchBlack && isDark && isVanillaIceCreamOrLater()) {
+                THEME_PICKER_GOOGLE -> if (pitchBlack && isVanillaIceCreamOrLater()) {
                     listOf(
                         "m3_sys_color_dynamic_dark_surface_container",
                         "settingslib_materialColorSurfaceContainer",
                         "system_surface_container"
-                    ).forEach { sink.color(it, Color.BLACK, ifExists = false) }
+                    ).forEach { sink.night(it, Color.BLACK, ifExists = false) }
                 }
             }
         }
@@ -162,19 +162,19 @@ object PerPackageColorWriter : ThemeColorWriter {
             "settingslib_materialColorSurfaceContainerLow",
             "settingslib_materialColorSurfaceContainer",
             "config_tab_color"
-        ).forEach { color(it, Color.BLACK, ifExists = false) }
+        ).forEach { night(it, Color.BLACK, ifExists = false) }
 
         val containerHigh = scheme[Token.SURFACE_CONTAINER_HIGH]
-        color("settingslib_materialColorSurfaceBright", containerHigh, ifExists = false)
-        color("settingslib_materialColorSurfaceContainerHigh", containerHigh, ifExists = false)
-        color("settingslib_materialColorSurfaceContainerHighest", scheme[Token.SURFACE_CONTAINER_HIGHEST], ifExists = false)
+        night("settingslib_materialColorSurfaceBright", containerHigh, ifExists = false)
+        night("settingslib_materialColorSurfaceContainerHigh", containerHigh, ifExists = false)
+        night("settingslib_materialColorSurfaceContainerHighest", scheme[Token.SURFACE_CONTAINER_HIGHEST], ifExists = false)
 
-        if (blackContainers) SETTINGS_CONTAINER_ALIASES.forEach { color(it, Color.BLACK) }
+        if (blackContainers) SETTINGS_CONTAINER_ALIASES.forEach { night(it, Color.BLACK) }
     }
 
-    private fun ColorSink.settingsSearchColors(scheme: ResolvedScheme, isDark: Boolean) {
-        if (isDark && isVanillaIceCreamOrLater()) {
-            color("search_bar_background", scheme[NEUTRAL].colorAt(11.6), ifExists = false)
+    private fun ColorSink.settingsSearchColors(scheme: ResolvedScheme) {
+        if (isVanillaIceCreamOrLater()) {
+            night("search_bar_background", scheme[NEUTRAL].colorAt(11.6), ifExists = false)
         }
 
         SETTINGS_SEARCH_DARK_SURFACES.forEach { token ->

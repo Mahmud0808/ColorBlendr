@@ -19,15 +19,13 @@ object ReferencePaletteWriter : ThemeColorWriter {
     private val NEUTRAL_SURFACE_TONES = listOf(4, 6, 12, 17, 22, 24, 87, 92, 94, 96)
 
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
-        val current = theme.scheme(target.isDarkMode)
-
         PaletteRole.entries.forEach { role ->
             val tones = if (role.isNeutral) TONES + NEUTRAL_SURFACE_TONES else TONES
             tones.forEach { tone ->
-                val currentColor = current.reference(role, tone.toDouble())
+                val lightColor = theme.light.reference(role, tone.toDouble())
                 val darkColor = theme.dark.reference(role, tone.toDouble())
                 PREFIXES.forEach { prefix ->
-                    sink.dayNight("$prefix${role.referenceName}$tone", currentColor, darkColor)
+                    sink.dayNight("$prefix${role.referenceName}$tone", lightColor, darkColor, target.isDarkMode)
                 }
             }
         }

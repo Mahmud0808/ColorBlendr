@@ -22,9 +22,8 @@ object SystemTokenWriter : ThemeColorWriter {
             sink.color("$PREFIX${token.resourceName}_dark", theme.dark[token])
         }
 
-        val current = theme.scheme(target.isDarkMode)
         theme.light.tokens(TokenGroup.FIXED).forEach { token ->
-            sink.dayNight("$PREFIX${token.resourceName}", current[token], theme.dark[token])
+            sink.dayNight("$PREFIX${token.resourceName}", theme.light[token], theme.dark[token], target.isDarkMode)
             sink.color("$PREFIX${token.resourceName}_light", theme.light[token])
             sink.color("$PREFIX${token.resourceName}_dark", theme.dark[token])
         }

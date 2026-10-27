@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.theme.overlay
 
+import android.os.Build
 import androidx.annotation.ColorInt
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
 
@@ -16,8 +17,15 @@ fun interface ColorSink {
     fun notNight(name: String, @ColorInt color: Int, ifExists: Boolean = true) =
         put(name, color, NOT_NIGHT_CONFIGURATION, ifExists)
 
-    fun dayNight(name: String, @ColorInt current: Int, @ColorInt dark: Int, ifExists: Boolean = true) {
-        color(name, current, ifExists)
+    fun dayNight(
+        name: String,
+        @ColorInt light: Int,
+        @ColorInt dark: Int,
+        isDark: Boolean,
+        ifExists: Boolean = true
+    ) {
+        val qualifiersSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        color(name, if (isDark && !qualifiersSupported) dark else light, ifExists)
         night(name, dark, ifExists)
     }
 
@@ -30,9 +38,18 @@ fun interface ColorSink {
                 overlay.setColor(name, color, configuration, ifExists)
             }
 
-        fun collecting(target: MutableMap<String, Int>): ColorSink =
-            ColorSink { name, color, configuration, _ ->
-                if (configuration == null) target[name] = color
+        fun collecting(target: MutableMap<String, Int>, isDark: Boolean): ColorSink {
+            val qualified = HashSet<String>()
+            val activeConfiguration = if (isDark) NIGHT_CONFIGURATION else NOT_NIGHT_CONFIGURATION
+            return ColorSink { name, color, configuration, _ ->
+                when (configuration) {
+                    null -> if (name !in qualified) target[name] = color
+                    activeConfiguration -> {
+                        target[name] = color
+                        qualified += name
+                    }
+                }
             }
+        }
     }
 }
