@@ -4,13 +4,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.WallpaperManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.RemoteException
 import android.provider.Settings
 import android.util.Log
@@ -34,6 +37,9 @@ import java.util.TimerTask
 class AutoStartService : Service() {
 
     private var notificationManager: NotificationManager? = null
+    private val wallpaperColorsListener = WallpaperManager.OnColorsChangedListener { _, which ->
+        if (which and WallpaperManager.FLAG_SYSTEM != 0) myReceiver.onWallpaperColorsChanged(this)
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -47,6 +53,8 @@ class AutoStartService : Service() {
         createNotificationChannel()
         showNotification()
         registerReceivers()
+        WallpaperManager.getInstance(this)
+            .addOnColorsChangedListener(wallpaperColorsListener, Handler(Looper.getMainLooper()))
 
         if (BroadcastListener.isLastConfigInitialized.not()) {
             BroadcastListener.lastConfig = Configuration(resources.configuration)
@@ -77,6 +85,8 @@ class AutoStartService : Service() {
         } catch (_: Exception) {
             // Receiver was probably never registered
         }
+
+        WallpaperManager.getInstance(this).removeOnColorsChangedListener(wallpaperColorsListener)
 
         val broadcastIntent = Intent(
             this,

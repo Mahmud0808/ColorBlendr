@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import android.util.Log
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
@@ -33,19 +34,20 @@ import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabrica
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.getWallpaperColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
+@Suppress("DEPRECATION")
 class BroadcastListener : BroadcastReceiver() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var sleepRunnable: Runnable? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    @Suppress("DEPRECATION")
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Received intent: " + intent.action)
 
@@ -93,7 +95,7 @@ class BroadcastListener : BroadcastReceiver() {
                     val newUiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
                     if (lastUiMode != newUiMode) {
-                        validateRootAndUpdateColors(context) {
+                        validateRootAndUpdateColors {
                             updateAllColors(true)
                         }
                     }
@@ -102,11 +104,11 @@ class BroadcastListener : BroadcastReceiver() {
                 }
 
                 Intent.ACTION_PACKAGE_REMOVED -> {
-                    handlePackageRemoved(context, intent)
+                    handlePackageRemoved(intent)
                 }
 
                 Intent.ACTION_PACKAGE_REPLACED -> {
-                    handlePackageReplaced(context, intent)
+                    handlePackageReplaced(intent)
                 }
             }
 
@@ -130,7 +132,7 @@ class BroadcastListener : BroadcastReceiver() {
             context.startForegroundService(Intent(context, AutoStartService::class.java))
         }
 
-        validateRootAndUpdateColors(context) {
+        validateRootAndUpdateColors {
             cooldownTime = 10000
             CoroutineScope(Dispatchers.Main).launch {
                 delay(10000.milliseconds)
@@ -140,7 +142,17 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleWallpaperChanged(context: Context, force: Boolean = false) {
+    fun onWallpaperColorsChanged(context: Context) {
+        coroutineScope.launch {
+            handleWallpaperChanged(context, live = true)
+        }
+    }
+
+    private suspend fun handleWallpaperChanged(
+        context: Context,
+        force: Boolean = false,
+        live: Boolean = false
+    ) {
         if (permissionsGranted(context)) {
             val wallpaperColors = withContext(Dispatchers.IO) {
                 getWallpaperColors(context)
@@ -148,12 +160,16 @@ class BroadcastListener : BroadcastReceiver() {
 
             val previousWallpaperColors = getWallpaperColorJson()
             val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
+            val changed = previousWallpaperColors != currentWallpaperColors
+
+            if (live && !changed) return
 
             if (!requiresUpdate) {
-                requiresUpdate = previousWallpaperColors != currentWallpaperColors
+                requiresUpdate = changed
             }
 
             setWallpaperColorJson(currentWallpaperColors)
+            if (live) AppEvents.emit(Intent.ACTION_WALLPAPER_CHANGED)
 
             if (PreviewController.isPreviewActive) {
                 if (requiresUpdate || force) PreviewController.markSystemUpdatePending()
@@ -166,15 +182,17 @@ class BroadcastListener : BroadcastReceiver() {
             }
         }
 
+        if (live && screenOffColorUpdateEnabled() && context.isInteractive()) return
+
         if (requiresUpdate || force) {
             requiresUpdate = false
-            validateRootAndUpdateColors(context) {
+            validateRootAndUpdateColors {
                 updateAllColors(true)
             }
         }
     }
 
-    private suspend fun handlePackageRemoved(context: Context, intent: Intent) {
+    private suspend fun handlePackageRemoved(intent: Intent) {
         if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return
 
         intent.data?.schemeSpecificPart?.let { packageName ->
@@ -184,7 +202,7 @@ class BroadcastListener : BroadcastReceiver() {
                 selectedApps.remove(packageName)
                 setSelectedFabricatedApps(selectedApps)
 
-                validateRootAndUpdateColors(context) {
+                validateRootAndUpdateColors {
                     unregisterFabricatedOverlay(
                         String.format(
                             FABRICATED_OVERLAY_NAME_APPS,
@@ -196,19 +214,19 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handlePackageReplaced(context: Context, intent: Intent) {
+    private suspend fun handlePackageReplaced(intent: Intent) {
         intent.data?.schemeSpecificPart?.let { packageName ->
             val selectedApps: HashMap<String, Boolean> = getSelectedFabricatedApps()
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
-                validateRootAndUpdateColors(context) {
+                validateRootAndUpdateColors {
                     applyFabricatedColorsPerApp(packageName)
                 }
             }
         }
     }
 
-    private suspend fun validateRootAndUpdateColors(context: Context, method: suspend () -> Unit) {
+    private suspend fun validateRootAndUpdateColors(method: suspend () -> Unit) {
         if (isRootMode() && RootConnectionProvider.isNotConnected) {
             RootConnectionProvider
                 .builder()
@@ -237,17 +255,22 @@ class BroadcastListener : BroadcastReceiver() {
         if (abs(getLastColorAppliedTimestamp() - System.currentTimeMillis()) >= cooldownTime || force) {
             updateColorAppliedTimestamp()
 
-            CoroutineScope(Dispatchers.IO).launch {
+            applyJob?.cancel()
+            applyJob = CoroutineScope(Dispatchers.IO).launch {
                 delay(500.milliseconds)
                 applyFabricatedColors()
             }
         }
     }
 
+    private fun Context.isInteractive(): Boolean =
+        getSystemService(PowerManager::class.java)?.isInteractive != false
+
     companion object {
         private val TAG: String = "BroadcastListener"
         var requiresUpdate = false
         private var cooldownTime: Long = 5000
+        private var applyJob: Job? = null
         lateinit var lastConfig: Configuration
         val isLastConfigInitialized: Boolean
             get() = ::lastConfig.isInitialized
