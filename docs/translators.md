@@ -32,21 +32,21 @@ ColorBlendr speaks your language because of these translators and proofreaders:
           <br />
           <sub><b>Aleksandr (AY_Translator)</b></sub></a>
         <br />
-        <sub><b>1659 words</b></sub>
+        <sub><b>1799 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/strange977"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12483545/medium/d7a65be2b31ae56a243c1a5da6740b9d.jpg" />
           <br />
           <sub><b>Andrea Ferrario (strange977)</b></sub></a>
         <br />
-        <sub><b>1441 words</b></sub>
+        <sub><b>1675 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/HangeulFactorys_HF"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
+        <a href="https://crowdin.com/profile/dudgowjs1"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
           <br />
-          <sub><b>dudgowjs1 (HangeulFactorys_HF)</b></sub></a>
+          <sub><b>dudgowjs (dudgowjs1)</b></sub></a>
         <br />
-        <sub><b>1315 words</b></sub>
+        <sub><b>1333 words</b></sub>
       </td>
     </tr>
     <tr>
