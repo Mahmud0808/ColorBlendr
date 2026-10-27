@@ -1,5 +1,7 @@
 package com.drdisagree.colorblendr.theme.legacy
 
+import android.graphics.Color
+import com.drdisagree.colorblendr.theme.palette.AdjustedPalette
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.PaletteRole.ERROR
 import com.drdisagree.colorblendr.theme.model.PaletteRole.NEUTRAL
@@ -11,14 +13,27 @@ import com.drdisagree.colorblendr.theme.model.ShadeScale
 import com.drdisagree.colorblendr.theme.rule.ThemeRule
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenResolution
+import com.drdisagree.materialcolorutilities.hct.Hct
 
-class LegacyTokenRule(private val roles: Set<PaletteRole>) : ThemeRule {
+class LegacyTokenRule(
+    private val roles: Set<PaletteRole>,
+    private val palettes: Map<PaletteRole, AdjustedPalette>,
+    private val pitchBlack: Boolean
+) : ThemeRule {
 
     override fun token(token: Token, resolution: TokenResolution, isDark: Boolean): TokenResolution {
         val source = SOURCES[token]?.takeIf { it.role in roles } ?: return resolution
-        val shadeTone = ShadeScale.tones[source.index(isDark)]
-        val tone = (shadeTone + shadeTone * source.adjustment(isDark) / 100.0).coerceIn(0.0, 100.0)
-        return resolution.copy(role = source.role, tone = tone, chromaMultiplier = 1.0, color = null)
+        val shade = shade(source.role, source.index(isDark))
+        val hct = Hct.fromInt(shade)
+        val percent = source.adjustment(isDark).coerceIn(-100, 100)
+        val tone = (hct.tone + hct.tone * percent / 100.0).coerceIn(0.0, 100.0)
+        val color = if (percent == 0) shade else Hct.from(hct.hue, hct.chroma, tone).toInt()
+        return resolution.copy(role = source.role, tone = tone, chromaMultiplier = 1.0, color = color)
+    }
+
+    private fun shade(role: PaletteRole, index: Int): Int {
+        if (pitchBlack && role.isNeutral && index == ShadeScale.SHADE_900) return Color.BLACK
+        return palettes.getValue(role).shades[index]
     }
 
     companion object {

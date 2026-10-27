@@ -42,16 +42,20 @@ object ThemeEngine {
         return ResolvedScheme(
             isDark = isDark,
             palettes = palettes,
-            rules = rules(adjustments, dynamicScheme),
+            rules = rules(adjustments, dynamicScheme, palettes),
             overrides = adjustments.tokenOverrides.forMode(isDark),
             tones = { TokenTones.of(source, dynamicScheme) }
         )
     }
 
-    private fun rules(adjustments: ThemeAdjustments, scheme: DynamicScheme): List<ThemeRule> = buildList {
+    private fun rules(
+        adjustments: ThemeAdjustments,
+        scheme: DynamicScheme,
+        palettes: Map<PaletteRole, AdjustedPalette>
+    ): List<ThemeRule> = buildList {
         if (adjustments.legacyTokens) {
             val roles = LegacyTokenRule.rolesOf(adjustments.shadeOverrides)
-            if (roles.isNotEmpty()) add(LegacyTokenRule(roles))
+            if (roles.isNotEmpty()) add(LegacyTokenRule(roles, palettes, adjustments.pitchBlack))
         }
         if (adjustments.pitchBlack) {
             add(PitchBlackRule(surfaceTone = MaterialDynamicColors().surface.getTone(scheme)))
