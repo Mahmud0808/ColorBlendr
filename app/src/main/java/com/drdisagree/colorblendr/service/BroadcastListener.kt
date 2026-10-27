@@ -47,12 +47,20 @@ class BroadcastListener : BroadcastReceiver() {
     private val handler = Handler(Looper.getMainLooper())
     private var sleepRunnable: Runnable? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private var screenOffWakeLock: PowerManager.WakeLock? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Received intent: " + intent.action)
 
         if (isLastConfigInitialized.not()) {
             lastConfig = Configuration(context.resources.configuration)
+        }
+
+        if (intent.action == Intent.ACTION_SCREEN_OFF && screenOffColorUpdateEnabled()) {
+            releaseScreenOffWakeLock()
+            screenOffWakeLock = context.getSystemService(PowerManager::class.java)
+                ?.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, SCREEN_OFF_WAKE_LOCK_TAG)
+                ?.apply { acquire(SCREEN_OFF_WAKE_LOCK_TIMEOUT) }
         }
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -85,6 +93,7 @@ class BroadcastListener : BroadcastReceiver() {
                         handler.removeCallbacks(runnable)
                         sleepRunnable = null
                     }
+                    releaseScreenOffWakeLock()
                 }
 
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
@@ -263,6 +272,11 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
+    private fun releaseScreenOffWakeLock() {
+        screenOffWakeLock?.takeIf { it.isHeld }?.release()
+        screenOffWakeLock = null
+    }
+
     private fun Context.isInteractive(): Boolean =
         getSystemService(PowerManager::class.java)?.isInteractive != false
 
@@ -271,6 +285,8 @@ class BroadcastListener : BroadcastReceiver() {
         var requiresUpdate = false
         private var cooldownTime: Long = 5000
         private var applyJob: Job? = null
+        private const val SCREEN_OFF_WAKE_LOCK_TAG = "ColorBlendr:ScreenOffUpdate"
+        private const val SCREEN_OFF_WAKE_LOCK_TIMEOUT = 30_000L
         lateinit var lastConfig: Configuration
         val isLastConfigInitialized: Boolean
             get() = ::lastConfig.isInitialized
