@@ -873,10 +873,25 @@
 							<dt>Why doesn't it fully work on OneUI?</dt>
 							<dd>
 								<p>
-									OneUI system apps use Samsung's own palette instead of
-									Material You. ColorBlendr's changes reach Google apps
-									and everything else that honors Monet, but not
-									OneUI's system UI.
+									OneUI's own apps, Quick Settings and system UI use
+									Samsung's palette instead of Material You, and only
+									Samsung's Color palette can change it (it requires
+									Samsung-signed system permissions no third-party app can
+									get). ColorBlendr's changes reach Google apps and
+									everything else that honors Monet, but not OneUI's own
+									apps and system UI.
+								</p>
+								<p>
+									On OneUI 8.5 and newer, Shizuku and Wireless ADB modes
+									can't change Material You colors while a Dual Messenger
+									profile exists: OneUI fails to apply any color change in
+									that state, even from Samsung's own Color palette. Turn
+									off Dual Messenger for every app and restart. If
+									<code>adb shell pm list users</code> still shows a
+									<code>DUAL_APP</code> user, remove it with
+									<code>adb shell pm remove-user &lt;id&gt;</code> (this
+									permanently deletes everything in that profile). Root
+									mode is not affected.
 								</p>
 							</dd>
 						</div>

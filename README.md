@@ -109,7 +109,8 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
 <details>
   <summary>Why doesn't ColorBlendr work properly on OneUI?</summary>
 
-- OneUI uses its own color palette for system apps, not Material You colors. As a result, ColorBlendr's modifications only affect Google apps and other apps that support Material You, but not OneUI system apps.
+- OneUI's own apps, Quick Settings and system UI use Samsung's color palette instead of Material You, and only Samsung's Color palette can change it (it requires Samsung-signed system permissions no third-party app can get). So ColorBlendr's changes reach Google apps and other apps that support Material You, but not OneUI's own apps and system UI.
+- On OneUI 8.5 and newer, Shizuku and Wireless ADB modes can't change Material You colors while a **Dual Messenger** profile exists. OneUI fails to apply any color change in that state, even from Samsung's own Color palette, so the color briefly flashes and reverts. Turn off Dual Messenger for every app (Settings → Advanced features → Dual Messenger) and restart. If `adb shell pm list users` still shows a `DUAL_APP` user afterwards, remove it with `adb shell pm remove-user <id>` (this permanently deletes everything in that profile). Root mode is not affected.
 </details>
 
 <details>
