@@ -50,6 +50,8 @@ object WallpaperColorUtil {
                 setSeedColorValue(wallpaperColors[0])
             }
         }
+
+        WallpaperShortcuts.update(context)
     }
 
     suspend fun getWallpaperColors(context: Context): ArrayList<Int> = withContext(Dispatchers.Default) {

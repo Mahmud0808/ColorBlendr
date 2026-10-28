@@ -64,6 +64,7 @@ import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricat
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
+import com.drdisagree.colorblendr.utils.wallpaper.WallpaperShortcuts
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.google.android.material.color.DynamicColors
@@ -142,6 +143,7 @@ class MainActivity : AppCompatActivity() {
             runCatching {
                 ThemeOverlays.frameworkColors(ThemePrefs.resolve().precompute(), SystemUtil.isDarkMode)
             }
+            WallpaperShortcuts.update(applicationContext)
         }
 
         setContent {

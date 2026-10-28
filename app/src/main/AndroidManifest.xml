@@ -115,6 +115,14 @@
             </intent-filter>
         </activity-alias>
 
+        <activity
+            android:name=".ui.activities.ShortcutActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <receiver
             android:name=".service.BroadcastListener"
             android:directBootAware="true"

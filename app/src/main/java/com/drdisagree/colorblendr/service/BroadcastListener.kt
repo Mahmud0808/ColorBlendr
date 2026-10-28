@@ -34,6 +34,7 @@ import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedCo
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.getWallpaperColors
+import com.drdisagree.colorblendr.utils.wallpaper.WallpaperShortcuts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -109,6 +110,7 @@ class BroadcastListener : BroadcastReceiver() {
                         validateRootAndUpdateColors {
                             updateAllColors(true)
                         }
+                        WallpaperShortcuts.update(context)
                     }
 
                     lastConfig = newConfig
@@ -184,6 +186,7 @@ class BroadcastListener : BroadcastReceiver() {
             }
 
             setWallpaperColorJson(currentWallpaperColors)
+            if (changed) WallpaperShortcuts.update(context)
             if (live) AppEvents.emit(Intent.ACTION_WALLPAPER_CHANGED)
 
             if (PreviewController.isPreviewActive) {
