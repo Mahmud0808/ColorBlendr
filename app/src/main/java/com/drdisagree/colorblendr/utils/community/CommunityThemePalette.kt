@@ -9,6 +9,7 @@ import com.drdisagree.colorblendr.theme.model.ThemeAdjustments
 import com.drdisagree.colorblendr.theme.model.ThemeSource
 import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
 import com.drdisagree.colorblendr.theme.token.Token
+import com.drdisagree.colorblendr.theme.token.TokenContrast
 
 object CommunityThemePalette {
 
@@ -29,6 +30,7 @@ object CommunityThemePalette {
 
     private val cache = LruCache<String, ResolvedScheme>(256)
     private val modeSupportCache = LruCache<String, ThemeModeSupport>(256)
+    private val lowContrastCache = LruCache<String, Boolean>(256)
 
     fun derive(theme: CommunityTheme, isDark: Boolean): List<List<Int>> = scheme(theme, isDark).shades
 
@@ -58,6 +60,20 @@ object CommunityThemePalette {
             lightReadable -> ThemeModeSupport.LIGHT_ONLY
             else -> ThemeModeSupport.LOW_CONTRAST
         }.also { modeSupportCache.put(key, it) }
+    }
+
+    fun hasLowContrast(theme: CommunityTheme): Boolean {
+        val key = key(theme)
+        lowContrastCache.get(key)?.let { return it }
+        val support = modeSupport(theme)
+        val modes = when (support) {
+            ThemeModeSupport.DARK_ONLY -> listOf(true)
+            ThemeModeSupport.LIGHT_ONLY -> listOf(false)
+            else -> listOf(false, true)
+        }
+        return (support == ThemeModeSupport.LOW_CONTRAST || modes.any { isDark ->
+            TokenContrast.hasLowContrast(scheme(theme, isDark), TokenContrast.CORE_PAIRS)
+        }).also { lowContrastCache.put(key, it) }
     }
 
     fun displayDark(theme: CommunityTheme, isDark: Boolean): Boolean = when (modeSupport(theme)) {

@@ -47,6 +47,7 @@ import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenCategory
+import com.drdisagree.colorblendr.theme.token.TokenContrast
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideRow
 import com.drdisagree.colorblendr.ui.compose.components.ColorOverrideSheet
@@ -116,6 +117,9 @@ private fun ColorTokensContent(
 
     val modeOverrides = overrides.forMode(isDark)
     val scheme = theme?.scheme(isDark)
+    val lowContrastTokens = remember(scheme, modeOverrides) {
+        scheme?.let { TokenContrast.lowContrastTokens(it, modeOverrides.keys) }.orEmpty()
+    }
 
     val sections = remember(query, filter, modeOverrides) {
         TokenCategory.entries.mapNotNull { category ->
@@ -239,6 +243,7 @@ private fun ColorTokensContent(
                                     title = token.displayName,
                                     color = scheme[token],
                                     override = modeOverrides[token],
+                                    lowContrast = token in lowContrastTokens,
                                     position = when {
                                         tokens.size == 1 -> WidgetPosition.Single
                                         index == 0 -> WidgetPosition.Top

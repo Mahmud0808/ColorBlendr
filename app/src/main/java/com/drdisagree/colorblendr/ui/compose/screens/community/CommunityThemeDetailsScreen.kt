@@ -10,6 +10,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -162,7 +164,7 @@ fun CommunityThemeDetailsScreen(themeId: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun DetailsContent(
     theme: CommunityTheme,
@@ -173,6 +175,7 @@ private fun DetailsContent(
 ) {
     val systemDark = isSystemInDarkTheme()
     val modeSupport = remember(theme) { CommunityThemePalette.modeSupport(theme) }
+    val lowContrast = remember(theme) { CommunityThemePalette.hasLowContrast(theme) }
     val isDark = remember(theme, systemDark) { CommunityThemePalette.displayDark(theme, systemDark) }
     val baseScheme = MaterialTheme.colorScheme
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
@@ -304,10 +307,20 @@ private fun DetailsContent(
                                         maxLines = 1
                                     )
                                 }
-                                ModeSupportBadge(
-                                    support = modeSupport,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
+                                if (modeSupport.icon != null || lowContrast) {
+                                    FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        if (modeSupport != ThemeModeSupport.LOW_CONTRAST) {
+                                            ModeSupportBadge(support = modeSupport)
+                                        }
+                                        if (lowContrast) {
+                                            ModeSupportBadge(support = ThemeModeSupport.LOW_CONTRAST)
+                                        }
+                                    }
+                                }
                             }
 
                             VoteButton(

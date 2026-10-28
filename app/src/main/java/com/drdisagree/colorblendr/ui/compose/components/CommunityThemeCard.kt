@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.data.enums.ThemeModeSupport
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.icon
@@ -58,7 +59,13 @@ fun CommunityThemeCard(
     showDownloads: Boolean = false
 ) {
     val systemDark = isSystemInDarkTheme()
-    val modeSupport = remember(theme) { CommunityThemePalette.modeSupport(theme) }
+    val modeSupport = remember(theme) {
+        if (CommunityThemePalette.hasLowContrast(theme)) {
+            ThemeModeSupport.LOW_CONTRAST
+        } else {
+            CommunityThemePalette.modeSupport(theme)
+        }
+    }
     val isDark = remember(theme, systemDark) { CommunityThemePalette.displayDark(theme, systemDark) }
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
 
