@@ -17,7 +17,7 @@ object AppColorResources {
     private const val MAX_TYPE_ID = 0xff
     private const val COLOR_TYPE = "color"
     private const val MAX_ENTRIES = 20_000
-    private const val MAX_GAP = 64
+    private const val MAX_GAP = 2048
     private const val OBFUSCATED_NAME = "0_resource_name_obfuscated"
     private const val DEFAULT_THEME = AndroidR.style.Theme_DeviceDefault_DayNight
     private val OVERLAY_FIELDS = listOf("resourceDirs", "overlayPaths")
@@ -42,9 +42,10 @@ object AppColorResources {
         val light = resources.themed(info, night = false)
         val dark = resources.themed(info, night = true)
 
+        val entryCounts = ResourceTableSpec.entryCounts(info.sourceDir)
         val ids = LinkedHashMap<String, Int>()
         colorTypes(light.first, packageName).forEach { base ->
-            colorIds(light.first, base).forEach { (name, id) -> ids.putIfAbsent(name, id) }
+            colorIds(light.first, base, entryCounts[base]).forEach { (name, id) -> ids.putIfAbsent(name, id) }
         }
         availability[packageName] = ids.isNotEmpty()
 
@@ -105,11 +106,12 @@ object AppColorResources {
         }
     }.getOrNull()
 
-    private fun colorIds(resources: Resources, base: Int): Map<String, Int> {
+    private fun colorIds(resources: Resources, base: Int, entryCount: Int?): Map<String, Int> {
         val ids = LinkedHashMap<String, Int>()
+        val limit = entryCount?.coerceIn(0, MAX_ENTRIES) ?: MAX_ENTRIES
         var index = 0
         var misses = 0
-        while (index < MAX_ENTRIES && misses < MAX_GAP) {
+        while (index < limit && (entryCount != null || misses < MAX_GAP)) {
             val id = base or index
             val name = resources.entryName(id)
             if (name == null) {
