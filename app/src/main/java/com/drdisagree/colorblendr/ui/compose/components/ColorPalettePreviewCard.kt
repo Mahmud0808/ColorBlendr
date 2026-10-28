@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.nativePaint
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
@@ -71,12 +72,14 @@ fun ColorPalettePreviewCard(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 20.dp)
             )
             Text(
                 text = summary,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 2.dp)
             )
         }

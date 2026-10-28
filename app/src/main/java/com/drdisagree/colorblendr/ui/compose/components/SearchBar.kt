@@ -85,7 +85,6 @@ fun SearchBar(
             overlayColor
         },
         border = AppCardDefaults.outlinedBorder(),
-        shadowElevation = 8.dp,
         modifier = modifier
             .fillMaxWidth()
             .padding(
