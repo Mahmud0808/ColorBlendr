@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.manager
 
+import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
@@ -8,6 +9,7 @@ import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnab
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil
 import com.drdisagree.colorblendr.utils.manager.backend.OverlayBackend
 import com.drdisagree.colorblendr.utils.manager.backend.RootOverlayBackend
 import com.drdisagree.colorblendr.utils.manager.backend.ShizukuOverlayBackend
@@ -29,6 +31,9 @@ object OverlayManager {
     fun applyFabricatedColors(): Boolean = lock.withLock {
         if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) {
             return@withLock true
+        }
+        FabricatedUtil.syncPitchBlackApps().forEach { packageName ->
+            RootOverlayBackend.unregister(String.format(FABRICATED_OVERLAY_NAME_APPS, packageName))
         }
         backend.apply().also { RefreshCoordinator.triggerRefresh() }
     }

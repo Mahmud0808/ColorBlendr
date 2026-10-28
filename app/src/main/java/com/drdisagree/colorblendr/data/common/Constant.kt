@@ -119,7 +119,7 @@ object Constant {
     const val DEVELOPER_MODE = "developerMode"
     const val COMMUNITY_VOTED_IDS = "communityVotedIds"
     const val COMMUNITY_LAST_FETCH = "communityLastFetch"
-    const val PER_APP_DEFAULTS_SEEDED = "perAppDefaultsSeeded"
+    const val PITCH_BLACK_AUTO_SELECTED_APPS = "pitchBlackAutoSelectedApps"
     const val SAMSUNG_PALETTE_ORIGINAL_STATE = "samsungPaletteOriginalState"
     const val COMMUNITY_WORKER_URL = "https://colorblendr-themes.drdisagree.workers.dev"
     const val TURNSTILE_SITE_KEY = "0x4AAAAAADzUgMuegUjZcG6j"
@@ -134,7 +134,7 @@ object Constant {
             WALLPAPER_COLOR_LIST,
             COMMUNITY_VOTED_IDS,
             COMMUNITY_LAST_FETCH,
-            PER_APP_DEFAULTS_SEEDED,
+            PITCH_BLACK_AUTO_SELECTED_APPS,
             SAMSUNG_PALETTE_ORIGINAL_STATE,
             DEVELOPER_MODE
         )

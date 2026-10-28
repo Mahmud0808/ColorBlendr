@@ -30,7 +30,7 @@ object Prefs {
         Constant.MONET_LAST_UPDATED,
         Constant.COMMUNITY_LAST_FETCH,
         Constant.COMMUNITY_VOTED_IDS,
-        Constant.PER_APP_DEFAULTS_SEEDED,
+        Constant.PITCH_BLACK_AUTO_SELECTED_APPS,
         Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
         Constant.SHOW_PALETTE_ROOT_HINT,
         Constant.SHOW_PALETTE_ROOTLESS_HINT,

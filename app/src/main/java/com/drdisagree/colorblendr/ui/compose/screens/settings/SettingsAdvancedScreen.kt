@@ -99,7 +99,6 @@ import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.selectSettingsForPerAppTheme
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
@@ -446,7 +445,6 @@ fun SettingsAdvancedScreen(
                             pitchBlackWorkaround = isChecked
                             resetCustomStyleIfNotNull()
                             setForcePitchBlackSettingsEnabled(isChecked)
-                            if (isChecked) selectSettingsForPerAppTheme()
                             applyColorsNow()
                         }
                     )

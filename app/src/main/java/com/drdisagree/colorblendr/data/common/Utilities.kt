@@ -25,7 +25,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
-import com.drdisagree.colorblendr.data.common.Constant.PER_APP_DEFAULTS_SEEDED
+import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_AUTO_SELECTED_APPS
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
@@ -87,12 +87,18 @@ object Utilities {
         putBoolean(THEMING_ENABLED, enabled)
     }
 
-    fun perAppDefaultsSeeded(): Boolean {
-        return getBoolean(PER_APP_DEFAULTS_SEEDED, false)
-    }
+    fun getPitchBlackAutoSelectedApps(): Set<String>? =
+        getString(PITCH_BLACK_AUTO_SELECTED_APPS, null)
+            ?.split(',')
+            ?.filter { it.isNotEmpty() }
+            ?.toSet()
 
-    fun setPerAppDefaultsSeeded(seeded: Boolean) {
-        putBoolean(PER_APP_DEFAULTS_SEEDED, seeded)
+    fun setPitchBlackAutoSelectedApps(packages: Set<String>?) {
+        if (packages == null) {
+            clearPref(PITCH_BLACK_AUTO_SELECTED_APPS)
+        } else {
+            putString(PITCH_BLACK_AUTO_SELECTED_APPS, packages.joinToString(","))
+        }
     }
 
     fun getSamsungPaletteOriginalState(): Boolean? {
