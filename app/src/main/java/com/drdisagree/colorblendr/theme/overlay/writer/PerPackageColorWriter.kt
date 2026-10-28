@@ -2,7 +2,6 @@ package com.drdisagree.colorblendr.theme.overlay.writer
 
 import android.graphics.Color
 import android.os.Build
-import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.data.common.Constant.DOLBY_ATMOS
 import com.drdisagree.colorblendr.data.common.Constant.GOOGLE_FEEDS
 import com.drdisagree.colorblendr.data.common.Constant.GOOGLE_NEWS
@@ -16,13 +15,10 @@ import com.drdisagree.colorblendr.data.common.Constant.SETTINGS_SEARCH_AOSP
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_CLOCKS
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER
 import com.drdisagree.colorblendr.data.common.Constant.THEME_PICKER_GOOGLE
-import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.PaletteRole.NEUTRAL
 import com.drdisagree.colorblendr.theme.model.PaletteRole.NEUTRAL_VARIANT
 import com.drdisagree.colorblendr.theme.model.PaletteRole.PRIMARY
-import com.drdisagree.colorblendr.theme.model.PaletteRole.SECONDARY
 import com.drdisagree.colorblendr.theme.model.ShadeScale
 import com.drdisagree.colorblendr.theme.overlay.ColorSink
 import com.drdisagree.colorblendr.theme.overlay.OverlayTarget
@@ -30,12 +26,9 @@ import com.drdisagree.colorblendr.theme.overlay.ThemeColorWriter
 import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.theme.token.Token
-import kotlin.math.roundToInt
 
 object PerPackageColorWriter : ThemeColorWriter {
 
-    private const val TRANSLUCENT_ICON_ALPHA = 80
-    private const val TRANSLUCENT_DRAWER_ALPHA = 95
 
     private val SETTINGS_CONTAINER_ALIASES = listOf(
         "materialColorSurfaceContainer",
@@ -94,7 +87,7 @@ object PerPackageColorWriter : ThemeColorWriter {
                 SETTINGS_SEARCH,
                 SETTINGS_SEARCH_AOSP -> if (pitchBlack) sink.settingsSearchColors(theme.dark)
 
-                PIXEL_LAUNCHER -> sink.pixelLauncherColors(theme, pitchBlack, isDark)
+                PIXEL_LAUNCHER -> if (pitchBlack) sink.pixelLauncherColors(theme, isDark)
 
                 THEME_PICKER,
                 THEME_PICKER_GOOGLE -> if (pitchBlack && isVanillaIceCreamOrLater()) {
@@ -197,54 +190,26 @@ object PerPackageColorWriter : ThemeColorWriter {
         }
     }
 
-    private fun ColorSink.pixelLauncherColors(theme: ResolvedTheme, pitchBlack: Boolean, isDark: Boolean) {
-        val translucent = semiTransparentLauncherIconsEnabled()
-        fun Int.icon() = if (translucent) withAlpha(TRANSLUCENT_ICON_ALPHA) else this
-        fun Int.drawer() = if (translucent) withAlpha(TRANSLUCENT_DRAWER_ALPHA) else this
-        fun both(name: String, light: Int, dark: Int) = dayNight(name, light, dark, isDark, ifExists = false)
-
-        val light = theme.light
-        val dark = theme.dark
-
-        val lightIconTint = light.tone(PRIMARY, 9)
-        val lightIconBackground = light.tone(PRIMARY, 3).icon()
-        val darkIconTint = dark.tone(PRIMARY, 5)
-        val darkIconBackground: Int
-        val darkFolder: Int
-        val darkDrawer: Int
-        val darkSurfaceBright: Int
-        if (pitchBlack) {
-            darkIconBackground = Color.BLACK.icon()
-            darkFolder = Color.BLACK.icon()
-            darkDrawer = Color.BLACK.drawer()
-            darkSurfaceBright = dark.tone(NEUTRAL, 11)
-        } else {
-            val iconShade = if (darkerLauncherIconsEnabled()) 11 else 10
-            darkIconBackground = dark.tone(SECONDARY, iconShade).icon()
-            darkFolder = dark.tone(NEUTRAL, 11).icon()
-            darkDrawer = dark.tone(NEUTRAL, 11).drawer()
-            darkSurfaceBright = dark.tone(NEUTRAL, 10)
+    private fun ColorSink.pixelLauncherColors(theme: ResolvedTheme, isDark: Boolean) {
+        fun darkOnly(name: String, color: Int) = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> night(name, color, ifExists = false)
+            isDark -> color(name, color, ifExists = false)
+            else -> Unit
         }
 
-        both("qsb_icon_tint_quaternary_mono", lightIconTint, darkIconTint)
-        both("themed_icon_color", lightIconTint, darkIconTint)
-        both("themed_icon_background_color", lightIconBackground, darkIconBackground)
-        both("material_color_surface_container_low", lightIconBackground, darkIconBackground)
-        both("material_color_surface_bright", light.tone(NEUTRAL, 1), darkSurfaceBright)
-        both("material_color_surface_dim", light.tone(NEUTRAL_VARIANT, 2).drawer(), darkDrawer)
+        darkOnly("themed_icon_background_color", Color.BLACK)
+        darkOnly("material_color_surface_container_low", Color.BLACK)
+        darkOnly("material_color_surface_dim", Color.BLACK)
+        darkOnly("material_color_surface_bright", theme.dark.tone(NEUTRAL, 11))
 
-        color("system_surface_container_low_light", lightIconBackground, ifExists = false)
-        color("system_surface_container_low_dark", darkIconBackground, ifExists = false)
-        color("folder_preview_light", light.tone(SECONDARY, 4).icon(), ifExists = false)
-        color("folder_background_light", light.tone(NEUTRAL, 1).icon(), ifExists = false)
-        color("folder_preview_dark", darkFolder, ifExists = false)
-        color("folder_background_dark", darkFolder, ifExists = false)
+        listOf(
+            "system_surface_container_low_dark",
+            "folder_preview_dark",
+            "folder_background_dark"
+        ).forEach { color(it, Color.BLACK, ifExists = false) }
     }
 
     private fun ResolvedScheme.tone(role: PaletteRole, index: Int): Int = get(role).shades[index]
-
-    private fun Int.withAlpha(percentage: Int): Int =
-        ColorUtils.setAlphaComponent(this, (percentage * 255 / 100f).roundToInt())
 
     private fun isVanillaIceCreamOrLater() =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM

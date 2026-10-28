@@ -56,8 +56,6 @@ object Constant {
     const val SCREEN_OFF_UPDATE_COLORS = "screenOffUpdateColors"
     const val TASKER_INTEGRATION = "taskerIntegration"
     const val COLOR_SPEC_VERSION = "colorSpecVersion"
-    const val DARKER_LAUNCHER_ICONS = "darkerLauncherIcons"
-    const val SEMI_TRANSPARENT_LAUNCHER_ICONS = "semiTransparentLauncherIcons"
     const val FORCE_PITCH_BLACK_SETTINGS = "forcePitchBlackSettings"
     const val MONET_ACCURATE_SHADES = "monetAccurateShades"
     const val MONET_PITCH_BLACK_THEME = "monetPitchBlackTheme"
@@ -173,8 +171,6 @@ object Constant {
             MONET_TERTIARY_COLOR,
             COLOR_SPEC_VERSION,
             MODE_SPECIFIC_THEMES,
-            DARKER_LAUNCHER_ICONS,
-            SEMI_TRANSPARENT_LAUNCHER_ICONS,
             FORCE_PITCH_BLACK_SETTINGS,
             FABRICATED_OVERLAY_FOR_APPS_STATE,
             CUSTOM_MONET_STYLE,

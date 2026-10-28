@@ -8,7 +8,6 @@ import com.drdisagree.colorblendr.data.common.Constant.APP_COLOR_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
-import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_APPS_STATE
 import com.drdisagree.colorblendr.data.common.Constant.FIRST_RUN
@@ -30,7 +29,6 @@ import com.drdisagree.colorblendr.data.common.Constant.PER_APP_DEFAULTS_SEEDED
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOTLESS_HINT
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOT_HINT
@@ -221,22 +219,6 @@ object Utilities {
 
     fun setColorSpecVersion(version: Int) {
         putInt(COLOR_SPEC_VERSION, version)
-    }
-
-    fun darkerLauncherIconsEnabled(): Boolean {
-        return getBoolean(DARKER_LAUNCHER_ICONS, false)
-    }
-
-    fun setDarkerLauncherIconsEnabled(enabled: Boolean) {
-        putBoolean(DARKER_LAUNCHER_ICONS, enabled)
-    }
-
-    fun semiTransparentLauncherIconsEnabled(): Boolean {
-        return getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
-    }
-
-    fun setSemiTransparentLauncherIconsEnabled(enabled: Boolean) {
-        putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, enabled)
     }
 
     fun forcePitchBlackSettingsEnabled(): Boolean {

@@ -18,10 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.AutoMode
 import androidx.compose.material.icons.rounded.Contrast
-import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FormatPaint
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Opacity
 import androidx.compose.material.icons.rounded.SettingsSuggest
 import androidx.compose.material.icons.rounded.Tonality
 import androidx.compose.material.icons.rounded.Update
@@ -49,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
@@ -58,18 +55,14 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SECONDARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
-import com.drdisagree.colorblendr.data.common.Constant.PIXEL_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.darkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.getContrastLevel
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.legacyTokensApplied
@@ -78,18 +71,14 @@ import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnable
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
 import com.drdisagree.colorblendr.data.common.Utilities.screenOffColorUpdateEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.semiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.setContrastLevel
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
-import com.drdisagree.colorblendr.data.common.Utilities.setDarkerLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setLegacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setScreenOffColorUpdateEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSecondaryColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.setSelectedFabricatedApps
-import com.drdisagree.colorblendr.data.common.Utilities.setSemiTransparentLauncherIconsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTaskerIntegrationEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.taskerIntegrationEnabled
@@ -109,7 +98,6 @@ import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
-import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.selectSettingsForPerAppTheme
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlin.time.Duration.Companion.milliseconds
@@ -138,7 +126,6 @@ fun SettingsAdvancedScreen(
 
     val rootMode = remember { isRootMode() }
     val customColor by rememberPrefState(MONET_SEED_COLOR_ENABLED) { customColorEnabled() }
-    val hasPixelLauncher = remember { SystemUtil.isAppInstalled(PIXEL_LAUNCHER) }
     val pitchBlackEnabled by rememberPrefState(MONET_PITCH_BLACK_THEME) { pitchBlackThemeEnabled() }
 
     var secondaryColor by rememberPrefState(MONET_SECONDARY_COLOR) { getSecondaryColorValue() }
@@ -146,8 +133,6 @@ fun SettingsAdvancedScreen(
     var screenOffUpdate by rememberPrefState(SCREEN_OFF_UPDATE_COLORS) { screenOffColorUpdateEnabled() }
     var taskerIntegration by rememberPrefState(TASKER_INTEGRATION) { taskerIntegrationEnabled() }
     var modeSpecificThemes by rememberPrefState(MODE_SPECIFIC_THEMES) { modeSpecificThemesEnabled() }
-    var darkerIcons by rememberPrefState(DARKER_LAUNCHER_ICONS) { darkerLauncherIconsEnabled() }
-    var semiTransparentIcons by rememberPrefState(SEMI_TRANSPARENT_LAUNCHER_ICONS) { semiTransparentLauncherIconsEnabled() }
     var pitchBlackWorkaround by rememberPrefState(FORCE_PITCH_BLACK_SETTINGS) { forcePitchBlackSettingsEnabled() }
     var legacyTokens by rememberPrefState(LEGACY_TOKENS) { legacyTokensEnabled() }
     val showLegacyTokens by rememberPrefState(LEGACY_TOKENS) { legacyTokensEnabled() || legacyTokensApplied() }
@@ -172,13 +157,6 @@ fun SettingsAdvancedScreen(
                 applyFabricatedColors()
             }
         }
-    }
-
-    fun savePixelLauncherInPerAppTheme() {
-        if (!hasPixelLauncher || !rootMode) return
-        val selectedApps = getSelectedFabricatedApps()
-        selectedApps[PIXEL_LAUNCHER] = true
-        setSelectedFabricatedApps(selectedApps)
     }
 
     // Saveable target so dialog survives rotation (lambdas can't go in
@@ -444,51 +422,6 @@ fun SettingsAdvancedScreen(
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
                     onClick = onNavigateToPerAppTheme
-                )
-
-                SwitchItem(
-                    title = stringResource(R.string.darker_launcher_icons_title),
-                    summary = stringResource(R.string.darker_launcher_icons_desc),
-                    icon = rememberVectorPainter(Icons.Rounded.DarkMode),
-                    checked = darkerIcons,
-                    enabled = rootMode && hasPixelLauncher,
-                    disabledReason = when {
-                        !rootMode -> stringResource(R.string.root_required)
-                        !hasPixelLauncher -> stringResource(R.string.pixel_launcher_required)
-                        else -> null
-                    },
-                    position = WidgetPosition.Top,
-                    onCheckedChange = { isChecked ->
-                        if (blockedByPreview()) return@SwitchItem
-                        darkerIcons = isChecked
-                        if (isChecked) {
-                            savePixelLauncherInPerAppTheme()
-                        }
-                        setDarkerLauncherIconsEnabled(isChecked)
-                        applyColorsNow()
-                    }
-                )
-                SwitchItem(
-                    title = stringResource(R.string.semitransparent_launcher_title),
-                    summary = stringResource(R.string.semitransparent_launcher_desc),
-                    icon = rememberVectorPainter(Icons.Rounded.Opacity),
-                    checked = semiTransparentIcons,
-                    enabled = rootMode && hasPixelLauncher,
-                    disabledReason = when {
-                        !rootMode -> stringResource(R.string.root_required)
-                        !hasPixelLauncher -> stringResource(R.string.pixel_launcher_required)
-                        else -> null
-                    },
-                    position = WidgetPosition.Bottom,
-                    onCheckedChange = { isChecked ->
-                        if (blockedByPreview()) return@SwitchItem
-                        semiTransparentIcons = isChecked
-                        if (isChecked) {
-                            savePixelLauncherInPerAppTheme()
-                        }
-                        setSemiTransparentLauncherIconsEnabled(isChecked)
-                        applyColorsNow()
-                    }
                 )
 
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
