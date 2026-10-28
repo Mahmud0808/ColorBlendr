@@ -102,7 +102,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
 import com.drdisagree.colorblendr.utils.app.AppColorResources
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.forgetPitchBlackAutoSelection
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.onPerAppSelectionChanged
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
 import com.drdisagree.colorblendr.utils.manager.OverlayManager
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
@@ -245,7 +245,7 @@ fun PerAppThemeScreen(
 
         selectedApps[app.packageName] = !isSelected
         setSelectedFabricatedApps(selectedApps)
-        forgetPitchBlackAutoSelection(app.packageName)
+        onPerAppSelectionChanged(app.packageName, !isSelected)
 
         val generation = (toggleGenerations[app.packageName] ?: 0) + 1
         toggleGenerations[app.packageName] = generation

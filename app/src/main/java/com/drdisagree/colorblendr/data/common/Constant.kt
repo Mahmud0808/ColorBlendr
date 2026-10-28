@@ -120,6 +120,7 @@ object Constant {
     const val COMMUNITY_VOTED_IDS = "communityVotedIds"
     const val COMMUNITY_LAST_FETCH = "communityLastFetch"
     const val PITCH_BLACK_AUTO_SELECTED_APPS = "pitchBlackAutoSelectedApps"
+    const val PITCH_BLACK_DECLINED_APPS = "pitchBlackDeclinedApps"
     const val SAMSUNG_PALETTE_ORIGINAL_STATE = "samsungPaletteOriginalState"
     const val COMMUNITY_WORKER_URL = "https://colorblendr-themes.drdisagree.workers.dev"
     const val TURNSTILE_SITE_KEY = "0x4AAAAAADzUgMuegUjZcG6j"
@@ -144,6 +145,7 @@ object Constant {
     val STYLE_EXCLUDED_PREFS: Set<String> = HashSet(
         listOf(
             FABRICATED_OVERLAY_FOR_APPS_STATE,
+            PITCH_BLACK_DECLINED_APPS,
             SHOW_PER_APP_THEME_WARN,
             SHOW_PALETTE_ROOT_HINT,
             SHOW_PALETTE_ROOTLESS_HINT,
@@ -173,6 +175,7 @@ object Constant {
             MODE_SPECIFIC_THEMES,
             FORCE_PITCH_BLACK_SETTINGS,
             FABRICATED_OVERLAY_FOR_APPS_STATE,
+            PITCH_BLACK_DECLINED_APPS,
             CUSTOM_MONET_STYLE,
             MONET_STYLE_ORIGINAL_NAME,
             MONET_ACCENT_SATURATION_DARK,

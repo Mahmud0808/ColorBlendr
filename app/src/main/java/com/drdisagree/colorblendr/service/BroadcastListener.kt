@@ -28,6 +28,8 @@ import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.utils.app.AppUtil.permissionsGranted
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.forgetPitchBlackAutoSelection
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.selectPitchBlackApp
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
@@ -110,6 +112,10 @@ class BroadcastListener : BroadcastReceiver() {
                     }
 
                     lastConfig = newConfig
+                }
+
+                Intent.ACTION_PACKAGE_ADDED -> {
+                    handlePackageAdded(intent)
                 }
 
                 Intent.ACTION_PACKAGE_REMOVED -> {
@@ -201,10 +207,24 @@ class BroadcastListener : BroadcastReceiver() {
         }
     }
 
+    private suspend fun handlePackageAdded(intent: Intent) {
+        if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return
+
+        intent.data?.schemeSpecificPart?.let { packageName ->
+            if (selectPitchBlackApp(packageName)) {
+                validateRootAndUpdateColors {
+                    applyFabricatedColorsPerApp(packageName)
+                }
+            }
+        }
+    }
+
     private suspend fun handlePackageRemoved(intent: Intent) {
         if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return
 
         intent.data?.schemeSpecificPart?.let { packageName ->
+            forgetPitchBlackAutoSelection(packageName)
+
             val selectedApps: HashMap<String, Boolean> = getSelectedFabricatedApps()
 
             if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
@@ -227,7 +247,7 @@ class BroadcastListener : BroadcastReceiver() {
         intent.data?.schemeSpecificPart?.let { packageName ->
             val selectedApps: HashMap<String, Boolean> = getSelectedFabricatedApps()
 
-            if (selectedApps.containsKey(packageName) && selectedApps[packageName] == true) {
+            if (selectedApps[packageName] == true || selectPitchBlackApp(packageName)) {
                 validateRootAndUpdateColors {
                     applyFabricatedColorsPerApp(packageName)
                 }

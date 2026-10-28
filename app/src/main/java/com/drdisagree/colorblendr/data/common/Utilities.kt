@@ -26,6 +26,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_AUTO_SELECTED_APPS
+import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_DECLINED_APPS
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
@@ -98,6 +99,20 @@ object Utilities {
             clearPref(PITCH_BLACK_AUTO_SELECTED_APPS)
         } else {
             putString(PITCH_BLACK_AUTO_SELECTED_APPS, packages.joinToString(","))
+        }
+    }
+
+    fun getPitchBlackDeclinedApps(): Set<String> = getString(PITCH_BLACK_DECLINED_APPS, null)
+        ?.split(',')
+        ?.filter { it.isNotEmpty() }
+        ?.toSet()
+        .orEmpty()
+
+    fun setPitchBlackDeclinedApps(packages: Set<String>) {
+        if (packages.isEmpty()) {
+            clearPref(PITCH_BLACK_DECLINED_APPS)
+        } else {
+            putString(PITCH_BLACK_DECLINED_APPS, packages.joinToString(","))
         }
     }
 

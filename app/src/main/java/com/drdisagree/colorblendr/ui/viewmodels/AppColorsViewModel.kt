@@ -18,6 +18,7 @@ import com.drdisagree.colorblendr.theme.override.ColorOverride
 import com.drdisagree.colorblendr.theme.override.ResourceOverrides
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.utils.app.AppColorResources
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.onPerAppSelectionChanged
 import com.drdisagree.colorblendr.utils.manager.OverlayManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -116,6 +117,7 @@ class AppColorsViewModel(val packageName: String) : ViewModel() {
             val applied = runCatching { OverlayManager.applyFabricatedColorsPerApp(packageName) }
                 .getOrDefault(false)
             _themingEnabled.value = applied || wasSelected
+            if (applied) onPerAppSelectionChanged(packageName, true)
             if (applied && isThemingEnabled()) _applied.tryEmit(Unit)
             if (!applied) {
                 if (!wasSelected) {

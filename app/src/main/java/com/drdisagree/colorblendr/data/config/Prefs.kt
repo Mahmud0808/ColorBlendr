@@ -31,6 +31,7 @@ object Prefs {
         Constant.COMMUNITY_LAST_FETCH,
         Constant.COMMUNITY_VOTED_IDS,
         Constant.PITCH_BLACK_AUTO_SELECTED_APPS,
+        Constant.PITCH_BLACK_DECLINED_APPS,
         Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
         Constant.SHOW_PALETTE_ROOT_HINT,
         Constant.SHOW_PALETTE_ROOTLESS_HINT,
