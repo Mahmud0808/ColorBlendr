@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
@@ -238,12 +239,14 @@ fun SettingsAdvancedScreen(
         )
     }
 
+    val colorSpecVersion by rememberPrefState(COLOR_SPEC_VERSION) { getColorSpecVersion() }
+    val colorSpecOptions = stringArrayResource(R.array.colorspec_versions).toList()
     var showColorSpecDialog by rememberSaveable { mutableStateOf(false) }
     if (showColorSpecDialog) {
         val currentVersion = getColorSpecVersion()
         SingleChoiceDialog(
             title = stringResource(R.string.colorspec_title),
-            options = resources.getStringArray(R.array.colorspec_versions).toList(),
+            options = colorSpecOptions,
             selectedIndex = currentVersion,
             onSelect = { which ->
                 if (currentVersion != which) {
@@ -342,6 +345,7 @@ fun SettingsAdvancedScreen(
                 MenuItem(
                     title = stringResource(R.string.colorspec_title),
                     summary = stringResource(R.string.colorspec_desc),
+                    value = colorSpecOptions.getOrNull(colorSpecVersion),
                     icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,
@@ -350,7 +354,8 @@ fun SettingsAdvancedScreen(
                 )
                 MenuItem(
                     title = stringResource(R.string.contrast_title),
-                    summary = contrastOptions[contrastLevel.ordinal],
+                    summary = stringResource(R.string.contrast_desc),
+                    value = contrastOptions[contrastLevel.ordinal],
                     icon = rememberVectorPainter(Icons.Rounded.Tonality),
                     enabled = rootMode,
                     disabledReason = if (!rootMode) stringResource(R.string.root_required) else null,

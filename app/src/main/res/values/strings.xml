@@ -263,6 +263,7 @@
     <!-- Advanced settings -->
     <string name="advanced_settings">Advanced</string>
     <string name="contrast_title">Color contrast</string>
+    <string name="contrast_desc">How strongly colors stand apart from each other</string>
     <string-array name="contrast_levels">
         <item>Standard</item>
         <item>Medium</item>
