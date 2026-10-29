@@ -16,34 +16,34 @@
     <string name="force_per_app_theme_title">Uygulamaya özel tema zorla</string>
     <string name="force_per_app_theme_desc">Sistem Monet renklerine uymayan uygulamalara özel renkleri uygula</string>
     <!-- Color palette -->
-    <string name="color_palette_root_warn">Tap a shade to customize it, long press to reset.</string>
+    <string name="color_palette_root_warn">Özelleştirmek için bir tona dokun, sıfırlamak için basılı tut.</string>
     <string name="color_palette_rootless_warn">Tap a shade to copy its hex code.</string>
-    <string name="app_colors_edit">Edit colors</string>
-    <string name="app_colors_edited">Custom colors</string>
+    <string name="app_colors_edit">Renkleri düzenle</string>
+    <string name="app_colors_edited">Özel renkler</string>
     <string name="app_colors_unavailable">No themeable colors</string>
-    <string name="color_unknown">Unknown</string>
+    <string name="color_unknown">Bilinmeyen</string>
     <string name="app_colors_hint">Editing a color turns on per-app theming for this app. Light and dark are saved separately.</string>
-    <string name="app_colors_filter_title">Show colors</string>
-    <string name="app_colors_filter_all">All colors</string>
+    <string name="app_colors_filter_title">Renkleri göster</string>
+    <string name="app_colors_filter_all">Tüm renkler</string>
     <string name="app_colors_filter_themed">Themed by ColorBlendr</string>
     <string name="app_colors_filter_own">App colors only</string>
     <string name="app_colors_preset">Preset</string>
     <string name="app_colors_themed">Themed</string>
-    <string name="app_colors_reset_title">Reset colors?</string>
+    <string name="app_colors_reset_title">Renkleri sıfırla?</string>
     <string name="app_colors_reset_message">Every edited color in %1$s mode returns to the app\'s own color.</string>
     <string name="app_colors_empty">No colors found</string>
     <string name="app_colors_empty_desc">This app has no color resources that can be read.</string>
     <string name="community_text_too_short">Use at least %1$d characters</string>
     <string name="community_text_counter">%1$d/%2$d</string>
-    <string name="theme_name_invalid_chars">Use letters, numbers and basic punctuation only</string>
-    <string name="theme_name_too_few_letters">Use a real name</string>
-    <string name="theme_description_too_few_words">Describe the theme in a few words</string>
-    <string name="upvote">Upvote</string>
+    <string name="theme_name_invalid_chars">Sadece harrf, sayı ve temel noktalama işaretleri </string>
+    <string name="theme_name_too_few_letters">Gerçek bir isim kullan</string>
+    <string name="theme_description_too_few_words">Temayı birkaç kelime ile anlat</string>
+    <string name="upvote">Beğen</string>
     <string name="community_dark_only">Dark mode only</string>
     <string name="community_light_only">Light mode only</string>
     <string name="community_low_contrast">Low contrast</string>
-    <string name="color_original">Original</string>
-    <string name="app_restart_hint">Restart %1$s to see the changes</string>
+    <string name="color_original">Orijinal</string>
+    <string name="app_restart_hint">Değişiklikleri görmek için %1$s sıfırla </string>
     <string name="app_restart">Restart</string>
     <string name="app_restart_failed">Couldn\'t restart %1$s</string>
     <string name="app_colors_apply_failed">Couldn\'t apply colors to %1$s</string>
@@ -254,6 +254,18 @@
     <string name="about_this_app_desc">Uygulama ve geliştiriciye dair bilgiler</string>
     <!-- Advanced settings -->
     <string name="advanced_settings">Gelişmiş</string>
+    <string name="contrast_title">Color contrast</string>
+    <string name="contrast_desc">How strongly colors stand apart from each other</string>
+    <string-array name="contrast_levels">
+        <item>Standard</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="contrast_level_descs">
+        <item>Default Material You contrast</item>
+        <item>Stronger separation between colors</item>
+        <item>Maximum separation for easier reading</item>
+    </string-array>
     <string name="advanced_settings_desc">Extra color options, integrations and workarounds</string>
     <string name="custom_secondary_color_desc">Özel ikincil renk</string>
     <string name="custom_tertiary_color_title">Özel üçüncül renk</string>
@@ -275,6 +287,8 @@
     <string name="semitransparent_launcher_desc">Pixel Launcher için yarı saydam bir stil kullan</string>
     <string name="pitch_black_settings_workaround_title">Ayarlar için zifiri siyah yaması</string>
     <string name="pitch_black_settings_workaround_desc">Make the Settings app pure black on Android 15 and above</string>
+    <string name="legacy_tokens_title">Legacy color mapping</string>
+    <string name="legacy_tokens_desc">Shows this community theme the way older versions did. Turn off to preview it with the new color engine</string>
     <!-- Privacy policy -->
     <string name="privacy_policy">Gizlilik politikası</string>
     <string name="privacy_policy_desc">What data the app uses and why</string>
