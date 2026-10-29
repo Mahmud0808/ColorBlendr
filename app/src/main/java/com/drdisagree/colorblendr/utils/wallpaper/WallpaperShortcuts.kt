@@ -35,6 +35,7 @@ import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedCo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Objects
 import kotlin.math.min
 
 object WallpaperShortcuts {
@@ -49,11 +50,13 @@ object WallpaperShortcuts {
     private const val CENTER_RADIUS = 10f / 18f
 
     suspend fun update(context: Context) {
+        withContext(Dispatchers.Default) { refresh(context) }
+    }
+
+    fun refresh(context: Context) {
         if (isFirstRun() || isWorkMethodUnknown()) return
-        withContext(Dispatchers.Default) {
-            runCatching { publish(context) }
-                .onFailure { Log.e(TAG, "Failed to update wallpaper shortcuts", it) }
-        }
+        runCatching { publish(context) }
+            .onFailure { Log.e(TAG, "Failed to update wallpaper shortcuts", it) }
     }
 
     private fun publish(context: Context) {
@@ -62,14 +65,15 @@ object WallpaperShortcuts {
         val isDark = SystemUtil.isDarkMode
         val limit = min(MAX_SHORTCUTS, ShortcutManagerCompat.getMaxShortcutCountPerActivity(context))
         val colors = getWallpaperColorList().distinct().take(limit)
-        val ids = colors.map { shortcutId(it, isDark) }
+        val adjustments = ThemePrefs.adjustments(isDark)
+        val signature = Objects.hash(ThemePrefs.source(seedColor = 0), adjustments, isDark)
+        val ids = colors.map { shortcutId(it, signature) }
 
         val current = ShortcutManagerCompat.getDynamicShortcuts(context)
             .sortedBy { it.rank }
             .map { it.id }
         if (current == ids) return
 
-        val adjustments = ThemePrefs.adjustments(isDark, includeOverrides = false)
         val shortcuts = colors.mapIndexed { index, color ->
             ShortcutInfoCompat.Builder(context, ids[index])
                 .setShortLabel(hexLabel(color))
@@ -118,8 +122,8 @@ object WallpaperShortcuts {
             .onFailure { Log.e(TAG, "Failed to apply wallpaper color", it) }
     }
 
-    private fun shortcutId(@ColorInt color: Int, isDark: Boolean): String =
-        ID_PREFIX + hexLabel(color).drop(1) + if (isDark) "_dark" else "_light"
+    private fun shortcutId(@ColorInt color: Int, signature: Int): String =
+        ID_PREFIX + hexLabel(color).drop(1) + "_" + Integer.toHexString(signature)
 
     private fun hexLabel(@ColorInt color: Int): String =
         String.format("#%06X", color and 0xFFFFFF)
