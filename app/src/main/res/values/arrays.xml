@@ -13,14 +13,14 @@
     </string-array>
 
     <string-array name="basic_color_codes" translatable="false">
-        <item>#fa5f49</item>
-        <item>#ff9800</item>
-        <item>#59b4bc</item>
-        <item>#d8f79a</item>
-        <item>#95b8f6</item>
-        <item>#7ff9c7</item>
-        <item>#f3edc8</item>
-        <item>#f7cae4</item>
-        <item>#b186f1</item>
+        <item>#AC6166</item>
+        <item>#A76837</item>
+        <item>#8B7526</item>
+        <item>#608045</item>
+        <item>#34846F</item>
+        <item>#2B8193</item>
+        <item>#5179A9</item>
+        <item>#7A6FAB</item>
+        <item>#9B6593</item>
     </string-array>
 </resources>

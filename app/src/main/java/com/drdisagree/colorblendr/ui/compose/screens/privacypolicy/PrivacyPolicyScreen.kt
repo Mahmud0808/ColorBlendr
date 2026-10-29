@@ -24,6 +24,7 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,12 +44,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.PositionedCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 private const val TAG = "PrivacyPolicyScreen"
@@ -70,8 +73,8 @@ fun PrivacyPolicyScreen() {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
-    val document = remember(context) {
-        parsePolicy(loadPrivacyPolicyFromAssets(context))
+    val document by produceState<PolicyDocument?>(null, context) {
+        value = withContext(Dispatchers.IO) { parsePolicy(loadPrivacyPolicyFromAssets(context)) }
     }
 
     Surface(
@@ -90,21 +93,23 @@ fun PrivacyPolicyScreen() {
                         .fillMaxSize()
                         .contentWidthLimit()
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(top = 8.dp)
                 ) {
-                    PolicyHeader(intro = document.intro)
+                    document?.let { doc ->
+                        PolicyHeader(intro = doc.intro)
 
-                    document.sections.forEachIndexed { index, section ->
-                        PolicySectionCard(
-                            section = section,
-                            position = when {
-                                document.sections.size == 1 -> WidgetPosition.Single
-                                index == 0 -> WidgetPosition.Top
-                                index == document.sections.lastIndex -> WidgetPosition.Bottom
-                                else -> WidgetPosition.Middle
-                            }
-                        )
+                        doc.sections.forEachIndexed { index, section ->
+                            PolicySectionCard(
+                                section = section,
+                                position = when {
+                                    doc.sections.size == 1 -> WidgetPosition.Single
+                                    index == 0 -> WidgetPosition.Top
+                                    index == doc.sections.lastIndex -> WidgetPosition.Bottom
+                                    else -> WidgetPosition.Middle
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -139,11 +144,9 @@ private fun PolicyHeader(intro: String) {
             )
         }
         if (intro.isNotEmpty()) {
+            val linkColor = MaterialTheme.colorScheme.primary
             Text(
-                text = annotatedBody(
-                    text = intro,
-                    linkColor = MaterialTheme.colorScheme.primary
-                ),
+                text = remember(intro, linkColor) { annotatedBody(intro, linkColor) },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 modifier = Modifier.padding(top = 20.dp)
@@ -168,11 +171,9 @@ private fun PolicySectionCard(
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary
             )
+            val linkColor = MaterialTheme.colorScheme.primary
             Text(
-                text = annotatedBody(
-                    text = section.body,
-                    linkColor = MaterialTheme.colorScheme.primary
-                ),
+                text = remember(section.body, linkColor) { annotatedBody(section.body, linkColor) },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 modifier = Modifier.padding(top = 8.dp)

@@ -1,548 +1,70 @@
 package com.drdisagree.colorblendr.utils.manager
 
-import android.graphics.Color
-import android.os.RemoteException
-import android.util.Log
-import androidx.core.graphics.ColorUtils
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
-import com.drdisagree.colorblendr.ColorBlendr.Companion.rootConnection
-import com.drdisagree.colorblendr.ColorBlendr.Companion.shizukuConnection
-import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
-import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
-import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
-import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
-import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
-import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
-import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
-import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
-import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
-import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
-import com.drdisagree.colorblendr.service.IRootConnection
-import com.drdisagree.colorblendr.service.IShizukuConnection
-import com.drdisagree.colorblendr.utils.app.MiscUtil
 import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
-import com.drdisagree.colorblendr.utils.colors.computeFinalColorOverrides
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.assignPerAppColorsToOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.createDynamicOverlay
-import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.generateSurfaceEffectColors
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
-import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil
+import com.drdisagree.colorblendr.utils.manager.backend.OverlayBackend
+import com.drdisagree.colorblendr.utils.manager.backend.RootOverlayBackend
+import com.drdisagree.colorblendr.utils.manager.backend.ShizukuOverlayBackend
+import com.drdisagree.colorblendr.utils.manager.backend.WirelessAdbOverlayBackend
+import com.drdisagree.colorblendr.utils.wallpaper.WallpaperShortcuts
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
-@Suppress("unused")
 object OverlayManager {
 
-    private val TAG: String = OverlayManager::class.java.simpleName
-    private lateinit var mRootConnection: IRootConnection
-    private lateinit var mShizukuConnection: IShizukuConnection
+    private val lock = ReentrantLock()
 
-    private fun ensureRootConnection(): Boolean {
-        if (::mRootConnection.isInitialized.not()) {
-            if (rootConnection == null) {
-                Log.w(TAG, "Root service connection is null")
-                return false
-            }
-            mRootConnection = rootConnection!!
+    private val backend: OverlayBackend
+        get() = when {
+            isShizukuMode() -> ShizukuOverlayBackend
+            isWirelessAdbMode() -> WirelessAdbOverlayBackend
+            else -> RootOverlayBackend
         }
+
+    fun applyFabricatedColors(): Boolean = lock.withLock {
+        if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) {
+            return@withLock true
+        }
+        FabricatedUtil.syncPitchBlackApps().forEach { packageName ->
+            RootOverlayBackend.unregister(String.format(FABRICATED_OVERLAY_NAME_APPS, packageName))
+        }
+        backend.apply().also {
+            RefreshCoordinator.triggerRefresh()
+            WallpaperShortcuts.refresh(appContext)
+        }
+    }
+
+    fun removeFabricatedColors(): Boolean = lock.withLock { backend.remove() }
+
+    fun applyFabricatedColorsPerApp(packageName: String): Boolean = lock.withLock {
+        if (!isThemingEnabled() || PreviewController.isPreviewActive) return@withLock true
+        RootOverlayBackend.applyPerApp(packageName)
+    }
+
+    fun unregisterFabricatedOverlay(overlayName: String): Boolean = lock.withLock {
+        RootOverlayBackend.unregister(overlayName)
+    }
+
+    fun restartApp(packageName: String): Boolean {
+        if (!RootOverlayBackend.forceStop(packageName)) return false
+        SystemUtil.launchApp(packageName)
         return true
     }
 
-    private fun ensureShizukuConnection(): Boolean {
-        if (!ShizukuUtil.isShizukuAvailable || !ShizukuUtil.hasShizukuPermission()) {
-            Log.w(TAG, "Shizuku permission not available")
-            return false
-        } else if (::mShizukuConnection.isInitialized.not()) {
-            if (shizukuConnection == null) {
-                Log.w(TAG, "Shizuku service connection is null")
-                return false
-            }
-            mShizukuConnection = shizukuConnection!!
-        }
-        return true
+    fun isOverlayEnabled(overlayName: String): Boolean? = lock.withLock {
+        RootOverlayBackend.isEnabled(overlayName)
     }
 
-    fun enableOverlay(packageName: String) {
-        if (!isRootMode()) return
-        if (!ensureRootConnection()) {
-            reportError(appContext.getString(R.string.error_root_unavailable))
-            return
-        }
-
-        try {
-            mRootConnection.enableOverlay(listOf(packageName))
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to enable overlay: $packageName", e)
-            reportError(overlayError(e))
-        }
+    fun areOverlaysEnabled(overlayNames: List<String>): BooleanArray? = lock.withLock {
+        RootOverlayBackend.areEnabled(overlayNames)
     }
-
-    fun disableOverlay(packageName: String) {
-        if (!isRootMode()) return
-        if (!ensureRootConnection()) {
-            reportError(appContext.getString(R.string.error_root_unavailable))
-            return
-        }
-
-        try {
-            mRootConnection.disableOverlay(listOf(packageName))
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to disable overlay: $packageName", e)
-            reportError(overlayError(e))
-        }
-    }
-
-    fun isOverlayInstalled(packageName: String): Boolean {
-        if (!isRootMode() || !ensureRootConnection()) return false
-
-        try {
-            return mRootConnection.isOverlayInstalled(packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to check if overlay is installed: $packageName", e)
-            return false
-        }
-    }
-
-    fun isOverlayEnabled(packageName: String): Boolean {
-        if (!isRootMode() || !ensureRootConnection()) return false
-
-        try {
-            return mRootConnection.isOverlayEnabled(packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to check if overlay is enabled: $packageName", e)
-            return false
-        }
-    }
-
-    fun uninstallOverlayUpdates(packageName: String) {
-        if (!isRootMode()) return
-        if (!ensureRootConnection()) {
-            reportError(appContext.getString(R.string.error_root_unavailable))
-            return
-        }
-
-        try {
-            mRootConnection.uninstallOverlayUpdates(packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to uninstall overlay updates: $packageName", e)
-            reportError(overlayError(e))
-        }
-    }
-
-    private fun registerFabricatedOverlay(fabricatedOverlay: FabricatedOverlayResource) {
-        if (!isRootMode()) return
-        if (!ensureRootConnection()) {
-            reportError(appContext.getString(R.string.error_root_unavailable))
-            return
-        }
-
-        try {
-            mRootConnection.registerFabricatedOverlay(fabricatedOverlay)
-            mRootConnection.enableOverlayWithIdentifier(listOf(fabricatedOverlay.overlayName))
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to register fabricated overlay: " + fabricatedOverlay.overlayName, e)
-            reportError(overlayError(e))
-        }
-    }
-
-    fun unregisterFabricatedOverlay(packageName: String) {
-        if (!isRootMode()) return
-        if (!ensureRootConnection()) {
-            reportError(appContext.getString(R.string.error_root_unavailable))
-            return
-        }
-
-        try {
-            mRootConnection.unregisterFabricatedOverlay(packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Failed to unregister fabricated overlay: $packageName", e)
-            reportError(overlayError(e))
-        }
-    }
-
-    fun applyFabricatedColors() {
-        if (!isThemingEnabled() && !isShizukuThemingEnabled() && !isWirelessAdbThemingEnabled()) return
-
-        if (applyFabricatedColorsNonRoot()) return
-
-        val style = getCurrentMonetStyle()
-        val monetAccentSaturation = getAccentSaturation()
-        val monetBackgroundSaturation = getBackgroundSaturation()
-        val monetBackgroundLightness = getBackgroundLightness()
-        val pitchBlackTheme = pitchBlackThemeEnabled()
-        val accurateShades = accurateShadesEnabled()
-        val isDarkMode = SystemUtil.isDarkMode
-
-        val paletteLight = generateModifiedColors(
-            style = style,
-            accentSaturation = monetAccentSaturation,
-            backgroundSaturation = monetBackgroundSaturation,
-            backgroundLightness = monetBackgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = false
-        )
-
-        val paletteDark = generateModifiedColors(
-            style = style,
-            accentSaturation = monetAccentSaturation,
-            backgroundSaturation = monetBackgroundSaturation,
-            backgroundLightness = monetBackgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = true
-        )
-
-        ArrayList<FabricatedOverlayResource>().apply {
-            add(
-                FabricatedOverlayResource(
-                    FABRICATED_OVERLAY_NAME_SYSTEM,
-                    FRAMEWORK_PACKAGE
-                ).also { frameworkOverlay ->
-                    frameworkOverlay.apply {
-                        for (i in systemPaletteNames.indices) {
-                            for (j in systemPaletteNames[i].indices) {
-                                setColor(
-                                    systemPaletteNames[i][j],
-                                    if (isDarkMode) paletteDark[i][j] else paletteLight[i][j]
-                                )
-                            }
-                        }
-                        // SurfaceEffectColors
-                        generateSurfaceEffectColors(isDarkMode)
-
-                        // Dynamic colors
-                        createDynamicOverlay(paletteLight, paletteDark)
-
-                        if (pitchBlackTheme) {
-                            setColor("background_dark", Color.BLACK)
-                            // QS top part color below A16
-                            setColor("surface_header_dark_sysui", Color.BLACK)
-                            if (isDarkMode) {
-                                // QS top part color A16+
-                                setColor(
-                                    "shade_panel_fg_color",
-                                    ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
-                                ) // with blur
-                            }
-                            setColor(systemPaletteNames[3][11], Color.BLACK)
-                            setColor(systemPaletteNames[4][11], Color.BLACK)
-                        }
-
-                        if (!tintedTextEnabled()) {
-                            setColor("text_color_primary_device_default_dark", Color.WHITE)
-                            setColor("text_color_secondary_device_default_dark", -0x4c000001)
-                            setColor("text_color_primary_device_default_light", Color.BLACK)
-                            setColor("text_color_secondary_device_default_light", -0x4d000000)
-                        }
-
-                        // Error, pitch black and A15 workaround role overrides,
-                        // shared with the in-app color preview.
-                        computeFinalColorOverrides(
-                            paletteLight = paletteLight,
-                            paletteDark = paletteDark,
-                            currentSurfaceContainerDark = getColor("system_surface_container_dark")
-                        ).forEach { (resourceName, colorValue) ->
-                            setColor(resourceName, colorValue)
-                        }
-                    }
-                }
-            )
-
-            add(
-                FabricatedOverlayResource(
-                    FABRICATED_OVERLAY_NAME_SYSTEMUI,
-                    SYSTEMUI_PACKAGE
-                ).also { systemuiOverlay ->
-                    systemuiOverlay.apply {
-                        setBoolean("flag_monet", false)
-
-                        if (isDarkMode && pitchBlackTheme) {
-                            // QS top part color A16+
-                            setColor(
-                                "shade_panel_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.32f * 255).toInt())
-                            ) // with blur
-                            setColor("shade_panel_fallback", Color.BLACK) // no blur
-                            // Notification scrim color A16+
-                            setColor(
-                                "notification_scrim_base",
-                                ColorUtils.setAlphaComponent(Color.BLACK, (0.5f * 255).toInt())
-                            ) // with blur
-                            setColor("notification_scrim_fallback", Color.BLACK) // no blur
-                        }
-                    }
-                }
-            )
-
-            getSelectedFabricatedApps().filter { (packageName, isSelected) ->
-                isSelected == java.lang.Boolean.TRUE && SystemUtil.isAppInstalled(packageName)
-            }.forEach { (packageName) ->
-                add(
-                    getFabricatedColorsPerApp(
-                        packageName,
-                        if (isDarkMode) paletteDark else paletteLight
-                    )
-                )
-            }
-        }.forEach { registerFabricatedOverlay(it) }
-
-        // Trigger a refresh to all the viewmodels
-        RefreshCoordinator.triggerRefresh()
-    }
-
-    fun applyFabricatedColorsPerApp(
-        packageName: String,
-        palette: ArrayList<ArrayList<Int>>?
-    ) {
-        registerFabricatedOverlay(
-            getFabricatedColorsPerApp(
-                packageName,
-                palette
-            )
-        )
-    }
-
-    fun removeFabricatedColors() {
-        if (removeFabricatedColorsNonRoot()) return
-
-        ArrayList<String>().apply {
-            getSelectedFabricatedApps().filter { (_, isSelected) ->
-                isSelected == java.lang.Boolean.TRUE
-            }.forEach { (packageName) ->
-                add(
-                    String.format(
-                        FABRICATED_OVERLAY_NAME_APPS,
-                        packageName
-                    )
-                )
-            }
-
-            add(FABRICATED_OVERLAY_NAME_SYSTEM)
-            add(FABRICATED_OVERLAY_NAME_SYSTEMUI)
-        }.forEach { unregisterFabricatedOverlay(it) }
-    }
-
-    private fun getFabricatedColorsPerApp(
-        packageName: String,
-        palette: ArrayList<ArrayList<Int>>?
-    ): FabricatedOverlayResource {
-        var paletteTemp = palette
-
-        if (paletteTemp == null) {
-            paletteTemp = generateModifiedColors(
-                getCurrentMonetStyle(),
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled(),
-                modifyPitchBlack = false
-            )
-        }
-
-        return FabricatedOverlayResource(
-            String.format(FABRICATED_OVERLAY_NAME_APPS, packageName),
-            packageName
-        ).also { overlay ->
-            overlay.assignPerAppColorsToOverlay(paletteTemp)
-        }
-    }
-
-    private fun applyFabricatedColorsNonRoot(): Boolean {
-        val isShizukuMode = isShizukuMode()
-        val isWirelessAdbMode = isWirelessAdbMode()
-
-        if (!isShizukuMode && !isWirelessAdbMode) return false
-
-        val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
-        val samsungPaletteName = "android:SemWT_G_MonetPalette"
-
-        if (isShizukuMode) {
-            if (!ensureShizukuConnection()) {
-                reportError(appContext.getString(R.string.error_shizuku_unavailable))
-                return true
-            }
-
-            try {
-                val currentSettings = mShizukuConnection.currentSettings
-
-                if (themeJson.isNotEmpty()) {
-                    val output =
-                        mShizukuConnection.run("cmd overlay list | grep \"$samsungPaletteName\"")
-                    if (output.contains(samsungPaletteName)) {
-                        val isEnabled = output.contains("[x]")
-                        mShizukuConnection.run("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
-                    }
-
-                    // Null on success, shell error message on failure.
-                    mShizukuConnection.applyFabricatedColors(
-                        MiscUtil.mergeJsonStrings(currentSettings, themeJson)
-                    )?.let { error ->
-                        Log.e(TAG, "applyFabricatedColorsNonRoot: $error")
-                        reportError(
-                            appContext.getString(R.string.error_overlay_operation, error)
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
-                reportError(overlayError(e))
-            }
-        } else {
-            if (!WifiAdbShell.isMyDeviceConnected()) {
-                Log.w(TAG, "Device not connected in wireless ADB mode")
-                reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
-                return true
-            }
-
-            try {
-                val current =
-                    WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
-                if (!current.success) {
-                    reportError(
-                        appContext.getString(R.string.error_overlay_operation, current.output)
-                    )
-                    return true
-                }
-
-                if (themeJson.isNotEmpty()) {
-                    // Grep exit 1 = palette absent; only the output matters.
-                    val list =
-                        WifiAdbShell.exec("cmd overlay list | grep \"$samsungPaletteName\"")
-                    if (list.output.contains(samsungPaletteName)) {
-                        val isEnabled = list.output.contains("[x]")
-                        WifiAdbShell.exec("cmd overlay ${if (isEnabled) "disable" else "enable"} $samsungPaletteName")
-                    }
-
-                    val currentSettings = current.output
-                        .takeUnless { it == "null" || it.isEmpty() } ?: "{}"
-                    val jsonString = MiscUtil.mergeJsonStrings(currentSettings, themeJson)
-                    val put = WifiAdbShell
-                        .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
-                    if (!put.success) {
-                        Log.e(TAG, "applyFabricatedColorsNonRoot: ${put.output}")
-                        reportError(
-                            appContext.getString(R.string.error_overlay_operation, put.output)
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "applyFabricatedColorsNonRoot: ", e)
-                reportError(overlayError(e))
-            }
-        }
-
-        // Trigger a refresh to all the viewmodels
-        RefreshCoordinator.triggerRefresh()
-
-        return true
-    }
-
-    private fun removeFabricatedColorsNonRoot(): Boolean {
-        val isShizukuMode = isShizukuMode()
-        val isWirelessAdbMode = isWirelessAdbMode()
-
-        if (!isShizukuMode && !isWirelessAdbMode) return false
-
-        val samsungPaletteName = "android:SemWT_G_MonetPalette"
-
-        if (isShizukuMode) {
-            if (!ensureShizukuConnection()) {
-                reportError(appContext.getString(R.string.error_shizuku_unavailable))
-                return true
-            }
-
-            try {
-                if (mShizukuConnection
-                        .run("cmd overlay list | grep \"$samsungPaletteName\"")
-                        .contains(samsungPaletteName)
-                ) {
-                    mShizukuConnection.run("cmd overlay disable $samsungPaletteName")
-                    mShizukuConnection.run("cmd overlay enable $samsungPaletteName")
-                }
-
-                // Null on success, shell error message on failure.
-                mShizukuConnection.removeFabricatedColors()?.let { error ->
-                    Log.e(TAG, "removeFabricatedColorsNonRoot: $error")
-                    reportError(
-                        appContext.getString(R.string.error_overlay_operation, error)
-                    )
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
-                reportError(overlayError(e))
-            }
-        } else {
-            if (!WifiAdbShell.isMyDeviceConnected()) {
-                Log.w(TAG, "Device not connected in wireless ADB mode")
-                reportError(appContext.getString(R.string.error_wireless_adb_unavailable))
-                return true
-            }
-
-            try {
-                val current =
-                    WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
-                if (!current.success) {
-                    reportError(
-                        appContext.getString(R.string.error_overlay_operation, current.output)
-                    )
-                    return true
-                }
-
-                // Grep exit 1 = palette absent; only the output matters.
-                val list = WifiAdbShell.exec("cmd overlay list | grep \"$samsungPaletteName\"")
-                if (list.output.contains(samsungPaletteName)) {
-                    WifiAdbShell.exec("cmd overlay disable $samsungPaletteName")
-                    WifiAdbShell.exec("cmd overlay enable $samsungPaletteName")
-                }
-
-                val currentSettings = current.output
-                    .takeUnless { it == "null" || it.isEmpty() } ?: "{}"
-                val jsonString = ThemeOverlayPackage
-                    .getOriginalSettings(currentSettings)
-                    .toString()
-                val put = WifiAdbShell
-                    .exec("settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'")
-                if (!put.success) {
-                    Log.e(TAG, "removeFabricatedColorsNonRoot: ${put.output}")
-                    reportError(
-                        appContext.getString(R.string.error_overlay_operation, put.output)
-                    )
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "removeFabricatedColorsNonRoot: ", e)
-                reportError(overlayError(e))
-            }
-        }
-
-        return true
-    }
-
-    private fun reportError(message: String) {
-        ThemingErrorReporter.report(message)
-    }
-
-    private fun overlayError(e: Exception): String =
-        appContext.getString(
-            R.string.error_overlay_operation,
-            e.message ?: e.javaClass.simpleName
-        )
 }

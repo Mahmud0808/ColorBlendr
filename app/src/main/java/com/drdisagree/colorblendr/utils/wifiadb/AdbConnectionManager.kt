@@ -49,9 +49,9 @@ class AdbConnectionManager private constructor(context: Context) : AbsAdbConnect
 
     init {
         api = Build.VERSION.SDK_INT
-        mPrivateKey = readPrivateKeyFromFile(context)
-        mCertificate = readCertificateFromFile(context)
-        if (mPrivateKey == null) {
+        mPrivateKey = runCatching { readPrivateKeyFromFile(context) }.getOrNull()
+        mCertificate = runCatching { readCertificateFromFile(context) }.getOrNull()
+        if (mPrivateKey == null || mCertificate == null) {
             // Generate a new key pair
             val keySize = 2048
             val keyPairGenerator = KeyPairGenerator.getInstance("RSA")

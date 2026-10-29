@@ -32,14 +32,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.colorblendr.data.enums.MONET
+import com.drdisagree.colorblendr.data.enums.ThemeModeSupport
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.icon
+import com.drdisagree.colorblendr.ui.compose.utils.labelRes
+import com.drdisagree.colorblendr.utils.community.CommunityCount
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
 import com.drdisagree.colorblendr.utils.community.communityColorScheme
 
@@ -53,14 +58,22 @@ fun CommunityThemeCard(
     modifier: Modifier = Modifier,
     showDownloads: Boolean = false
 ) {
-    val isDark = isSystemInDarkTheme()
+    val systemDark = isSystemInDarkTheme()
+    val modeSupport = remember(theme) {
+        if (CommunityThemePalette.hasLowContrast(theme)) {
+            ThemeModeSupport.LOW_CONTRAST
+        } else {
+            CommunityThemePalette.modeSupport(theme)
+        }
+    }
+    val isDark = remember(theme, systemDark) { CommunityThemePalette.displayDark(theme, systemDark) }
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
 
     // Real scheme roles from the generated theme (respects background
     // saturation/lightness and spec version).
     val baseScheme = MaterialTheme.colorScheme
     val scheme = remember(theme, isDark, baseScheme) {
-        communityColorScheme(palette, isDark, baseScheme)
+        communityColorScheme(theme, isDark, baseScheme)
     }
     // Surface container tinted toward the accent for extra vibrancy.
     val container = scheme.surfaceContainerHigh
@@ -122,7 +135,7 @@ fun CommunityThemeCard(
                     modifier = Modifier.size(14.dp)
                 )
                 Text(
-                    text = theme.upvotes.toString(),
+                    text = CommunityCount.compact(theme.upvotes),
                     color = subtle,
                     fontSize = 12.sp
                 )
@@ -135,9 +148,18 @@ fun CommunityThemeCard(
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
-                        text = theme.downloads.toString(),
+                        text = CommunityCount.compact(theme.downloads),
                         color = subtle,
                         fontSize = 12.sp
+                    )
+                }
+                modeSupport.icon?.let { icon ->
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        painter = rememberVectorPainter(icon),
+                        contentDescription = modeSupport.labelRes?.let { stringResource(it) },
+                        tint = subtle,
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }

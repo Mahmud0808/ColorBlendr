@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.dev.utils
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,10 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import android.Manifest
 import com.drdisagree.colorblendr.dev.MainActivity
 import com.drdisagree.colorblendr.dev.R
 
@@ -41,9 +42,19 @@ object PendingNotifier {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun canNotify(context: Context): Boolean =
+        hasPermission(context) && NotificationManagerCompat.from(context).areNotificationsEnabled()
+
+    fun openNotificationSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
+
     @SuppressLint("MissingPermission")
     fun notifyPending(context: Context, count: Int) {
-        if (count <= 0 || !hasPermission(context)) return
+        if (count <= 0 || !canNotify(context)) return
         ensureChannel(context)
 
         val intent = Intent(context, MainActivity::class.java)
@@ -57,7 +68,13 @@ object PendingNotifier {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.notify_title))
-            .setContentText(context.resources.getQuantityString(R.plurals.notify_body, count, count))
+            .setContentText(
+                context.resources.getQuantityString(
+                    R.plurals.notify_body,
+                    count,
+                    count
+                )
+            )
             .setAutoCancel(true)
             .setContentIntent(pending)
             .build()

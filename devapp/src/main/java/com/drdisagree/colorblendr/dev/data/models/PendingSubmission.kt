@@ -15,5 +15,6 @@ data class PendingSubmission(
     companion object {
         const val MAX_NAME = 40
         const val MAX_DESCRIPTION = 500
+        const val MAX_AUTHOR = 24
     }
 }

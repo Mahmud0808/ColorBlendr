@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
@@ -31,10 +35,10 @@ import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 
 @Composable
 fun CompactSearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier
 ) {
+    val query = state.text
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -59,9 +63,8 @@ fun CompactSearchField(
                 )
             }
             BasicTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                singleLine = true,
+                state = state,
+                lineLimits = TextFieldLineLimits.SingleLine,
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 ),
@@ -71,7 +74,7 @@ fun CompactSearchField(
         }
         if (query.isNotEmpty()) {
             IconButton(
-                onClick = { onQueryChange("") },
+                onClick = { state.clearText() },
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
@@ -89,9 +92,6 @@ fun CompactSearchField(
 @Composable
 private fun CompactSearchFieldPreview() {
     DevTheme {
-        CompactSearchField(
-            query = "",
-            onQueryChange = {}
-        )
+        CompactSearchField(state = rememberTextFieldState())
     }
 }

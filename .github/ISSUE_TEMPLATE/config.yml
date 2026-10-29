@@ -1,11 +1,17 @@
 blank_issues_enabled: false
 contact_links:
+  - name: FAQ
+    url: https://github.com/Mahmud0808/ColorBlendr#faq-
+    about: OneUI colors, greyed out options, uninstalling properly. Read this before opening an issue.
+  - name: Questions and support
+    url: https://t.me/DrDsProjectsChat
+    about: Setup help and "how do I" questions. Fastest replies here.
   - name: GitHub Discussions
     url: https://github.com/Mahmud0808/ColorBlendr/discussions
-    about: Discuss anything related to ColorBlendr, or ask and answer questions here.
+    about: Ideas, showcases, and anything that is not a confirmed bug or a specific feature request.
+  - name: Report a community theme
+    url: https://github.com/Mahmud0808/ColorBlendr-Themes
+    about: Use the report button on the theme inside the app instead of opening an issue.
   - name: Telegram Channel
     url: https://t.me/DrDsProjects
-    about: Follow telegram channel to get latest news and updates.
-  - name: Telegram Group
-    url: https://t.me/DrDsProjectsChat
-    about: We recommend to go to this place if you wish to ask a question and want a quicker reply. 
+    about: Release announcements and news.

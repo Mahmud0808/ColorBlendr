@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 @Suppress("unused")
 object Prefs {
 
-    private val TAG: String = Prefs::class.java.simpleName
+    private val TAG: String = "Prefs"
 
     private val prefs: SharedPreferences by lazy {
         val context = runCatching { appContext.createDeviceProtectedStorageContext() }
@@ -21,10 +21,22 @@ object Prefs {
         }
     }
 
-    private val editor by lazy { prefs.edit() }
+    fun newEditor(): SharedPreferences.Editor = prefs.edit()
 
-    val preferenceEditor: SharedPreferences.Editor
-        get() = editor
+    private val stagingLock = Any()
+
+    private val unstagedKeys = setOf(
+        Constant.WALLPAPER_COLOR_LIST,
+        Constant.MONET_LAST_UPDATED,
+        Constant.COMMUNITY_LAST_FETCH,
+        Constant.COMMUNITY_VOTED_IDS,
+        Constant.PITCH_BLACK_AUTO_SELECTED_APPS,
+        Constant.PITCH_BLACK_DECLINED_APPS,
+        Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
+        Constant.SHOW_PALETTE_ROOT_HINT,
+        Constant.SHOW_PALETTE_ROOTLESS_HINT,
+        Constant.APP_COLOR_OVERRIDES
+    )
 
     // Staging layer: while active, writes are kept in memory only (still
     // visible to every getter and change listener) until they are either
@@ -37,6 +49,7 @@ object Prefs {
     @Volatile
     private var stagedClearAll = false
     private val staged = ConcurrentHashMap<String, Any>()
+    private val stagedDefaults = ConcurrentHashMap<String, Any>()
 
     private val changeListeners =
         CopyOnWriteArraySet<SharedPreferences.OnSharedPreferenceChangeListener>()
@@ -50,75 +63,105 @@ object Prefs {
         get() = stagingActive
 
     fun beginStaging() {
-        stagingActive = true
+        synchronized(stagingLock) {
+            if (stagingActive) return
+            staged.clear()
+            stagedDefaults.clear()
+            stagedClearAll = false
+            stagingActive = true
+        }
     }
 
     fun commitStaged() {
-        if (!stagingActive) return
+        synchronized(stagingLock) {
+            if (!stagingActive) return
 
-        if (stagedClearAll) editor.clear()
-        staged.forEach { (key, value) ->
-            if (value === REMOVED) {
-                editor.remove(key)
-            } else {
-                putIntoEditor(key, value)
+            val editor = prefs.edit()
+            if (stagedClearAll) editor.clear()
+            staged.forEach { (key, value) ->
+                if (value === REMOVED) {
+                    editor.remove(key)
+                } else {
+                    editor.putValue(key, value)
+                }
             }
-        }
-        editor.commit()
+            editor.commit()
 
-        stagingActive = false
-        stagedClearAll = false
-        staged.clear()
+            stagingActive = false
+            stagedClearAll = false
+            staged.clear()
+            stagedDefaults.clear()
+        }
     }
 
     fun discardStaged() {
-        if (!stagingActive) return
+        synchronized(stagingLock) {
+            if (!stagingActive) return
 
-        stagingActive = false
-        stagedClearAll = false
-        staged.clear()
+            stagingActive = false
+            stagedClearAll = false
+            staged.clear()
+            stagedDefaults.clear()
+        }
 
         // Null key: observers re-read everything from storage.
         dispatchChange(null)
     }
 
-    private fun stagedValue(key: String): Any? {
-        if (!stagingActive) return null
-        staged[key]?.let { return it }
-        return if (stagedClearAll) REMOVED else null
+    fun hasStagedChanges(): Boolean = synchronized(stagingLock) {
+        if (!stagingActive) return false
+        if (stagedClearAll) return true
+        val committed = prefs.all
+        staged.any { (key, value) -> !matchesCommitted(key, value, committed[key]) }
     }
 
-    private fun stage(key: String, value: Any) {
-        staged[key] = value
-        dispatchChange(key)
+    private fun matchesCommitted(key: String, value: Any, committed: Any?): Boolean {
+        if (value === REMOVED) return committed == null
+        val normalized = if (value is Double) value.toInt() else value
+        return normalized == (committed ?: stagedDefaults[key])
+    }
+
+    private fun stagedValue(key: String, defValue: Any?): Any? {
+        if (!stagingActive) return null
+        if (defValue != null) stagedDefaults.putIfAbsent(key, defValue)
+        staged[key]?.let { return it }
+        return if (stagedClearAll) REMOVED else null
     }
 
     private fun dispatchChange(key: String?) {
         changeListeners.forEach { it.onSharedPreferenceChanged(prefs, key) }
     }
 
-    private fun putIntoEditor(key: String, value: Any) {
+    private fun SharedPreferences.Editor.putValue(key: String, value: Any) {
         when (value) {
-            is Boolean -> editor.putBoolean(key, value)
-            is Int -> editor.putInt(key, value)
-            is Long -> editor.putLong(key, value)
-            is Float -> editor.putFloat(key, value)
-            is String -> editor.putString(key, value)
-            is Double -> editor.putInt(key, value.toInt())
+            is Boolean -> putBoolean(key, value)
+            is Int -> putInt(key, value)
+            is Long -> putLong(key, value)
+            is Float -> putFloat(key, value)
+            is String -> putString(key, value)
+            is Double -> putInt(key, value.toInt())
             else -> throw IllegalArgumentException(
                 "Type ${value.javaClass.simpleName} is unknown"
             )
         }
     }
 
-    fun putAny(key: String, value: Any) {
-        if (stagingActive) {
-            stage(key, value)
-        } else {
-            putIntoEditor(key, value)
-            editor.apply()
+    private fun stageOrWrite(key: String, value: Any) {
+        val stagedNow = synchronized(stagingLock) {
+            if (stagingActive && key !in unstagedKeys) {
+                staged[key] = value
+                true
+            } else {
+                prefs.edit().apply {
+                    if (value === REMOVED) remove(key) else putValue(key, value)
+                }.apply()
+                false
+            }
         }
+        if (stagedNow) dispatchChange(key)
     }
+
+    fun putAny(key: String, value: Any) = stageOrWrite(key, value)
 
     fun putBoolean(key: String, `val`: Boolean) = putAny(key, `val`)
 
@@ -131,42 +174,45 @@ object Prefs {
     fun putString(key: String, `val`: String) = putAny(key, `val`)
 
     fun getBoolean(key: String, defValue: Boolean): Boolean {
-        val staged = stagedValue(key) ?: return prefs.getBoolean(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getBoolean(key, defValue)
         return if (staged === REMOVED) defValue else staged as Boolean
     }
 
     fun getInt(key: String): Int = getInt(key, 0)
 
     fun getInt(key: String, defValue: Int): Int {
-        val staged = stagedValue(key) ?: return prefs.getInt(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getInt(key, defValue)
         return if (staged === REMOVED) defValue else (staged as Number).toInt()
     }
 
     fun getLong(key: String): Long = getLong(key, 0)
 
     fun getLong(key: String, defValue: Long): Long {
-        val staged = stagedValue(key) ?: return prefs.getLong(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getLong(key, defValue)
         return if (staged === REMOVED) defValue else (staged as Number).toLong()
     }
 
     fun getFloat(key: String): Float = getFloat(key, 0f)
 
     fun getFloat(key: String, defValue: Float): Float {
-        val staged = stagedValue(key) ?: return prefs.getFloat(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getFloat(key, defValue)
         return if (staged === REMOVED) defValue else (staged as Number).toFloat()
     }
 
     fun getCommittedString(key: String, defValue: String? = null): String? =
         prefs.getString(key, defValue)
 
+    fun getCommittedBoolean(key: String, defValue: Boolean): Boolean =
+        prefs.getBoolean(key, defValue)
+
     fun getString(key: String): String? = getString(key, null)
 
     fun getString(key: String, defValue: String?): String? {
-        val staged = stagedValue(key) ?: return prefs.getString(key, defValue)
+        val staged = stagedValue(key, defValue) ?: return prefs.getString(key, defValue)
         return if (staged === REMOVED) defValue else staged as String
     }
 
-    fun getAllPrefs(): MutableMap<String, *> {
+    fun getAllPrefs(): MutableMap<String, *> = synchronized(stagingLock) {
         val all: MutableMap<String, Any?> = if (stagingActive && stagedClearAll) {
             HashMap()
         } else {
@@ -177,7 +223,7 @@ object Prefs {
                 if (value === REMOVED) all.remove(key) else all[key] = value
             }
         }
-        return all
+        all
     }
 
     fun getAllPrefsAsGson(): String = Constant.GSON.toJson(getAllPrefs() as Map<String, *>)
@@ -195,23 +241,21 @@ object Prefs {
         changeListeners.remove(listener)
     }
 
-    fun clearPref(key: String) {
-        if (stagingActive) {
-            stage(key, REMOVED)
-        } else {
-            editor.remove(key).apply()
-        }
-    }
+    fun clearPref(key: String) = stageOrWrite(key, REMOVED)
 
     fun clearPrefs(vararg keys: String) = keys.forEach { key -> clearPref(key) }
 
     fun clearAllPrefs() {
-        if (stagingActive) {
-            stagedClearAll = true
-            staged.clear()
-            dispatchChange(null)
-        } else {
-            editor.clear().apply()
+        val stagedNow = synchronized(stagingLock) {
+            if (stagingActive) {
+                stagedClearAll = true
+                staged.clear()
+                true
+            } else {
+                prefs.edit().clear().apply()
+                false
+            }
         }
+        if (stagedNow) dispatchChange(null)
     }
 }

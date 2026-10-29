@@ -8,19 +8,18 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
-import com.drdisagree.colorblendr.data.domain.PreviewController.PreviewColors
-import com.drdisagree.colorblendr.utils.app.SystemUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import com.google.android.material.color.PreviewColorResourcesLoader
+import java.lang.ref.WeakReference
 
 // Remaps the framework system color resources on the activity while a preview
 // is active, so view-based UI (MDC dialogs, the color picker) follows the
 // previewed colors just like the Compose theme does.
 object PreviewResourcesOverride {
 
-    private val TAG = PreviewResourcesOverride::class.java.simpleName
+    private val TAG = "PreviewResourcesOverride"
 
-    private var currentLoader: ResourcesLoader? = null
+    private var loader: ResourcesLoader? = null
+    private var loaderResources: WeakReference<Resources>? = null
     private val resourceIdCache = HashMap<String, Int>()
 
     // Bumped after every loader change; composables resolving theme attrs
@@ -29,68 +28,55 @@ object PreviewResourcesOverride {
     var revision by mutableIntStateOf(0)
         private set
 
-    fun apply(activity: Activity, previewColors: PreviewColors?) {
+    fun apply(activity: Activity, frameworkColors: Map<String, Int>?) {
         val resources = activity.resources
+        val loader = loaderFor(resources)
 
-        currentLoader?.let {
+        val colorValues = frameworkColors?.let { buildColorValues(resources, it) }.orEmpty()
+        val built = if (colorValues.isEmpty()) {
+            null
+        } else {
             try {
-                resources.removeLoaders(it)
-            } catch (_: Exception) {
+                PreviewColorResourcesLoader.create(activity, colorValues)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error overriding preview resources", e)
+                null
             }
-            currentLoader = null
         }
+        val providers = built?.providers.orEmpty()
 
-        if (previewColors == null) {
-            // Theme objects cache resolved attributes; without a rebase some
-            // of them keep serving the removed preview values.
-            activity.theme.rebase()
-            revision++
-            return
-        }
+        val oldProviders = loader.providers
+        if (providers.isEmpty() && oldProviders.isEmpty()) return
 
-        val colorValues = buildColorValues(resources, previewColors)
-        if (colorValues.isEmpty()) return
+        loader.setProviders(providers)
+        built?.clearProviders()
+        oldProviders.forEach { runCatching { it.close() } }
 
-        try {
-            PreviewColorResourcesLoader.create(activity, colorValues)?.let {
-                resources.addLoaders(it)
-                currentLoader = it
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error overriding preview resources", e)
-        }
+        // Theme objects cache resolved attributes; without a rebase some
+        // of them keep serving the removed preview values.
         activity.theme.rebase()
         revision++
     }
 
+    private fun loaderFor(resources: Resources): ResourcesLoader {
+        loader?.takeIf { loaderResources?.get() === resources }?.let { return it }
+        return ResourcesLoader().also {
+            resources.addLoaders(it)
+            loader = it
+            loaderResources = WeakReference(resources)
+        }
+    }
+
     @SuppressLint("DiscouragedApi")
-    private fun buildColorValues(
-        resources: Resources,
-        previewColors: PreviewColors
-    ): Map<Int, Int> {
+    private fun buildColorValues(resources: Resources, frameworkColors: Map<String, Int>): Map<Int, Int> {
         val colorValues = HashMap<Int, Int>()
-        val palette = if (SystemUtil.isDarkMode) {
-            previewColors.paletteDark
-        } else {
-            previewColors.paletteLight
-        }
 
-        fun colorId(name: String): Int = resourceIdCache.getOrPut(name) {
-            resources.getIdentifier(name, "color", "android")
-        }
-
-        systemPaletteNames.forEachIndexed { i, row ->
-            row.forEachIndexed { j, name ->
-                val id = colorId(name)
-                if (id != 0) colorValues[id] = palette[i][j]
+        frameworkColors.forEach { (name, color) ->
+            val id = resourceIdCache.getOrPut(name) {
+                resources.getIdentifier(name, "color", "android")
             }
+            if (id != 0) colorValues[id] = color
         }
-
-        (previewColors.lightMap.entries + previewColors.darkMap.entries)
-            .forEach { (name, color) ->
-                val id = colorId(name)
-                if (id != 0) colorValues[id] = color
-            }
 
         return colorValues
     }

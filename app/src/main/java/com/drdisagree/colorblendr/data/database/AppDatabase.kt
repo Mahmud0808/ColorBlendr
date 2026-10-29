@@ -27,16 +27,25 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getInstance(): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    appContext,
-                    AppDatabase::class.java,
-                    DATABASE_NAME
-                ).addMigrations(
-                    MIGRATION_1_2,
-                    MIGRATION_2_3
-                ).build().also { INSTANCE = it }
+                INSTANCE ?: build().also { INSTANCE = it }
             }
         }
+
+        fun closeInstance() {
+            synchronized(this) {
+                INSTANCE?.close()
+                INSTANCE = null
+            }
+        }
+
+        private fun build(): AppDatabase = Room.databaseBuilder(
+            appContext,
+            AppDatabase::class.java,
+            DATABASE_NAME
+        ).addMigrations(
+            MIGRATION_1_2,
+            MIGRATION_2_3
+        ).build()
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -60,19 +69,6 @@ abstract class AppDatabase : RoomDatabase() {
                             "ADD COLUMN `sortOrder` INTEGER NOT NULL DEFAULT 0"
                 )
                 db.execSQL("UPDATE `$CUSTOM_STYLE_TABLE` SET sortOrder = rowid")
-            }
-        }
-
-        fun reloadInstance() {
-            synchronized(this) {
-                INSTANCE = Room.databaseBuilder(
-                    appContext,
-                    AppDatabase::class.java,
-                    DATABASE_NAME
-                ).addMigrations(
-                    MIGRATION_1_2,
-                    MIGRATION_2_3
-                ).build()
             }
         }
     }

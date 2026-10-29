@@ -11,16 +11,19 @@ import com.drdisagree.colorblendr.data.common.Utilities.setAccurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.setCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.setCustomColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setForcePitchBlackSettingsEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setLegacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setModeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setPitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.setSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setTertiaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setTintedTextEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.setTokenOverrides
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.models.CommunityTheme
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import android.graphics.Color as AndroidColor
 
 // Maps a community theme onto the staged prefs and starts a live preview —
@@ -72,8 +75,11 @@ object CommunityThemeApplier {
         setColorSpecVersion(theme.colorSpecVersion)
         setPitchBlackThemeEnabled(theme.pitchBlack)
         setTintedTextEnabled(theme.tintText)
+        setTokenOverrides(theme.tokenOverrides)
+        setLegacyTokensEnabled(CommunityThemePalette.usesLegacyTokens(theme))
+        if (theme.schemaVersion > 1) setForcePitchBlackSettingsEnabled(theme.pitchBlackContainers)
 
-        systemPaletteNames.forEach { row ->
+        PaletteRole.shadeNames.forEach { row ->
             row.forEach { shadeName ->
                 val override = theme.colorOverrides[shadeName]
                 if (override != null) {

@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.wifiadb
 
+import android.app.ForegroundServiceStartNotAllowedException
 import android.content.Context
 import android.content.Intent
 import androidx.work.Worker
@@ -19,14 +20,17 @@ class AdbPairingNotificationWorker(
         val pairingCode = inputData.getString(PAIRING_CODE_KEY)
         val message = inputData.getString("message")
 
-        context.startForegroundService(
-            Intent(context, AdbPairingNotification::class.java).apply {
-                putExtra(PAIRING_CODE_KEY, pairingCode)
-                message?.let { putExtra("message", it) }
-            }
-        )
-
-        return Result.success()
+        return try {
+            context.startForegroundService(
+                Intent(context, AdbPairingNotification::class.java).apply {
+                    putExtra(PAIRING_CODE_KEY, pairingCode)
+                    message?.let { putExtra("message", it) }
+                }
+            )
+            Result.success()
+        } catch (_: ForegroundServiceStartNotAllowedException) {
+            Result.failure()
+        }
     }
 
     companion object {

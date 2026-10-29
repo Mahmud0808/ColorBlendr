@@ -27,12 +27,17 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.thread
+import kotlin.concurrent.withLock
 
 object WifiAdbShell {
 
-    private val TAG = WifiAdbShell::class.java.simpleName
+    private val TAG = "WifiAdbShell"
     private val executor: ExecutorService = Executors.newFixedThreadPool(3)
+    private val execExecutor: ExecutorService = Executors.newCachedThreadPool()
+    private val connectLock = ReentrantLock()
     private var adbShellStream: AdbStream? = null
     private val commandOutput = MutableLiveData<CharSequence?>()
 
@@ -45,6 +50,37 @@ object WifiAdbShell {
         } catch (e: Exception) {
             Log.e(TAG, "isMyDeviceConnected: ", e)
             false
+        }
+    }
+
+    private fun dropConnection() {
+        thread(name = "WifiAdbDrop") {
+            try {
+                AdbConnectionManager.getInstance(appContext).disconnect()
+            } catch (th: Throwable) {
+                Log.e(TAG, "dropConnection: ", th)
+            }
+        }
+    }
+
+    @WorkerThread
+    fun ensureConnected(): Boolean {
+        if (isMyDeviceConnected()) return true
+
+        connectLock.withLock {
+            if (isMyDeviceConnected()) return true
+
+            Log.i(TAG, "Wireless ADB not connected; reconnecting")
+            var connected = false
+            autoConnectInternal(object : ConnectionListener {
+                override fun onConnectionSuccess() {
+                    connected = true
+                }
+
+                override fun onConnectionFailed() {}
+            })
+            Log.i(TAG, "Wireless ADB reconnect ${if (connected) "succeeded" else "failed"}")
+            return connected
         }
     }
 
@@ -264,12 +300,12 @@ object WifiAdbShell {
     // Blocking - call from IO.
     @WorkerThread
     fun exec(command: String): AdbCommandResult {
-        if (!isMyDeviceConnected()) {
+        if (!ensureConnected()) {
             return AdbCommandResult(success = false, output = "Device not connected")
         }
 
         val streamRef = AtomicReference<AdbStream?>(null)
-        val future = executor.submit<AdbCommandResult> {
+        val future = execExecutor.submit<AdbCommandResult> {
             try {
                 val manager = AdbConnectionManager.getInstance(appContext)
                 val destination = "shell:{ $command; } 2>&1; echo \"$EXIT_MARKER$?\""
@@ -307,6 +343,7 @@ object WifiAdbShell {
                 val markerIndex = output.lastIndexOf(EXIT_MARKER)
                 if (markerIndex == -1) {
                     // Stream ended without marker: connection dropped.
+                    dropConnection()
                     AdbCommandResult(success = false, output = output.trim())
                 } else {
                     val code = output.substring(markerIndex + EXIT_MARKER.length)
@@ -334,6 +371,7 @@ object WifiAdbShell {
                 streamRef.get()?.close()
             } catch (_: Exception) {
             }
+            dropConnection()
             AdbCommandResult(success = false, output = "Command timed out")
         } catch (e: Exception) {
             Log.e(TAG, "exec: $command", e)

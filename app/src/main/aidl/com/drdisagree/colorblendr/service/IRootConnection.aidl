@@ -8,13 +8,14 @@ interface IRootConnection {
     void setSystemUIRestartListener();
     boolean isOverlayInstalled(String packageName);
     boolean isOverlayEnabled(String packageName);
+    boolean[] areOverlaysEnabled(in List<String> packageNames);
     void enableOverlay(in List<String> packages);
     void enableOverlayWithIdentifier(in List<String> packages);
     boolean enableOverlayExclusive(in String packageName);
     boolean enableOverlayExclusiveInCategory(in String packageName);
     void disableOverlay(in List<String> packages);
     void disableOverlayWithIdentifier(in List<String> packages);
-    void registerFabricatedOverlay(in FabricatedOverlayResource fabricatedOverlay);
+    boolean registerFabricatedOverlay(in FabricatedOverlayResource fabricatedOverlay);
     void unregisterFabricatedOverlay(in String packageName);
     boolean setHighestPriority(String packageName);
     boolean setLowestPriority(String packageName);

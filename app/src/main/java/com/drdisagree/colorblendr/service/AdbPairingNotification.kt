@@ -34,24 +34,27 @@ class AdbPairingNotification : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val message = intent?.getStringExtra("message")
+        if (intent == null) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        if (ACTION_STOP_SERVICE == intent.action) {
+            stopNotification(PAIRING_NOTIFICATION_ID)
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        val message = intent.getStringExtra("message")
         if (!message.isNullOrEmpty()) {
             showSearchingNotification()
         } else {
             requestPairingCodeInput()
         }
 
-        if (intent != null) {
-            if (ACTION_STOP_SERVICE == intent.action) {
-                stopNotification(PAIRING_NOTIFICATION_ID)
-                stopSelf()
-                return START_NOT_STICKY
-            }
+        handleUserInput(intent)
 
-            handleUserInput(intent)
-        }
-
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun handleUserInput(intent: Intent) {
@@ -77,13 +80,19 @@ class AdbPairingNotification : Service() {
 
     private fun initiateAdbPairing(code: String) {
         val ip = Prefs.getString(ADB_IP, null)
-            ?: throw IllegalStateException("ADB IP not set")
-        val port = Prefs.getString(ADB_PAIRING_PORT, null)
-            ?: throw IllegalStateException("ADB Port not set")
+        val port = Prefs.getString(ADB_PAIRING_PORT, null)?.toIntOrNull()
+
+        if (ip.isNullOrEmpty() || port == null) {
+            showResultNotification(
+                getString(R.string.adb_connection_failed_title),
+                getString(R.string.adb_connection_failed_message)
+            )
+            return
+        }
 
         WifiAdbShell.pair(
             ip,
-            port.toInt(),
+            port,
             code,
             object : WifiAdbShell.PairingListener {
                 override fun onPairingSuccess() {

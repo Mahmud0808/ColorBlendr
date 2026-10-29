@@ -1,26 +1,26 @@
 [versions]
 activityCompose = "1.13.0"
-agp = "9.3.1"
+agp = "9.4.1"
 annotation = "1.10.0"
-appcompat = "1.7.1"
-bcprovJdk15to18 = "1.85.1"
-coil = "3.5.0"
-composeBom = "2026.07.00"
-composePlugin = "2.4.10"
+appcompat = "1.8.0"
+bcprovJdk15to18 = "1.86"
+coil = "3.6.3"
+composeBom = "2026.09.00"
+composePlugin = "2.4.20"
 coreKtx = "1.19.0"
 coreSplashscreen = "1.2.0"
 gson = "2.14.0"
-haze = "1.7.2"
+haze = "2.0.0"
 hiddenapibypassVersion = "6.1"
 ksp = "2.3.10"
 lifecycleCompose = "2.11.0"
 localbroadcastmanager = "1.1.0"
-navigationCompose = "2.9.8"
+navigationCompose = "2.10.1"
 libsuVersion = "6.0.0"
 material = "1.14.0"
-okhttpVersion = "5.4.0"
+okhttpVersion = "5.5.0"
 remotepreferences = "0.8"
-roomVersion = "2.8.4"
+roomVersion = "2.8.5"
 shizuku = "13.1.5"
 spake2Android = "-SNAPSHOT"
 sunSecurityAndroid = "1.1"
@@ -45,6 +45,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-blur = { module = "dev.chrisbanes.haze:haze-blur", version.ref = "haze" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleCompose" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleCompose" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

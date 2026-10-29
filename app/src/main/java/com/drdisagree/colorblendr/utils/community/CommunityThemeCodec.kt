@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.community
 
+import android.os.Build
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_DARK
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION_LIGHT
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS_DARK
@@ -7,12 +8,15 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNES
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_DARK
 import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION_LIGHT
 import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.forcePitchBlackSettingsEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getColorSpecVersion
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getOverriddenColorFor
 import com.drdisagree.colorblendr.data.common.Utilities.getSecondaryColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.getTertiaryColorValue
+import com.drdisagree.colorblendr.data.common.Utilities.getTokenOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.isColorOverriddenFor
+import com.drdisagree.colorblendr.data.common.Utilities.legacyTokensEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.secondaryColorEnabled
@@ -21,7 +25,9 @@ import com.drdisagree.colorblendr.data.common.Utilities.tintedTextEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CommunityTheme
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.theme.model.PaletteRole
+import com.drdisagree.colorblendr.theme.override.ColorOverrideCodec
+import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -30,7 +36,11 @@ import org.json.JSONObject
 object CommunityThemeCodec {
 
     const val SCHEMA_VERSION = 1
+    const val SCHEMA_VERSION_TOKENS = 2
     const val MAX_PAYLOAD_BYTES = 8 * 1024
+    const val MAX_PAYLOAD_BYTES_TOKENS = 16 * 1024
+    const val ENGINE_VERSION_LEGACY = 1
+    const val ENGINE_VERSION_TOKENS = 2
     const val MAX_INDEX_THEMES = 2000
 
     private const val MAX_NAME_LENGTH = 40
@@ -39,6 +49,11 @@ object CommunityThemeCodec {
     private const val SLIDER_MIN = 0
     private const val SLIDER_MAX = 200
 
+    private const val TOKEN_OVERRIDES = "tokenOverrides"
+    private const val PITCH_BLACK_CONTAINERS = "pitchBlackContainers"
+    private const val ENGINE_VERSION = "engineVersion"
+    private val V2_KEYS = listOf(TOKEN_OVERRIDES, PITCH_BLACK_CONTAINERS)
+
     private val ID_REGEX = Regex("^[a-z0-9][a-z0-9-]{0,63}$")
     private val HEX_COLOR_REGEX = Regex("^#[0-9a-fA-F]{6}$")
     private val CONTROL_CHARS = Regex("\\p{Cntrl}")
@@ -46,7 +61,7 @@ object CommunityThemeCodec {
     private val EXCESS_NEWLINES = Regex("\n{3,}")
 
     private val validShadeNames: Set<String> by lazy {
-        systemPaletteNames.flatMap { it.asIterable() }.toSet()
+        PaletteRole.shadeNames.flatten().toSet()
     }
 
     // Index = JSON array of theme objects; invalid entries skipped, duplicate
@@ -67,8 +82,11 @@ object CommunityThemeCodec {
     }
 
     fun parseTheme(json: JSONObject): CommunityTheme? {
-        if (json.toString().toByteArray().size > MAX_PAYLOAD_BYTES) return null
-        if (json.optInt("schemaVersion", -1) != SCHEMA_VERSION) return null
+        val schemaVersion = json.optInt("schemaVersion", -1)
+        if (schemaVersion != SCHEMA_VERSION && schemaVersion != SCHEMA_VERSION_TOKENS) return null
+        val maxBytes = if (schemaVersion == SCHEMA_VERSION) MAX_PAYLOAD_BYTES else MAX_PAYLOAD_BYTES_TOKENS
+        if (json.toString().toByteArray().size > maxBytes) return null
+        if (schemaVersion == SCHEMA_VERSION && V2_KEYS.any(json::has)) return null
 
         val id = json.optString("id")
         if (!ID_REGEX.matches(id)) return null
@@ -104,6 +122,20 @@ object CommunityThemeCodec {
         val colorOverrides = parseColorOverrides(json.optJSONObject("colorOverrides"))
             ?: return null
 
+        val tokenOverrides = if (json.has(TOKEN_OVERRIDES)) {
+            json.optJSONObject(TOKEN_OVERRIDES)?.let(ColorOverrideCodec::tokenModesFromJson) ?: return null
+        } else {
+            TokenOverrides()
+        }
+        val engineVersion = if (json.has(ENGINE_VERSION)) {
+            json.optInt(ENGINE_VERSION, -1).takeIf { it in ENGINE_VERSION_LEGACY..ENGINE_VERSION_TOKENS }
+                ?: return null
+        } else {
+            ENGINE_VERSION_LEGACY
+        }
+        val pitchBlackContainers = json.opt(PITCH_BLACK_CONTAINERS)
+        if (pitchBlackContainers != null && pitchBlackContainers !is Boolean) return null
+
         return CommunityTheme(
             id = id,
             name = name,
@@ -127,7 +159,11 @@ object CommunityThemeCodec {
             colorOverrides = colorOverrides,
             upvotes = json.optInt("upvotes").coerceAtLeast(0),
             downloads = json.optInt("downloads").coerceAtLeast(0),
-            createdAt = json.optLong("createdAt").coerceAtLeast(0L)
+            createdAt = json.optLong("createdAt").coerceAtLeast(0L),
+            schemaVersion = schemaVersion,
+            tokenOverrides = tokenOverrides,
+            pitchBlackContainers = pitchBlackContainers == true,
+            engineVersion = engineVersion
         )
     }
 
@@ -140,7 +176,12 @@ object CommunityThemeCodec {
         author: String,
         seedColor: Int
     ): JSONObject = JSONObject().apply {
-        put("schemaVersion", SCHEMA_VERSION)
+        val tokenOverrides = getTokenOverrides()
+        val pitchBlackContainers = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
+                pitchBlackThemeEnabled() && forcePitchBlackSettingsEnabled()
+        val usesTokens = !tokenOverrides.isEmpty || pitchBlackContainers
+
+        put("schemaVersion", if (usesTokens) SCHEMA_VERSION_TOKENS else SCHEMA_VERSION)
         put("name", sanitizeText(name, MAX_NAME_LENGTH))
         put("description", sanitizeMultiline(description, MAX_DESCRIPTION_LENGTH))
         put("author", sanitizeText(author, MAX_AUTHOR_LENGTH))
@@ -169,11 +210,14 @@ object CommunityThemeCodec {
             }
         }
         if (overrides.length() > 0) put("colorOverrides", overrides)
+        if (!tokenOverrides.isEmpty) put(TOKEN_OVERRIDES, ColorOverrideCodec.tokenModesToJson(tokenOverrides))
+        if (pitchBlackContainers) put(PITCH_BLACK_CONTAINERS, true)
+        if (!legacyTokensEnabled()) put(ENGINE_VERSION, ENGINE_VERSION_TOKENS)
     }
 
     // Full round-trip serialization (id + counters) for the Room cache.
     fun themeToJson(theme: CommunityTheme): JSONObject = JSONObject().apply {
-        put("schemaVersion", SCHEMA_VERSION)
+        put("schemaVersion", theme.schemaVersion)
         put("id", theme.id)
         put("name", theme.name)
         put("description", theme.description)
@@ -198,6 +242,11 @@ object CommunityThemeCodec {
         if (theme.colorOverrides.isNotEmpty()) {
             put("colorOverrides", JSONObject(theme.colorOverrides.mapValues { toHex(it.value) }))
         }
+        if (!theme.tokenOverrides.isEmpty) {
+            put(TOKEN_OVERRIDES, ColorOverrideCodec.tokenModesToJson(theme.tokenOverrides))
+        }
+        if (theme.pitchBlackContainers) put(PITCH_BLACK_CONTAINERS, true)
+        if (theme.engineVersion > ENGINE_VERSION_LEGACY) put(ENGINE_VERSION, theme.engineVersion)
         put("upvotes", theme.upvotes)
         put("downloads", theme.downloads)
         put("createdAt", theme.createdAt)

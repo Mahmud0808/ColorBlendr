@@ -1,6 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Save
@@ -39,6 +43,7 @@ fun MenuItem(
     title: String,
     modifier: Modifier = Modifier,
     summary: String? = null,
+    value: String? = null,
     icon: Painter? = null,
     iconSpaceReserved: Boolean = false,
     showEndArrow: Boolean = false,
@@ -105,6 +110,22 @@ fun MenuItem(
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
+                if (value != null) {
+                    val effectsSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
+                    AnimatedContent(
+                        targetState = value,
+                        transitionSpec = { fadeIn(effectsSpec) togetherWith fadeOut(effectsSpec) },
+                        label = "menuItemValue",
+                        modifier = Modifier.padding(top = 4.dp)
+                    ) { current ->
+                        Text(
+                            text = current,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                                .copy(alpha = if (enabled) 1f else 0.4f)
+                        )
+                    }
+                }
             }
 
             if (showEndArrow) {
@@ -129,6 +150,7 @@ private fun MenuItemPreview() {
             MenuItem(
                 title = "Backup and restore",
                 summary = "Save and restore your settings",
+                value = "Last backup: today",
                 icon = rememberVectorPainter(Icons.Rounded.Save),
                 showEndArrow = true,
                 position = WidgetPosition.Top

@@ -8,7 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
-import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -24,10 +24,7 @@ fun PreviewSchemeParityCheck(viewScheme: ColorScheme) {
 
         withContext(Dispatchers.IO) {
             try {
-                val previewScheme = previewColorScheme(
-                    PreviewController.buildPreviewColors(),
-                    isDark
-                )
+                val previewScheme = ThemePrefs.scheme(isDark).toColorScheme()
                 val mismatches = compareSchemes(viewScheme, previewScheme)
                 if (mismatches.isEmpty()) {
                     Log.d(TAG, "Preview scheme matches view theme")

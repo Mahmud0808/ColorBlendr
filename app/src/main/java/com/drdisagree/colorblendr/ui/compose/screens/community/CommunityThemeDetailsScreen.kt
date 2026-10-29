@@ -1,11 +1,17 @@
 package com.drdisagree.colorblendr.ui.compose.screens.community
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Share
@@ -35,6 +40,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -47,33 +53,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.COMMUNITY_WORKER_URL
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.data.enums.ThemeModeSupport
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.previewCommunityTheme
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
+import com.drdisagree.colorblendr.ui.compose.utils.icon
+import com.drdisagree.colorblendr.ui.compose.utils.labelRes
+import com.drdisagree.colorblendr.utils.community.CommunityCount
 import com.drdisagree.colorblendr.utils.community.CommunityReporter
 import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
 import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
@@ -151,7 +164,7 @@ fun CommunityThemeDetailsScreen(themeId: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun DetailsContent(
     theme: CommunityTheme,
@@ -160,17 +173,22 @@ private fun DetailsContent(
     upvotes: Int,
     onUpvoteToggle: (() -> Unit)?
 ) {
-    val isDark = isSystemInDarkTheme()
+    val systemDark = isSystemInDarkTheme()
+    val modeSupport = remember(theme) { CommunityThemePalette.modeSupport(theme) }
+    val lowContrast = remember(theme) { CommunityThemePalette.hasLowContrast(theme) }
+    val isDark = remember(theme, systemDark) { CommunityThemePalette.displayDark(theme, systemDark) }
     val baseScheme = MaterialTheme.colorScheme
     val palette = remember(theme, isDark) { CommunityThemePalette.derive(theme, isDark) }
     val scopedScheme = remember(theme, isDark, baseScheme) {
-        communityColorScheme(palette, isDark, baseScheme)
+        communityColorScheme(theme, isDark, baseScheme)
     }
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val rootMode = if (LocalInspectionMode.current) true else remember { isRootMode() }
     val scrollState = rememberScrollState()
     val toolbarLifted by remember { derivedStateOf { scrollState.value > 0 } }
+
+    SystemBarAppearance(isDark = isDark)
 
     // Scoped theming: only this screen wears the theme; navigating away
     // simply recomposes the rest of the app untouched.
@@ -249,7 +267,7 @@ private fun DetailsContent(
                         .fillMaxSize()
                         .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(horizontal = 16.dp)
                 ) {
                     val info: @Composable () -> Unit = {
@@ -266,34 +284,55 @@ private fun DetailsContent(
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(
-                                    text = theme.author.ifEmpty {
-                                        stringResource(R.string.anonymous)
-                                    },
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 13.sp
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = theme.author.ifEmpty {
+                                            stringResource(R.string.anonymous)
+                                        },
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 13.sp,
+                                        maxLines = 1,
+                                        modifier = Modifier
+                                            .weight(1f, fill = false)
+                                            .basicMarquee(iterations = Int.MAX_VALUE)
+                                    )
+                                    Text(
+                                        text = pluralStringResource(
+                                            R.plurals.community_applies,
+                                            theme.downloads,
+                                            CommunityCount.compact(theme.downloads)
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 13.sp,
+                                        maxLines = 1
+                                    )
+                                }
+                                if (modeSupport.icon != null || lowContrast) {
+                                    FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        if (modeSupport != ThemeModeSupport.LOW_CONTRAST) {
+                                            ModeSupportBadge(support = modeSupport)
+                                        }
+                                        if (lowContrast) {
+                                            ModeSupportBadge(support = ThemeModeSupport.LOW_CONTRAST)
+                                        }
+                                    }
+                                }
                             }
 
-                            StatChip(
-                                icon = if (upvoted) {
-                                    rememberVectorPainter(Icons.Rounded.ThumbUp)
-                                } else {
-                                    rememberVectorPainter(Icons.Outlined.ThumbUp)
-                                },
-                                value = upvotes,
-                                onClick = onUpvoteToggle?.let { toggle ->
+                            VoteButton(
+                                upvoted = upvoted,
+                                upvotes = upvotes,
+                                onToggle = onUpvoteToggle?.let { toggle ->
                                     {
                                         haptics.performHapticFeedback(HapticFeedbackType.Confirm)
                                         toggle()
                                     }
-                                }
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            StatChip(
-                                icon = rememberVectorPainter(Icons.Rounded.Download),
-                                value = theme.downloads,
-                                onClick = null
+                                },
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
 
@@ -369,7 +408,7 @@ private fun DetailsContent(
 
 // All five palette rows as large overlapping shade circles.
 @Composable
-private fun LargeSwatch(palette: ArrayList<ArrayList<Int>>) {
+private fun LargeSwatch(palette: List<List<Int>>) {
     val shadeIndices = listOf(3, 4, 6, 8, 10)
 
     Surface(
@@ -400,41 +439,116 @@ private fun LargeSwatch(palette: ArrayList<ArrayList<Int>>) {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun StatChip(
-    icon: Painter,
-    value: Int,
-    onClick: (() -> Unit)?
-) {
-    val content: @Composable () -> Unit = {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp)
-            )
-            Text(text = value.toString())
+private fun SystemBarAppearance(isDark: Boolean) {
+    val view = LocalView.current
+    if (view.isInEditMode) return
+
+    DisposableEffect(view, isDark) {
+        val window = view.context.findActivity()?.window ?: return@DisposableEffect onDispose {}
+        val controller = WindowCompat.getInsetsController(window, view)
+        val lightStatusBars = controller.isAppearanceLightStatusBars
+        val lightNavigationBars = controller.isAppearanceLightNavigationBars
+        controller.isAppearanceLightStatusBars = !isDark
+        controller.isAppearanceLightNavigationBars = !isDark
+        onDispose {
+            controller.isAppearanceLightStatusBars = lightStatusBars
+            controller.isAppearanceLightNavigationBars = lightNavigationBars
         }
     }
+}
 
-    if (onClick != null) {
-        OutlinedButton(
-            onClick = onClick,
-            shapes = ButtonDefaults.shapes()
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+@Composable
+private fun ModeSupportBadge(
+    support: ThemeModeSupport,
+    modifier: Modifier = Modifier
+) {
+    val icon = support.icon ?: return
+    val label = support.labelRes ?: return
+    val warning = support == ThemeModeSupport.LOW_CONTRAST
+
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = if (warning) {
+            MaterialTheme.colorScheme.errorContainer
+        } else {
+            MaterialTheme.colorScheme.secondaryContainer
+        },
+        contentColor = if (warning) {
+            MaterialTheme.colorScheme.onErrorContainer
+        } else {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        },
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            content()
+            Icon(
+                painter = rememberVectorPainter(icon),
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
+            )
+            Text(
+                text = stringResource(label),
+                style = MaterialTheme.typography.labelMedium
+            )
         }
-    } else {
-        OutlinedButton(
-            onClick = {},
-            enabled = false,
-            shapes = ButtonDefaults.shapes()
-        ) {
-            content()
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun VoteButton(
+    upvoted: Boolean,
+    upvotes: Int,
+    onToggle: (() -> Unit)?,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = { onToggle?.invoke() },
+        enabled = onToggle != null,
+        shapes = ButtonDefaults.shapes(),
+        modifier = modifier
+    ) {
+        Icon(
+            painter = rememberVectorPainter(
+                if (upvoted) Icons.Rounded.ThumbUp else Icons.Outlined.ThumbUp
+            ),
+            contentDescription = stringResource(R.string.upvote),
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text = CommunityCount.compact(upvotes))
+    }
+}
+
+@Preview
+@Composable
+private fun VoteButtonPreview() {
+    ColorBlendrTheme {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            VoteButton(upvoted = false, upvotes = 42, onToggle = {})
+            VoteButton(upvoted = true, upvotes = 43, onToggle = {})
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ModeSupportBadgePreview() {
+    ColorBlendrTheme {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            ModeSupportBadge(support = ThemeModeSupport.DARK_ONLY)
+            ModeSupportBadge(support = ThemeModeSupport.LOW_CONTRAST)
         }
     }
 }

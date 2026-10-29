@@ -12,8 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.TextObfuscationMode
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Visibility
@@ -24,11 +28,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,8 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,8 +51,7 @@ import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 
 @Composable
 fun KeyGate(
-    adminKey: String,
-    onKeyChange: (String) -> Unit,
+    keyState: TextFieldState,
     loading: Boolean,
     onUnlock: () -> Unit,
     modifier: Modifier = Modifier
@@ -89,25 +91,30 @@ fun KeyGate(
             modifier = Modifier.padding(top = 6.dp)
         )
         var revealed by rememberSaveable { mutableStateOf(false) }
-        OutlinedTextField(
+        val controlCharFilter = remember {
+            InputTransformation {
+                val cleaned = asCharSequence().toString().filterNot(Char::isISOControl)
+                if (cleaned.length != length) replace(0, length, cleaned)
+            }
+        }
+        OutlinedSecureTextField(
+            state = keyState,
             shape = RoundedCornerShape(20.dp),
-            value = adminKey,
-            onValueChange = { onKeyChange(it.filterNot(Char::isISOControl)) },
             label = { Text(text = stringResource(R.string.admin_key)) },
-            singleLine = true,
             enabled = !loading,
-            visualTransformation = if (revealed) {
-                VisualTransformation.None
+            inputTransformation = controlCharFilter,
+            textObfuscationMode = if (revealed) {
+                TextObfuscationMode.Visible
             } else {
-                PasswordVisualTransformation()
+                TextObfuscationMode.Hidden
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Go
             ),
-            keyboardActions = KeyboardActions(
-                onGo = { if (adminKey.isNotBlank()) onUnlock() }
-            ),
+            onKeyboardAction = KeyboardActionHandler {
+                if (keyState.text.isNotBlank()) onUnlock()
+            },
             trailingIcon = {
                 IconButton(onClick = { revealed = !revealed }) {
                     Icon(
@@ -127,7 +134,7 @@ fun KeyGate(
         )
         Button(
             onClick = onUnlock,
-            enabled = !loading && adminKey.isNotBlank(),
+            enabled = !loading && keyState.text.isNotBlank(),
             shapes = ButtonDefaults.shapes(),
             contentPadding = ButtonDefaults.contentPaddingFor(56.dp),
             modifier = Modifier
@@ -153,8 +160,7 @@ fun KeyGate(
 private fun KeyGatePreview() {
     DevTheme {
         KeyGate(
-            adminKey = "",
-            onKeyChange = {},
+            keyState = rememberTextFieldState(),
             loading = false,
             onUnlock = {}
         )

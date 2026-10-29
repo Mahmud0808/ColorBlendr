@@ -15,12 +15,13 @@ plugins {
 configure<ApplicationExtension> {
     namespace = "com.drdisagree.colorblendr"
     compileSdk = 37
+    compileSdkMinor = 1
 
     defaultConfig {
         minSdk = 31
         targetSdk = 36
-        versionCode = 42
-        versionName = "v3.0.1"
+        versionCode = 43
+        versionName = "v3.1"
 
         ndk {
             abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
@@ -201,6 +202,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.haze)
+    implementation(libs.haze.blur)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.okhttp)

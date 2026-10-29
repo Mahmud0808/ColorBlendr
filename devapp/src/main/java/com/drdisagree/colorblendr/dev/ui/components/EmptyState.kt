@@ -20,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -78,8 +80,8 @@ fun EmptyState(
 private fun EmptyStatePreview() {
     DevTheme {
         EmptyState(
-            text = "Queue is empty",
-            subtitle = "New submissions will show up here."
+            text = stringResource(R.string.no_pending),
+            subtitle = stringResource(R.string.empty_pending_subtitle)
         )
     }
 }

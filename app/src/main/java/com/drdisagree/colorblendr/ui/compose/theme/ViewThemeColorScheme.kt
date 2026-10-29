@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.theme.scheme.ResolvedScheme
+import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.google.android.material.color.MaterialColors
 import android.R as AndroidR
@@ -83,32 +85,26 @@ private fun Context.themeColor(@AttrRes attr: Int): Color =
 fun themeAttrColor(@AttrRes attr: Int): Color {
     PreviewResourcesOverride.revision
 
-    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val previewTheme by PreviewController.previewTheme.collectAsStateWithLifecycle()
     val isDark = isSystemInDarkTheme()
 
-    return previewColors?.let { previewAttrColor(attr, it, isDark) }
+    return previewTheme?.let { previewAttrColor(attr, it.scheme(isDark)) }
         ?: LocalContext.current.themeColor(attr)
 }
 
-private fun previewAttrColor(
-    @AttrRes attr: Int,
-    previewColors: PreviewController.PreviewColors,
-    isDark: Boolean
-): Color? {
-    val map = if (isDark) previewColors.darkMap else previewColors.lightMap
-    val suffix = if (isDark) "_dark" else "_light"
+private fun previewAttrColor(@AttrRes attr: Int, scheme: ResolvedScheme): Color? {
 
     // Theme.Material3 resolves colorPrimaryVariant to colorPrimary; M3 text
     // colors = selectors over colorOnSurface(Variant), also the
     // colorControlNormal fallback.
-    val roleName = when (attr) {
-        MaterialR.attr.colorPrimaryVariant -> "primary"
-        AndroidR.attr.textColorPrimary -> "on_surface"
+    val token = when (attr) {
+        MaterialR.attr.colorPrimaryVariant -> Token.PRIMARY
+        AndroidR.attr.textColorPrimary -> Token.ON_SURFACE
         AndroidR.attr.textColorSecondary,
-        AppCompatR.attr.colorControlNormal -> "on_surface_variant"
+        AppCompatR.attr.colorControlNormal -> Token.ON_SURFACE_VARIANT
 
         else -> return null
     }
 
-    return map["system_$roleName$suffix"]?.let { Color(it) }
+    return Color(scheme[token])
 }

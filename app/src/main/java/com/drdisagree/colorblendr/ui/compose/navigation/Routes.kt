@@ -11,7 +11,11 @@ object Routes {
     const val SETTINGS = "settings?restoreUri={restoreUri}"
     const val SETTINGS_BASE = "settings"
     const val COLOR_PALETTE = "colorPalette"
+    const val COLOR_TOKENS = "colorTokens"
+    const val COLOR_TOKENS_GUIDE = "colorTokensGuide"
     const val PER_APP_THEME = "perAppTheme"
+    const val APP_COLORS = "appColors/{packageName}"
+    const val APP_COLORS_BASE = "appColors"
     const val SETTINGS_ADVANCED = "settingsAdvanced"
     const val ABOUT = "about"
     const val PRIVACY_POLICY = "privacyPolicy"
@@ -22,10 +26,10 @@ object Routes {
 
 // Group 1-4 mapping for slide directions + bottom bar highlighting.
 fun tabGroup(route: String?): Int = when (route?.substringBefore("?")) {
-    Routes.COLORS, Routes.COLOR_PALETTE, Routes.COMMUNITY, Routes.COMMUNITY_THEME -> 1
+    Routes.COLORS, Routes.COLOR_PALETTE, Routes.COLOR_TOKENS, Routes.COLOR_TOKENS_GUIDE, Routes.COMMUNITY, Routes.COMMUNITY_THEME -> 1
     Routes.THEME -> 2
     Routes.STYLES -> 3
     Routes.SETTINGS_BASE, Routes.SETTINGS_ADVANCED, Routes.ABOUT, Routes.PRIVACY_POLICY,
-    Routes.PER_APP_THEME, Routes.CRASH_LOG -> 4
+    Routes.PER_APP_THEME, Routes.APP_COLORS, Routes.CRASH_LOG -> 4
     else -> 0
 }

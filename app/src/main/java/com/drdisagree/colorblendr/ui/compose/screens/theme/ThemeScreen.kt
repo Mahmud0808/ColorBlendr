@@ -22,27 +22,30 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.drdisagree.colorblendr.R
-import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
-import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
+import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
+import com.drdisagree.colorblendr.data.common.Constant.accentSaturationKey
+import com.drdisagree.colorblendr.data.common.Constant.backgroundLightnessKey
+import com.drdisagree.colorblendr.data.common.Constant.backgroundSaturationKey
 import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.modeSpecificThemesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.resetBackgroundSaturation
@@ -51,17 +54,18 @@ import com.drdisagree.colorblendr.data.common.Utilities.setAccentSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundLightness
 import com.drdisagree.colorblendr.data.common.Utilities.setBackgroundSaturation
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SeekbarItem
+import com.drdisagree.colorblendr.ui.compose.components.ThemeModeToggle
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.AppCardDefaults
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.LocalWidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.WidthClass
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
-import com.drdisagree.colorblendr.utils.colors.ColorUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,41 +78,41 @@ fun ThemeScreen() {
     val isDark = isSystemInDarkTheme()
     val rootMode = remember { isRootMode() }
 
-    var accentSaturation by rememberPrefState(MONET_ACCENT_SATURATION) { getAccentSaturation() }
-    var backgroundSaturation by rememberPrefState(MONET_BACKGROUND_SATURATION) { getBackgroundSaturation() }
-    var backgroundLightness by rememberPrefState(MONET_BACKGROUND_LIGHTNESS) { getBackgroundLightness() }
+    val haptics = LocalHapticFeedback.current
+    val modeSpecific by rememberPrefState(MODE_SPECIFIC_THEMES) { modeSpecificThemesEnabled() }
+    var editDark by rememberSaveable { mutableStateOf(isDark) }
+    val targetDark = if (modeSpecific) editDark else isDark
 
-    val preview by PreviewController.previewColors.collectAsState()
-
-    var committedPalette by remember {
-        mutableStateOf(
-            ColorUtil.generateModifiedColors(
-                getCurrentMonetStyle(),
-                accentSaturation,
-                backgroundSaturation,
-                backgroundLightness,
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            ).map { it.toList() }
-        )
+    var accentSaturation by key(targetDark, modeSpecific) {
+        rememberPrefState(accentSaturationKey(targetDark)) { getAccentSaturation(targetDark) }
     }
-    LaunchedEffect(preview == null, accentSaturation, backgroundSaturation, backgroundLightness) {
+    var backgroundSaturation by key(targetDark, modeSpecific) {
+        rememberPrefState(backgroundSaturationKey(targetDark)) { getBackgroundSaturation(targetDark) }
+    }
+    var backgroundLightness by key(targetDark, modeSpecific) {
+        rememberPrefState(backgroundLightnessKey(targetDark)) { getBackgroundLightness(targetDark) }
+    }
+
+    val preview by PreviewController.previewTheme.collectAsState()
+
+    var committedPalette by remember { mutableStateOf(emptyList<List<Int>>()) }
+    LaunchedEffect(preview == null, targetDark, accentSaturation, backgroundSaturation, backgroundLightness) {
         if (preview != null) return@LaunchedEffect
 
         committedPalette = withContext(Dispatchers.Default) {
-            ColorUtil.generateModifiedColors(
-                getCurrentMonetStyle(),
-                accentSaturation,
-                backgroundSaturation,
-                backgroundLightness,
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            ).map { it.toList() }
+            ThemePrefs.scheme(
+                isDark = targetDark,
+                adjustments = ThemePrefs.adjustments(
+                    isDark = targetDark,
+                    accentSaturation = accentSaturation,
+                    backgroundSaturation = backgroundSaturation,
+                    backgroundLightness = backgroundLightness
+                )
+            ).shades
         }
     }
 
-    val colorPalette = preview?.let { if (isDark) it.paletteDark else it.paletteLight }
-        ?: committedPalette
+    val colorPalette = preview?.scheme(targetDark)?.shades ?: committedPalette
 
     fun updateColors() {
         scope.launch {
@@ -131,13 +135,25 @@ fun ThemeScreen() {
                     .fillMaxSize()
                     .contentWidthLimit(max = if (twoPane) 1100.dp else 640.dp)
                     .verticalScroll(scrollState)
-                    .padding(bottom = LocalPreviewBottomInset.current)
+                    .padding(previewContentPadding())
                     .padding(top = 12.dp)
             ) {
                 val rampCard: @Composable () -> Unit = {
                     TonalRampCard(colorPalette = colorPalette)
                 }
                 val sliders: @Composable () -> Unit = {
+                    if (modeSpecific) {
+                        ThemeModeToggle(
+                            isDark = editDark,
+                            onChange = { dark ->
+                                haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                editDark = dark
+                            },
+                            modifier = Modifier.padding(
+                                bottom = dimensionResource(R.dimen.container_margin_bottom)
+                            )
+                        )
+                    }
                     ThemeSlider(
                         title = stringResource(R.string.accent_saturation),
                         value = accentSaturation,
@@ -145,20 +161,20 @@ fun ThemeScreen() {
                         onValueChange = {
                             accentSaturation = it
                             PreviewController.beginPreview()
-                            setAccentSaturation(it)
+                            setAccentSaturation(it, targetDark)
                             PreviewController.updatePreview(refreshOthers = false)
                         },
                         onValueChangeFinished = {
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
-                            setAccentSaturation(accentSaturation)
+                            setAccentSaturation(accentSaturation, targetDark)
                             updateColors()
                         },
                         onReset = {
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             accentSaturation = 100
-                            resetAccentSaturation()
+                            resetAccentSaturation(targetDark)
                             updateColors()
                         }
                     )
@@ -169,20 +185,20 @@ fun ThemeScreen() {
                         onValueChange = {
                             backgroundSaturation = it
                             PreviewController.beginPreview()
-                            setBackgroundSaturation(it)
+                            setBackgroundSaturation(it, targetDark)
                             PreviewController.updatePreview(refreshOthers = false)
                         },
                         onValueChangeFinished = {
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
-                            setBackgroundSaturation(backgroundSaturation)
+                            setBackgroundSaturation(backgroundSaturation, targetDark)
                             updateColors()
                         },
                         onReset = {
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             backgroundSaturation = 100
-                            resetBackgroundSaturation()
+                            resetBackgroundSaturation(targetDark)
                             updateColors()
                         }
                     )
@@ -193,20 +209,20 @@ fun ThemeScreen() {
                         onValueChange = {
                             backgroundLightness = it
                             PreviewController.beginPreview()
-                            setBackgroundLightness(it)
+                            setBackgroundLightness(it, targetDark)
                             PreviewController.updatePreview(refreshOthers = false)
                         },
                         onValueChangeFinished = {
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
-                            setBackgroundLightness(backgroundLightness)
+                            setBackgroundLightness(backgroundLightness, targetDark)
                             updateColors()
                         },
                         onReset = {
                             PreviewController.beginPreview()
                             resetCustomStyleIfNotNull()
                             backgroundLightness = 100
-                            resetBackgroundLightness()
+                            resetBackgroundLightness(targetDark)
                             updateColors()
                         }
                     )

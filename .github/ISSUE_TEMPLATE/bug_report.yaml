@@ -1,23 +1,110 @@
 name: Bug Report
-description: Create a report to help us address issues you are facing with the app.
+description: Something in the app is broken or behaves incorrectly.
 title: "[BUG] Your bug report title here"
 labels: [ bug ]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to file this issue! Here are a few things to check before clicking the submit button :)
-        1. Make sure you're on the latest version of the app. The current release can be found here: https://github.com/Mahmud0808/ColorBlendr/releases/latest
-        2. Search through **both** [open and closed issues](https://github.com/Mahmud0808/ColorBlendr/issues?q=is%3Aissue%20sort%3Aupdated-desc) for your bug.
-        3. **ALWAYS** fill this template. If you fail to do so, your issue will be immediately closed with no response. Maintaining open source projects for free is hard work, and we expect users to respect that time and effort by putting in a little bit of their own. That helps us fix these problems faster and in return you get a better app — everybody wins.
+        Fill every required field. Issues that ignore the template get closed without a reply.
 
-        Note: If this issue is inactive for 90 days, it'll be marked as stale.
+        Check the [FAQ](https://github.com/Mahmud0808/ColorBlendr#faq-) first. These are the most reported things that are not bugs:
+
+        - OneUI system apps keep their own colors. Samsung does not use Material You for its own apps.
+        - Greyed out options need root, or a newer Android version.
+        - Colors staying after uninstall means the service was not disabled first.
+
+        Questions and "does it support X" go to [Discussions](https://github.com/Mahmud0808/ColorBlendr/discussions) or the [Telegram group](https://t.me/DrDsProjectsChat).
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before submitting
+      options:
+        - label: I am on the [latest release](https://github.com/Mahmud0808/ColorBlendr/releases/latest) and the bug still happens there.
+          required: true
+        - label: I searched [open and closed issues](https://github.com/Mahmud0808/ColorBlendr/issues?q=is%3Aissue%20sort%3Aupdated-desc) and this is not a duplicate.
+          required: true
+        - label: I read the [FAQ](https://github.com/Mahmud0808/ColorBlendr#faq-) and my problem is not explained there.
+          required: true
+        - label: This is a bug report, not a question, feature request or support request.
+          required: true
+        - label: I can capture a logcat if asked for one.
+          required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: Exact version from the app's About page. "Latest" is not a version.
+      placeholder: v3.0.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: work-mode
+    attributes:
+      label: Work method
+      description: Which mode the app runs in.
+      options:
+        - Root
+        - Shizuku
+        - Wireless ADB
+    validations:
+      required: true
+
+  - type: dropdown
+    id: root-manager
+    attributes:
+      label: Root manager
+      options:
+        - Not rooted
+        - Magisk
+        - KernelSU
+        - KernelSU Next
+        - APatch
+        - Other (state it in Additional context)
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: Google Pixel 8 Pro
+    validations:
+      required: true
+
+  - type: input
+    id: android-version
+    attributes:
+      label: Android version and build
+      description: Android version plus the build number from Settings, About phone.
+      placeholder: Android 16 (BP31.250610.004)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: skin
+    attributes:
+      label: OS / skin
+      description: OEM skins theme their own apps differently, so this decides whether a color issue can be fixed at all.
+      options:
+        - Pixel / stock Android
+        - OneUI (Samsung)
+        - HyperOS / MIUI (Xiaomi)
+        - ColorOS / realme UI / OxygenOS
+        - Custom ROM (name it in Additional context)
+        - Other (name it in Additional context)
+    validations:
+      required: true
 
   - type: textarea
     id: bug-description
     attributes:
       label: Describe the bug
-      description: A clear and concise description of what the bug is.
+      description: What goes wrong. One bug per issue. File separate issues for unrelated problems.
+      placeholder: Applying a theme leaves the quick settings panel on the old colors until reboot.
     validations:
       required: true
 
@@ -25,13 +112,11 @@ body:
     id: steps-to-reproduce
     attributes:
       label: Steps to reproduce
-      description: Steps to reproduce the bug
+      description: Numbered steps someone else can follow on their own device. "It doesn't work" is not a reproduction.
       value: |
-        Steps to reproduce the behavior:
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
+        1. Open ...
+        2. Tap ...
+        3. Observe ...
     validations:
       required: true
 
@@ -39,37 +124,34 @@ body:
     id: expected-behavior
     attributes:
       label: Expected behavior
-      description: A clear and concise description of what you expected to happen.
+      description: What should have happened instead.
     validations:
       required: true
 
   - type: textarea
-    id: screenshots
+    id: logs
     attributes:
-      label: Screenshots
-      description: If applicable, add screenshots to help explain your problem.
+      label: Logs
+      description: |
+        Required for crashes. Capture with the device connected:
+        `adb logcat -c`, reproduce the bug, then `adb logcat -d > log.txt`.
+        Paste the relevant part here or attach the file.
+      render: shell
     validations:
       required: false
 
   - type: textarea
-    id: device-info
+    id: screenshots
     attributes:
-      label: Device information
-      description: Provide details about your device, OS, app version, etc.
-      value: |
-        - Device: [e.g. Google Pixel 6]
-        - OS: [e.g. Pixel Android 13.0 QPR3]
-        - App version: [e.g. v1.11.3]
-        - Rooted: [e.g. Yes]
-        - Root Manager: [e.g. Magisk 25.2]
+      label: Screenshots or screen recording
+      description: Add these for anything visual.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: additional-context
     attributes:
       label: Additional context
-      description: Add any other context about the problem here.
-      placeholder: If this is a crash report, you can paste or link the crash message in here.
+      description: Custom ROM name, other theming apps installed, anything else relevant.
     validations:
       required: false

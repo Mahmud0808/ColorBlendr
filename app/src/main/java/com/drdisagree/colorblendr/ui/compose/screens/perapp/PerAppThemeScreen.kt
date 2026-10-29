@@ -1,8 +1,8 @@
 package com.drdisagree.colorblendr.ui.compose.screens.perapp
 
-import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
+import android.util.LruCache
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -10,26 +10,33 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -37,16 +44,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -56,7 +68,10 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
+import com.drdisagree.colorblendr.data.common.Utilities.getAppColorOverrides
 import com.drdisagree.colorblendr.data.common.Utilities.getAppListFilteringMethod
+import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
+import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isThemingEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbThemingEnabled
@@ -66,38 +81,47 @@ import com.drdisagree.colorblendr.data.common.Utilities.setShowPerAppThemeWarnin
 import com.drdisagree.colorblendr.data.common.Utilities.showPerAppThemeWarning
 import com.drdisagree.colorblendr.data.domain.AppEvents
 import com.drdisagree.colorblendr.data.domain.AppScope
+import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.enums.AppType
 import com.drdisagree.colorblendr.data.models.AppInfoModel
+import com.drdisagree.colorblendr.theme.overlay.writer.PerPackageColorWriter
 import com.drdisagree.colorblendr.ui.compose.components.AnimatedCheckIcon
+import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.SearchBar
 import com.drdisagree.colorblendr.ui.compose.components.SingleChoiceDialog
 import com.drdisagree.colorblendr.ui.compose.components.WarningCard
 import com.drdisagree.colorblendr.ui.compose.components.WidgetPosition
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
+import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.theme.themeAttrColor
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.rememberPrefState
+import com.drdisagree.colorblendr.utils.app.AppColorResources
+import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.onPerAppSelectionChanged
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
+import com.drdisagree.colorblendr.utils.manager.OverlayManager
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColorsPerApp
-import com.drdisagree.colorblendr.utils.manager.OverlayManager.isOverlayEnabled
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.unregisterFabricatedOverlay
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.google.android.material.R as MaterialR
 
 @Composable
-fun PerAppThemeScreen() {
-    val context = LocalContext.current
+fun PerAppThemeScreen(
+    onEditColors: (String) -> Unit = {}
+) {
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -111,43 +135,76 @@ fun PerAppThemeScreen() {
     var filterMethod by remember { mutableIntStateOf(getAppListFilteringMethod()) }
     var appList by remember { mutableStateOf<List<AppInfoModel>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var query by remember { mutableStateOf("") }
+    val searchState = rememberTextFieldState()
+    val query = searchState.text.toString()
     var warningVisible by rememberPrefState(SHOW_PER_APP_THEME_WARN) { showPerAppThemeWarning() }
-    var reloadTrigger by remember { mutableIntStateOf(0) }
     val selections = remember { mutableStateMapOf<String, Boolean>() }
     val selectedApps = remember { HashMap<String, Boolean>() }
+    val toggleGenerations = remember { HashMap<String, Int>() }
+    val pendingToggles = remember { HashMap<String, Int>() }
+    val touchedSinceLoad = remember { HashSet<String>() }
+    val iconCache = remember { LruCache<String, ImageBitmap>(128) }
+    val rootMode = remember { isRootMode() }
+    val editedApps = remember { getAppColorOverrides().keys }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(filterMethod, reloadTrigger) {
+    LaunchedEffect(filterMethod) {
         isLoading = true
-        withContext(Dispatchers.IO) {
+        touchedSinceLoad.clear()
+        val apps = withContext(Dispatchers.IO) {
             updateFabricatedAppList(appContext)
-            val apps = getAllInstalledApps(AppType.entries[filterMethod])
+            getAllInstalledApps(AppType.entries[filterMethod])
+        }
 
-            if (isThemingEnabled(false)
-                || isShizukuThemingEnabled(false)
-                || isWirelessAdbThemingEnabled(false)
-            ) {
-                apps.asSequence()
-                    .filter { it.isSelected }
-                    .forEach { selectedApps[it.packageName] = true }
-                setSelectedFabricatedApps(selectedApps)
-            }
-
-            withContext(Dispatchers.Main) {
-                selections.clear()
-                apps.forEach { selections[it.packageName] = it.isSelected }
-                appList = apps
-                isLoading = false
+        apps.forEach { app ->
+            if (app.packageName in touchedSinceLoad || pendingToggles.containsKey(app.packageName)) {
+                app.isSelected = selections[app.packageName] == true
             }
         }
+
+        if (isThemingEnabled(false)
+            || isShizukuThemingEnabled(false)
+            || isWirelessAdbThemingEnabled(false)
+        ) {
+            apps.asSequence()
+                .filter { it.isSelected }
+                .forEach { selectedApps[it.packageName] = true }
+            setSelectedFabricatedApps(selectedApps)
+        }
+
+        selections.clear()
+        apps.forEach { selections[it.packageName] = it.isSelected }
+        appList = apps
+        isLoading = false
     }
 
     LaunchedEffect(Unit) {
-        AppEvents.events.collect { action ->
-            if (action == Intent.ACTION_PACKAGE_ADDED ||
-                action == Intent.ACTION_PACKAGE_REMOVED
-            ) {
-                reloadTrigger++
+        AppEvents.packageChanges.collect { packageName ->
+            snapshotFlow { isLoading }.first { !it }
+            val appType = AppType.entries[filterMethod]
+            val app = withContext(Dispatchers.IO) { getInstalledApp(packageName, appType) }
+            if (isLoading || appType != AppType.entries[filterMethod]) return@collect
+
+            val index = appList.indexOfFirst { it.packageName == packageName }
+            if (app == null) {
+                if (index < 0) return@collect
+                appList = appList.toMutableList().apply { removeAt(index) }
+                selections.remove(packageName)
+                selectedApps.remove(packageName)
+                return@collect
+            }
+
+            if (packageName in touchedSinceLoad || pendingToggles.containsKey(packageName)) {
+                app.isSelected = selections[packageName] == true
+            }
+            selections[packageName] = app.isSelected
+            appList = appList.toMutableList().apply {
+                if (index >= 0) {
+                    set(index, app)
+                } else {
+                    val position = indexOfFirst { APP_ORDER.compare(it, app) > 0 }
+                    add(if (position < 0) size else position, app)
+                }
             }
         }
     }
@@ -174,6 +231,11 @@ fun PerAppThemeScreen() {
     }
 
     fun toggleApp(app: AppInfoModel) {
+        if (PreviewController.isPreviewActive) {
+            Toast.makeText(appContext, R.string.preview_pending_apply_first, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val isSelected = selections[app.packageName] == true
         haptics.performHapticFeedback(
             if (!isSelected) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
@@ -183,14 +245,68 @@ fun PerAppThemeScreen() {
 
         selectedApps[app.packageName] = !isSelected
         setSelectedFabricatedApps(selectedApps)
+        onPerAppSelectionChanged(app.packageName, !isSelected)
+
+        val generation = (toggleGenerations[app.packageName] ?: 0) + 1
+        toggleGenerations[app.packageName] = generation
+        pendingToggles[app.packageName] = (pendingToggles[app.packageName] ?: 0) + 1
+        touchedSinceLoad += app.packageName
 
         AppScope.launch(Dispatchers.IO) {
-            if (isSelected) {
+            val rejected = if (isSelected) {
                 unregisterFabricatedOverlay(
                     String.format(FABRICATED_OVERLAY_NAME_APPS, app.packageName)
                 )
+                false
             } else {
-                applyFabricatedColorsPerApp(app.packageName, null)
+                !applyFabricatedColorsPerApp(app.packageName)
+            }
+
+            withContext(Dispatchers.Main) {
+                val pending = (pendingToggles[app.packageName] ?: 1) - 1
+                if (pending > 0) {
+                    pendingToggles[app.packageName] = pending
+                } else {
+                    pendingToggles.remove(app.packageName)
+                }
+                touchedSinceLoad += app.packageName
+
+                if (!isSelected && !rejected && rootMode && isThemingEnabled() &&
+                    toggleGenerations[app.packageName] == generation
+                ) {
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbarReplacing(
+                            message = appContext.getString(R.string.app_restart_hint, app.appName),
+                            actionLabel = appContext.getString(R.string.app_restart),
+                            duration = SnackbarDuration.Long
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            AppScope.launch(Dispatchers.IO) {
+                                if (!OverlayManager.restartApp(app.packageName)) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            appContext,
+                                            appContext.getString(R.string.app_restart_failed, app.appName),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (rejected && toggleGenerations[app.packageName] == generation) {
+                    selections[app.packageName] = false
+                    app.isSelected = false
+                    selectedApps[app.packageName] = false
+                    setSelectedFabricatedApps(selectedApps)
+                    Toast.makeText(
+                        appContext,
+                        appContext.getString(R.string.per_app_overlay_rejected, app.appName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -228,10 +344,7 @@ fun PerAppThemeScreen() {
                 Box(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
                         state = listState,
-                        contentPadding = PaddingValues(
-                            top = 72.dp,
-                            bottom = LocalPreviewBottomInset.current
-                        ),
+                        contentPadding = previewContentPadding(top = 72.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .contentWidthLimit()
@@ -241,8 +354,18 @@ fun PerAppThemeScreen() {
                             filteredList,
                             key = { _, app -> app.packageName }
                         ) { index, app ->
+                            val editable by produceState<Boolean?>(null, app.packageName, rootMode) {
+                                if (rootMode) {
+                                    value = withContext(Dispatchers.IO) {
+                                        AppColorResources.hasColors(app.packageName)
+                                    }
+                                }
+                            }
+                            val themeable = editable != false ||
+                                    PerPackageColorWriter.handles(app.packageName)
                             AppListItem(
                                 app = app,
+                                iconCache = iconCache,
                                 selected = selections[app.packageName] == true,
                                 position = when {
                                     filteredList.size == 1 -> WidgetPosition.Single
@@ -250,7 +373,14 @@ fun PerAppThemeScreen() {
                                     index == filteredList.lastIndex -> WidgetPosition.Bottom
                                     else -> WidgetPosition.Middle
                                 },
-                                onClick = { toggleApp(app) }
+                                onClick = { toggleApp(app) },
+                                edited = app.packageName in editedApps,
+                                themeable = themeable,
+                                onEditColors = if (editable == true) {
+                                    { onEditColors(app.packageName) }
+                                } else {
+                                    null
+                                }
                             )
                         }
                     }
@@ -274,13 +404,19 @@ fun PerAppThemeScreen() {
                     }
 
                     SearchBar(
-                        query = query,
-                        onQueryChange = { query = it },
+                        state = searchState,
                         onFilterClick = { showFilterDialog = true },
                         hazeState = hazeState,
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .contentWidthLimit()
+                    )
+
+                    AppSnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = navBottomInset())
                     )
                 }
             }
@@ -291,17 +427,32 @@ fun PerAppThemeScreen() {
 @Composable
 private fun AppListItem(
     app: AppInfoModel,
+    iconCache: LruCache<String, ImageBitmap>,
     selected: Boolean,
     position: WidgetPosition,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    edited: Boolean = false,
+    themeable: Boolean = true,
+    onEditColors: (() -> Unit)? = null
 ) {
+    val toggleEnabled = themeable || selected
     val contentColor = if (selected) {
         MaterialTheme.colorScheme.onPrimaryContainer
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val appIcon = remember(app.packageName) {
-        app.appIcon.toBitmap().asImageBitmap()
+    val context = LocalContext.current
+    val iconSizePx = with(LocalDensity.current) { 48.dp.roundToPx() }
+    val appIcon by produceState(iconCache.get(app.packageName), app.packageName) {
+        if (value != null) return@produceState
+        value = withContext(Dispatchers.IO) {
+            runCatching {
+                context.packageManager.getApplicationIcon(app.packageName)
+                    .toBitmap(iconSizePx, iconSizePx)
+                    .asImageBitmap()
+                    .also { iconCache.put(app.packageName, it) }
+            }.getOrNull()
+        }
     }
 
     val radius = dimensionResource(R.dimen.container_corner_radius)
@@ -327,8 +478,6 @@ private fun AppListItem(
         } else {
             MaterialTheme.colorScheme.surfaceContainer
         },
-        onClick = onClick,
-        interactionSource = interactionSource,
         modifier = Modifier
             .fillMaxWidth()
             .graphicsLayer {
@@ -351,45 +500,97 @@ private fun AppListItem(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 6.dp, end = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                bitmap = appIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-                    .size(48.dp)
-            )
-            Column(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(16.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = LocalIndication.current,
+                        enabled = onEditColors != null || toggleEnabled,
+                        onClick = onEditColors ?: onClick
+                    )
+                    .padding(start = 6.dp)
+                    .alpha(if (themeable) 1f else DISABLED_ALPHA)
             ) {
-                Text(
-                    text = app.appName,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = contentColor
-                )
-                Text(
-                    text = app.packageName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = contentColor.copy(alpha = 0.8f),
-                    modifier = Modifier.padding(top = 2.dp)
+                val iconModifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+                    .size(48.dp)
+                appIcon.let { icon ->
+                    if (icon != null) {
+                        Image(
+                            bitmap = icon,
+                            contentDescription = null,
+                            modifier = iconModifier
+                        )
+                    } else {
+                        Box(modifier = iconModifier)
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = app.appName,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = contentColor
+                    )
+                    Text(
+                        text = app.packageName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = contentColor.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                    if (!themeable) {
+                        Text(
+                            text = stringResource(R.string.app_colors_unavailable),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = contentColor,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    } else if (edited) {
+                        Text(
+                            text = stringResource(R.string.app_colors_edited),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (selected) contentColor else MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+            }
+            if (onEditColors != null) {
+                VerticalDivider(
+                    color = contentColor.copy(alpha = 0.2f),
+                    modifier = Modifier.height(36.dp)
                 )
             }
-            AnimatedCheckIcon(
-                selected = selected,
-                tint = if (selected) {
-                    themeAttrColor(MaterialR.attr.colorPrimaryVariant)
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .clickable(enabled = toggleEnabled, onClick = onClick)
+                    .padding(horizontal = 20.dp, vertical = 24.dp)
+                    .alpha(if (toggleEnabled) 1f else DISABLED_ALPHA)
+            ) {
+                AnimatedCheckIcon(
+                    selected = selected,
+                    tint = if (selected) {
+                        themeAttrColor(MaterialR.attr.colorPrimaryVariant)
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    outline = MaterialTheme.colorScheme.onPrimary,
+                    tickColor = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
+
+private const val DISABLED_ALPHA = 0.5f
 
 private fun filterList(appList: List<AppInfoModel>, query: String): List<AppInfoModel> {
     if (query.trim().isEmpty()) return appList
@@ -415,43 +616,55 @@ private fun filterList(appList: List<AppInfoModel>, query: String): List<AppInfo
 }
 
 private fun getAllInstalledApps(appType: AppType): List<AppInfoModel> {
-    val appList: MutableList<AppInfoModel> = ArrayList()
     val packageManager = appContext.packageManager
 
-    val applications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+    val applications = packageManager.getInstalledApplications(0)
 
-    for (appInfo in applications) {
-        val packageName = appInfo.packageName
+    val filtered = applications.filter { it.matches(appType) }
 
-        if (appType == AppType.LAUNCHABLE) {
-            packageManager.getLaunchIntentForPackage(packageName) ?: continue
-        }
+    val enabled = OverlayManager.areOverlaysEnabled(
+        filtered.map { String.format(FABRICATED_OVERLAY_NAME_APPS, it.packageName) }
+    )
+    val savedSelection by lazy { getSelectedFabricatedApps() }
 
-        val appName = appInfo.loadLabel(packageManager).toString()
-        val appIcon = appInfo.loadIcon(packageManager)
-        val isSelected = isOverlayEnabled(
-            String.format(FABRICATED_OVERLAY_NAME_APPS, packageName)
+    val appList = filtered.mapIndexed { index, appInfo ->
+        AppInfoModel(
+            appName = appInfo.loadLabel(packageManager).toString(),
+            packageName = appInfo.packageName,
+            isSelected = enabled?.get(index) ?: (savedSelection[appInfo.packageName] == true)
         )
+    }.toMutableList()
 
-        val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-
-        val includeApp = when (appType) {
-            AppType.SYSTEM -> isSystemApp
-            AppType.USER -> !isSystemApp
-            AppType.LAUNCHABLE, AppType.ALL -> true
-        }
-
-        if (includeApp) {
-            val app = AppInfoModel(appName, packageName, appIcon)
-            app.isSelected = isSelected
-            appList.add(app)
-        }
-    }
-
-    appList.sortWith(compareBy<AppInfoModel> { !it.isSelected }.thenBy { it.appName.lowercase() })
+    appList.sortWith(APP_ORDER)
 
     return appList
 }
+
+private fun getInstalledApp(packageName: String, appType: AppType): AppInfoModel? {
+    val packageManager = appContext.packageManager
+    val appInfo = runCatching { packageManager.getApplicationInfo(packageName, 0) }.getOrNull()
+    if (appInfo == null || !appInfo.matches(appType)) return null
+
+    return AppInfoModel(
+        appName = appInfo.loadLabel(packageManager).toString(),
+        packageName = appInfo.packageName,
+        isSelected = OverlayManager.areOverlaysEnabled(
+            listOf(String.format(FABRICATED_OVERLAY_NAME_APPS, appInfo.packageName))
+        )?.get(0) ?: (getSelectedFabricatedApps()[appInfo.packageName] == true)
+    )
+}
+
+private fun ApplicationInfo.matches(appType: AppType): Boolean =
+    packageName != appContext.packageName && when (appType) {
+        AppType.LAUNCHABLE ->
+            appContext.packageManager.getLaunchIntentForPackage(packageName) != null
+
+        AppType.SYSTEM -> (flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        AppType.USER -> (flags and ApplicationInfo.FLAG_SYSTEM) == 0
+        AppType.ALL -> true
+    }
+
+private val APP_ORDER = compareBy<AppInfoModel> { !it.isSelected }.thenBy { it.appName.lowercase() }
 
 @AdaptivePreviews
 @Composable

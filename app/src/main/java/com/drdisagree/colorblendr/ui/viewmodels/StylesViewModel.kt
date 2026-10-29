@@ -5,15 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
 import com.drdisagree.colorblendr.data.common.Utilities
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
 import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.isFirstRun
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.config.Prefs.toGsonString
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
@@ -21,10 +16,11 @@ import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.drdisagree.colorblendr.data.models.StyleModel
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.utils.app.MiscUtil.getOriginalString
 import com.drdisagree.colorblendr.utils.colors.ColorSchemeUtil.stringToEnumMonetStyle
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +36,8 @@ class StylesViewModel(
 
     private val _stylePalettes = MutableStateFlow<Map<String, List<List<Int>>>>(emptyMap())
     val stylePalettes: StateFlow<Map<String, List<List<Int>>>> = _stylePalettes.asStateFlow()
+
+    private var paletteJob: Job? = null
 
     init {
         refreshData()
@@ -59,7 +57,8 @@ class StylesViewModel(
         // Before onboarding there is no wallpaper color list to generate from.
         if (isFirstRun() || isWorkMethodUnknown()) return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        paletteJob?.cancel()
+        paletteJob = viewModelScope.launch(Dispatchers.IO) {
             val styleList = getStyleList()
             if (styleList != _styleList.value) {
                 _styleList.value = styleList
@@ -75,7 +74,10 @@ class StylesViewModel(
         }
     }
 
-    suspend fun addCustomStyle(title: String, description: String): CustomStyleModel {
+    suspend fun addCustomStyle(
+        title: String,
+        description: String
+    ): CustomStyleModel = withContext(Dispatchers.Default) {
         val allPrefs = Prefs.getAllPrefs()
         for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
             allPrefs.remove(excludedPref)
@@ -87,20 +89,13 @@ class StylesViewModel(
             description = description.trim(),
             prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
             monet = currentMonet,
-            palette = generateModifiedColors(
-                currentMonet,
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            ),
+            palette = stylePalette(currentMonet),
             sortOrder = customStyleRepository.getNextSortOrder()
         )
 
         customStyleRepository.saveCustomStyle(newStyle)
         refreshData()
-        return newStyle
+        newStyle
     }
 
     suspend fun editCustomStyle(title: String, description: String, styleId: String) {
@@ -114,8 +109,9 @@ class StylesViewModel(
         refreshData()
     }
 
-    suspend fun updateCustomStyle(styleId: String): CustomStyleModel? {
-        val customStyle = customStyleRepository.getCustomStyleById(styleId) ?: return null
+    suspend fun updateCustomStyle(styleId: String): CustomStyleModel? = withContext(Dispatchers.Default) {
+        val customStyle = customStyleRepository.getCustomStyleById(styleId)
+            ?: return@withContext null
 
         val allPrefs = Prefs.getAllPrefs()
         for (excludedPref in EXCLUDED_PREFS_FROM_BACKUP) {
@@ -126,19 +122,12 @@ class StylesViewModel(
         val updatedStyle = customStyle.copy(
             prefsGson = allPrefs.mapValues { it.value as Any }.toGsonString(),
             monet = currentMonet,
-            palette = generateModifiedColors(
-                currentMonet,
-                getAccentSaturation(),
-                getBackgroundSaturation(),
-                getBackgroundLightness(),
-                pitchBlackThemeEnabled(),
-                accurateShadesEnabled()
-            )
+            palette = stylePalette(currentMonet)
         )
 
         customStyleRepository.updateCustomStyle(updatedStyle)
         refreshData()
-        return updatedStyle
+        updatedStyle
     }
 
     suspend fun deleteCustomStyle(styleId: String) {
@@ -164,23 +153,19 @@ class StylesViewModel(
         }
     }
 
+    private fun stylePalette(style: MONET): ArrayList<ArrayList<Int>> =
+        ThemePrefs.scheme(source = ThemePrefs.source(style = style)).shades
+            .mapTo(ArrayList()) { ArrayList(it) }
+
     private suspend fun loadPreviewColorPalettes(styleName: List<String>): Map<String, List<List<Int>>> {
         return withContext(Dispatchers.IO) {
-            val accentSaturation = getAccentSaturation()
-            val backgroundSaturation = getBackgroundSaturation()
-            val backgroundLightness = getBackgroundLightness()
-            val pitchBlackThemeEnabled = pitchBlackThemeEnabled()
-            val accurateShadesEnabled = accurateShadesEnabled()
+            val adjustments = ThemePrefs.adjustments()
 
             styleName.associateWith { name ->
-                generateModifiedColors(
-                    stringToEnumMonetStyle(enumString = name),
-                    accentSaturation,
-                    backgroundSaturation,
-                    backgroundLightness,
-                    pitchBlackThemeEnabled,
-                    accurateShadesEnabled
-                )
+                ThemePrefs.scheme(
+                    source = ThemePrefs.source(style = stringToEnumMonetStyle(enumString = name)),
+                    adjustments = adjustments
+                ).shades
             }
         }
     }

@@ -2,7 +2,10 @@ package com.drdisagree.colorblendr.dev.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,6 +24,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -60,18 +65,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drdisagree.colorblendr.dev.R
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
+import com.drdisagree.colorblendr.dev.ui.components.ActionLoadingDialog
 import com.drdisagree.colorblendr.dev.ui.components.BlockReasonDialog
 import com.drdisagree.colorblendr.dev.ui.components.BlockedCard
 import com.drdisagree.colorblendr.dev.ui.components.CompactSearchField
@@ -81,9 +88,12 @@ import com.drdisagree.colorblendr.dev.ui.components.KeyGate
 import com.drdisagree.colorblendr.dev.ui.components.PendingCard
 import com.drdisagree.colorblendr.dev.ui.components.SegmentedTabs
 import com.drdisagree.colorblendr.dev.ui.components.StackedSnackbarHost
+import com.drdisagree.colorblendr.dev.ui.components.screen
 import com.drdisagree.colorblendr.dev.ui.navigation.Routes
 import com.drdisagree.colorblendr.dev.ui.theme.DevTheme
 import com.drdisagree.colorblendr.dev.ui.viewmodels.DevViewModel
+import com.drdisagree.colorblendr.dev.utils.MatchResult
+import com.drdisagree.colorblendr.dev.utils.ThemeForwarder
 
 @Composable
 fun DevScreen(openPendingTick: Int = 0) {
@@ -116,10 +126,12 @@ fun DevScreen(openPendingTick: Int = 0) {
     val authorized by devViewModel.authorized.collectAsState()
     val loading by devViewModel.loading.collectAsState()
     val busy by devViewModel.busy.collectAsState()
+    val actionLoading by devViewModel.actionLoading.collectAsState()
     val pending by devViewModel.pending.collectAsState()
     val blocked by devViewModel.blocked.collectAsState()
     val messages by devViewModel.messages.collectAsState()
 
+    val context = LocalContext.current
     val navController = rememberNavController()
 
     LaunchedEffect(Unit) {
@@ -133,15 +145,29 @@ fun DevScreen(openPendingTick: Int = 0) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        fun AnimatedContentTransitionScope<NavBackStackEntry>.isPop(): Boolean {
+            val current = navController.currentBackStackEntry
+            val previous = navController.previousBackStackEntry
+            return targetState == previous || (initialState != current && initialState != previous)
+        }
+
+        fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition =
+            slideInHorizontally { if (isPop()) -it else it }
+
+        fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition =
+            slideOutHorizontally { if (isPop()) it else -it }
+
         NavHost(
             navController = navController,
             startDestination = Routes.HOME,
-            enterTransition = { slideInHorizontally { it } },
-            exitTransition = { slideOutHorizontally { -it } },
-            popEnterTransition = { slideInHorizontally { -it } },
-            popExitTransition = { slideOutHorizontally { it } }
+            enterTransition = { enter() },
+            exitTransition = { exit() },
+            popEnterTransition = { enter() },
+            popExitTransition = { exit() },
+            predictivePopEnterTransition = { enter() },
+            predictivePopExitTransition = { exit() }
         ) {
-            composable(Routes.HOME) {
+            screen(Routes.HOME) {
                 HomeContent(
                     authorized = authorized,
                     loading = loading,
@@ -150,6 +176,7 @@ fun DevScreen(openPendingTick: Int = 0) {
                     blocked = blocked,
                     initialKey = devViewModel.savedKey,
                     openPendingTick = openPendingTick,
+                    onGetMatch = devViewModel::getBestMatch,
                     onUnlock = devViewModel::refresh,
                     onRefresh = devViewModel::refresh,
                     onPreview = devViewModel::openPreview,
@@ -164,7 +191,7 @@ fun DevScreen(openPendingTick: Int = 0) {
                     onOpenDetail = { navController.navigate(Routes.detail(it.id)) }
                 )
             }
-            composable(Routes.SETTINGS) {
+            screen(Routes.SETTINGS) {
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
                     onLogout = {
@@ -173,43 +200,49 @@ fun DevScreen(openPendingTick: Int = 0) {
                     }
                 )
             }
-            composable(Routes.DETAIL) { entry ->
+            screen(Routes.DETAIL) { entry ->
                 val id = entry.arguments?.getString(Routes.ARG_SUBMISSION_ID)
                 val latest = pending?.find { it.id == id }
-                // keep last known item -> approve/reject/block drop it from
-                // pending while detail still animates out
                 val lastKnown = remember { mutableStateOf(latest) }
                 LaunchedEffect(latest) { if (latest != null) lastKnown.value = latest }
                 val item = lastKnown.value
                 if (item == null) {
-                    // targeted pop -> no-op if detail already left back stack
                     LaunchedEffect(Unit) {
                         navController.popBackStack(Routes.DETAIL, inclusive = true)
                     }
                 } else {
                     SubmissionDetailScreen(
                         item = item,
+                        matchResult = devViewModel.getBestMatch(item),
                         onBack = { navController.popBackStack() },
                         onPreview = { devViewModel.openPreview(item) },
+                        onPreviewPayload = { payloadJson ->
+                            ThemeForwarder.openPreview(context, payloadJson)
+                        },
                         onApprove = {
-                            navController.popBackStack()
-                            devViewModel.approve(item)
+                            devViewModel.approve(item, onSuccess = {
+                                navController.popBackStack()
+                            })
                         },
                         onReject = {
-                            navController.popBackStack()
-                            devViewModel.reject(item)
+                            devViewModel.reject(item, onSuccess = {
+                                navController.popBackStack()
+                            })
                         },
                         onBlock = { reason ->
-                            navController.popBackStack()
-                            devViewModel.block(item, reason)
+                            devViewModel.block(item, reason, onSuccess = {
+                                navController.popBackStack()
+                            })
                         },
-                        onEdit = { name, description ->
-                            devViewModel.editSubmission(item, name, description)
+                        onEdit = { name, description, author ->
+                            devViewModel.editSubmission(item, name, description, author)
                         }
                     )
                 }
             }
         }
+
+        ActionLoadingDialog(message = actionLoading)
 
         StackedSnackbarHost(
             messages = messages,
@@ -228,6 +261,7 @@ private fun HomeContent(
     blocked: List<BlockedEntry>?,
     initialKey: String,
     openPendingTick: Int,
+    onGetMatch: ((PendingSubmission) -> MatchResult?)? = null,
     onUnlock: (String) -> Unit,
     onRefresh: () -> Unit,
     onPreview: (PendingSubmission) -> Unit,
@@ -245,9 +279,9 @@ private fun HomeContent(
     val pendingListState = rememberLazyListState()
     val blockedListState = rememberLazyListState()
 
-    var adminKey by rememberSaveable { mutableStateOf(initialKey) }
+    val keyState = rememberTextFieldState(initialKey)
     var tab by rememberSaveable { mutableIntStateOf(0) }
-    var query by rememberSaveable { mutableStateOf("") }
+    val searchState = rememberTextFieldState()
     var searchVisible by rememberSaveable { mutableStateOf(false) }
     var newestFirst by rememberSaveable { mutableStateOf(true) }
     var blockTarget by remember { mutableStateOf<PendingSubmission?>(null) }
@@ -307,10 +341,9 @@ private fun HomeContent(
             target = selectedItems.first(),
             onDismiss = { bulkBlock = false },
             onConfirm = { reason ->
-                val targets = selectedItems
                 bulkBlock = false
                 selectedIds = emptySet()
-                onBlockAll(targets, reason)
+                onBlockAll(selectedItems, reason)
             }
         )
     }
@@ -445,7 +478,7 @@ private fun HomeContent(
                             IconButton(
                                 onClick = {
                                     searchVisible = !searchVisible
-                                    if (!searchVisible) query = ""
+                                    if (!searchVisible) searchState.clearText()
                                 },
                                 shapes = IconButtonDefaults.shapes()
                             ) {
@@ -477,10 +510,9 @@ private fun HomeContent(
     ) { innerPadding ->
         if (!authorized) {
             KeyGate(
-                adminKey = adminKey,
-                onKeyChange = { adminKey = it },
+                keyState = keyState,
                 loading = loading,
-                onUnlock = { onUnlock(adminKey) },
+                onUnlock = { onUnlock(keyState.text.toString()) },
                 modifier = Modifier.padding(innerPadding)
             )
             return@Scaffold
@@ -527,8 +559,7 @@ private fun HomeContent(
                         .padding(top = 8.dp)
                 ) {
                     CompactSearchField(
-                        query = query,
-                        onQueryChange = { query = it },
+                        state = searchState,
                         modifier = Modifier.weight(1f)
                     )
                     Box {
@@ -594,7 +625,7 @@ private fun HomeContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 AnimatedContent(
-                    targetState = Pair(tab, query.trim()),
+                    targetState = Pair(tab, searchState.text.trim().toString()),
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
                     label = "devTabs"
                 ) { (currentTab, trimmedQuery) ->
@@ -634,6 +665,7 @@ private fun HomeContent(
                                         busy = busy,
                                         selectionMode = selectionMode,
                                         selected = item.id in selectedIds,
+                                        matchResult = onGetMatch?.invoke(item),
                                         onClick = {
                                             if (selectionMode) {
                                                 selectedIds = selectedIds.toggle(item.id)
@@ -649,7 +681,8 @@ private fun HomeContent(
                                         },
                                         onApprove = { confirmApprove = item },
                                         onReject = { confirmReject = item },
-                                        onBlock = { blockTarget = item }
+                                        onBlock = { blockTarget = item },
+                                        onMatchClick = { onOpenDetail(item) }
                                     )
                                 }
                             }

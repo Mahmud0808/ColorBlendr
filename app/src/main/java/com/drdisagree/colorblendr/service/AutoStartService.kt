@@ -4,13 +4,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.WallpaperManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.RemoteException
 import android.provider.Settings
 import android.util.Log
@@ -26,8 +29,6 @@ import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
 import com.drdisagree.colorblendr.utils.annotations.Test
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.getAccentColor
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import java.util.Timer
@@ -36,6 +37,9 @@ import java.util.TimerTask
 class AutoStartService : Service() {
 
     private var notificationManager: NotificationManager? = null
+    private val wallpaperColorsListener = WallpaperManager.OnColorsChangedListener { _, which ->
+        if (which and WallpaperManager.FLAG_SYSTEM != 0) myReceiver.onWallpaperColorsChanged(this)
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -49,6 +53,8 @@ class AutoStartService : Service() {
         createNotificationChannel()
         showNotification()
         registerReceivers()
+        WallpaperManager.getInstance(this)
+            .addOnColorsChangedListener(wallpaperColorsListener, Handler(Looper.getMainLooper()))
 
         if (BroadcastListener.isLastConfigInitialized.not()) {
             BroadcastListener.lastConfig = Configuration(resources.configuration)
@@ -79,6 +85,8 @@ class AutoStartService : Service() {
         } catch (_: Exception) {
             // Receiver was probably never registered
         }
+
+        WallpaperManager.getInstance(this).removeOnColorsChangedListener(wallpaperColorsListener)
 
         val broadcastIntent = Intent(
             this,
@@ -171,7 +179,7 @@ class AutoStartService : Service() {
 
     private fun setupSystemUIRestartListener() {
         if (isRootMode() && RootConnectionProvider.isNotConnected) {
-            RootConnectionProvider.builder(appContext)
+            RootConnectionProvider.builder()
                 .onSuccess { initSystemUIRestartListener() }
                 .run()
         } else if (isShizukuMode() &&
@@ -179,10 +187,7 @@ class AutoStartService : Service() {
             isShizukuAvailable &&
             hasShizukuPermission()
         ) {
-            bindUserService(
-                getUserServiceArgs(ShizukuConnection::class.java),
-                ShizukuConnectionProvider.serviceConnection
-            )
+            ShizukuConnectionProvider.bind()
         } else if (isRootMode()) {
             initSystemUIRestartListener()
         }
@@ -233,7 +238,7 @@ class AutoStartService : Service() {
     }
 
     companion object {
-        private val TAG: String = AutoStartService::class.java.simpleName
+        private val TAG: String = "AutoStartService"
         private var isRunning = false
         private const val NOTIFICATION_ID = 1
         private const val NOTIFICATION_CHANNEL_ID = "Background Service"
@@ -245,7 +250,7 @@ class AutoStartService : Service() {
          * The following fields and methods are for testing purposes only
          */
         @Test
-        private val TEST_TAG = AutoStartService::class.java.simpleName + "_TEST"
+        private val TEST_TAG = "AutoStartService_TEST"
 
         @Test
         private val packageName: String = appContext.packageName

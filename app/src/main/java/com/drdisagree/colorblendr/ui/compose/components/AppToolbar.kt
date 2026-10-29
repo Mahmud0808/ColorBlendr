@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -121,16 +120,6 @@ fun ToolbarIconPill(
             modifier = Modifier.size(24.dp)
         )
     }
-}
-
-@Composable
-fun ToolbarOverflowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    ToolbarIconPill(
-        icon = rememberVectorPainter(Icons.Rounded.MoreVert),
-        width = 36.dp,
-        onClick = onClick,
-        modifier = modifier
-    )
 }
 
 @Preview

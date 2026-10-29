@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.domain.PreviewController
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 
 object AppCardDefaults {
@@ -23,12 +24,11 @@ object AppCardDefaults {
         // Re-resolve when preview resources loader added/removed.
         PreviewResourcesOverride.revision
 
-        val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+        val previewTheme by PreviewController.previewTheme.collectAsStateWithLifecycle()
         val isDark = isSystemInDarkTheme()
 
-        val strokeColor = previewColors?.let {
-            val palette = if (isDark) it.paletteDark else it.paletteLight
-            Color(palette[4][if (isDark) 10 else 5])
+        val strokeColor = previewTheme?.let {
+            Color(it.scheme(isDark)[PaletteRole.NEUTRAL_VARIANT, if (isDark) 10 else 5])
         } ?: colorResource(R.color.m3_card_stroke_color)
 
         return BorderStroke(1.dp, strokeColor)

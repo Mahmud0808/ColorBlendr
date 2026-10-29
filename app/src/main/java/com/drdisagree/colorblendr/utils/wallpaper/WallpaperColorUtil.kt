@@ -16,6 +16,7 @@ import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorJson
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
 import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.setWallpaperColorJson
 import com.drdisagree.colorblendr.service.BroadcastListener
@@ -30,13 +31,13 @@ import kotlin.math.sqrt
 
 object WallpaperColorUtil {
 
-    private val TAG: String = WallpaperColorUtil::class.java.simpleName
+    private val TAG: String = "WallpaperColorUtil"
     private const val SMALL_SIDE = 128
     private const val MAX_BITMAP_SIZE = 112
     private const val MAX_WALLPAPER_EXTRACTION_AREA = MAX_BITMAP_SIZE * MAX_BITMAP_SIZE
 
-    suspend fun updateWallpaperColorList(context: Context) {
-        if (!AppUtil.permissionsGranted(context)) return
+    suspend fun updateWallpaperColorList(context: Context) = withContext(Dispatchers.Default) {
+        if (!AppUtil.permissionsGranted(context)) return@withContext
 
         val wallpaperColors = getWallpaperColors(context)
         val currentWallpaperColors = Constant.GSON.toJson(wallpaperColors)
@@ -49,41 +50,51 @@ object WallpaperColorUtil {
                 setSeedColorValue(wallpaperColors[0])
             }
         }
+
+        WallpaperShortcuts.update(context)
     }
 
-    suspend fun getWallpaperColors(context: Context): ArrayList<Int> {
-        if (!AppUtil.permissionsGranted(context)) {
-            return ColorUtil.monetAccentColors
-        }
-
+    suspend fun getWallpaperColors(context: Context): ArrayList<Int> = withContext(Dispatchers.Default) {
         val mergedColors = mutableSetOf<Int>()
-
         val wallpaperManager = WallpaperManager.getInstance(context)
-        var isLiveWallpaper = false
+        val isLiveWallpaper = wallpaperManager.wallpaperInfo != null
 
-        wallpaperManager.wallpaperInfo?.let {
-            isLiveWallpaper = true
-            wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
-                ?.let { wallpaperColors ->
-                    mergedColors.add(wallpaperColors.primaryColor.toArgb())
-                    wallpaperColors.secondaryColor?.let { mergedColors.add(it.toArgb()) }
-                    wallpaperColors.tertiaryColor?.let { mergedColors.add(it.toArgb()) }
-                }
+        if (isLiveWallpaper) {
+            mergedColors.addSystemWallpaperColors(wallpaperManager)
         }
 
-        return try {
-            if (!isLiveWallpaper || mergedColors.isEmpty()) {
+        if (AppUtil.permissionsGranted(context) && (!isLiveWallpaper || mergedColors.isEmpty())) {
+            try {
                 withContext(Dispatchers.IO) {
                     WallpaperLoader.loadWallpaperAsync(context, WallpaperManager.FLAG_SYSTEM)
                 }?.let { bitmap ->
                     mergedColors.addAll(bitmap.extractColors())
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting wallpaper color", e)
             }
+        }
 
-            if (mergedColors.isEmpty()) ColorUtil.monetAccentColors else ArrayList(mergedColors)
+        if (mergedColors.isEmpty()) {
+            mergedColors.addSystemWallpaperColors(wallpaperManager)
+        }
+
+        if (mergedColors.isNotEmpty()) {
+            ArrayList(mergedColors)
+        } else {
+            getWallpaperColorList().takeIf { it.isNotEmpty() } ?: ColorUtil.monetAccentColors
+        }
+    }
+
+    private fun MutableSet<Int>.addSystemWallpaperColors(wallpaperManager: WallpaperManager) {
+        try {
+            wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM)?.let { colors ->
+                add(colors.primaryColor.toArgb())
+                colors.secondaryColor?.let { add(it.toArgb()) }
+                colors.tertiaryColor?.let { add(it.toArgb()) }
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting wallpaper color", e)
-            ColorUtil.monetAccentColors
+            Log.e(TAG, "Error getting system wallpaper colors", e)
         }
     }
 
@@ -187,7 +198,7 @@ object WallpaperColorUtil {
 
     private object WallpaperLoader {
 
-        private val TAG: String = WallpaperLoader::class.java.simpleName
+        private val TAG: String = "WallpaperLoader"
 
         suspend fun loadWallpaperAsync(
             context: Context,
@@ -207,7 +218,16 @@ object WallpaperColorUtil {
 
                 // Static wallpaper
                 wallpaperManager.getWallpaperFile(which)?.use { file ->
-                    return createMiniBitmap(BitmapFactory.decodeFileDescriptor(file.fileDescriptor))
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeFileDescriptor(file.fileDescriptor, null, bounds)
+
+                    val smallestSide = min(bounds.outWidth, bounds.outHeight)
+                    var sampleSize = 1
+                    while (smallestSide / (sampleSize * 2) >= SMALL_SIDE) sampleSize *= 2
+
+                    val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+                    BitmapFactory.decodeFileDescriptor(file.fileDescriptor, null, options)
+                        ?.let { return createMiniBitmap(it) }
                 }
 
                 // Built-in wallpaper (fallback)
@@ -219,6 +239,9 @@ object WallpaperColorUtil {
                 null
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting wallpaper bitmap", e)
+                null
+            } catch (e: OutOfMemoryError) {
+                Log.e(TAG, "Out of memory decoding wallpaper bitmap", e)
                 null
             }
         }

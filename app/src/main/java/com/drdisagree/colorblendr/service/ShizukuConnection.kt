@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.Keep
 import com.drdisagree.colorblendr.data.common.Constant.THEME_CUSTOMIZATION_OVERLAY_PACKAGES
 import com.drdisagree.colorblendr.extension.ThemeOverlayPackage
+import com.drdisagree.colorblendr.extension.ThemeOverlayPackage.shellQuoted
 import com.topjohnwu.superuser.Shell
 import org.json.JSONObject
 import kotlin.system.exitProcess
@@ -12,7 +13,7 @@ import kotlin.system.exitProcess
 class ShizukuConnection : IShizukuConnection.Stub {
 
     companion object {
-        private val TAG: String = ShizukuConnection::class.java.simpleName
+        private const val TAG = "ShizukuConnection"
     }
 
     @Suppress("unused")
@@ -58,7 +59,7 @@ class ShizukuConnection : IShizukuConnection.Stub {
      */
     override fun applyFabricatedColors(jsonString: String): String? {
         val result = Shell.cmd(
-            "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES '$jsonString'"
+            "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES ${jsonString.shellQuoted()}"
         ).exec()
 
         return if (result.isSuccess) {
@@ -80,7 +81,7 @@ class ShizukuConnection : IShizukuConnection.Stub {
     override fun removeFabricatedColors(): String? {
         return try {
             applyFabricatedColors(
-                ThemeOverlayPackage.getOriginalSettings(currentSettings).toString()
+                ThemeOverlayPackage.getOriginalSettings(currentSettings)
             )
         } catch (e: Exception) {
             Log.e(TAG, "removeFabricatedColors: ", e)
@@ -102,9 +103,9 @@ class ShizukuConnection : IShizukuConnection.Stub {
     override fun getCurrentSettings(): String {
         val currentSettings = Shell.cmd(
             "settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES"
-        ).exec().out[0]
+        ).exec().out.firstOrNull()?.trim()
 
-        return if (currentSettings == "null") {
+        return if (currentSettings.isNullOrEmpty() || currentSettings == "null") {
             JSONObject().toString()
         } else {
             currentSettings

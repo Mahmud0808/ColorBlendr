@@ -1,6 +1,10 @@
 package com.drdisagree.colorblendr.ui.compose.navigation
 
 import android.net.Uri
+import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.MaterialTheme
@@ -11,12 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
@@ -27,7 +30,6 @@ import com.drdisagree.colorblendr.data.common.Utilities.setWorkingMethod
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
-import com.drdisagree.colorblendr.service.ShizukuConnection
 import com.drdisagree.colorblendr.ui.activities.MainActivity
 import com.drdisagree.colorblendr.ui.compose.screens.home.HomeScreen
 import com.drdisagree.colorblendr.ui.compose.screens.onboarding.OnboardingActionState
@@ -37,13 +39,13 @@ import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.bindUserService
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.requestShizukuPermission
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AppNavHost(
@@ -83,7 +85,7 @@ fun AppNavHost(
         scope.launch {
             try {
                 updateWallpaperColorList(context)
-                updateFabricatedAppList(context)
+                withContext(Dispatchers.IO) { updateFabricatedAppList(context) }
 
                 setFirstRunCompleted()
                 setWorkingMethod(WORKING_METHOD)
@@ -104,7 +106,7 @@ fun AppNavHost(
     fun checkRootConnection() {
         onboardingAction = OnboardingActionState.Connecting
         RootConnectionProvider
-            .builder(context)
+            .builder()
             .onSuccess { goToHome() }
             .onFailure {
                 onboardingAction = OnboardingActionState.Error(
@@ -120,10 +122,7 @@ fun AppNavHost(
             onboardingAction = OnboardingActionState.Connecting
             requestShizukuPermission(fragmentActivity) { granted ->
                 if (granted) {
-                    bindUserService(
-                        getUserServiceArgs(ShizukuConnection::class.java),
-                        ShizukuConnectionProvider.serviceConnection
-                    )
+                    ShizukuConnectionProvider.bind()
                     goToHome()
                 } else {
                     onboardingAction = OnboardingActionState.Error(
@@ -149,23 +148,23 @@ fun AppNavHost(
         }
     }
 
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition =
+        slideInHorizontally(spatialSpec) { if (isPop(navController)) -it else it }
+
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition =
+        slideOutHorizontally(spatialSpec) { if (isPop(navController)) it else -it }
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        enterTransition = {
-            slideInHorizontally(spatialSpec) { it }
-        },
-        exitTransition = {
-            slideOutHorizontally(spatialSpec) { -it }
-        },
-        popEnterTransition = {
-            slideInHorizontally(spatialSpec) { -it }
-        },
-        popExitTransition = {
-            slideOutHorizontally(spatialSpec) { it }
-        }
+        enterTransition = { enter() },
+        exitTransition = { exit() },
+        popEnterTransition = { enter() },
+        popExitTransition = { exit() },
+        predictivePopEnterTransition = { enter() },
+        predictivePopExitTransition = { exit() }
     ) {
-        composable(Routes.ONBOARDING) {
+        screen(Routes.ONBOARDING) {
             OnboardingScreen(
                 actionState = onboardingAction,
                 onError = { onboardingAction = OnboardingActionState.Error(it) },
@@ -178,13 +177,13 @@ fun AppNavHost(
                 onFinishActivity = { activity?.finish() }
             )
         }
-        composable(Routes.PAIRING) {
+        screen(Routes.PAIRING) {
             PairingScreen(
                 onPairDevice = { (activity as? MainActivity)?.pairThisDevice() },
                 onDeviceConnected = { navController.popBackStack() }
             )
         }
-        composable(Routes.HOME) {
+        screen(Routes.HOME) {
             HomeScreen(
                 success = success || onboardedSuccess,
                 pendingRestoreUri = pendingRestoreUri,

@@ -5,8 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.enums.CommunitySort
 import com.drdisagree.colorblendr.data.models.CommunityTheme
+import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.community.CommunityThemePalette
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 // Cache-first: emit the Room cache instantly, refresh from the index in the
@@ -23,21 +29,38 @@ class CommunityViewModel : ViewModel() {
     private val _sort = MutableStateFlow(CommunitySort.TRENDING)
     val sort = _sort.asStateFlow()
 
+    private val _query = MutableStateFlow("")
+    val query = _query.asStateFlow()
+
     init {
         viewModelScope.launch {
-            repository.getThemes().takeIf { it.isNotEmpty() }?.let {
-                _allThemes.value = it
-            }
-            if (repository.refreshIndex()) {
+            val cached = repository.getThemes()
+            if (cached.isNotEmpty()) _allThemes.value = cached
+            val needsFetch = cached.isEmpty() || repository.isStale(STALE_AFTER_MILLIS)
+            if (needsFetch && repository.refreshIndex()) {
                 _allThemes.value = repository.getThemes()
             } else if (_allThemes.value == null) {
                 _allThemes.value = emptyList()
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            allThemes.filterNotNull().collectLatest { themes ->
+                val isDark = SystemUtil.isDarkMode
+                themes.forEach { theme ->
+                    ensureActive()
+                    CommunityThemePalette.derive(theme, isDark)
+                }
             }
         }
     }
 
     fun setSort(sort: CommunitySort) {
         _sort.value = sort
+    }
+
+    fun setQuery(query: String) {
+        _query.value = query
     }
 
     // Refetch when the index has gone stale mid-session, so freshly merged
@@ -61,6 +84,6 @@ class CommunityViewModel : ViewModel() {
     }
 
     companion object {
-        private const val STALE_AFTER_MILLIS = 10L * 60 * 1000
+        private const val STALE_AFTER_MILLIS = 6L * 60 * 60 * 1000
     }
 }

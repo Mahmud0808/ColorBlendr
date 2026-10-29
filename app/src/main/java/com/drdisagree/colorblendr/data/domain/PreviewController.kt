@@ -1,18 +1,15 @@
 package com.drdisagree.colorblendr.data.domain
 
 import android.util.Log
-import com.drdisagree.colorblendr.utils.community.CommunityVotes
-import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
+import com.drdisagree.colorblendr.data.common.Utilities.getWallpaperColorList
+import com.drdisagree.colorblendr.data.common.Utilities.setSeedColorValue
 import com.drdisagree.colorblendr.data.common.Utilities.updateColorAppliedTimestamp
 import com.drdisagree.colorblendr.data.config.Prefs
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
-import com.drdisagree.colorblendr.utils.colors.computeSystemColorMap
+import com.drdisagree.colorblendr.theme.ThemePrefs
+import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
+import com.drdisagree.colorblendr.utils.community.CommunityThemeApplier
+import com.drdisagree.colorblendr.utils.community.CommunityVotes
 import com.drdisagree.colorblendr.utils.manager.OverlayManager.applyFabricatedColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,29 +20,24 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 // Defers user color/setting selections: changes are staged in memory (never
 // persisted) and only restyle the in-app theme, until the user applies them —
 // committing the prefs and pushing the overlay — or discards them.
 object PreviewController {
 
-    private val TAG = PreviewController::class.java.simpleName
+    private val TAG = "PreviewController"
 
-    data class PreviewColors(
-        val lightMap: Map<String, Int>,
-        val darkMap: Map<String, Int>,
-        val paletteLight: List<List<Int>>,
-        val paletteDark: List<List<Int>>
-    )
-
-    private val _previewColors = MutableStateFlow<PreviewColors?>(null)
-    val previewColors = _previewColors.asStateFlow()
+    private val _previewTheme = MutableStateFlow<ResolvedTheme?>(null)
+    val previewTheme = _previewTheme.asStateFlow()
 
     private val _isApplying = MutableStateFlow(false)
     val isApplying = _isApplying.asStateFlow()
 
     val isPreviewActive: Boolean
-        get() = Prefs.isStagingActive || _previewColors.value != null
+        get() = Prefs.isStagingActive || _previewTheme.value != null
 
     // Own scope: callers' composition scopes get cancelled when applying the
     // overlay recreates the activity, which must not abort these jobs.
@@ -64,6 +56,39 @@ object PreviewController {
     @Volatile
     private var refreshOthersPending = false
 
+    private val sessionLock = Any()
+
+    private val busy = AtomicBoolean(false)
+
+    @Volatile
+    private var previewSession = 0
+
+    private fun endPreviewSession() {
+        synchronized(sessionLock) {
+            previewSession++
+            _previewTheme.value = null
+        }
+    }
+
+    @Volatile
+    private var systemUpdatePending = false
+
+    fun markSystemUpdatePending() {
+        systemUpdatePending = true
+    }
+
+    private fun takeSystemUpdatePending(): Boolean {
+        val pending = systemUpdatePending
+        systemUpdatePending = false
+        return pending
+    }
+
+    private fun syncWallpaperSeed() {
+        if (!customColorEnabled()) {
+            getWallpaperColorList().firstOrNull()?.let { setSeedColorValue(it) }
+        }
+    }
+
     init {
         controllerScope.launch {
             previewRequests.collect {
@@ -71,10 +96,23 @@ object PreviewController {
                 // applied or discarded) must not resurrect the preview.
                 if (!Prefs.isStagingActive) return@collect
 
+                val session = previewSession
                 val refreshOthers = refreshOthersPending
                 refreshOthersPending = false
                 try {
-                    _previewColors.value = buildPreviewColors()
+                    val theme = ThemePrefs.resolve().precompute()
+                    if (refreshOthers && !Prefs.hasStagedChanges()) {
+                        withContext(Dispatchers.Main) {
+                            if (session == previewSession && !Prefs.hasStagedChanges()) {
+                                abandonPreview()
+                            }
+                        }
+                        return@collect
+                    }
+                    synchronized(sessionLock) {
+                        if (session != previewSession || !Prefs.isStagingActive) return@collect
+                        _previewTheme.value = theme
+                    }
                     if (refreshOthers) {
                         // Palette/style pages regenerate from the staged prefs.
                         RefreshCoordinator.triggerRefresh()
@@ -100,10 +138,13 @@ object PreviewController {
     }
 
     fun applyChanges() {
+        if (!isPreviewActive || !busy.compareAndSet(false, true)) return
+
+        _isApplying.value = true
         controllerScope.launch {
-            _isApplying.value = true
             try {
                 Prefs.commitStaged()
+                if (takeSystemUpdatePending()) syncWallpaperSeed()
                 updateColorAppliedTimestamp()
                 applyFabricatedColors()
 
@@ -116,13 +157,16 @@ object PreviewController {
             } catch (e: Exception) {
                 Log.e(TAG, "Error applying preview colors", e)
             } finally {
-                _previewColors.value = null
+                endPreviewSession()
                 _isApplying.value = false
+                busy.set(false)
             }
         }
     }
 
     fun discardChanges() {
+        if (busy.get()) return
+
         controllerScope.launch {
             abandonPreview()
         }
@@ -132,10 +176,13 @@ object PreviewController {
     // a just-updated style) with the same "applying" dialog + overlay push
     // applyChanges shows.
     fun reapply(prepare: suspend () -> Unit) {
+        if (!busy.compareAndSet(false, true)) return
+
+        _isApplying.value = true
         controllerScope.launch {
-            _isApplying.value = true
             try {
-                abandonPreview()
+                abandonPreview(applyPending = false)
+                if (takeSystemUpdatePending()) syncWallpaperSeed()
                 prepare()
                 updateColorAppliedTimestamp()
                 applyFabricatedColors()
@@ -143,53 +190,25 @@ object PreviewController {
                 Log.e(TAG, "Error reapplying colors", e)
             } finally {
                 _isApplying.value = false
+                busy.set(false)
             }
         }
     }
 
     // Synchronous discard for flows that take over from an active preview
     // (master switch, backup restore).
-    fun abandonPreview() {
+    fun abandonPreview(applyPending: Boolean = true) {
         CommunityThemeApplier.pendingCreationId = null
         Prefs.discardStaged()
-        _previewColors.value = null
+        endPreviewSession()
         RefreshCoordinator.triggerRefresh()
-    }
 
-    fun buildPreviewColors(): PreviewColors {
-        val style = getCurrentMonetStyle()
-        val accentSaturation = getAccentSaturation()
-        val backgroundSaturation = getBackgroundSaturation()
-        val backgroundLightness = getBackgroundLightness()
-        val pitchBlackTheme = pitchBlackThemeEnabled()
-        val accurateShades = accurateShadesEnabled()
-
-        val paletteLight = generateModifiedColors(
-            style = style,
-            accentSaturation = accentSaturation,
-            backgroundSaturation = backgroundSaturation,
-            backgroundLightness = backgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = false
-        )
-        val paletteDark = generateModifiedColors(
-            style = style,
-            accentSaturation = accentSaturation,
-            backgroundSaturation = backgroundSaturation,
-            backgroundLightness = backgroundLightness,
-            pitchBlackTheme = pitchBlackTheme,
-            accurateShades = accurateShades,
-            modifyPitchBlack = false,
-            isDark = true
-        )
-
-        return PreviewColors(
-            lightMap = computeSystemColorMap(paletteLight, paletteDark, isDark = false),
-            darkMap = computeSystemColorMap(paletteLight, paletteDark, isDark = true),
-            paletteLight = paletteLight,
-            paletteDark = paletteDark
-        )
+        if (applyPending && takeSystemUpdatePending()) {
+            syncWallpaperSeed()
+            controllerScope.launch {
+                updateColorAppliedTimestamp()
+                applyFabricatedColors()
+            }
+        }
     }
 }

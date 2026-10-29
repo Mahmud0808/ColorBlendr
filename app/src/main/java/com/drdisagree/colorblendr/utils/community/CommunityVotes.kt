@@ -10,13 +10,11 @@ import com.drdisagree.colorblendr.data.models.CommunityVoteResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.security.MessageDigest
-import java.util.concurrent.TimeUnit
 
 // Anonymous one-vote-per-device votes. Device key = salted SHA-256 of SSAID
 // (survives reinstall, scoped to this app's signing key, never sent raw).
@@ -25,10 +23,7 @@ object CommunityVotes {
 
     private const val SALT = "colorblendr-community-v1"
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .callTimeout(20, TimeUnit.SECONDS)
-        .build()
+    private val client = CommunityHttp.withCallTimeout(20)
 
     @SuppressLint("HardwareIds")
     fun deviceHash(): String {

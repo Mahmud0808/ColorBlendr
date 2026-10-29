@@ -112,6 +112,11 @@ fun TurnstileChallenge(
                                 )
                             }
                         },
+                        onRelease = { webView ->
+                            webView.stopLoading()
+                            webView.removeJavascriptInterface("TurnstileBridge")
+                            webView.destroy()
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

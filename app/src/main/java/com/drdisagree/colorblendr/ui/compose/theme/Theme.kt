@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,12 +24,15 @@ fun ColorBlendrTheme(content: @Composable () -> Unit) {
         ColorBlendr.initializeForPreview(LocalContext.current)
     }
 
-    val previewColors by PreviewController.previewColors.collectAsStateWithLifecycle()
+    val previewTheme by PreviewController.previewTheme.collectAsStateWithLifecycle()
     val viewScheme = viewThemeColorScheme()
-    val colorScheme = previewColors?.let { previewColorScheme(it, isSystemInDarkTheme()) }
-        ?: viewScheme
+    val isDark = isSystemInDarkTheme()
+    val previewScheme = remember(previewTheme, isDark) {
+        previewTheme?.scheme(isDark)?.toColorScheme()
+    }
+    val colorScheme = previewScheme ?: viewScheme
 
-    if (BuildConfig.DEBUG && !LocalInspectionMode.current && previewColors == null) {
+    if (BuildConfig.DEBUG && !LocalInspectionMode.current && previewTheme == null) {
         PreviewSchemeParityCheck(viewScheme)
     }
 

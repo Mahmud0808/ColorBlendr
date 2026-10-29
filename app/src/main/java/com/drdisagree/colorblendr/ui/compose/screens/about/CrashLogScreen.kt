@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,13 +39,15 @@ import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbar
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ExpressiveEmptyState
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
 import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.utils.app.CrashLogger
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // Dev-mode only: crashes captured locally by CrashLogger, newest first.
 @Composable
@@ -56,8 +59,9 @@ fun CrashLogScreen() {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
-    var log by remember {
-        mutableStateOf(if (inspection) "" else CrashLogger.read(context))
+    var log by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        if (!inspection) log = withContext(Dispatchers.IO) { CrashLogger.read(context) }
     }
     val copiedText = stringResource(R.string.crash_log_copied)
 
@@ -122,7 +126,7 @@ fun CrashLogScreen() {
                             .verticalScroll(scrollState)
                             .horizontalScroll(rememberScrollState())
                             .padding(16.dp)
-                            .padding(bottom = LocalPreviewBottomInset.current)
+                            .padding(previewContentPadding())
                     )
                 }
             }

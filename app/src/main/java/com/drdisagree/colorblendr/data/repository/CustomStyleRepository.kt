@@ -3,7 +3,11 @@ package com.drdisagree.colorblendr.data.repository
 import com.drdisagree.colorblendr.data.dao.CustomStyleDao
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 
-class CustomStyleRepository(private val customStyleDao: CustomStyleDao) {
+class CustomStyleRepository(private val daoProvider: () -> CustomStyleDao) {
+
+    private val customStyleDao: CustomStyleDao
+        get() = daoProvider()
+
     suspend fun getCustomStyles(): List<CustomStyleModel> {
         return customStyleDao.getAllCustomStyles()
     }

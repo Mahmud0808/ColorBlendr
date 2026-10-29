@@ -30,6 +30,6 @@ class ScheduledJobService internal constructor() : JobService() {
     }
 
     companion object {
-        private val TAG: String = ScheduledJobService::class.java.simpleName
+        private val TAG: String = "ScheduledJobService"
     }
 }

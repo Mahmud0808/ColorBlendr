@@ -2,15 +2,18 @@ package com.drdisagree.colorblendr.dev.data.api
 
 import androidx.core.graphics.toColorInt
 import com.drdisagree.colorblendr.dev.data.models.BlockedEntry
+import com.drdisagree.colorblendr.dev.data.models.ComparableTheme
 import com.drdisagree.colorblendr.dev.data.models.PendingSubmission
+import com.drdisagree.colorblendr.dev.utils.ThemePayloadDecoder
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 
 object AdminApi {
 
@@ -56,15 +59,86 @@ object AdminApi {
             }
         }
 
+    suspend fun fetchPublishedThemes(): ApiResult<List<ComparableTheme>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val request = Request.Builder()
+                    .url("https://cdn.jsdelivr.net/gh/Mahmud0808/ColorBlendr-Themes@main/index.json")
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext ApiResult.Failure(
+                        response.code,
+                        "Failed to fetch published index"
+                    )
+                    val body = response.body.string()
+                    val array = JSONArray(body)
+                    val list = (0 until array.length()).mapNotNull { i ->
+                        val entry = array.optJSONObject(i) ?: return@mapNotNull null
+                        val id = entry.optString("id").takeIf { it.isNotEmpty() }
+                            ?: return@mapNotNull null
+                        ComparableTheme(
+                            id = id,
+                            name = entry.optString("name"),
+                            author = entry.optString("author"),
+                            description = entry.optString("description"),
+                            seedColor = entry.color("seedColor"),
+                            secondaryColor = entry.color("secondaryColor"),
+                            tertiaryColor = entry.color("tertiaryColor"),
+                            style = entry.optString("style"),
+                            colorSpecVersion = entry.optInt("colorSpecVersion", 0),
+                            accentSaturation = entry.optInt("accentSaturation", 100),
+                            backgroundSaturation = entry.optInt("backgroundSaturation", 100),
+                            backgroundLightness = entry.optInt("backgroundLightness", 100),
+                            modeSpecificThemes = entry.optBoolean("modeSpecificThemes", false),
+                            accentSaturationLight = entry.optInt("accentSaturationLight", 100),
+                            backgroundSaturationLight = entry.optInt("backgroundSaturationLight", 100),
+                            backgroundLightnessLight = entry.optInt("backgroundLightnessLight", 100),
+                            accurateShades = entry.optBoolean("accurateShades", true),
+                            pitchBlack = entry.optBoolean("pitchBlack", false),
+                            tintText = entry.optBoolean("tintText", true),
+                            colorOverrides = parseColorOverrides(entry.optJSONObject("colorOverrides")),
+                            tokenOverrides = ThemePayloadDecoder.tokenOverrides(entry.optJSONObject("tokenOverrides")),
+                            pitchBlackContainers = entry.optBoolean("pitchBlackContainers", false),
+                            payloadJson = entry.toString(),
+                            isPublished = true
+                        )
+                    }
+                    ApiResult.Success(list)
+                }
+            } catch (e: Exception) {
+                ApiResult.Failure(null, e.message)
+            }
+        }
+
+    private fun parseColorOverrides(json: JSONObject?): Map<String, Int> {
+        if (json == null) return emptyMap()
+        val map = mutableMapOf<String, Int>()
+        val keys = json.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val colorVal = json.optString(key)
+            if (colorVal.isNotEmpty()) {
+                val colorInt = runCatching { colorVal.toColorInt() }.getOrNull()
+                    ?: json.optInt(key).takeIf { it != 0 }
+                if (colorInt != null) {
+                    map[key] = colorInt
+                }
+            }
+        }
+        return map
+    }
+
     suspend fun approve(
         adminKey: String,
         id: String,
         name: String? = null,
-        description: String? = null
+        description: String? = null,
+        author: String? = null
     ): ApiResult<String> {
         val payload = JSONObject().put("id", id)
         name?.let { payload.put("name", it) }
         description?.let { payload.put("description", it) }
+        author?.let { payload.put("author", it) }
         return execute(post("approve", adminKey, payload)) { body ->
             JSONObject(body).optString("prUrl").takeIf { it.isNotEmpty() }
         }

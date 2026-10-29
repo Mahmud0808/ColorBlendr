@@ -1,21 +1,22 @@
 package com.drdisagree.colorblendr.data.common
 
+import android.app.UiModeManager
 import android.graphics.Color
+import android.os.Build
+import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
+import com.drdisagree.colorblendr.data.common.Constant.APP_COLOR_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.APP_LIST_FILTER_METHOD
 import com.drdisagree.colorblendr.data.common.Constant.COLOR_SPEC_VERSION
-import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Constant.CUSTOM_MONET_STYLE
-import com.drdisagree.colorblendr.data.common.Constant.DARKER_LAUNCHER_ICONS
+import com.drdisagree.colorblendr.data.common.Constant.DEVELOPER_MODE
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_FOR_APPS_STATE
 import com.drdisagree.colorblendr.data.common.Constant.FIRST_RUN
 import com.drdisagree.colorblendr.data.common.Constant.FORCE_PITCH_BLACK_SETTINGS
 import com.drdisagree.colorblendr.data.common.Constant.GSON
-import com.drdisagree.colorblendr.data.common.Constant.MANUAL_OVERRIDE_COLORS
+import com.drdisagree.colorblendr.data.common.Constant.LEGACY_TOKENS
+import com.drdisagree.colorblendr.data.common.Constant.MONET_CONTRAST
 import com.drdisagree.colorblendr.data.common.Constant.MODE_SPECIFIC_THEMES
-import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCENT_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_ACCURATE_SHADES
-import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_LIGHTNESS
-import com.drdisagree.colorblendr.data.common.Constant.MONET_BACKGROUND_SATURATION
 import com.drdisagree.colorblendr.data.common.Constant.MONET_LAST_UPDATED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_PITCH_BLACK_THEME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SECONDARY_COLOR
@@ -24,19 +25,28 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_AUTO_SELECTED_APPS
+import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_DECLINED_APPS
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
+import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_STATE
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
-import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
-import com.drdisagree.colorblendr.data.common.Constant.SEMI_TRANSPARENT_LAUNCHER_ICONS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOTLESS_HINT
+import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOT_HINT
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
+import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.TINT_TEXT_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.TOKEN_OVERRIDES
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Constant.WIRELESS_ADB_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WORKING_METHOD
+import com.drdisagree.colorblendr.data.common.Constant.accentSaturationKey
+import com.drdisagree.colorblendr.data.common.Constant.backgroundLightnessKey
+import com.drdisagree.colorblendr.data.common.Constant.backgroundSaturationKey
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getBoolean
+import com.drdisagree.colorblendr.data.config.Prefs.getCommittedBoolean
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.getLong
 import com.drdisagree.colorblendr.data.config.Prefs.getString
@@ -46,12 +56,17 @@ import com.drdisagree.colorblendr.data.config.Prefs.putLong
 import com.drdisagree.colorblendr.data.config.Prefs.putString
 import com.drdisagree.colorblendr.data.database.AppDatabase
 import com.drdisagree.colorblendr.data.enums.AppType
+import com.drdisagree.colorblendr.data.enums.ContrastLevel
 import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.data.enums.MONET.Companion.toEnumMonet
 import com.drdisagree.colorblendr.data.enums.WorkMethod
 import com.drdisagree.colorblendr.data.repository.CommunityThemeRepository
 import com.drdisagree.colorblendr.data.repository.CustomStyleRepository
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
+import com.drdisagree.colorblendr.theme.model.PaletteRole
+import com.drdisagree.colorblendr.theme.override.ColorOverrideCodec
+import com.drdisagree.colorblendr.theme.override.ResourceOverrides
+import com.drdisagree.colorblendr.theme.override.TokenOverrides
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.google.gson.reflect.TypeToken
 
 @Suppress("unused")
@@ -71,6 +86,50 @@ object Utilities {
 
     fun setThemingEnabled(enabled: Boolean) {
         putBoolean(THEMING_ENABLED, enabled)
+    }
+
+    fun getPitchBlackAutoSelectedApps(): Set<String>? =
+        getString(PITCH_BLACK_AUTO_SELECTED_APPS, null)
+            ?.split(',')
+            ?.filter { it.isNotEmpty() }
+            ?.toSet()
+
+    fun setPitchBlackAutoSelectedApps(packages: Set<String>?) {
+        if (packages == null) {
+            clearPref(PITCH_BLACK_AUTO_SELECTED_APPS)
+        } else {
+            putString(PITCH_BLACK_AUTO_SELECTED_APPS, packages.joinToString(","))
+        }
+    }
+
+    fun getPitchBlackDeclinedApps(): Set<String> = getString(PITCH_BLACK_DECLINED_APPS, null)
+        ?.split(',')
+        ?.filter { it.isNotEmpty() }
+        ?.toSet()
+        .orEmpty()
+
+    fun setPitchBlackDeclinedApps(packages: Set<String>) {
+        if (packages.isEmpty()) {
+            clearPref(PITCH_BLACK_DECLINED_APPS)
+        } else {
+            putString(PITCH_BLACK_DECLINED_APPS, packages.joinToString(","))
+        }
+    }
+
+    fun getSamsungPaletteOriginalState(): Boolean? {
+        return when (getInt(SAMSUNG_PALETTE_ORIGINAL_STATE, -1)) {
+            0 -> false
+            1 -> true
+            else -> null
+        }
+    }
+
+    fun setSamsungPaletteOriginalState(enabled: Boolean?) {
+        if (enabled == null) {
+            clearPref(SAMSUNG_PALETTE_ORIGINAL_STATE)
+        } else {
+            putInt(SAMSUNG_PALETTE_ORIGINAL_STATE, if (enabled) 1 else 0)
+        }
     }
 
     fun isShizukuThemingEnabled(defaultValue: Boolean = true): Boolean {
@@ -118,11 +177,19 @@ object Utilities {
     }
 
     fun getCurrentMonetStyle(): MONET {
-        return getString(MONET_STYLE, null).toEnumMonet()
+        return getString(MONET_STYLE, MONET.TONAL_SPOT.toString()).toEnumMonet()
     }
 
     fun setCurrentMonetStyle(monet: MONET) {
         putString(MONET_STYLE, monet.toString())
+    }
+
+    fun canonicalMonetStyle(raw: String?): String = raw.toEnumMonet().toString()
+
+    fun normalizeMonetStyle() {
+        val stored = getString(MONET_STYLE, null) ?: return
+        val canonical = canonicalMonetStyle(stored)
+        if (stored != canonical) putString(MONET_STYLE, canonical)
     }
 
     fun getCurrentCustomStyle(): String? {
@@ -175,22 +242,6 @@ object Utilities {
         putInt(COLOR_SPEC_VERSION, version)
     }
 
-    fun darkerLauncherIconsEnabled(): Boolean {
-        return getBoolean(DARKER_LAUNCHER_ICONS, false)
-    }
-
-    fun setDarkerLauncherIconsEnabled(enabled: Boolean) {
-        putBoolean(DARKER_LAUNCHER_ICONS, enabled)
-    }
-
-    fun semiTransparentLauncherIconsEnabled(): Boolean {
-        return getBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, false)
-    }
-
-    fun setSemiTransparentLauncherIconsEnabled(enabled: Boolean) {
-        putBoolean(SEMI_TRANSPARENT_LAUNCHER_ICONS, enabled)
-    }
-
     fun forcePitchBlackSettingsEnabled(): Boolean {
         return getBoolean(FORCE_PITCH_BLACK_SETTINGS, false)
     }
@@ -199,40 +250,40 @@ object Utilities {
         putBoolean(FORCE_PITCH_BLACK_SETTINGS, enabled)
     }
 
-    fun getAccentSaturation(): Int {
-        return getInt(MONET_ACCENT_SATURATION, 100)
+    fun getAccentSaturation(isDark: Boolean = SystemUtil.isDarkMode): Int {
+        return getInt(accentSaturationKey(isDark), 100)
     }
 
-    fun setAccentSaturation(value: Int) {
-        putInt(MONET_ACCENT_SATURATION, value)
+    fun setAccentSaturation(value: Int, isDark: Boolean = SystemUtil.isDarkMode) {
+        putInt(accentSaturationKey(isDark), value)
     }
 
-    fun resetAccentSaturation() {
-        clearPref(MONET_ACCENT_SATURATION)
+    fun resetAccentSaturation(isDark: Boolean = SystemUtil.isDarkMode) {
+        clearPref(accentSaturationKey(isDark))
     }
 
-    fun getBackgroundSaturation(): Int {
-        return getInt(MONET_BACKGROUND_SATURATION, 100)
+    fun getBackgroundSaturation(isDark: Boolean = SystemUtil.isDarkMode): Int {
+        return getInt(backgroundSaturationKey(isDark), 100)
     }
 
-    fun setBackgroundSaturation(value: Int) {
-        putInt(MONET_BACKGROUND_SATURATION, value)
+    fun setBackgroundSaturation(value: Int, isDark: Boolean = SystemUtil.isDarkMode) {
+        putInt(backgroundSaturationKey(isDark), value)
     }
 
-    fun resetBackgroundSaturation() {
-        clearPref(MONET_BACKGROUND_SATURATION)
+    fun resetBackgroundSaturation(isDark: Boolean = SystemUtil.isDarkMode) {
+        clearPref(backgroundSaturationKey(isDark))
     }
 
-    fun getBackgroundLightness(): Int {
-        return getInt(MONET_BACKGROUND_LIGHTNESS, 100)
+    fun getBackgroundLightness(isDark: Boolean = SystemUtil.isDarkMode): Int {
+        return getInt(backgroundLightnessKey(isDark), 100)
     }
 
-    fun setBackgroundLightness(value: Int) {
-        putInt(MONET_BACKGROUND_LIGHTNESS, value)
+    fun setBackgroundLightness(value: Int, isDark: Boolean = SystemUtil.isDarkMode) {
+        putInt(backgroundLightnessKey(isDark), value)
     }
 
-    fun resetBackgroundLightness() {
-        clearPref(MONET_BACKGROUND_LIGHTNESS)
+    fun resetBackgroundLightness(isDark: Boolean = SystemUtil.isDarkMode) {
+        clearPref(backgroundLightnessKey(isDark))
     }
 
     fun accurateShadesEnabled(): Boolean {
@@ -291,14 +342,6 @@ object Utilities {
         putInt(MONET_TERTIARY_COLOR, color)
     }
 
-    fun manualColorOverrideEnabled(): Boolean {
-        return getBoolean(MANUAL_OVERRIDE_COLORS, false)
-    }
-
-    fun setManualColorOverrideEnabled(enabled: Boolean) {
-        putBoolean(MANUAL_OVERRIDE_COLORS, enabled)
-    }
-
     fun isColorOverriddenFor(shadeName: String): Boolean {
         return getInt(shadeName, Int.MIN_VALUE) != Int.MIN_VALUE
     }
@@ -311,11 +354,78 @@ object Utilities {
         clearPref(shadeName)
     }
 
-    fun clearAllOverriddenColors() {
-        systemPaletteNames.forEach { palettes ->
+    fun hasOverriddenShades(): Boolean {
+        return PaletteRole.shadeNames.any { palettes -> palettes.any(::isColorOverriddenFor) }
+    }
+
+    fun clearAllOverriddenShades() {
+        PaletteRole.shadeNames.forEach { palettes ->
             palettes.forEach { shadeName ->
                 clearPref(shadeName)
             }
+        }
+    }
+
+    fun clearAllOverriddenColors() {
+        clearAllOverriddenShades()
+        clearPref(TOKEN_OVERRIDES)
+    }
+
+    fun getTokenOverrides(): TokenOverrides {
+        return ColorOverrideCodec.decodeTokens(getString(TOKEN_OVERRIDES))
+    }
+
+    fun legacyTokensEnabled(): Boolean {
+        return getBoolean(LEGACY_TOKENS, false)
+    }
+
+    fun legacyTokensApplied(): Boolean = getCommittedBoolean(LEGACY_TOKENS, false)
+
+    fun setLegacyTokensEnabled(enabled: Boolean) {
+        if (enabled) putBoolean(LEGACY_TOKENS, true) else clearPref(LEGACY_TOKENS)
+    }
+
+    fun getContrastLevel(): ContrastLevel =
+        ContrastLevel.fromString(getString(MONET_CONTRAST, ContrastLevel.STANDARD.name))
+
+    fun setContrastLevel(level: ContrastLevel) {
+        putString(MONET_CONTRAST, level.name)
+    }
+
+    fun contrastValue(): Double =
+        if (isRootMode()) getContrastLevel().value else systemContrast()
+
+    private fun systemContrast(): Double =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            appContext.getSystemService(UiModeManager::class.java)?.contrast?.toDouble() ?: 0.0
+        } else {
+            0.0
+        }
+
+    fun getAppColorOverrides(): Map<String, ResourceOverrides> {
+        return ColorOverrideCodec.decodeApps(getString(APP_COLOR_OVERRIDES))
+    }
+
+    fun getAppColorOverrides(packageName: String): ResourceOverrides {
+        return getAppColorOverrides()[packageName] ?: ResourceOverrides()
+    }
+
+    fun setAppColorOverrides(packageName: String, overrides: ResourceOverrides) {
+        val all = getAppColorOverrides().toMutableMap().apply {
+            if (overrides.isEmpty) remove(packageName) else put(packageName, overrides)
+        }
+        if (all.isEmpty()) {
+            clearPref(APP_COLOR_OVERRIDES)
+        } else {
+            putString(APP_COLOR_OVERRIDES, ColorOverrideCodec.encodeApps(all))
+        }
+    }
+
+    fun setTokenOverrides(overrides: TokenOverrides) {
+        if (overrides.isEmpty) {
+            clearPref(TOKEN_OVERRIDES)
+        } else {
+            putString(TOKEN_OVERRIDES, ColorOverrideCodec.encodeTokens(overrides))
         }
     }
 
@@ -386,6 +496,17 @@ object Utilities {
         putBoolean(SHOW_PER_APP_THEME_WARN, show)
     }
 
+    fun showColorPaletteHint(rootMode: Boolean): Boolean {
+        return getBoolean(paletteHintKey(rootMode), true)
+    }
+
+    fun setShowColorPaletteHint(rootMode: Boolean, show: Boolean) {
+        putBoolean(paletteHintKey(rootMode), show)
+    }
+
+    private fun paletteHintKey(rootMode: Boolean): String =
+        if (rootMode) SHOW_PALETTE_ROOT_HINT else SHOW_PALETTE_ROOTLESS_HINT
+
     fun tintedTextEnabled(): Boolean {
         return getBoolean(TINT_TEXT_COLOR, true)
     }
@@ -403,7 +524,7 @@ object Utilities {
     }
 
     fun getCustomStyleRepository(): CustomStyleRepository {
-        return CustomStyleRepository(AppDatabase.getInstance().customStyleDao())
+        return CustomStyleRepository { AppDatabase.getInstance().customStyleDao() }
     }
 
     fun developerModeEnabled(): Boolean {
@@ -415,6 +536,6 @@ object Utilities {
     }
 
     fun getCommunityThemeRepository(): CommunityThemeRepository {
-        return CommunityThemeRepository(AppDatabase.getInstance().communityThemeDao())
+        return CommunityThemeRepository { AppDatabase.getInstance().communityThemeDao() }
     }
 }

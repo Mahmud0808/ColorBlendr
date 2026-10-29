@@ -1,10 +1,12 @@
 package com.drdisagree.colorblendr.ui.activities
 
+import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +29,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.drdisagree.colorblendr.R
@@ -41,26 +44,27 @@ import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWirelessAdbMode
 import com.drdisagree.colorblendr.data.common.Utilities.isWorkMethodUnknown
 import com.drdisagree.colorblendr.data.config.Prefs
+import com.drdisagree.colorblendr.data.domain.AppScope
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.provider.RootConnectionProvider
 import com.drdisagree.colorblendr.provider.ShizukuConnectionProvider
-import com.drdisagree.colorblendr.service.ShizukuConnection
+import com.drdisagree.colorblendr.theme.ThemePrefs
+import com.drdisagree.colorblendr.theme.overlay.ThemeOverlays
 import com.drdisagree.colorblendr.ui.compose.navigation.AppNavHost
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.ColorsViewModel
 import com.drdisagree.colorblendr.ui.viewmodels.StylesViewModel
+import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.app.parcelable
 import com.drdisagree.colorblendr.utils.colors.PreviewResourcesOverride
 import com.drdisagree.colorblendr.utils.community.CommunityThemeCodec
 import com.drdisagree.colorblendr.utils.community.TestThemeHolder
-import org.json.JSONObject
 import com.drdisagree.colorblendr.utils.fabricated.FabricatedUtil.updateFabricatedAppList
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil
-import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.getUserServiceArgs
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.hasShizukuPermission
 import com.drdisagree.colorblendr.utils.shizuku.ShizukuUtil.isShizukuAvailable
 import com.drdisagree.colorblendr.utils.wallpaper.WallpaperColorUtil.updateWallpaperColorList
+import com.drdisagree.colorblendr.utils.wallpaper.WallpaperShortcuts
 import com.drdisagree.colorblendr.utils.wifiadb.AdbPairingNotificationWorker
 import com.drdisagree.colorblendr.utils.wifiadb.WifiAdbShell
 import com.google.android.material.color.DynamicColors
@@ -68,10 +72,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import java.util.concurrent.CountDownLatch
+import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : AppCompatActivity() {
 
@@ -108,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
         splashScreen.setKeepOnScreenCondition { initSuccess == null }
 
-        if (savedInstanceState?.containsKey(KEY_INIT_SUCCESS) == true) {
+        if (savedInstanceState?.containsKey(KEY_INIT_SUCCESS) == true && isBackendConnected()) {
             initSuccess = savedInstanceState.getBoolean(KEY_INIT_SUCCESS)
         } else {
             bootstrap()
@@ -117,12 +124,26 @@ class MainActivity : AppCompatActivity() {
         // View-based UI (MDC dialogs, color picker) follows the preview via
         // runtime resource overrides.
         lifecycleScope.launch {
-            PreviewController.previewColors.collectLatest { preview ->
+            PreviewController.previewTheme.collectLatest { preview ->
                 // Debounced: rebuilding the resources table on every slider
                 // tick is expensive and dialogs only need the settled value.
-                if (preview != null) delay(150.milliseconds)
-                PreviewResourcesOverride.apply(this@MainActivity, preview)
+                if (preview != null) delay(PREVIEW_RESOURCES_DELAY)
+                val colors = preview?.let {
+                    withContext(Dispatchers.Default) {
+                        ThemeOverlays.frameworkColors(it, SystemUtil.isDarkMode)
+                    }
+                }
+                PreviewResourcesOverride.apply(this@MainActivity, colors)
             }
+        }
+
+        lifecycleScope.launch(Dispatchers.Default) {
+            delay(WARM_UP_DELAY)
+            if (isFirstRun() || isWorkMethodUnknown()) return@launch
+            runCatching {
+                ThemeOverlays.frameworkColors(ThemePrefs.resolve().precompute(), SystemUtil.isDarkMode)
+            }
+            WallpaperShortcuts.update(applicationContext)
         }
 
         setContent {
@@ -162,87 +183,84 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bootstrap() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val success = AtomicBoolean(false)
-            val countDownLatch = CountDownLatch(1)
-
-            handleInitialization(success, countDownLatch)
-
-            try {
-                countDownLatch.await()
-            } catch (_: InterruptedException) {
-            }
-
-            withContext(Dispatchers.Main) {
-                initSuccess = success.get()
+        lifecycleScope.launch {
+            initSuccess = withContext(Dispatchers.IO) {
+                suspendCancellableCoroutine { continuation ->
+                    val resumed = AtomicBoolean(false)
+                    handleInitialization { result ->
+                        if (resumed.compareAndSet(false, true) && continuation.isActive) {
+                            continuation.resume(result)
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun handleInitialization(
-        success: AtomicBoolean,
-        countDownLatch: CountDownLatch
-    ) {
+    private fun handleInitialization(onResult: (Boolean) -> Unit) {
+        val appContext = applicationContext
+
         if (!isFirstRun() && !isWorkMethodUnknown()) {
             when {
                 isRootMode() -> {
-                    RootConnectionProvider.builder(applicationContext)
+                    RootConnectionProvider.builder()
                         .onSuccess {
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                updateWallpaperColorList(applicationContext)
-                                updateFabricatedAppList(applicationContext)
-                                success.set(true)
-                                countDownLatch.countDown()
+                            AppScope.launch(Dispatchers.IO) {
+                                updateWallpaperColorList(appContext)
+                                updateFabricatedAppList(appContext)
+                                onResult(true)
                             }
                         }
-                        .onFailure {
-                            success.set(false)
-                            countDownLatch.countDown()
-                        }
+                        .onFailure { onResult(false) }
                         .run()
                 }
 
                 isShizukuMode() -> {
-                    if (isShizukuAvailable && hasShizukuPermission()) {
-                        ShizukuUtil.bindUserService(
-                            getUserServiceArgs(ShizukuConnection::class.java),
-                            ShizukuConnectionProvider.serviceConnection
-                        )
-                        success.set(true)
+                    if (awaitShizukuBinder() && hasShizukuPermission()) {
+                        ShizukuConnectionProvider.bind()
+                        onResult(true)
                     } else {
-                        success.set(false)
+                        onResult(false)
                     }
-                    countDownLatch.countDown()
                 }
 
                 isWirelessAdbMode() -> {
                     if (WifiAdbShell.isMyDeviceConnected()) {
-                        success.set(true)
-                        countDownLatch.countDown()
+                        onResult(true)
                     } else {
                         WifiAdbShell.autoConnect(object : WifiAdbShell.ConnectionListener {
                             override fun onConnectionSuccess() {
-                                success.set(true)
-                                countDownLatch.countDown()
+                                onResult(true)
                             }
 
                             override fun onConnectionFailed() {
-                                success.set(false)
-                                countDownLatch.countDown()
+                                onResult(false)
                             }
                         })
                     }
                 }
 
-                else -> {
-                    success.set(false)
-                    countDownLatch.countDown()
-                }
+                else -> onResult(false)
             }
         } else {
-            success.set(false)
-            countDownLatch.countDown()
+            onResult(false)
         }
+    }
+
+    private fun isBackendConnected(): Boolean = when {
+        isRootMode() -> !RootConnectionProvider.isNotConnected
+        isShizukuMode() -> !ShizukuConnectionProvider.isNotConnected
+        isWirelessAdbMode() -> WifiAdbShell.isMyDeviceConnected()
+        else -> false
+    }
+
+    private fun awaitShizukuBinder(): Boolean {
+        val deadline = SystemClock.uptimeMillis() + SHIZUKU_BINDER_TIMEOUT_MS
+        while (!isShizukuAvailable) {
+            if (SystemClock.uptimeMillis() >= deadline) return false
+            SystemClock.sleep(SHIZUKU_BINDER_POLL_MS)
+        }
+        return true
     }
 
     private fun setupEdgeToEdge() {
@@ -274,42 +292,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pairThisDevice() {
-        showPairingNotification(true)
+        showPairingNotification(applicationContext, true)
         startPairingCodeSearch()
     }
 
     private fun startPairingCodeSearch() {
+        val appContext = applicationContext
         WifiAdbShell.getPairingAddress(
             object : WifiAdbShell.IpAddressListener {
                 override fun onPortDetected(ip: String?, port: Int) {
                     if (ip != null && port != -1) {
                         Prefs.putString(ADB_IP, ip)
                         Prefs.putString(ADB_PAIRING_PORT, port.toString())
-                        showPairingNotification()
+                        showPairingNotification(appContext)
                     }
                 }
             }
         )
         startTimeout()
-    }
-
-    private fun showPairingNotification(isSearching: Boolean = false) {
-        val workManager = WorkManager.getInstance(this)
-
-        val workRequest = OneTimeWorkRequest
-            .Builder(AdbPairingNotificationWorker::class.java)
-            .setInputData(
-                Data.Builder()
-                    .putString("message", if (isSearching) "searching" else null)
-                    .build()
-            )
-            .build()
-
-        workManager.enqueueUniqueWork(
-            if (isSearching) ADB_SEARCH_NOTIFICATION else ADB_PAIR_NOTIFICATION,
-            ExistingWorkPolicy.REPLACE,
-            workRequest
-        )
     }
 
     // We run a timeout after which the pairing code searching will stop
@@ -364,5 +364,29 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_INIT_SUCCESS = "initSuccess"
+        private val PREVIEW_RESOURCES_DELAY = 400.milliseconds
+        private val WARM_UP_DELAY = 1.seconds
+        private const val SHIZUKU_BINDER_TIMEOUT_MS = 2000L
+        private const val SHIZUKU_BINDER_POLL_MS = 100L
+
+        fun showPairingNotification(context: Context, isSearching: Boolean = false) {
+            val workManager = WorkManager.getInstance(context)
+
+            val workRequest = OneTimeWorkRequest
+                .Builder(AdbPairingNotificationWorker::class.java)
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .setInputData(
+                    Data.Builder()
+                        .putString("message", if (isSearching) "searching" else null)
+                        .build()
+                )
+                .build()
+
+            workManager.enqueueUniqueWork(
+                if (isSearching) ADB_SEARCH_NOTIFICATION else ADB_PAIR_NOTIFICATION,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
+        }
     }
 }

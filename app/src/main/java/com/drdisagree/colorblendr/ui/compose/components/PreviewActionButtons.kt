@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ fun PreviewActionButtons(
     modifier: Modifier = Modifier
 ) {
     val haptics = LocalHapticFeedback.current
+    val flatElevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
 
     AnimatedVisibility(
         visible = visible,
@@ -53,7 +55,8 @@ fun PreviewActionButtons(
                     onDiscard()
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                elevation = flatElevation
             ) {
                 Icon(
                     painter = rememberVectorPainter(Icons.Rounded.Close),
@@ -67,6 +70,7 @@ fun PreviewActionButtons(
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                elevation = flatElevation,
                 icon = {
                     Icon(
                         painter = rememberVectorPainter(Icons.Rounded.Check),

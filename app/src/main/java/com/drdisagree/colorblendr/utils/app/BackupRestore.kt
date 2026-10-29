@@ -1,5 +1,6 @@
 package com.drdisagree.colorblendr.utils.app
 
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
@@ -8,14 +9,15 @@ import com.drdisagree.colorblendr.data.common.Constant.DATABASE_NAME
 import com.drdisagree.colorblendr.data.common.Constant.EXCLUDED_PREFS_FROM_BACKUP
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR
 import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
+import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.SAVED_CUSTOM_MONET_STYLES
+import com.drdisagree.colorblendr.data.common.Constant.STYLE_EXCLUDED_PREFS
 import com.drdisagree.colorblendr.data.common.Constant.THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.WALLPAPER_COLOR_LIST
 import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.config.Prefs
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.config.Prefs.getAllPrefs
-import com.drdisagree.colorblendr.data.config.Prefs.preferenceEditor
 import com.drdisagree.colorblendr.data.database.AppDatabase
 import com.drdisagree.colorblendr.data.models.CustomStyleModel
 import com.google.gson.reflect.TypeToken
@@ -36,7 +38,7 @@ import java.io.OutputStream
 
 object BackupRestore {
 
-    private val TAG = BackupRestore::class.java.simpleName
+    private val TAG = "BackupRestore"
     private const val PREFERENCE_BACKUP_FILE_NAME = "preference_backup"
     private const val DATABASE_BACKUP_FILE_NAME = "database_backup"
 
@@ -142,6 +144,10 @@ object BackupRestore {
                     "$DATABASE_BACKUP_FILE_NAME-wal" to File("$dbPath-wal")
                 )
 
+                AppDatabase.closeInstance()
+                File("$dbPath-wal").delete()
+                File("$dbPath-shm").delete()
+
                 databaseFiles.forEach { (dbFileName, targetFile) ->
                     try {
                         val extractedFile = File(tempDir, dbFileName)
@@ -150,9 +156,6 @@ object BackupRestore {
                     } catch (_: IOException) {
                     }
                 }
-
-                // Reload database
-                AppDatabase.reloadInstance()
 
                 tempDir.deleteRecursively()
 
@@ -203,10 +206,15 @@ object BackupRestore {
     }
 
     @Suppress("deprecation")
-    suspend fun restorePrefsMap(map: Map<String, Any>) {
+    suspend fun restorePrefsMap(map: Map<String, Any>, forStyle: Boolean = false) {
         withContext(Dispatchers.IO) {
             val allPrefs = getAllPrefs()
             val newPrefs = map.toMutableMap()
+            val preservedPrefs = if (forStyle) {
+                EXCLUDED_PREFS_FROM_BACKUP + STYLE_EXCLUDED_PREFS
+            } else {
+                EXCLUDED_PREFS_FROM_BACKUP
+            }
 
             // Retrieve excluded prefs from current prefs
             val excludedPrefs: MutableMap<String, Any> = HashMap()
@@ -214,7 +222,7 @@ object BackupRestore {
             // Restoring config will enable theming service
             excludedPrefs[THEMING_ENABLED] = true
 
-            EXCLUDED_PREFS_FROM_BACKUP.forEach { excludedPref ->
+            preservedPrefs.forEach { excludedPref ->
                 val prefValue = allPrefs[excludedPref]
                 if (prefValue != null) {
                     excludedPrefs[excludedPref] = prefValue
@@ -222,7 +230,7 @@ object BackupRestore {
             }
 
             // Check if seed color is available in current wallpaper color list
-            val seedColor = newPrefs[MONET_SEED_COLOR] as? Int
+            val seedColor = (newPrefs[MONET_SEED_COLOR] as? Number)?.toInt()
             val wallpaperColors = allPrefs[WALLPAPER_COLOR_LIST] as? String
             val colorAvailable = if (seedColor != null && wallpaperColors != null) {
                 Constant.GSON.fromJson<ArrayList<Int?>?>(
@@ -232,8 +240,9 @@ object BackupRestore {
             } else false
 
             val staging = Prefs.isStagingActive
+            val editor = Prefs.newEditor()
 
-            if (staging) Prefs.clearAllPrefs() else preferenceEditor.clear()
+            if (staging) Prefs.clearAllPrefs() else editor.clear()
 
             /*
              * Migrate previously saved custom styles from preferences to database
@@ -270,7 +279,7 @@ object BackupRestore {
                         else -> Prefs.putAny(key, value)
                     }
                 } else {
-                    putObject(key, value)
+                    editor.putObject(key, value)
                 }
             }
 
@@ -282,16 +291,16 @@ object BackupRestore {
             // Restore non-excluded prefs
             val rootMode = Utilities.isRootMode()
             for ((key, value) in newPrefs) {
-                if (EXCLUDED_PREFS_FROM_BACKUP.contains(key)) continue
+                if (preservedPrefs.contains(key)) continue
                 if (!rootMode && isRootOnlyPref(key)) continue
 
-                put(key, value)
+                put(key, if (key == MONET_STYLE) Utilities.canonicalMonetStyle(value as? String) else value)
             }
 
             // Set basic color if seed color is not listed in wallpaper colors
             put(MONET_SEED_COLOR_ENABLED, !colorAvailable)
 
-            if (!staging) preferenceEditor.commit()
+            if (!staging) editor.commit()
         }
     }
 
@@ -299,17 +308,17 @@ object BackupRestore {
     private fun isRootOnlyPref(key: String): Boolean =
         key in Constant.ROOT_ONLY_PREFS || key.startsWith("system_")
 
-    private fun putObject(key: String, value: Any) {
+    private fun SharedPreferences.Editor.putObject(key: String, value: Any) {
         when (value) {
-            is Boolean -> preferenceEditor.putBoolean(key, value)
-            is String -> preferenceEditor.putString(key, value)
-            is Int -> preferenceEditor.putInt(key, value)
-            is Long -> preferenceEditor.putLong(key, value)
+            is Boolean -> putBoolean(key, value)
+            is String -> putString(key, value)
+            is Int -> putInt(key, value)
+            is Long -> putLong(key, value)
             // Float and Double are unused in this project
             // is Float -> editor.putFloat(key, value)
             // is Double -> editor.putFloat(key, value.toFloat())
-            is Float -> preferenceEditor.putInt(key, value.toInt())
-            is Double -> preferenceEditor.putInt(key, value.toInt())
+            is Float -> putInt(key, value.toInt())
+            is Double -> putInt(key, value.toInt())
             else -> throw IllegalArgumentException("Type ${value.javaClass.simpleName} is unknown")
         }
     }

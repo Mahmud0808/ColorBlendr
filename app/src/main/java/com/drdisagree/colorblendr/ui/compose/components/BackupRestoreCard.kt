@@ -11,6 +11,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,8 +19,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ButtonShapes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +54,7 @@ fun BackupRestoreCard(
     modifier: Modifier = Modifier,
     position: WidgetPosition = WidgetPosition.Single
 ) {
-    var buttonsVisible by remember { mutableStateOf(false) }
+    var buttonsVisible by rememberSaveable { mutableStateOf(false) }
     val mediumAnimTime = LocalContext.current.resources
         .getInteger(AndroidR.integer.config_mediumAnimTime)
 
@@ -94,14 +100,15 @@ fun BackupRestoreCard(
                     MaterialTheme.motionScheme.defaultSpatialSpec()
                 ) + fadeOut(tween(mediumAnimTime))
             ) {
-                Row(modifier = Modifier.padding(top = 12.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+                    modifier = Modifier.padding(top = 12.dp)
+                ) {
                     Button(
                         onClick = onBackup,
-                        shapes = ButtonDefaults.shapes(),
+                        shapes = connectedButtonShapes(leading = true),
                         contentPadding = ButtonDefaults.ContentPadding,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 6.dp)
+                        modifier = Modifier.weight(1f)
                     ) {
                         Icon(
                             painter = rememberVectorPainter(Icons.Rounded.Save),
@@ -113,11 +120,9 @@ fun BackupRestoreCard(
                     }
                     Button(
                         onClick = onRestore,
-                        shapes = ButtonDefaults.shapes(),
+                        shapes = connectedButtonShapes(leading = false),
                         contentPadding = ButtonDefaults.ContentPadding,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 6.dp)
+                        modifier = Modifier.weight(1f)
                     ) {
                         Icon(
                             painter = rememberVectorPainter(Icons.Rounded.Restore),
@@ -132,6 +137,26 @@ fun BackupRestoreCard(
         }
     }
 }
+
+@Composable
+private fun connectedButtonShapes(leading: Boolean): ButtonShapes {
+    val outer = CornerSize(50)
+    val small = MaterialTheme.shapes.small
+    val extraSmall = MaterialTheme.shapes.extraSmall
+    return remember(leading, small, extraSmall) {
+        ButtonShapes(
+            shape = connectedShape(leading, outer = outer, inner = small.topEnd),
+            pressedShape = connectedShape(leading, outer = small.topStart, inner = extraSmall.topEnd)
+        )
+    }
+}
+
+private fun connectedShape(leading: Boolean, outer: CornerSize, inner: CornerSize) =
+    if (leading) {
+        RoundedCornerShape(topStart = outer, topEnd = inner, bottomEnd = inner, bottomStart = outer)
+    } else {
+        RoundedCornerShape(topStart = inner, topEnd = outer, bottomEnd = outer, bottomStart = inner)
+    }
 
 @Preview
 @Composable

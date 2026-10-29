@@ -88,11 +88,7 @@ fun SeekbarItem(
     } else {
         themeAttrColor(AndroidR.attr.textColorPrimary).copy(alpha = 0.05f)
     }
-    val textIconColor = if (enabled) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val textIconColor = MaterialTheme.colorScheme.onSurface
     val cornerRadius = with(LocalDensity.current) {
         dimensionResource(R.dimen.default_corner_radius).toPx()
     }

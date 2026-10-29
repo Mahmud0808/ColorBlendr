@@ -6,19 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.common.Utilities
-import com.drdisagree.colorblendr.data.common.Utilities.accurateShadesEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.customColorEnabled
-import com.drdisagree.colorblendr.data.common.Utilities.getAccentSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundLightness
-import com.drdisagree.colorblendr.data.common.Utilities.getBackgroundSaturation
-import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSeedColorValue
-import com.drdisagree.colorblendr.data.common.Utilities.pitchBlackThemeEnabled
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.utils.app.SystemUtil
 import com.drdisagree.colorblendr.utils.colors.ColorUtil
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.generateModifiedColors
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,6 +42,9 @@ class ColorsViewModel : ViewModel() {
     private val _seedColor = MutableStateFlow(getSeedColorValue(0))
     val seedColor: StateFlow<Int> = _seedColor.asStateFlow()
 
+    private var wallpaperJob: Job? = null
+    private var basicJob: Job? = null
+
     init {
         refreshData()
 
@@ -71,7 +69,8 @@ class ColorsViewModel : ViewModel() {
     }
 
     fun loadWallpaperColors() {
-        viewModelScope.launch(Dispatchers.IO) {
+        wallpaperJob?.cancel()
+        wallpaperJob = viewModelScope.launch(Dispatchers.IO) {
             val wallpaperColors = getWallpaperColors()
             if (wallpaperColors != _wallpaperColors.value) {
                 _wallpaperColors.value = wallpaperColors
@@ -85,7 +84,8 @@ class ColorsViewModel : ViewModel() {
     }
 
     fun loadBasicColors() {
-        viewModelScope.launch(Dispatchers.IO) {
+        basicJob?.cancel()
+        basicJob = viewModelScope.launch(Dispatchers.IO) {
             val basicColors: List<Int> = appContext.resources
                 .getStringArray(R.array.basic_color_codes)
                 .map { it.toColorInt() }
@@ -102,27 +102,15 @@ class ColorsViewModel : ViewModel() {
 
     private suspend fun loadPreviewColorPalettes(colors: List<Int>): Map<Int, List<List<Int>>> {
         return withContext(Dispatchers.IO) {
-            val currentMonetStyle = getCurrentMonetStyle()
-            val accentSaturation = getAccentSaturation()
-            val backgroundSaturation = getBackgroundSaturation()
-            val backgroundLightness = getBackgroundLightness()
-            val pitchBlackThemeEnabled = pitchBlackThemeEnabled()
-            val accurateShadesEnabled = accurateShadesEnabled()
+            val adjustments = ThemePrefs.adjustments(includeOverrides = false)
             val isDarkMode = SystemUtil.isDarkMode
 
             colors.associateWith { color ->
-                generateModifiedColors(
-                    currentMonetStyle,
-                    color,
-                    accentSaturation,
-                    backgroundSaturation,
-                    backgroundLightness,
-                    pitchBlackThemeEnabled,
-                    accurateShadesEnabled,
-                    false,
-                    isDarkMode,
-                    false
-                )
+                ThemePrefs.scheme(
+                    isDark = isDarkMode,
+                    source = ThemePrefs.source(seedColor = color),
+                    adjustments = adjustments
+                ).shades
             }
         }
     }

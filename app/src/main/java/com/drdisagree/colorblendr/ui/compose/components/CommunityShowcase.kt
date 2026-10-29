@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -207,9 +209,10 @@ private fun DriftingCarousel(
     val lifecycleState by LocalLifecycleOwner.current.lifecycle
         .currentStateAsState()
     val resumed = lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
+    var onScreen by remember { mutableStateOf(true) }
 
-    LaunchedEffect(themes, dragged, touched, resumed) {
-        if (!infinite || dragged || touched || !resumed) return@LaunchedEffect
+    LaunchedEffect(themes, dragged, touched, resumed, onScreen) {
+        if (!infinite || dragged || touched || !resumed || !onScreen) return@LaunchedEffect
 
         delay(RESUME_DELAY_MS.milliseconds)
 
@@ -224,18 +227,20 @@ private fun DriftingCarousel(
         }
     }
 
-    val pulse = rememberSkeletonPulse()
+    val pulse = if (themes == null) rememberSkeletonPulse() else null
 
     LazyRow(
         state = listState,
-        modifier = Modifier.pointerInput(Unit) {
-            awaitPointerEventScope {
-                while (true) {
-                    val event = awaitPointerEvent(PointerEventPass.Initial)
-                    touched = event.changes.any { it.pressed }
+        modifier = Modifier
+            .onGloballyPositioned { onScreen = it.boundsInWindow().height > 0f }
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        touched = event.changes.any { it.pressed }
+                    }
                 }
-            }
-        },
+            },
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         userScrollEnabled = themes != null,
         contentPadding = PaddingValues(
@@ -246,7 +251,7 @@ private fun DriftingCarousel(
     ) {
         items(itemCount) { index ->
             if (themes == null) {
-                CommunityThemeCardSkeleton(pulse = pulse)
+                CommunityThemeCardSkeleton(pulse = { pulse?.value ?: 1f })
             } else {
                 val theme = themes[index % themes.size]
                 CommunityThemeCard(

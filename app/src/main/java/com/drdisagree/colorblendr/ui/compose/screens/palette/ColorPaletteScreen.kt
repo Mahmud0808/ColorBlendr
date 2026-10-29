@@ -13,14 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FormatColorFill
+import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
@@ -42,29 +43,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.colorblendr.R
+import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenShades
+import com.drdisagree.colorblendr.data.common.Utilities.hasOverriddenShades
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
-import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
-import com.drdisagree.colorblendr.data.common.Utilities.manualColorOverrideEnabled
 import com.drdisagree.colorblendr.data.common.Utilities.resetCustomStyleIfNotNull
+import com.drdisagree.colorblendr.data.common.Utilities.setShowColorPaletteHint
+import com.drdisagree.colorblendr.data.common.Utilities.showColorPaletteHint
 import com.drdisagree.colorblendr.data.config.Prefs.clearPref
 import com.drdisagree.colorblendr.data.config.Prefs.getInt
 import com.drdisagree.colorblendr.data.config.Prefs.putInt
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.RefreshCoordinator
+import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.ui.compose.components.AppSnackbarHost
 import com.drdisagree.colorblendr.ui.compose.components.AppToolbar
 import com.drdisagree.colorblendr.ui.compose.components.ColorTable
-import com.drdisagree.colorblendr.ui.compose.components.LocalPreviewBottomInset
-import com.drdisagree.colorblendr.ui.compose.components.WarningCard
+import com.drdisagree.colorblendr.ui.compose.components.ConfirmDialog
+import com.drdisagree.colorblendr.ui.compose.components.InfoHint
+import com.drdisagree.colorblendr.ui.compose.components.MenuItem
+import com.drdisagree.colorblendr.ui.compose.components.ToolbarIconPill
 import com.drdisagree.colorblendr.ui.compose.components.contentWidthLimit
 import com.drdisagree.colorblendr.ui.compose.components.navBottomInset
+import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.components.showSnackbarReplacing
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.ColorPaletteViewModel
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.calculateTextColor
 import com.drdisagree.colorblendr.utils.colors.ColorUtil.intToHexColor
-import com.drdisagree.colorblendr.utils.colors.ColorUtil.systemPaletteNames
 import kotlinx.coroutines.launch
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerDialog
 import me.jfenn.colorpickerdialog.compose.dialogs.ColorPickerType
@@ -73,7 +79,8 @@ private val colorCodes = intArrayOf(0, 10, 50, 100, 200, 300, 400, 500, 600, 700
 
 @Composable
 fun ColorPaletteScreen(
-    colorPaletteViewModel: ColorPaletteViewModel
+    colorPaletteViewModel: ColorPaletteViewModel,
+    onNavigateToTokens: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -84,7 +91,7 @@ fun ColorPaletteScreen(
 
     val colorPalette by colorPaletteViewModel.colorPalette.collectAsStateWithLifecycle()
 
-    val isOverrideAvailable = remember { isRootMode() && manualColorOverrideEnabled() }
+    val isOverrideAvailable = remember { isRootMode() }
     var overrideRevision by remember { mutableIntStateOf(0) }
 
     // Re-merge override prefs when preview discarded (or anything else
@@ -96,7 +103,7 @@ fun ColorPaletteScreen(
     val cellColors = remember(colorPalette, overrideRevision) {
         colorPalette.mapIndexed { column, colors ->
             colors.mapIndexed { row, color ->
-                val overridden = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
+                val overridden = getInt(PaletteRole.shadeNames[column][row], Int.MIN_VALUE)
                 if (overridden != Int.MIN_VALUE) overridden else color
             }
         }
@@ -128,7 +135,7 @@ fun ColorPaletteScreen(
     fun showOverridePicker(column: Int, row: Int, currentColor: Int) {
         // Resolve (possibly staged) override at open time so picker seeds
         // color currently shown in table.
-        val initialColor = getInt(systemPaletteNames[column][row], Int.MIN_VALUE)
+        val initialColor = getInt(PaletteRole.shadeNames[column][row], Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE } ?: currentColor
         overridePickerRequest = Triple(column, row, initialColor)
     }
@@ -142,7 +149,7 @@ fun ColorPaletteScreen(
                 if (initialColor != color) {
                     PreviewController.beginPreview()
                     resetCustomStyleIfNotNull()
-                    putInt(systemPaletteNames[column][row], color)
+                    putInt(PaletteRole.shadeNames[column][row], color)
                     updateColors()
                 }
             },
@@ -157,24 +164,43 @@ fun ColorPaletteScreen(
         )
     }
 
+    val hasShadeOverrides = remember(cellColors) { isOverrideAvailable && hasOverriddenShades() }
+    var showResetDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showResetDialog) {
+        ConfirmDialog(
+            title = stringResource(R.string.color_palette_reset_title),
+            message = stringResource(R.string.color_palette_reset_message),
+            confirmText = stringResource(R.string.reset),
+            destructive = true,
+            onConfirm = {
+                showResetDialog = false
+                PreviewController.beginPreview()
+                resetCustomStyleIfNotNull()
+                clearAllOverriddenShades()
+                updateColors()
+            },
+            onDismiss = { showResetDialog = false }
+        )
+    }
+
     fun onCellClick(column: Int, row: Int) {
         val cellColor = cellColors.getOrNull(column)?.getOrNull(row) ?: return
-        val manualOverride = manualColorOverrideEnabled()
 
         scope.launch {
             val result = snackbarHostState.showSnackbarReplacing(
                 message = context.getString(R.string.color_code, intToHexColor(cellColor)),
-                actionLabel = if (manualOverride) overrideText else copyText,
+                actionLabel = if (isOverrideAvailable) overrideText else copyText,
                 duration = SnackbarDuration.Indefinite
             )
             if (result != SnackbarResult.ActionPerformed) return@launch
 
-            if (!manualOverride || isShizukuMode()) {
+            if (!isOverrideAvailable) {
                 val clipboard =
                     context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(
                     ClipData.newPlainText(
-                        systemPaletteNames[column][row],
+                        PaletteRole.shadeNames[column][row],
                         intToHexColor(cellColor)
                     )
                 )
@@ -196,7 +222,7 @@ fun ColorPaletteScreen(
 
     fun onCellLongClick(column: Int, row: Int) {
         if (row == 0 || row == 12 ||
-            getInt(systemPaletteNames[column][row], Int.MIN_VALUE) == Int.MIN_VALUE
+            getInt(PaletteRole.shadeNames[column][row], Int.MIN_VALUE) == Int.MIN_VALUE
         ) {
             return
         }
@@ -204,7 +230,7 @@ fun ColorPaletteScreen(
         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         PreviewController.beginPreview()
         resetCustomStyleIfNotNull()
-        clearPref(systemPaletteNames[column][row])
+        clearPref(PaletteRole.shadeNames[column][row])
         updateColors()
     }
 
@@ -217,53 +243,59 @@ fun ColorPaletteScreen(
                 AppToolbar(
                     title = stringResource(R.string.color_palette_title),
                     showBackButton = true,
-                    lifted = toolbarLifted
+                    lifted = toolbarLifted,
+                    actions = {
+                        if (hasShadeOverrides) {
+                            ToolbarIconPill(
+                                icon = rememberVectorPainter(Icons.Rounded.RestartAlt),
+                                width = 40.dp,
+                                destructive = true,
+                                contentDescription = stringResource(R.string.reset),
+                                onClick = { showResetDialog = true }
+                            )
+                        }
+                    }
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .contentWidthLimit(max = 760.dp)
                         .verticalScroll(scrollState)
-                        .padding(bottom = LocalPreviewBottomInset.current)
+                        .padding(previewContentPadding())
                         .padding(top = 12.dp)
                 ) {
-                    // Swipe to dismiss; state intentionally not persisted,
-                    // warning returns on next screen launch.
-                    var warningVisible by remember { mutableStateOf(true) }
+                    var hintVisible by remember { mutableStateOf(showColorPaletteHint(isOverrideAvailable)) }
                     AnimatedVisibility(
-                        visible = warningVisible,
+                        visible = hintVisible,
                         exit = shrinkVertically(
                             animationSpec = tween(durationMillis = 250)
                         ) + fadeOut()
                     ) {
-                        @Suppress("DEPRECATION")
-                        val dismissState = rememberSwipeToDismissBoxState(
-                            confirmValueChange = { value ->
-                                if (value != SwipeToDismissBoxValue.Settled) {
-                                    haptics.performHapticFeedback(HapticFeedbackType.GestureEnd)
-                                    warningVisible = false
+                        InfoHint(
+                            text = stringResource(
+                                if (isOverrideAvailable) {
+                                    R.string.color_palette_root_warn
+                                } else {
+                                    R.string.color_palette_rootless_warn
                                 }
-                                true
-                            }
-                        )
-
-                        SwipeToDismissBox(
-                            state = dismissState,
-                            backgroundContent = {}
-                        ) {
-                            WarningCard(
-                                warningText = stringResource(
-                                    if (isOverrideAvailable) {
-                                        R.string.color_palette_root_warn
-                                    } else {
-                                        R.string.color_palette_rootless_warn
-                                    }
-                                ),
-                                modifier = Modifier.padding(
-                                    bottom = dimensionResource(R.dimen.container_margin_bottom)
-                                )
+                            ),
+                            onDismiss = {
+                                setShowColorPaletteHint(isOverrideAvailable, false)
+                                hintVisible = false
+                            },
+                            modifier = Modifier.padding(
+                                bottom = dimensionResource(R.dimen.container_margin_bottom)
                             )
-                        }
+                        )
+                    }
+                    if (isOverrideAvailable) {
+                        MenuItem(
+                            title = stringResource(R.string.color_tokens_title),
+                            summary = stringResource(R.string.color_tokens_summary),
+                            icon = rememberVectorPainter(Icons.Rounded.FormatColorFill),
+                            showEndArrow = true,
+                            onClick = onNavigateToTokens
+                        )
                     }
                     if (cellColors.isNotEmpty()) {
                         ColorTable(

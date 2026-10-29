@@ -15,7 +15,17 @@ object AppEvents {
     )
     val events = _events.asSharedFlow()
 
+    private val _packageChanges = MutableSharedFlow<String>(
+        extraBufferCapacity = 32,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val packageChanges = _packageChanges.asSharedFlow()
+
     fun emit(action: String) {
         _events.tryEmit(action)
+    }
+
+    fun emitPackageChanged(packageName: String) {
+        _packageChanges.tryEmit(packageName)
     }
 }
