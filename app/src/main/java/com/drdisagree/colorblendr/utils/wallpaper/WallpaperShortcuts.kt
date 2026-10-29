@@ -45,7 +45,7 @@ object WallpaperShortcuts {
     private const val ID_PREFIX = "wallpaper_color_"
     private const val MAX_SHORTCUTS = 4
     private const val ICON_SIZE_DP = 108
-    private const val SWATCH_RADIUS = 0.3f
+    private const val SWATCH_RADIUS = 0.25f
     private const val CENTER_RADIUS = 10f / 18f
 
     suspend fun update(context: Context) {
