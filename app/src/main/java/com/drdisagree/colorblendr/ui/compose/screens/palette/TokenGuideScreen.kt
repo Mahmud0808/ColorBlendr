@@ -49,6 +49,7 @@ import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.compose.utils.transparencyGrid
 import com.drdisagree.colorblendr.ui.viewmodels.ColorTokensViewModel
+import com.drdisagree.colorblendr.utils.app.TokenAvailability
 
 @Composable
 fun TokenGuideScreen(
@@ -57,13 +58,21 @@ fun TokenGuideScreen(
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
-    TokenGuideContent(scheme = theme?.scheme(isDark))
+    val availableTokens = remember { TokenAvailability.tokens }
+
+    TokenGuideContent(scheme = theme?.scheme(isDark), availableTokens = availableTokens)
 }
 
 @Composable
-private fun TokenGuideContent(scheme: ResolvedScheme?) {
+private fun TokenGuideContent(scheme: ResolvedScheme?, availableTokens: Set<Token>) {
     val listState = rememberLazyListState()
     val toolbarLifted by remember { derivedStateOf { listState.canScrollBackward } }
+    val categories = remember(availableTokens) {
+        TokenCategory.entries.mapNotNull { category ->
+            val tokens = category.tokens.filter { it in availableTokens }
+            if (tokens.isEmpty()) null else category to tokens
+        }
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -85,10 +94,10 @@ private fun TokenGuideContent(scheme: ResolvedScheme?) {
                 item(key = "hint") {
                     InfoHint(text = stringResource(R.string.color_tokens_usage_hint))
                 }
-                items(TokenCategory.entries, key = { it.name }) { category ->
+                items(categories, key = { (category, _) -> category.name }) { (category, tokens) ->
                     Column {
                         ListSectionHeader(text = stringResource(category.labelRes))
-                        GuideCard(tokens = category.tokens, scheme = scheme)
+                        GuideCard(tokens = tokens, scheme = scheme)
                     }
                 }
             }
@@ -154,6 +163,6 @@ private fun TokenGuideContentPreview() {
         isDark = true
     )
     ColorBlendrTheme {
-        TokenGuideContent(scheme = scheme)
+        TokenGuideContent(scheme = scheme, availableTokens = Token.entries.toSet())
     }
 }
