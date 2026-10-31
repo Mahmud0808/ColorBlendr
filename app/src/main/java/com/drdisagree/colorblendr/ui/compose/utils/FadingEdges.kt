@@ -1,7 +1,7 @@
 package com.drdisagree.colorblendr.ui.compose.utils
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -16,17 +16,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 fun Modifier.horizontalFadingEdges(
-    scrollState: ScrollState,
+    scrollState: ScrollableState,
     length: Dp = 32.dp
 ): Modifier = fadingEdges(scrollState, length, vertical = false)
 
 fun Modifier.verticalFadingEdges(
-    scrollState: ScrollState,
+    scrollState: ScrollableState,
     length: Dp = 32.dp
 ): Modifier = fadingEdges(scrollState, length, vertical = true)
 
 private fun Modifier.fadingEdges(
-    scrollState: ScrollState,
+    scrollState: ScrollableState,
     length: Dp,
     vertical: Boolean
 ): Modifier = composed {
