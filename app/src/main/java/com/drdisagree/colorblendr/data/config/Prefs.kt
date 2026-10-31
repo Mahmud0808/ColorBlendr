@@ -34,6 +34,7 @@ object Prefs {
         Constant.PITCH_BLACK_DECLINED_APPS,
         Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
         Constant.SHOW_PALETTE_ROOT_HINT,
+        Constant.NAV_RAIL_EXPANDED,
         Constant.SHOW_PALETTE_ROOTLESS_HINT,
         Constant.APP_COLOR_OVERRIDES
     )

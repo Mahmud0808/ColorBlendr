@@ -64,6 +64,7 @@ import com.drdisagree.colorblendr.ui.compose.components.previewContentPadding
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
 import com.drdisagree.colorblendr.ui.compose.utils.AdaptivePreviews
 import com.drdisagree.colorblendr.ui.viewmodels.ColorTokensViewModel
+import com.drdisagree.colorblendr.utils.app.TokenAvailability
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 
@@ -78,10 +79,12 @@ fun ColorTokensScreen(
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val overrides by viewModel.overrides.collectAsStateWithLifecycle()
+    val availableTokens = remember { TokenAvailability.tokens }
 
     ColorTokensContent(
         theme = theme,
         overrides = overrides,
+        availableTokens = availableTokens,
         onOverride = viewModel::setOverride,
         onClear = viewModel::clearOverrides,
         onOpenGuide = onOpenGuide
@@ -93,6 +96,7 @@ fun ColorTokensScreen(
 private fun ColorTokensContent(
     theme: ResolvedTheme?,
     overrides: TokenOverrides,
+    availableTokens: Set<Token>,
     onOverride: (isDark: Boolean, token: Token, override: ColorOverride?) -> Unit,
     onClear: (isDark: Boolean) -> Unit,
     onOpenGuide: () -> Unit
@@ -121,9 +125,9 @@ private fun ColorTokensContent(
         scheme?.let { TokenContrast.lowContrastTokens(it, modeOverrides.keys) }.orEmpty()
     }
 
-    val sections = remember(query, filter, modeOverrides) {
+    val sections = remember(query, filter, modeOverrides, availableTokens) {
         TokenCategory.entries.mapNotNull { category ->
-            val tokens = category.tokens.filter { token ->
+            val tokens = category.tokens.filter { it in availableTokens }.filter { token ->
                 val matchesFilter = when (filter) {
                     FILTER_ALL -> true
                     FILTER_EDITED -> token in modeOverrides
@@ -299,6 +303,7 @@ private fun ColorTokensContentPreview() {
             overrides = TokenOverrides(
                 light = mapOf(Token.SURFACE to ColorOverride.Custom(0xFFFAF7F2.toInt()))
             ),
+            availableTokens = Token.entries.toSet(),
             onOverride = { _, _, _ -> },
             onClear = {},
             onOpenGuide = {}

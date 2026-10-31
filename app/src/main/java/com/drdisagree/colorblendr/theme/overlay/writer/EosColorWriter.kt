@@ -1,6 +1,7 @@
 package com.drdisagree.colorblendr.theme.overlay.writer
 
 import androidx.core.graphics.ColorUtils
+import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.SYSTEMUI_PACKAGE
 import com.drdisagree.colorblendr.theme.model.PaletteRole.NEUTRAL
 import com.drdisagree.colorblendr.theme.model.PaletteRole.PRIMARY
@@ -8,14 +9,18 @@ import com.drdisagree.colorblendr.theme.overlay.ColorSink
 import com.drdisagree.colorblendr.theme.overlay.OverlayTarget
 import com.drdisagree.colorblendr.theme.overlay.ThemeColorWriter
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
+import com.drdisagree.colorblendr.utils.app.ResourceUtil
 
 object EosColorWriter : ThemeColorWriter {
 
     private const val ALPHA_ACCENT = 0x14
+    private const val EOS_MARKER = "e_accent"
 
     private class LightDark(val light: Int, val dark: Int)
 
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
+        if (!isEos()) return
+
         val isDark = target.isDarkMode
         fun ColorSink.qualified(name: String, colors: LightDark) {
             dayNight(name, colors.light, colors.dark, isDark)
@@ -60,4 +65,8 @@ object EosColorWriter : ThemeColorWriter {
             sink.dayNight("brightness_slider_track", surfaceContainer.light, surfaceContainer.dark, isDark)
         }
     }
+
+    private fun isEos(): Boolean =
+        ResourceUtil.resourceExists(SYSTEMUI_PACKAGE, EOS_MARKER, "color") ||
+                ResourceUtil.resourceExists(FRAMEWORK_PACKAGE, EOS_MARKER, "color")
 }

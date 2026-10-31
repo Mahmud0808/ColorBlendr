@@ -67,6 +67,8 @@ import com.drdisagree.colorblendr.data.common.Utilities
 import com.drdisagree.colorblendr.data.common.Utilities.clearAllOverriddenColors
 import com.drdisagree.colorblendr.data.common.Utilities.getCommunityThemeRepository
 import com.drdisagree.colorblendr.data.common.Utilities.isShizukuMode
+import com.drdisagree.colorblendr.data.common.Utilities.navRailExpanded
+import com.drdisagree.colorblendr.data.common.Utilities.setNavRailExpanded
 import com.drdisagree.colorblendr.data.domain.PreviewController
 import com.drdisagree.colorblendr.data.domain.ThemingErrorReporter
 import com.drdisagree.colorblendr.data.models.CommunityTheme
@@ -355,6 +357,8 @@ fun HomeScreen(
         }
     }
 
+    var railExpanded by rememberSaveable { mutableStateOf(navRailExpanded()) }
+
     fun onTabClick(tab: TabItem) {
         val routeGroupNow =
             tabGroup(nestedNavController.currentBackStackEntry?.destination?.route)
@@ -373,10 +377,19 @@ fun HomeScreen(
         Row(modifier = Modifier.fillMaxSize()) {
             if (useRail) {
                 MaterialTheme(colorScheme = navBarScheme) {
+                    val wideRail = widthClass == WidthClass.Expanded
                     HomeNavigationRail(
                         currentGroup = currentGroup,
-                        expanded = widthClass == WidthClass.Expanded,
-                        onTabClick = ::onTabClick
+                        expanded = wideRail && railExpanded,
+                        onTabClick = ::onTabClick,
+                        onToggle = if (wideRail) {
+                            {
+                                railExpanded = !railExpanded
+                                setNavRailExpanded(railExpanded)
+                            }
+                        } else {
+                            null
+                        }
                     )
                 }
             }

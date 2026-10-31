@@ -1,7 +1,10 @@
 package com.drdisagree.colorblendr.theme.token
 
+import android.os.Build
+import com.drdisagree.materialcolorutilities.dynamiccolor.ColorSpec.SpecVersion
 import com.drdisagree.materialcolorutilities.dynamiccolor.ContrastCurve
 import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicColor
+import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
 import com.drdisagree.materialcolorutilities.dynamiccolor.MaterialDynamicColors
 import com.drdisagree.materialcolorutilities.dynamiccolor.ToneDeltaPair
 import com.drdisagree.materialcolorutilities.dynamiccolor.ToneDeltaPair.DeltaConstraint
@@ -11,6 +14,13 @@ import com.drdisagree.materialcolorutilities.hct.Hct
 import com.drdisagree.materialcolorutilities.palettes.TonalPalette
 
 class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
+
+    private val nearerShadePairs: Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            Build.VERSION.SDK_INT_FULL < Build.VERSION_CODES_FULL.BAKLAVA_1
+        } else {
+            true
+        }
 
     fun widgetBackground() = DynamicColor(
         name = "widget_background",
@@ -112,7 +122,7 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
                 themeAppRing(),
                 5.0,
                 TonePolarity.RELATIVE_LIGHTER,
-                constraint = DeltaConstraint.FARTHER
+                constraint = if (legacyDeltaPairs(it)) DeltaConstraint.NEARER else DeltaConstraint.FARTHER
             )
         }
     )
@@ -168,11 +178,15 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         name = "shade_active",
         palette = { it.primaryPalette },
         tone = { 90.0 },
-        isBackground = true,
+        isBackground = !nearerShadePairs,
         background = { underSurface() },
-        contrastCurve = { ContrastCurve(3.0, 3.0, 4.5, 7.0) },
+        contrastCurve = { ContrastCurve(lowestContrast(3.0), 3.0, 4.5, 7.0) },
         toneDeltaPair = {
-            ToneDeltaPair(shadeActive(), shadeInactive(), 30.0, TonePolarity.LIGHTER, constraint = DeltaConstraint.FARTHER)
+            if (legacyDeltaPairs(it)) {
+                ToneDeltaPair(shadeActive(), shadeInactive(), 30.0, TonePolarity.LIGHTER, stayTogether = false)
+            } else {
+                ToneDeltaPair(shadeActive(), shadeInactive(), 30.0, TonePolarity.LIGHTER, constraint = DeltaConstraint.FARTHER)
+            }
         }
     )
 
@@ -181,24 +195,16 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         palette = { it.primaryPalette },
         tone = { 10.0 },
         background = { shadeActive() },
-        contrastCurve = { ContrastCurve(4.5, 4.5, 7.0, 11.0) },
-        toneDeltaPair = {
-            ToneDeltaPair(
-                onShadeActive(),
-                onShadeActiveVariant(),
-                20.0,
-                TonePolarity.RELATIVE_LIGHTER,
-                constraint = DeltaConstraint.FARTHER
-            )
-        }
+        contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) },
+        toneDeltaPair = { shadeTextPair(it, onShadeActive(), onShadeActiveVariant(), 20.0) }
     )
 
-    fun onShadeActiveVariant() = DynamicColor(
+    fun onShadeActiveVariant(): DynamicColor = DynamicColor(
         name = "on_shade_active_variant",
         palette = { it.primaryPalette },
         tone = { 30.0 },
         background = { shadeActive() },
-        contrastCurve = { ContrastCurve(4.5, 4.5, 7.0, 11.0) }
+        contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) }
     )
 
     fun shadeInactive(): DynamicColor = DynamicColor(
@@ -209,7 +215,11 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         background = { underSurface() },
         contrastCurve = { ContrastCurve(1.0, 1.0, 1.0, 1.0) },
         toneDeltaPair = {
-            ToneDeltaPair(shadeInactive(), shadeDisabled(), 15.0, TonePolarity.LIGHTER, constraint = DeltaConstraint.FARTHER)
+            if (legacyDeltaPairs(it)) {
+                ToneDeltaPair(shadeInactive(), shadeDisabled(), 15.0, TonePolarity.LIGHTER, stayTogether = false)
+            } else {
+                ToneDeltaPair(shadeInactive(), shadeDisabled(), 15.0, TonePolarity.LIGHTER, constraint = DeltaConstraint.FARTHER)
+            }
         }
     )
 
@@ -217,28 +227,46 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         name = "on_shade_inactive",
         palette = { it.neutralVariantPalette },
         tone = { 90.0 },
+        isBackground = nearerShadePairs,
         background = { shadeInactive() },
-        contrastCurve = { ContrastCurve(4.5, 4.5, 7.0, 11.0) },
-        toneDeltaPair = {
-            ToneDeltaPair(
-                onShadeInactive(),
-                onShadeInactiveVariant(),
-                10.0,
-                TonePolarity.RELATIVE_LIGHTER,
-                constraint = DeltaConstraint.FARTHER
-            )
-        }
+        contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) },
+        toneDeltaPair = { shadeTextPair(it, onShadeInactive(), onShadeInactiveVariant(), 10.0) }
     )
 
-    fun onShadeInactiveVariant() = DynamicColor(
+    fun onShadeInactiveVariant(): DynamicColor = DynamicColor(
         name = "on_shade_inactive_variant",
         palette = { it.neutralVariantPalette },
         tone = { 80.0 },
         background = { shadeInactive() },
-        contrastCurve = { ContrastCurve(4.5, 4.5, 7.0, 11.0) }
+        contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) }
     )
 
-    fun shadeDisabled() = DynamicColor(
+    private fun shadeTextPair(
+        scheme: DynamicScheme,
+        roleA: DynamicColor,
+        roleB: DynamicColor,
+        delta: Double
+    ): ToneDeltaPair =
+        if (legacyDeltaPairs(scheme)) {
+            ToneDeltaPair(
+                roleA,
+                roleB,
+                delta,
+                TonePolarity.RELATIVE_LIGHTER,
+                stayTogether = false,
+                constraint = DeltaConstraint.NEARER
+            )
+        } else {
+            ToneDeltaPair(roleA, roleB, delta, TonePolarity.RELATIVE_LIGHTER, constraint = DeltaConstraint.FARTHER)
+        }
+
+    private fun legacyDeltaPairs(scheme: DynamicScheme): Boolean =
+        scheme.specVersion == SpecVersion.SPEC_2021
+
+    private fun lowestContrast(current: Double): Double =
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) 1.0 else current
+
+    fun shadeDisabled(): DynamicColor = DynamicColor(
         name = "shade_disabled",
         palette = { it.neutralPalette },
         tone = { 4.0 },

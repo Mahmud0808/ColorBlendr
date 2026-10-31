@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.colorblendr.R
 import com.drdisagree.colorblendr.data.models.CommunityTheme
 import com.drdisagree.colorblendr.ui.compose.theme.ColorBlendrTheme
+import com.drdisagree.colorblendr.ui.compose.utils.horizontalFadingEdges
 import com.drdisagree.colorblendr.ui.viewmodels.CommunityViewModel
 import com.drdisagree.colorblendr.utils.community.CommunityTrending
 import kotlinx.coroutines.Dispatchers
@@ -232,6 +233,7 @@ private fun DriftingCarousel(
     LazyRow(
         state = listState,
         modifier = Modifier
+            .horizontalFadingEdges(listState, length = 48.dp)
             .onGloballyPositioned { onScreen = it.boundsInWindow().height > 0f }
             .pointerInput(Unit) {
                 awaitPointerEventScope {

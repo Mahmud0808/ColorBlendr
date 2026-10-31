@@ -32,6 +32,7 @@ import com.drdisagree.colorblendr.data.common.Constant.SAMSUNG_PALETTE_ORIGINAL_
 import com.drdisagree.colorblendr.data.common.Constant.SCREEN_OFF_UPDATE_COLORS
 import com.drdisagree.colorblendr.data.common.Constant.SHIZUKU_THEMING_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOTLESS_HINT
+import com.drdisagree.colorblendr.data.common.Constant.NAV_RAIL_EXPANDED
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PALETTE_ROOT_HINT
 import com.drdisagree.colorblendr.data.common.Constant.SHOW_PER_APP_THEME_WARN
 import com.drdisagree.colorblendr.data.common.Constant.TASKER_INTEGRATION
@@ -486,6 +487,12 @@ object Utilities {
 
     fun setSelectedFabricatedApps(selectedApps: HashMap<String, Boolean>) {
         putString(FABRICATED_OVERLAY_FOR_APPS_STATE, GSON.toJson(selectedApps))
+    }
+
+    fun navRailExpanded(): Boolean = getBoolean(NAV_RAIL_EXPANDED, false)
+
+    fun setNavRailExpanded(expanded: Boolean) {
+        putBoolean(NAV_RAIL_EXPANDED, expanded)
     }
 
     fun showPerAppThemeWarning(): Boolean {
