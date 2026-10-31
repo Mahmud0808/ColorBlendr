@@ -18,11 +18,11 @@ object ShizukuOverlayBackend : OverlayBackend {
             val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
             if (themeJson.isEmpty()) return@attempt true
 
-            SamsungMonetPalette.flip(connection::run)
-            succeeded(
-                connection.applyFabricatedColors(
-                    ThemeOverlayPackage.mergeIntoSettings(currentSettings, themeJson)
-                )
+            val samsung = SamsungMonetPalette.refresh(connection::run)
+            putSettings(
+                connection,
+                ThemeOverlayPackage.mergeIntoSettings(currentSettings, themeJson),
+                samsung
             )
         }
     }
@@ -30,9 +30,18 @@ object ShizukuOverlayBackend : OverlayBackend {
     override fun remove(): Boolean {
         val connection = connect() ?: return false
         return attempt {
-            SamsungMonetPalette.restore(connection::run)
-            succeeded(connection.removeFabricatedColors())
+            val samsung = SamsungMonetPalette.restore(connection::run)
+            putSettings(
+                connection,
+                ThemeOverlayPackage.getOriginalSettings(connection.currentSettings),
+                samsung
+            )
         }
+    }
+
+    private fun putSettings(connection: IShizukuConnection, json: String, samsung: Boolean): Boolean {
+        val write = { value: String -> succeeded(connection.applyFabricatedColors(value)) }
+        return write(json) && (!samsung || SamsungMonetPalette.reassert(json, { connection.currentSettings }, write))
     }
 
     private fun succeeded(shellError: String?): Boolean {
