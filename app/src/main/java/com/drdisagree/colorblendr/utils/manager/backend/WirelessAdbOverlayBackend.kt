@@ -15,13 +15,13 @@ object WirelessAdbOverlayBackend : OverlayBackend {
         val themeJson = ThemeOverlayPackage.themeCustomizationOverlayPackages.toString()
         if (themeJson.isEmpty()) return@withSettings true
 
-        SamsungMonetPalette.flip(::shell)
-        putSettings(ThemeOverlayPackage.mergeIntoSettings(current, themeJson))
+        val samsung = SamsungMonetPalette.refresh(::shell)
+        putSettings(ThemeOverlayPackage.mergeIntoSettings(current, themeJson), samsung)
     }
 
     override fun remove(): Boolean = withSettings { current ->
-        SamsungMonetPalette.restore(::shell)
-        putSettings(ThemeOverlayPackage.getOriginalSettings(current))
+        val samsung = SamsungMonetPalette.restore(::shell)
+        putSettings(ThemeOverlayPackage.getOriginalSettings(current), samsung)
     }
 
     private inline fun withSettings(action: (String) -> Boolean): Boolean {
@@ -45,7 +45,11 @@ object WirelessAdbOverlayBackend : OverlayBackend {
         }
     }
 
-    private fun putSettings(json: String): Boolean {
+    private fun putSettings(json: String, samsung: Boolean): Boolean {
+        return writeSettings(json) && (!samsung || SamsungMonetPalette.reassert(json, ::readSettings, ::writeSettings))
+    }
+
+    private fun writeSettings(json: String): Boolean {
         val result = WifiAdbShell.exec(
             "settings put secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES ${json.shellQuoted()}"
         )
@@ -54,6 +58,10 @@ object WirelessAdbOverlayBackend : OverlayBackend {
         OverlayErrors.reportOperation(result.output)
         return false
     }
+
+    private fun readSettings(): String? =
+        WifiAdbShell.exec("settings get secure $THEME_CUSTOMIZATION_OVERLAY_PACKAGES")
+            .takeIf { it.success }?.output
 
     private fun shell(command: String): String = WifiAdbShell.exec(command).output
 }

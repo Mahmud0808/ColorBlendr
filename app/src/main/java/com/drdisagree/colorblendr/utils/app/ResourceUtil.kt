@@ -2,6 +2,7 @@ package com.drdisagree.colorblendr.utils.app
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
+import android.util.TypedValue
 import com.drdisagree.colorblendr.ColorBlendr.Companion.appContext
 import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.data.common.Constant.LAUNCHER3_LAUNCHER
@@ -10,6 +11,7 @@ object ResourceUtil {
 
     private val resourcesCache = HashMap<String, Resources?>()
     private val packageCache = HashMap<String, String?>()
+    private val frameworkReferenceCache = HashMap<String, Boolean>()
 
     @Synchronized
     fun clearLookupCache() {
@@ -73,4 +75,16 @@ object ResourceUtil {
     fun resourceExists(packageName: String, resourceName: String, type: String): Boolean {
         return getResourcePackage(packageName, resourceName, type) != null
     }
+
+    @SuppressLint("DiscouragedApi")
+    @Synchronized
+    fun isFrameworkColorReference(resourceName: String): Boolean =
+        frameworkReferenceCache.getOrPut(resourceName) {
+            runCatching {
+                val resources = Resources.getSystem()
+                val id = resources.getIdentifier(resourceName, "color", FRAMEWORK_PACKAGE)
+                id != 0 && TypedValue().also { resources.getValue(id, it, false) }.type ==
+                        TypedValue.TYPE_REFERENCE
+            }.getOrDefault(false)
+        }
 }
