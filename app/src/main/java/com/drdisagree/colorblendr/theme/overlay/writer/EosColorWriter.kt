@@ -19,6 +19,8 @@ object EosColorWriter : ThemeColorWriter {
     private class LightDark(val light: Int, val dark: Int)
 
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
+        if (!isEos()) return
+
         val isDark = target.isDarkMode
         fun ColorSink.qualified(name: String, colors: LightDark) {
             dayNight(name, colors.light, colors.dark, isDark)
@@ -58,7 +60,7 @@ object EosColorWriter : ThemeColorWriter {
             )
         )
 
-        if (target.packageName == SYSTEMUI_PACKAGE && isEos()) {
+        if (target.packageName == SYSTEMUI_PACKAGE) {
             sink.dayNight("brightness_slider_overlay_color", accent.light, accent.dark, isDark)
             sink.dayNight("brightness_slider_track", surfaceContainer.light, surfaceContainer.dark, isDark)
         }
