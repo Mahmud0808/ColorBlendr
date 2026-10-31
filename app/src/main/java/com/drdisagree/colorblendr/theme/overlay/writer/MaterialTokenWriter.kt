@@ -1,11 +1,13 @@
 package com.drdisagree.colorblendr.theme.overlay.writer
 
+import com.drdisagree.colorblendr.data.common.Constant.FRAMEWORK_PACKAGE
 import com.drdisagree.colorblendr.theme.overlay.ColorSink
 import com.drdisagree.colorblendr.theme.overlay.OverlayTarget
 import com.drdisagree.colorblendr.theme.overlay.ResourceNames
 import com.drdisagree.colorblendr.theme.overlay.ThemeColorWriter
 import com.drdisagree.colorblendr.theme.scheme.ResolvedTheme
 import com.drdisagree.colorblendr.theme.token.TokenGroup
+import com.drdisagree.colorblendr.utils.app.ResourceUtil
 
 object MaterialTokenWriter : ThemeColorWriter {
 
@@ -21,6 +23,8 @@ object MaterialTokenWriter : ThemeColorWriter {
 
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
         val current = theme.scheme(target.isDarkMode)
+        val isFramework = target.packageName == FRAMEWORK_PACKAGE
+        val writable = { name: String -> !isFramework || !ResourceUtil.isFrameworkColorReference(name) }
 
         current.tokens(TokenGroup.SYSTEM).forEach { token ->
             listOf(theme.light, theme.dark).forEach { scheme ->
@@ -36,7 +40,8 @@ object MaterialTokenWriter : ThemeColorWriter {
                 sink.dayNight("$prefix${token.resourceName}", light, dark, target.isDarkMode)
             }
             PASCAL_PREFIXES.forEach { prefix ->
-                sink.dayNight("$prefix${ResourceNames.pascal(token.resourceName)}", light, dark, target.isDarkMode)
+                val name = "$prefix${ResourceNames.pascal(token.resourceName)}"
+                if (writable(name)) sink.dayNight(name, light, dark, target.isDarkMode)
             }
         }
 
@@ -46,19 +51,15 @@ object MaterialTokenWriter : ThemeColorWriter {
             }
             PASCAL_PREFIXES.forEach { prefix ->
                 val name = "$prefix${ResourceNames.pascal(token.resourceName)}"
-                sink.dayNight(name, theme.light[token], theme.dark[token], target.isDarkMode)
-                sink.color("${name}Light", theme.light[token])
-                sink.color("${name}Dark", theme.dark[token])
+                if (writable(name)) sink.dayNight(name, theme.light[token], theme.dark[token], target.isDarkMode)
+                if (writable("${name}Light")) sink.color("${name}Light", theme.light[token])
+                if (writable("${name}Dark")) sink.color("${name}Dark", theme.dark[token])
             }
         }
 
         current.tokens(TokenGroup.CUSTOM).forEach { token ->
-            sink.dayNight(
-                "$CUSTOM_PASCAL_PREFIX${ResourceNames.pascal(token.resourceName)}",
-                theme.light[token],
-                theme.dark[token],
-                target.isDarkMode
-            )
+            val name = "$CUSTOM_PASCAL_PREFIX${ResourceNames.pascal(token.resourceName)}"
+            if (writable(name)) sink.dayNight(name, theme.light[token], theme.dark[token], target.isDarkMode)
         }
     }
 }
