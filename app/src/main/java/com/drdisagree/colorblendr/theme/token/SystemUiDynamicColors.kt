@@ -1,8 +1,10 @@
 package com.drdisagree.colorblendr.theme.token
 
 import android.os.Build
+import com.drdisagree.materialcolorutilities.dynamiccolor.ColorSpec.SpecVersion
 import com.drdisagree.materialcolorutilities.dynamiccolor.ContrastCurve
 import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicColor
+import com.drdisagree.materialcolorutilities.dynamiccolor.DynamicScheme
 import com.drdisagree.materialcolorutilities.dynamiccolor.MaterialDynamicColors
 import com.drdisagree.materialcolorutilities.dynamiccolor.ToneDeltaPair
 import com.drdisagree.materialcolorutilities.dynamiccolor.ToneDeltaPair.DeltaConstraint
@@ -120,7 +122,7 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
                 themeAppRing(),
                 5.0,
                 TonePolarity.RELATIVE_LIGHTER,
-                constraint = DeltaConstraint.FARTHER
+                constraint = if (legacyDeltaPairs(it)) DeltaConstraint.NEARER else DeltaConstraint.FARTHER
             )
         }
     )
@@ -180,7 +182,7 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         background = { underSurface() },
         contrastCurve = { ContrastCurve(lowestContrast(3.0), 3.0, 4.5, 7.0) },
         toneDeltaPair = {
-            if (nearerShadePairs) {
+            if (legacyDeltaPairs(it)) {
                 ToneDeltaPair(shadeActive(), shadeInactive(), 30.0, TonePolarity.LIGHTER, stayTogether = false)
             } else {
                 ToneDeltaPair(shadeActive(), shadeInactive(), 30.0, TonePolarity.LIGHTER, constraint = DeltaConstraint.FARTHER)
@@ -194,7 +196,7 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         tone = { 10.0 },
         background = { shadeActive() },
         contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) },
-        toneDeltaPair = { shadeTextPair(onShadeActive(), onShadeActiveVariant(), 20.0) }
+        toneDeltaPair = { shadeTextPair(it, onShadeActive(), onShadeActiveVariant(), 20.0) }
     )
 
     fun onShadeActiveVariant(): DynamicColor = DynamicColor(
@@ -213,7 +215,7 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         background = { underSurface() },
         contrastCurve = { ContrastCurve(1.0, 1.0, 1.0, 1.0) },
         toneDeltaPair = {
-            if (nearerShadePairs) {
+            if (legacyDeltaPairs(it)) {
                 ToneDeltaPair(shadeInactive(), shadeDisabled(), 15.0, TonePolarity.LIGHTER, stayTogether = false)
             } else {
                 ToneDeltaPair(shadeInactive(), shadeDisabled(), 15.0, TonePolarity.LIGHTER, constraint = DeltaConstraint.FARTHER)
@@ -228,7 +230,7 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         isBackground = nearerShadePairs,
         background = { shadeInactive() },
         contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) },
-        toneDeltaPair = { shadeTextPair(onShadeInactive(), onShadeInactiveVariant(), 10.0) }
+        toneDeltaPair = { shadeTextPair(it, onShadeInactive(), onShadeInactiveVariant(), 10.0) }
     )
 
     fun onShadeInactiveVariant(): DynamicColor = DynamicColor(
@@ -239,8 +241,13 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         contrastCurve = { ContrastCurve(lowestContrast(4.5), 4.5, 7.0, 11.0) }
     )
 
-    private fun shadeTextPair(roleA: DynamicColor, roleB: DynamicColor, delta: Double): ToneDeltaPair =
-        if (nearerShadePairs) {
+    private fun shadeTextPair(
+        scheme: DynamicScheme,
+        roleA: DynamicColor,
+        roleB: DynamicColor,
+        delta: Double
+    ): ToneDeltaPair =
+        if (legacyDeltaPairs(scheme)) {
             ToneDeltaPair(
                 roleA,
                 roleB,
@@ -252,6 +259,9 @@ class SystemUiDynamicColors(private val material: MaterialDynamicColors) {
         } else {
             ToneDeltaPair(roleA, roleB, delta, TonePolarity.RELATIVE_LIGHTER, constraint = DeltaConstraint.FARTHER)
         }
+
+    private fun legacyDeltaPairs(scheme: DynamicScheme): Boolean =
+        scheme.specVersion == SpecVersion.SPEC_2021
 
     private fun lowestContrast(current: Double): Double =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) 1.0 else current
