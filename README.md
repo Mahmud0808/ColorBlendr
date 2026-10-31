@@ -34,7 +34,7 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 - Generate palettes from your wallpaper
 - Pick any seed color, or choose from a set of basic colors
-- Live preview before applying — see changes as you tweak them
+- Live preview before applying, so you see changes as you tweak them
 
 **Fine-tuning**
 
@@ -50,9 +50,9 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 - Separate configurations for light and dark mode
 - Extra tweaks: color spec version, screen-off updates, darker / semi-transparent Pixel launcher icons
 
-**AI & community**
+**Community**
 
-- Community creations — browse, apply, upvote, and share themes (see below)
+- Community creations: browse, apply, upvote, and share themes (see below)
 
 **Backup & modes**
 
@@ -81,12 +81,12 @@ Elevate your creativity with effortless material customization. Instantly tweak 
 
 Share your favorite color setups and discover themes crafted by others, right inside the app.
 
-- **Browse & search** — explore a growing gallery of community-made themes, sorted by popularity or recency
-- **One-tap apply** — preview any creation live and apply it instantly (root mode)
-- **Upvote** — like the themes you enjoy so the best ones rise to the top
-- **Share your own** — publish your current palette with a name and description
+- **Browse & search:** explore a growing gallery of community-made themes, sorted by popularity or recency
+- **One-tap apply:** preview any creation live and apply it instantly (root mode)
+- **Upvote:** like the themes you enjoy so the best ones rise to the top
+- **Share your own:** publish your current palette with a name and description
 
-Everything is anonymous — no account, sign-up, or personal data required. Submissions go through a quick human review before they appear for everyone.
+Everything is anonymous. No account, sign-up, or personal data required. Submissions go through a quick human review before they appear for everyone.
 
 > [!NOTE]
 >
@@ -128,7 +128,7 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
 <details>
   <summary>Is any personal data collected when I share a theme?</summary>
 
-- No. Community creations are fully anonymous — no account or personal data is attached. Only the palette itself, along with the name and description you provide, is submitted.
+- No. Community creations are fully anonymous. No account or personal data is attached. Only the palette itself, along with the name and description you provide, is submitted.
 </details>
 
 <details>
@@ -143,10 +143,10 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
 
 - Yes. Enable **Tasker integration** in the app's advanced settings, then send a broadcast from Tasker (or MacroDroid / Automate) with:
   - **Action:** `com.drdisagree.colorblendr.action.APPLY_CONFIG`
-  - **Package:** `com.drdisagree.colorblendr` (required — broadcasts without it are dropped by Android)
+  - **Package:** `com.drdisagree.colorblendr` (required, Android drops broadcasts without it)
   - **Target:** Broadcast Receiver
 
-- Supported extras — include any combination; only the ones you send are changed:
+- Supported extras (include any combination, only the ones you send are changed):
 
   | Extra | Type | Values | What it does |
   |-------|------|--------|--------------|
@@ -159,9 +159,9 @@ Everything is anonymous — no account, sign-up, or personal data required. Subm
   | `backgroundLightness` | Integer | `0`–`200` (100 = default) | Background lightness slider |
   | `pitchBlack` | Boolean | `true` / `false` | Toggles the pitch black dark theme |
   | `accurateShades` | Boolean | `true` / `false` | Toggles accurate shades |
-  | `config` | String | JSON with any of the keys above, e.g. `{"seedColor":"#3F51B5","pitchBlack":true}` | Sends everything in one extra — useful since Tasker's UI has limited extra fields |
+  | `config` | String | JSON with any of the keys above, e.g. `{"seedColor":"#3F51B5","pitchBlack":true}` | Sends everything in one extra, useful since Tasker's UI has limited extra fields |
 
-- Values outside their allowed range or malformed colors are ignored. Extras sent both individually and inside `config` — the individual one wins.
+- Values outside their allowed range or malformed colors are ignored. If an extra is sent both individually and inside `config`, the individual one wins.
 - Sending any of the three slider extras turns off **Mode specific themes**, since the automated value replaces the separate light/dark slider setup.
 - If **Update colors when screen off** is enabled, automated changes are held back and applied once the screen actually turns off.
 - Example: a Tasker time profile repeating every hour + Send Intent with extra `randomColor:true` gives you a fresh random theme every hour.
