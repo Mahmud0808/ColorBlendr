@@ -3,20 +3,32 @@ package com.drdisagree.colorblendr.theme.rule
 import android.graphics.Color
 import com.drdisagree.colorblendr.theme.model.PaletteRole
 import com.drdisagree.colorblendr.theme.model.ShadeScale
+import com.drdisagree.colorblendr.theme.palette.AdjustedPalette
 import com.drdisagree.colorblendr.theme.token.Token
 import com.drdisagree.colorblendr.theme.token.TokenResolution
 
-class PitchBlackRule(private val surfaceTone: Double) : ThemeRule {
+class PitchBlackRule(
+    private val surfaceTone: Double,
+    notificationTone: Double,
+    notificationChroma: Double,
+    neutral: AdjustedPalette
+) : ThemeRule {
+
+    private val notificationColor: Int by lazy {
+        neutral.colorAt(darken(notificationTone), notificationChroma)
+    }
 
     override fun token(
         token: Token,
         resolution: TokenResolution,
         isDark: Boolean
     ): TokenResolution {
-        if (!isDark || resolution.role?.isNeutral != true || token !in SURFACE_TOKENS) {
-            return resolution
+        if (!isDark || resolution.role?.isNeutral != true) return resolution
+        return when (token) {
+            in SURFACE_TOKENS -> resolution.copy(tone = darken(resolution.tone))
+            Token.SHADE_INACTIVE -> resolution.copy(color = notificationColor)
+            else -> resolution
         }
-        return resolution.copy(tone = darken(resolution.tone))
     }
 
     override fun shade(role: PaletteRole, index: Int, color: Int, isDark: Boolean): Int =
@@ -39,7 +51,8 @@ class PitchBlackRule(private val surfaceTone: Double) : ThemeRule {
             Token.SURFACE_CONTAINER_LOW,
             Token.SURFACE_CONTAINER,
             Token.SURFACE_CONTAINER_HIGH,
-            Token.SURFACE_CONTAINER_HIGHEST
+            Token.SURFACE_CONTAINER_HIGHEST,
+            Token.SHADE_DISABLED
         )
 
         val REFERENCE_SURFACE_TONES = setOf(4.0, 6.0, 12.0, 17.0, 22.0, 24.0)

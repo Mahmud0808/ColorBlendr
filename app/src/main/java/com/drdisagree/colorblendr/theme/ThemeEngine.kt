@@ -58,7 +58,15 @@ object ThemeEngine {
             if (roles.isNotEmpty()) add(LegacyTokenRule(roles, palettes, adjustments.pitchBlack))
         }
         if (adjustments.pitchBlack) {
-            add(PitchBlackRule(surfaceTone = MaterialDynamicColors().surface.getTone(scheme)))
+            val colors = MaterialDynamicColors()
+            add(
+                PitchBlackRule(
+                    surfaceTone = colors.surface.getTone(scheme),
+                    notificationTone = colors.surfaceContainerHigh.getTone(scheme),
+                    notificationChroma = colors.surfaceContainerHigh.chromaMultiplier?.invoke(scheme) ?: 1.0,
+                    neutral = palettes.getValue(PaletteRole.NEUTRAL)
+                )
+            )
         }
         if (!adjustments.tintedText) add(TintlessTextRule)
     }
