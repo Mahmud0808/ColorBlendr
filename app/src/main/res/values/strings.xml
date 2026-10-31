@@ -475,4 +475,7 @@
         <item quantity="one"> · %1$s apply</item>
         <item quantity="other"> · %1$s applies</item>
     </plurals>
+
+    <string name="nav_rail_expand">Expand navigation</string>
+    <string name="nav_rail_collapse">Collapse navigation</string>
 </resources>

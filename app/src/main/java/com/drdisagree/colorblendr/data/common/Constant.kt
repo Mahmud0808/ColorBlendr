@@ -70,6 +70,7 @@ object Constant {
     const val FABRICATED_OVERLAY_FOR_APPS_STATE = "fabricatedOverlayForAppsState"
     const val SHOW_PER_APP_THEME_WARN = "showPerAppThemeWarn"
     const val SHOW_PALETTE_ROOT_HINT = "showPaletteRootHint"
+    const val NAV_RAIL_EXPANDED = "navRailExpanded"
     const val SHOW_PALETTE_ROOTLESS_HINT = "showPaletteRootlessHint"
     const val TOKEN_OVERRIDES = "tokenOverrides"
     const val LEGACY_TOKENS = "legacyTokens"
@@ -149,6 +150,7 @@ object Constant {
             SHOW_PER_APP_THEME_WARN,
             SHOW_PALETTE_ROOT_HINT,
             SHOW_PALETTE_ROOTLESS_HINT,
+            NAV_RAIL_EXPANDED,
             APP_LIST_FILTER_METHOD,
             ADB_IP,
             ADB_PAIRING_PORT,
