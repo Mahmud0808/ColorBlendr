@@ -11,10 +11,12 @@ object SystemUiExtrasWriter : ThemeColorWriter {
 
     private const val BLURRED_PANEL_ALPHA = 0.32f
     private const val BLURRED_SCRIM_ALPHA = 0.5f
+    private const val TINTED_RIPPLE_ALPHA = 0.19f
 
     override fun write(theme: ResolvedTheme, target: OverlayTarget, sink: ColorSink) {
         sink.color("shade_scrim_background_dark", Color.BLACK)
-        sink.color("notification_ripple_tinted_color", Color.WHITE)
+        sink.color("notification_ripple_tinted_color", Color.WHITE.withAlpha(TINTED_RIPPLE_ALPHA))
+        sink.color("media_on_background", Color.WHITE)
         sink.color("system_bar_background_opaque", Color.BLACK)
 
         if (target.isDarkMode && theme.adjustments.pitchBlack) {
