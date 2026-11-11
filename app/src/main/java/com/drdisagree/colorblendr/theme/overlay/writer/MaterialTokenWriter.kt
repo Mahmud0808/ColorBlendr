@@ -17,7 +17,7 @@ object MaterialTokenWriter : ThemeColorWriter {
         "gm3_sys_color_",
         "gm3_sys_color_dynamic_"
     )
-    private val CURRENT_MODE_PREFIXES = listOf("media_dialog_", "media_")
+    private val CURRENT_MODE_PREFIXES = listOf("media_dialog_")
     private val PASCAL_PREFIXES = listOf("settingslib_materialColor", "materialColor")
     private const val CUSTOM_PASCAL_PREFIX = "customColor"
 
