@@ -42,14 +42,21 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <sub><b>1701 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/Chumor"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16820639/medium/e7ed1f24b383d021ae0ff81f7ef17cef_default.png" />
+          <br />
+          <sub><b>Chumor</b></sub></a>
+        <br />
+        <sub><b>1689 words</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/dudgowjs1"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16258428/medium/27db7af70e75426ee4c2784aae7bc4a7.png" />
           <br />
           <sub><b>dudgowjs (dudgowjs1)</b></sub></a>
         <br />
         <sub><b>1333 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/qnqelle"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16271182/medium/5bf6a630acd692aa55fed444852f28ff.png" />
           <br />
@@ -85,6 +92,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>756 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Davvx-Gbyte"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17805007/medium/8f4bfeeeb153965d7fd3a205ee99429c.png" />
           <br />
@@ -92,8 +101,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>692 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/hanubeki"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13024821/medium/631bc0c6dd71f4ce29df979b78bcd589.png" />
           <br />
@@ -129,6 +136,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>616 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/simonk206"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16190414/medium/78e14d6bf5a4e70d1559d07c4514c302.jpeg" />
           <br />
@@ -136,8 +145,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>607 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/NORIMIKAME"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16190376/medium/7063bcc41dac9121126e2310b9c711eb.jpg" />
           <br />
@@ -173,6 +180,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>343 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/mak7im01"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16278166/medium/57ebd8e9c54e419c321adb96652841cc.jpeg" />
           <br />
@@ -180,8 +189,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>274 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/itzedimy"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14834464/medium/096a40e24eaf05c32e06048264ba38fe.jpeg" />
           <br />
@@ -217,6 +224,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>166 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/RocketSmash"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16350008/medium/85d18d511d02537d512618bd416d8c1a_default.png" />
           <br />
@@ -224,8 +233,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>157 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/karpzpodkarpacia"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16166038/medium/f1ed92a919c1014d0b798d8595d36025.png" />
           <br />
@@ -261,6 +268,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>99 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/tecxz5"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16544793/medium/1bbf1b8b08de2789ac908491d41b234f.png" />
           <br />
@@ -268,8 +277,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>98 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/IslamAlorabI"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15482826/medium/66d0009f12159a391f5bf7f4daec04bd.jpg" />
           <br />
@@ -305,6 +312,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>77 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Shiitake79"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15310478/medium/02de9141c3d24c8ded33c1b4a3e5128b.png" />
           <br />
@@ -312,8 +321,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>68 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/yurtpage"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16314122/medium/0f5ab37f0c52a4d9da31a56ac037fc8e.png" />
           <br />
@@ -349,6 +356,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>50 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/aliuguryasar"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17929057/medium/40e5dceb56f36c77df9153f3b3cc6189.png" />
           <br />
@@ -356,8 +365,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>47 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/shentte_vak89"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17954227/medium/5aabea356dbb8680932dc3cbd5137e40_default.png" />
           <br />
@@ -393,6 +400,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>24 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/edixonmiguelg"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15731475/medium/d8fb6026740016e03ea30a8934575a0b.jpg" />
           <br />
@@ -400,8 +409,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>23 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/ivankiss666"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17911349/medium/8f0fd159d8f182a49b2619be8643eda9.jpeg" />
           <br />
@@ -437,6 +444,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>8 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/arefin.mostafa2004"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16657829/medium/65c3fb7155313ba1ed817768a156de4f.jpeg" />
           <br />
@@ -444,8 +453,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>5 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Wallisonx7"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16321662/medium/4bc7e54c0e556a151e88192a4d480083_default.png" />
           <br />
@@ -481,6 +488,8 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>3 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Ethyne"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16903415/medium/0b87050fe8b8c9f5c7c67bdde851a80e.jpeg" />
           <br />
@@ -488,8 +497,6 @@ ColorBlendr speaks your language because of these translators and proofreaders:
         <br />
         <sub><b>2 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/filipe8bits"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17287116/medium/1929e7d2935deefa208151e6bf30a6bf.jpeg" />
           <br />
