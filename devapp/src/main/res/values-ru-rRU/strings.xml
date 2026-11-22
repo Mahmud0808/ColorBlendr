@@ -88,10 +88,10 @@
     <string name="detail_bg_sat_light">Насыщенность фона (светлая)</string>
     <string name="detail_bg_light_light">Яркость фона (светлая)</string>
     <string name="detail_overrides">Подмена цвета</string>
-    <string name="detail_token_overrides">Token overrides</string>
-    <string name="detail_token_overrides_value">%1$d light · %2$d dark</string>
-    <string name="detail_schema">Schema</string>
-    <string name="detail_schema_v2">v2 · token overrides</string>
+    <string name="detail_token_overrides">Переопределение токена</string>
+    <string name="detail_token_overrides_value">%1$d светлый · %2$d темный</string>
+    <string name="detail_schema">Схема</string>
+    <string name="detail_schema_v2">v2 · переопределение токенов</string>
     <string name="detail_schema_tokens">v1 · token engine</string>
     <string name="detail_schema_legacy">v1 · legacy mapping</string>
     <string name="detail_pitch_black_containers">Pitch black containers</string>

@@ -146,31 +146,31 @@
     <string name="color_tokens_filter_all">All tokens</string>
     <string name="color_tokens_filter_edited">Edited</string>
     <string name="color_tokens_category_surface">Surfaces</string>
-    <string name="color_tokens_category_primary">Primary</string>
-    <string name="color_tokens_category_secondary">Secondary</string>
-    <string name="color_tokens_category_tertiary">Tertiary</string>
-    <string name="color_tokens_category_error">Error</string>
-    <string name="color_tokens_category_fixed">Fixed accents</string>
+    <string name="color_tokens_category_primary">Первичный</string>
+    <string name="color_tokens_category_secondary">Вторичный</string>
+    <string name="color_tokens_category_tertiary">Третичный</string>
+    <string name="color_tokens_category_error">Ошибка</string>
+    <string name="color_tokens_category_fixed">Фиксированные акценты</string>
     <string name="color_tokens_category_framework">Framework</string>
-    <string name="color_tokens_category_system_ui">System UI</string>
+    <string name="color_tokens_category_system_ui">Система UI</string>
     <string name="color_tokens_category_key_color">Key colors</string>
-    <string name="color_tokens_mode_light">Light</string>
-    <string name="color_tokens_mode_dark">Dark</string>
-    <string name="color_tokens_source_palette">Palette</string>
-    <string name="color_tokens_source_custom">Custom</string>
-    <string name="color_tokens_pick_color">Pick a color</string>
-    <string name="color_tokens_edited">Edited</string>
+    <string name="color_tokens_mode_light">Светлая</string>
+    <string name="color_tokens_mode_dark">Тёмная</string>
+    <string name="color_tokens_source_palette">Палитра</string>
+    <string name="color_tokens_source_custom">Пользовательская</string>
+    <string name="color_tokens_pick_color">Выберите цвет</string>
+    <string name="color_tokens_edited">Отредактировано</string>
     <string name="color_tokens_from_shade">%1$s · %2$s %3$d</string>
-    <string name="color_palette_reset_title">Reset shades?</string>
-    <string name="color_palette_reset_message">Every customized shade returns to its generated color.</string>
-    <string name="color_tokens_reset_title">Reset tokens?</string>
+    <string name="color_palette_reset_title">Сбросить оттенки?</string>
+    <string name="color_palette_reset_message">Каждый настраиваемый оттенок возвращается к исходному цвету.</string>
+    <string name="color_tokens_reset_title">Сбросить токены?</string>
     <string name="color_tokens_reset_message">Every edited token in %1$s mode returns to its generated color.</string>
-    <string name="color_tokens_empty">No tokens found</string>
-    <string name="color_tokens_empty_desc">Try a different search or filter.</string>
-    <string name="palette_neutral">Neutral</string>
-    <string name="palette_neutral_variant">Neutral variant</string>
-    <string name="palette_error">Error</string>
-    <string name="done">Done</string>
+    <string name="color_tokens_empty">Токены не найдены</string>
+    <string name="color_tokens_empty_desc">Попробуйте другой поиск или фильтр.</string>
+    <string name="palette_neutral">Нейтральный</string>
+    <string name="palette_neutral_variant">Нейтральный вариант</string>
+    <string name="palette_error">Ошибка</string>
+    <string name="done">Готово</string>
     <string name="primary">Первичный</string>
     <string name="secondary">Вторичный</string>
     <string name="tertiary">Третичный</string>
@@ -254,22 +254,22 @@
     <string name="about_this_app_desc">Информация об этом приложении и его разработчике</string>
     <!-- Advanced settings -->
     <string name="advanced_settings">Расширенный</string>
-    <string name="contrast_title">Color contrast</string>
-    <string name="contrast_desc">How strongly colors stand apart from each other</string>
+    <string name="contrast_title">Цветовой контраст</string>
+    <string name="contrast_desc">Насколько сильно цвета отличаются друг от друга</string>
     <string-array name="contrast_levels">
-        <item>Standard</item>
-        <item>Medium</item>
-        <item>High</item>
+        <item>Стандарт</item>
+        <item>Средний</item>
+        <item>Высокий</item>
     </string-array>
     <string-array name="contrast_level_descs">
-        <item>Default Material You contrast</item>
-        <item>Stronger separation between colors</item>
-        <item>Maximum separation for easier reading</item>
+        <item>Контрастный Material You по умолчанию</item>
+        <item>Более четкое разделение цветов</item>
+        <item>Максимальное разделение для облегчения чтения</item>
     </string-array>
-    <string name="advanced_settings_desc">Extra color options, integrations and workarounds</string>
+    <string name="advanced_settings_desc">Дополнительные варианты цветового оформления, интеграции и обходные пути</string>
     <string name="custom_secondary_color_desc">Пользовательский дополнительный цвет</string>
     <string name="custom_tertiary_color_title">Пользовательский основной цвет</string>
-    <string name="custom_accent_color_summary">Generated from the seed color unless you pick one</string>
+    <string name="custom_accent_color_summary">Цвет определяется исходным цветом, если вы сами его не выберете</string>
     <string name="mode_specific_theme_title">Конкретная тема режима</string>
     <string name="screen_off_update_desc">Обновляет цвета после 15-ти секунд отключения экрана; полезно для живых обоев</string>
     <string name="screen_off_update_title">Обновить цвета при выключенном экране</string>
@@ -277,21 +277,21 @@
     <string name="colorspec_title">Версия ColorSpec</string>
     <string name="colorspec_desc">Выберите версию спецификации цвета материала, которая будет использоваться для генерации палитры.</string>
     <string-array name="colorspec_version_descs">
-        <item>Original Material You colors, used by every style</item>
-        <item>Material 3 Expressive colors from Android 16 for Neutral, Tonal Spot, Vibrant and Expressive. Other styles stay on 2021.</item>
-        <item>Same as 2025, and unlocks the CMF style</item>
+        <item>Оригинальные Material You цвета, используемые в каждом стиле</item>
+        <item>В цветовой гамме Material 3 Expressive используются цвета из Android 16: Neutral, Tonal Spot, Vibrant и Expressive. Остальные стили остаются актуальными в 2021 году.</item>
+        <item>Аналогично 2025 году, и открывает доступ к стилю CMF</item>
     </string-array>
     <string name="darker_launcher_icons_title">Значки Darker launcher</string>
     <string name="darker_launcher_icons_desc">Применить более темный фон к монохромным иконкам Pixel Launcher</string>
     <string name="semitransparent_launcher_title">Полупрозрачный лаунчер</string>
     <string name="semitransparent_launcher_desc">Применить полупрозрачный стиль к Pixel Launcher</string>
     <string name="pitch_black_settings_workaround_title">Настройки черного цвета</string>
-    <string name="pitch_black_settings_workaround_desc">Make the Settings app pure black on Android 15 and above</string>
-    <string name="legacy_tokens_title">Legacy color mapping</string>
-    <string name="legacy_tokens_desc">Shows this community theme the way older versions did. Turn off to preview it with the new color engine</string>
+    <string name="pitch_black_settings_workaround_desc">Сделайте приложение «Настройки» полностью чёрным на Android 15 и выше</string>
+    <string name="legacy_tokens_title">Устаревшая цветовая карта</string>
+    <string name="legacy_tokens_desc">Отображает эту тему оформления сообщества так же, как и в более ранних версиях. Отключите предварительный просмотр, чтобы использовать новый цветовой движок</string>
     <!-- Privacy policy -->
     <string name="privacy_policy">Политика конфиденциальности</string>
-    <string name="privacy_policy_desc">What data the app uses and why</string>
+    <string name="privacy_policy_desc">Какие данные использует приложение и почему</string>
     <!-- About -->
     <string name="news">Новости</string>
     <string name="support">Поддержка</string>
@@ -365,7 +365,7 @@
     <string name="error_wireless_adb_unavailable">Беспроводной ADB не подключен.</string>
     <string name="error_overlay_operation">Операция наложения не удалась: %1$s</string>
     <string name="per_app_overlay_rejected">%1$s нет цветов, подстраиваемых под тему, для переопределения</string>
-    <string name="preview_pending_apply_first">Apply or discard your color changes first</string>
+    <string name="preview_pending_apply_first">Сначала внесите изменения в цвет или отмените их</string>
     <string name="search_hint">Искать здесь…</string>
     <string name="search_by_color">Поиск по цвету</string>
     <string name="saved_styles_divider">Ваши стили</string>
@@ -449,11 +449,11 @@
     <string name="preview_applying">Применение цветов…</string>
     <string name="preview_discard">Отменить изменения</string>
     <plurals name="community_applies">
-        <item quantity="one"> · %1$s apply</item>
-        <item quantity="few"> · %1$s applies</item>
-        <item quantity="many"> · %1$s applies</item>
-        <item quantity="other"> · %1$s applies</item>
+        <item quantity="one"> · %1$s применить</item>
+        <item quantity="few"> · %1$s применяется</item>
+        <item quantity="many"> · %1$s применяется</item>
+        <item quantity="other"> · %1$s применяется</item>
     </plurals>
-    <string name="nav_rail_expand">Expand navigation</string>
-    <string name="nav_rail_collapse">Collapse navigation</string>
+    <string name="nav_rail_expand">Развернуть навигацию</string>
+    <string name="nav_rail_collapse">Свернуть навигацию</string>
 </resources>
