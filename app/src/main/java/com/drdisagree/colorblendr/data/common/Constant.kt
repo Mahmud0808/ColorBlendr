@@ -123,6 +123,7 @@ object Constant {
     const val PITCH_BLACK_AUTO_SELECTED_APPS = "pitchBlackAutoSelectedApps"
     const val PITCH_BLACK_DECLINED_APPS = "pitchBlackDeclinedApps"
     const val SAMSUNG_PALETTE_ORIGINAL_STATE = "samsungPaletteOriginalState"
+    const val ONE_UI_PALETTE_BACKUP = "oneUiPaletteBackup"
     const val COMMUNITY_WORKER_URL = "https://colorblendr-themes.drdisagree.workers.dev"
     const val TURNSTILE_SITE_KEY = "0x4AAAAAADzUgMuegUjZcG6j"
 
@@ -138,6 +139,7 @@ object Constant {
             COMMUNITY_LAST_FETCH,
             PITCH_BLACK_AUTO_SELECTED_APPS,
             SAMSUNG_PALETTE_ORIGINAL_STATE,
+            ONE_UI_PALETTE_BACKUP,
             DEVELOPER_MODE
         )
     )

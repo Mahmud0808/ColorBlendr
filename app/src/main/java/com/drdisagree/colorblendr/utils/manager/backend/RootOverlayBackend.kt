@@ -9,8 +9,10 @@ import com.drdisagree.colorblendr.data.common.Constant.BLISS_LAUNCHER
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_APPS
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEM
 import com.drdisagree.colorblendr.data.common.Constant.FABRICATED_OVERLAY_NAME_SYSTEMUI
+import com.drdisagree.colorblendr.data.common.Utilities.getCurrentMonetStyle
 import com.drdisagree.colorblendr.data.common.Utilities.getSelectedFabricatedApps
 import com.drdisagree.colorblendr.data.common.Utilities.isRootMode
+import com.drdisagree.colorblendr.data.enums.MONET
 import com.drdisagree.colorblendr.service.IRootConnection
 import com.drdisagree.colorblendr.theme.ThemePrefs
 import com.drdisagree.colorblendr.theme.overlay.ThemeOverlays
@@ -39,10 +41,17 @@ object RootOverlayBackend : OverlayBackend {
             .filter { it.getEntries().isNotEmpty() }
             .forEach(::register)
 
+        OneUiColorPalette.apply(
+            scheme = theme.scheme(isDarkMode),
+            isGray = getCurrentMonetStyle() == MONET.MONOCHROMATIC,
+            shell = ::shell
+        )
+
         return applied
     }
 
     override fun remove(): Boolean {
+        OneUiColorPalette.restore(::shell)
         val overlayNames = selectedApps().map(::perAppOverlayName) + listOf(
             FABRICATED_OVERLAY_NAME_SYSTEM,
             FABRICATED_OVERLAY_NAME_SYSTEMUI,
@@ -76,6 +85,10 @@ object RootOverlayBackend : OverlayBackend {
     fun areEnabled(overlayNames: List<String>): BooleanArray? {
         if (overlayNames.isEmpty()) return BooleanArray(0)
         return query<BooleanArray?>(null) { it.areOverlaysEnabled(overlayNames) }
+    }
+
+    private fun shell(line: String): String = command("", "shell") {
+        it.runCommand(listOf(line)).joinToString("\n")
     }
 
     private fun register(overlay: FabricatedOverlayResource): Boolean =

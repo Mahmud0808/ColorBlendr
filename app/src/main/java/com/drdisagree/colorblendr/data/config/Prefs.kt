@@ -33,6 +33,7 @@ object Prefs {
         Constant.PITCH_BLACK_AUTO_SELECTED_APPS,
         Constant.PITCH_BLACK_DECLINED_APPS,
         Constant.SAMSUNG_PALETTE_ORIGINAL_STATE,
+        Constant.ONE_UI_PALETTE_BACKUP,
         Constant.SHOW_PALETTE_ROOT_HINT,
         Constant.NAV_RAIL_EXPANDED,
         Constant.SHOW_PALETTE_ROOTLESS_HINT,

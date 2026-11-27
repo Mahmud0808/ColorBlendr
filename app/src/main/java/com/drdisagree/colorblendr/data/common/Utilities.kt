@@ -25,6 +25,7 @@ import com.drdisagree.colorblendr.data.common.Constant.MONET_SEED_COLOR_ENABLED
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE
 import com.drdisagree.colorblendr.data.common.Constant.MONET_STYLE_ORIGINAL_NAME
 import com.drdisagree.colorblendr.data.common.Constant.MONET_TERTIARY_COLOR
+import com.drdisagree.colorblendr.data.common.Constant.ONE_UI_PALETTE_BACKUP
 import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_AUTO_SELECTED_APPS
 import com.drdisagree.colorblendr.data.common.Constant.PITCH_BLACK_DECLINED_APPS
 import com.drdisagree.colorblendr.data.common.Constant.PREF_WORKING_METHOD
@@ -68,6 +69,7 @@ import com.drdisagree.colorblendr.theme.override.ColorOverrideCodec
 import com.drdisagree.colorblendr.theme.override.ResourceOverrides
 import com.drdisagree.colorblendr.theme.override.TokenOverrides
 import com.drdisagree.colorblendr.utils.app.SystemUtil
+import com.drdisagree.colorblendr.utils.manager.backend.OneUiPaletteBackup
 import com.google.gson.reflect.TypeToken
 
 @Suppress("unused")
@@ -130,6 +132,17 @@ object Utilities {
             clearPref(SAMSUNG_PALETTE_ORIGINAL_STATE)
         } else {
             putInt(SAMSUNG_PALETTE_ORIGINAL_STATE, if (enabled) 1 else 0)
+        }
+    }
+
+    fun getOneUiPaletteBackup(): OneUiPaletteBackup? =
+        getString(ONE_UI_PALETTE_BACKUP)?.let(OneUiPaletteBackup::fromJson)
+
+    fun setOneUiPaletteBackup(backup: OneUiPaletteBackup?) {
+        if (backup == null) {
+            clearPref(ONE_UI_PALETTE_BACKUP)
+        } else {
+            putString(ONE_UI_PALETTE_BACKUP, backup.toJson())
         }
     }
 

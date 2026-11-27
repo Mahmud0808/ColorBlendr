@@ -22,10 +22,16 @@
 -keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.service.IShizukuConnection { *; }
 -keep,allowoptimization,allowobfuscation class com.drdisagree.colorblendr.utils.fabricated.FabricatedOverlayResource { *; }
 
+-keep,allowobfuscation class com.drdisagree.colorblendr.service.OneUiPaletteCaller
+-keepclassmembers class com.drdisagree.colorblendr.service.OneUiPaletteCaller {
+    public static void main(java.lang.String[]);
+}
+
 # Gson
 -keepattributes Signature
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
+
 # WebView JavaScript bridge (Turnstile) — methods called by name from JS
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
