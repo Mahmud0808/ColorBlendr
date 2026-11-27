@@ -21,6 +21,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -99,13 +100,14 @@ public class AdbMdns {
         mRegistered = false;
     }
 
+    @SuppressWarnings("deprecation")
     private void onServiceFound(NsdServiceInfo serviceInfo) {
         mNsdManager.resolveService(serviceInfo, new ResolveListener(this));
     }
 
     private void onServiceLost(NsdServiceInfo serviceInfo) {
         if (mServiceName != null && mServiceName.equals(serviceInfo.getServiceName())) {
-            mAdbDaemonDiscoveredListener.onPortChanged(serviceInfo.getHost(), -1);
+            mAdbDaemonDiscoveredListener.onPortChanged(hostOf(serviceInfo), -1);
         }
     }
 
@@ -115,16 +117,26 @@ public class AdbMdns {
             for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 for (InetAddress inetAddress : Collections.list(networkInterface.getInetAddresses())) {
                     String inetHost = inetAddress.getHostAddress();
-                    if (Objects.equals(inetHost, serviceInfo.getHost().getHostAddress())
+                    if (Objects.equals(inetHost, hostOf(serviceInfo).getHostAddress())
                             && isPortAvailable(serviceInfo.getPort())) {
                         mServiceName = serviceInfo.getServiceName();
-                        mAdbDaemonDiscoveredListener.onPortChanged(serviceInfo.getHost(), serviceInfo.getPort());
+                        mAdbDaemonDiscoveredListener.onPortChanged(hostOf(serviceInfo), serviceInfo.getPort());
                     }
                 }
             }
         } catch (SocketException e) {
             e.printStackTrace();
         }
+    }
+
+    @Nullable
+    @SuppressWarnings("deprecation")
+    private static InetAddress hostOf(NsdServiceInfo serviceInfo) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            List<InetAddress> addresses = serviceInfo.getHostAddresses();
+            return addresses.isEmpty() ? null : addresses.get(0);
+        }
+        return serviceInfo.getHost();
     }
 
     private boolean isPortAvailable(int port) {

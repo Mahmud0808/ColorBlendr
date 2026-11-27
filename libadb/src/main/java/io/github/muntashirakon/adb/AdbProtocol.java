@@ -32,6 +32,7 @@ final class AdbProtocol {
      *
      * @deprecated Obsolete, no longer used. Never used on the client side.
      */
+    @Deprecated
     public static final int A_SYNC = 0x434e5953;
 
     /**

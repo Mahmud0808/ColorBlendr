@@ -21,6 +21,7 @@ object OneUiPaletteCaller {
         exitProcess(0)
     }
 
+    @Suppress("DEPRECATION")
     private fun call(args: Array<String>) {
         Os.setgid(SYSTEM_UID)
         Os.setuid(SYSTEM_UID)

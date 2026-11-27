@@ -58,10 +58,6 @@ object AppColorResources {
         packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
     }.getOrNull()
 
-    private fun ApplicationInfo.isResourceOverlay(): Boolean = runCatching {
-        ApplicationInfo::class.java.getMethod("isResourceOverlay").invoke(this) as Boolean
-    }.getOrDefault(false)
-
     private fun ApplicationInfo.withoutOverlays(): ApplicationInfo = ApplicationInfo(this).apply {
         OVERLAY_FIELDS.forEach { field ->
             runCatching { ApplicationInfo::class.java.getField(field).set(this, null) }
